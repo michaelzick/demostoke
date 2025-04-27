@@ -7,9 +7,10 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from './ui/button';
 import { MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { Input } from './ui/input';
 
-// Replace with your actual Mapbox token or a temporary input field
-const MAPBOX_TOKEN = 'pk.eyJ1IjoibG92YWJsZSIsImEiOiJjbHV6M2N6b2kwNzF2MmpvOTU4ZGdrejE2In0.h8HqM2V5iGtc_Bt3PSHjSQ';
+// This is a placeholder token - users will need to provide their own valid token
+const MAPBOX_TOKEN = '';
 
 interface MapComponentProps {
   equipment: Equipment[];
@@ -24,17 +25,25 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  // Track custom token if needed
-  const [customToken, setCustomToken] = useState<string | null>(null);
-  const [showTokenInput, setShowTokenInput] = useState(false);
+  // Store token in localStorage to persist between sessions
+  const [token, setToken] = useState<string>(() => {
+    return localStorage.getItem('mapbox_token') || MAPBOX_TOKEN;
+  });
+  const [showTokenInput, setShowTokenInput] = useState(!token);
+  const [tokenInput, setTokenInput] = useState(token);
   
-  const effectiveToken = customToken || MAPBOX_TOKEN;
-
+  // Initialize map with token
   useEffect(() => {
-    if (!mapContainer.current || map.current) return;
+    if (!mapContainer.current || !token) return;
+    
+    // Clear existing map if any
+    if (map.current) {
+      map.current.remove();
+      map.current = null;
+    }
 
     try {
-      mapboxgl.accessToken = effectiveToken;
+      mapboxgl.accessToken = token;
       
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
@@ -55,19 +64,37 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
         setMapLoaded(true);
       });
 
+      // Handle map loading errors
+      map.current.on('error', (e) => {
+        console.error('Map error:', e);
+        if (e.error && (e.error.status === 401 || e.error.status === 403)) {
+          toast({
+            title: "Invalid Mapbox Token",
+            description: "The provided Mapbox token is invalid or expired. Please enter a new token.",
+            variant: "destructive"
+          });
+          setShowTokenInput(true);
+          localStorage.removeItem('mapbox_token');
+          setToken('');
+        }
+      });
+
       return () => {
-        map.current?.remove();
+        if (map.current) {
+          map.current.remove();
+          map.current = null;
+        }
       };
     } catch (error) {
       console.error('Error initializing map:', error);
       setShowTokenInput(true);
       toast({
         title: "Map Error",
-        description: "There was an error loading the map. Please check the console for details.",
+        description: "There was an error loading the map. Please check your Mapbox token.",
         variant: "destructive"
       });
     }
-  }, [effectiveToken, toast]);
+  }, [token, toast]);
 
   // Add markers when map is loaded and equipment data changes
   useEffect(() => {
@@ -146,19 +173,23 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
     }
   };
 
-  // Handle custom token input
+  // Handle token submission
   const handleTokenSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const input = document.getElementById('mapbox-token') as HTMLInputElement;
-    if (input.value) {
-      setCustomToken(input.value);
+    if (tokenInput && tokenInput.startsWith('pk.')) {
+      localStorage.setItem('mapbox_token', tokenInput);
+      setToken(tokenInput);
       setShowTokenInput(false);
-      
-      // Remove the existing map if any
-      if (map.current) {
-        map.current.remove();
-        map.current = null;
-      }
+      toast({
+        title: "Token Applied",
+        description: "Your Mapbox token has been saved. The map will now load.",
+      });
+    } else {
+      toast({
+        title: "Invalid Token Format",
+        description: "Please enter a valid Mapbox public token starting with 'pk.'",
+        variant: "destructive"
+      });
     }
   };
 
@@ -169,37 +200,54 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
           <form onSubmit={handleTokenSubmit} className="w-full max-w-md space-y-4 p-6 bg-card rounded-lg shadow-lg">
             <h3 className="text-lg font-medium">Enter Mapbox Token</h3>
             <p className="text-sm text-muted-foreground">
-              Please provide your Mapbox public token to display the map. You can get one for free at mapbox.com.
+              You need to provide a Mapbox public token to display the map. Get a free token at <a href="https://www.mapbox.com/signin/" target="_blank" rel="noopener noreferrer" className="text-primary underline">mapbox.com</a>.
             </p>
-            <input
+            <Input
               id="mapbox-token"
               type="text"
-              placeholder="pk.eyJ1IjoieW91..."
-              className="w-full px-3 py-2 border rounded-md"
+              placeholder="pk.eyJ1IjoiZXhhbXBsZSIsImEiOiJjbGV4..."
+              value={tokenInput}
+              onChange={(e) => setTokenInput(e.target.value)}
+              className="w-full"
               required
             />
-            <Button type="submit">Submit Token</Button>
+            <div className="space-y-2">
+              <Button type="submit" className="w-full">Apply Token</Button>
+              <p className="text-xs text-muted-foreground">
+                Your token is stored locally in your browser and is never sent to our servers.
+              </p>
+            </div>
           </form>
         </div>
       ) : (
-        <div className="absolute top-4 left-4 z-10 bg-background/90 p-2 rounded-md backdrop-blur-sm">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-ocean-DEFAULT" />
-              <span className="text-xs font-medium">Surfboards</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-ocean-deep" />
-              <span className="text-xs font-medium">Paddles</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-mountain-DEFAULT" />
-              <span className="text-xs font-medium">Snowboards</span>
+        <>
+          <div className="absolute top-4 left-4 z-10 bg-background/90 p-2 rounded-md backdrop-blur-sm">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-ocean-DEFAULT" />
+                <span className="text-xs font-medium">Surfboards</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-ocean-deep" />
+                <span className="text-xs font-medium">Paddles</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-mountain-DEFAULT" />
+                <span className="text-xs font-medium">Snowboards</span>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="text-xs mt-2" 
+                onClick={() => setShowTokenInput(true)}
+              >
+                Change Mapbox Token
+              </Button>
             </div>
           </div>
-        </div>
+          <div ref={mapContainer} className="w-full h-full" />
+        </>
       )}
-      <div ref={mapContainer} className="w-full h-full" />
     </div>
   );
 };
