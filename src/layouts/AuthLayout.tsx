@@ -1,0 +1,32 @@
+
+import { Link, Outlet } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+
+const AuthLayout = () => {
+  return (
+    <div className="flex flex-col min-h-screen bg-ocean-light">
+      <div className="container flex h-16 items-center px-4 md:px-6">
+        <Link to="/" className="flex items-center justify-center">
+          <img
+            src="/logo.svg"
+            alt="RideLocal"
+            className="h-8 w-auto"
+          />
+          <span className="ml-2 text-xl font-bold">RideLocal</span>
+        </Link>
+        <div className="ml-auto">
+          <Button variant="ghost" asChild>
+            <Link to="/">Back to Home</Link>
+          </Button>
+        </div>
+      </div>
+      <div className="flex flex-1 items-center justify-center p-4 md:p-8">
+        <div className="w-full max-w-md">
+          <Outlet />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AuthLayout;
