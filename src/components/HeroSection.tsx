@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { MapPin, Surfboard, Snowboard, Paddle } from "lucide-react";
+import { MapPin, ArrowUp, ArrowDown, ArrowRight } from "lucide-react";
 
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -48,15 +48,15 @@ const HeroSection = () => {
           </div>
           <div className="flex flex-wrap gap-8 justify-center">
             <div className="flex items-center gap-2 animate-float">
-              <Surfboard className="h-6 w-6" />
+              <ArrowUp className="h-6 w-6" />
               <span className="text-sm font-medium">Surfboards</span>
             </div>
             <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.5s' }}>
-              <Paddle className="h-6 w-6" />
+              <ArrowRight className="h-6 w-6" />
               <span className="text-sm font-medium">Paddle Boards</span>
             </div>
             <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '1s' }}>
-              <Snowboard className="h-6 w-6" />
+              <ArrowDown className="h-6 w-6" />
               <span className="text-sm font-medium">Snowboards</span>
             </div>
           </div>

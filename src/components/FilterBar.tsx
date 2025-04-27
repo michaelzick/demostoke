@@ -8,7 +8,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Paddle, Snowboard, Surfboard } from "lucide-react";
+import { MapPin, ArrowUp, ArrowDown, ArrowRight } from "lucide-react";
 
 interface FilterBarProps {
   activeCategory: string | null;
@@ -51,7 +51,7 @@ const FilterBar = ({
               onClick={() => setActiveCategory("surfboard")}
               className="whitespace-nowrap gap-1"
             >
-              <Surfboard className="h-4 w-4" />
+              <ArrowUp className="h-4 w-4" />
               Surfboards
             </Button>
             <Button
@@ -60,7 +60,7 @@ const FilterBar = ({
               onClick={() => setActiveCategory("paddle")}
               className="whitespace-nowrap gap-1"
             >
-              <Paddle className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4" />
               Paddle Boards
             </Button>
             <Button
@@ -69,7 +69,7 @@ const FilterBar = ({
               onClick={() => setActiveCategory("snowboard")}
               className="whitespace-nowrap gap-1"
             >
-              <Snowboard className="h-4 w-4" />
+              <ArrowDown className="h-4 w-4" />
               Snowboards
             </Button>
           </div>

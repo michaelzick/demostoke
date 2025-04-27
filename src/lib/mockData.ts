@@ -88,13 +88,13 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
       description: `Great ${category} for ${suitable.toLowerCase()}. Well maintained and ready for your next adventure!`,
       imageUrl,
       pricePerDay: Math.floor(Math.random() * 30) + 20, // $20-$50
-      rating: (Math.random() * 2 + 3).toFixed(1), // 3.0-5.0
+      rating: Number((Math.random() * 2 + 3).toFixed(1)), // 3.0-5.0 as a number
       reviewCount: Math.floor(Math.random() * 50) + 1,
       owner: {
         id: `owner-${Math.floor(Math.random() * 10) + 1}`,
         name: `${['Alex', 'Jamie', 'Taylor', 'Jordan', 'Casey', 'Riley'][Math.floor(Math.random() * 6)]} ${['S.', 'M.', 'T.', 'L.', 'K.'][Math.floor(Math.random() * 5)]}`,
         imageUrl: `https://api.dicebear.com/6.x/avataaars/svg?seed=${Math.random()}`,
-        rating: (Math.random() * 1 + 4).toFixed(1), // 4.0-5.0
+        rating: Number((Math.random() * 1 + 4).toFixed(1)), // 4.0-5.0 as a number
         responseRate: Math.floor(Math.random() * 20) + 80, // 80%-100%
       },
       location: {
