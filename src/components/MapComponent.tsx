@@ -1,4 +1,3 @@
-
 import { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -9,7 +8,6 @@ import { MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from './ui/input';
 
-// This is a placeholder token - users will need to provide their own valid token
 const MAPBOX_TOKEN = '';
 
 interface MapComponentProps {
@@ -25,18 +23,15 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  // Store token in localStorage to persist between sessions
   const [token, setToken] = useState<string>(() => {
     return localStorage.getItem('mapbox_token') || MAPBOX_TOKEN;
   });
   const [showTokenInput, setShowTokenInput] = useState(!token);
   const [tokenInput, setTokenInput] = useState(token);
   
-  // Initialize map with token
   useEffect(() => {
     if (!mapContainer.current || !token) return;
     
-    // Clear existing map if any
     if (map.current) {
       map.current.remove();
       map.current = null;
@@ -48,7 +43,7 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/streets-v12',
-        center: [-122.4194, 37.7749], // San Francisco by default
+        center: [-122.4194, 37.7749],
         zoom: 11
       });
 
@@ -64,10 +59,9 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
         setMapLoaded(true);
       });
 
-      // Handle map loading errors
-      map.current.on('error', (e) => {
+      map.current.on('error', (e: { error: { message: string, code?: number } }) => {
         console.error('Map error:', e);
-        if (e.error && (e.error.status === 401 || e.error.status === 403)) {
+        if (e.error && (e.error.code === 401 || e.error.code === 403)) {
           toast({
             title: "Invalid Mapbox Token",
             description: "The provided Mapbox token is invalid or expired. Please enter a new token.",
@@ -96,22 +90,17 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
     }
   }, [token, toast]);
 
-  // Add markers when map is loaded and equipment data changes
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
 
-    // Clear existing markers
     markers.current.forEach(marker => marker.remove());
     markers.current = [];
 
-    // Filter equipment by active category if needed
     const filteredEquipment = activeCategory 
       ? equipment.filter(item => item.category === activeCategory)
       : equipment;
 
-    // Add markers for filtered equipment
     filteredEquipment.forEach(item => {
-      // Create a custom marker element
       const el = document.createElement('div');
       el.className = 'flex items-center justify-center';
       
@@ -125,7 +114,6 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
       markerIcon.appendChild(icon);
       el.appendChild(markerIcon);
       
-      // Create a mapbox marker
       const marker = new mapboxgl.Marker(el)
         .setLngLat([item.location.lng, item.location.lat])
         .setPopup(
@@ -149,7 +137,6 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
       markers.current.push(marker);
     });
 
-    // Fit the map to show all markers
     if (markers.current.length > 0) {
       const bounds = new mapboxgl.LngLatBounds();
       filteredEquipment.forEach(item => {
@@ -159,7 +146,6 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
     }
   }, [equipment, activeCategory, mapLoaded]);
 
-  // Helper function to get color based on category
   const getCategoryColor = (category: string): string => {
     switch (category.toLowerCase()) {
       case 'surfboard':
@@ -173,7 +159,6 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
     }
   };
 
-  // Handle token submission
   const handleTokenSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (tokenInput && tokenInput.startsWith('pk.')) {
