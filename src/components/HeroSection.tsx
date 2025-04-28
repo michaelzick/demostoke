@@ -42,7 +42,11 @@ const HeroSection = () => {
             <Button size="lg" asChild>
               <Link to="/explore">Find Equipment Near Me</Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-white hover:bg-white/20">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="bg-white/20 border-white hover:bg-transparent"
+            >
               List Your Gear
             </Button>
           </div>
