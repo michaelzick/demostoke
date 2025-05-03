@@ -31,6 +31,7 @@ const SignInPage = () => {
       await login(email, password);
       navigate("/");
     } catch (err: any) {
+      console.error("Login error:", err);
       setError(err.message || "Invalid email or password");
     }
   };

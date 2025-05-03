@@ -23,28 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check active session when the component mounts
-    const checkSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        console.error("Error fetching session:", error);
-        setIsLoading(false);
-        return;
-      }
-      
-      setSession(data.session);
-      
-      if (data.session) {
-        await fetchUserProfile(data.session);
-      } else {
-        setIsLoading(false);
-      }
-    };
-    
-    checkSession();
-    
-    // Set up listener for auth state changes
+    // Set up listener for auth state changes first
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
         setSession(currentSession);
@@ -57,6 +36,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
     );
+    
+    // Then check active session
+    const checkSession = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Error fetching session:", error);
+          setIsLoading(false);
+          return;
+        }
+        
+        setSession(data.session);
+        
+        if (data.session) {
+          await fetchUserProfile(data.session);
+        } else {
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("Session check failed:", error);
+        setIsLoading(false);
+      }
+    };
+    
+    checkSession();
     
     return () => {
       authListener.subscription.unsubscribe();
@@ -74,17 +79,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .eq('id', session.user.id)
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error("Profile fetch error:", error);
+        // Even if profile fetch fails, we can still set basic user info from session
+        setUser({
+          id: session.user.id,
+          name: session.user.user_metadata?.name || 'User',
+          email: session.user.email || '',
+          imageUrl: null
+        });
+        return;
+      }
       
       // Set user data in state
       setUser({
         id: session.user.id,
-        name: data.name,
+        name: data.name || session.user.user_metadata?.name || 'User',
         email: session.user.email || '',
         imageUrl: data.avatar_url
       });
     } catch (error) {
       console.error("Error fetching user profile:", error);
+      // Fallback to basic user info if profile fetch fails
+      setUser({
+        id: session.user.id,
+        name: session.user.user_metadata?.name || 'User',
+        email: session.user.email || '',
+        imageUrl: null
+      });
     } finally {
       setIsLoading(false);
     }
