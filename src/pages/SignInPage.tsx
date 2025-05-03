@@ -22,10 +22,12 @@ const SignInPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [localLoading, setLocalLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setLocalLoading(true);
     
     try {
       await login(email, password);
@@ -33,8 +35,14 @@ const SignInPage = () => {
     } catch (err: any) {
       console.error("Login error:", err);
       setError(err.message || "Invalid email or password");
+      setLocalLoading(false);
     }
   };
+
+  // We use local loading state to avoid button getting stuck
+  // if the global loading state isn't properly reset
+  const buttonDisabled = isLoading || localLoading;
+  const buttonText = buttonDisabled ? "Signing in..." : "Sign In";
 
   return (
     <Card className="w-full max-w-md mx-auto shadow-lg">
@@ -89,8 +97,8 @@ const SignInPage = () => {
           </div>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Signing in..." : "Sign In"}
+          <Button type="submit" className="w-full" disabled={buttonDisabled}>
+            {buttonText}
           </Button>
           <div className="text-center text-sm">
             Don't have an account?{" "}

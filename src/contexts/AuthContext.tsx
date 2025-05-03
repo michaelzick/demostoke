@@ -133,9 +133,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: error.message || "Invalid email or password",
         variant: "destructive",
       });
-      throw error;
-    } finally {
+      // Make sure we reset loading state on error
       setIsLoading(false);
+      throw error;
     }
   };
 
@@ -165,9 +165,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: error.message || "There was an error creating your account",
         variant: "destructive",
       });
-      throw error;
-    } finally {
+      // Make sure we reset loading state on error
       setIsLoading(false);
+      throw error;
     }
   };
 
@@ -189,6 +189,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         variant: "destructive",
       });
     } finally {
+      // Always reset loading state for logout
       setIsLoading(false);
     }
   };
