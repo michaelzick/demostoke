@@ -1,7 +1,9 @@
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { User } from "@/types";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Session } from "@supabase/supabase-js";
 
 interface AuthContextType {
   user: User | null;
@@ -9,39 +11,104 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [session, setSession] = useState<Session | null>(null);
   const { toast } = useToast();
 
+  useEffect(() => {
+    // Check active session when the component mounts
+    const checkSession = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error("Error fetching session:", error);
+        setIsLoading(false);
+        return;
+      }
+      
+      setSession(data.session);
+      
+      if (data.session) {
+        await fetchUserProfile(data.session);
+      } else {
+        setIsLoading(false);
+      }
+    };
+    
+    checkSession();
+    
+    // Set up listener for auth state changes
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      async (event, currentSession) => {
+        setSession(currentSession);
+        
+        if (currentSession) {
+          await fetchUserProfile(currentSession);
+        } else {
+          setUser(null);
+          setIsLoading(false);
+        }
+      }
+    );
+    
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+  
+  const fetchUserProfile = async (session: Session) => {
+    setIsLoading(true);
+    
+    try {
+      // Get user profile data
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (error) throw error;
+      
+      // Set user data in state
+      setUser({
+        id: session.user.id,
+        name: data.name,
+        email: session.user.email || '',
+        imageUrl: data.avatar_url
+      });
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const login = async (email: string, password: string) => {
-    // This would be integrated with a real auth system (like Supabase)
     try {
       setIsLoading(true);
-      // Simulate login
-      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Mock user for demo purposes
-      setUser({
-        id: "user-1",
-        name: "Demo User",
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        imageUrl: "https://api.dicebear.com/6.x/avataaars/svg?seed=demo"
+        password,
       });
+      
+      if (error) throw error;
       
       toast({
         title: "Logged in successfully",
         description: "Welcome back to RideLocal!",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Login failed",
-        description: "Invalid email or password",
+        description: error.message || "Invalid email or password",
         variant: "destructive",
       });
       throw error;
@@ -51,28 +118,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signup = async (name: string, email: string, password: string) => {
-    // This would be integrated with a real auth system
     try {
       setIsLoading(true);
-      // Simulate signup
-      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Mock user for demo purposes
-      setUser({
-        id: "user-1",
-        name,
+      const { data, error } = await supabase.auth.signUp({
         email,
-        imageUrl: "https://api.dicebear.com/6.x/avataaars/svg?seed=new"
+        password,
+        options: {
+          data: {
+            name,
+          },
+        },
       });
+      
+      if (error) throw error;
       
       toast({
         title: "Account created",
         description: "Welcome to RideLocal!",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: "Signup failed",
-        description: "There was an error creating your account",
+        description: error.message || "There was an error creating your account",
         variant: "destructive",
       });
       throw error;
@@ -81,13 +149,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const logout = () => {
-    // This would log out from the auth system
-    setUser(null);
-    toast({
-      title: "Logged out",
-      description: "You've been logged out successfully",
-    });
+  const logout = async () => {
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Logged out",
+        description: "You've been logged out successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error logging out",
+        description: error.message || "There was a problem logging out",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

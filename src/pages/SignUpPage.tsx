@@ -36,9 +36,9 @@ const SignUpPage = () => {
     
     try {
       await signup(name, email, password);
-      navigate("/");
-    } catch (err) {
-      setError("Failed to create account");
+      // We don't navigate here as the auth state change will trigger automatically
+    } catch (err: any) {
+      setError(err.message || "Failed to create account");
     }
   };
 
