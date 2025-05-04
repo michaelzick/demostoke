@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { User } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,7 +14,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
         setSession(currentSession);
-        
+
         if (currentSession) {
           await fetchUserProfile(currentSession);
         } else {
@@ -36,20 +36,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
     );
-    
+
     // Then check active session
     const checkSession = async () => {
       try {
         const { data, error } = await supabase.auth.getSession();
-        
+
         if (error) {
           console.error("Error fetching session:", error);
           setIsLoading(false);
           return;
         }
-        
+
         setSession(data.session);
-        
+
         if (data.session) {
           await fetchUserProfile(data.session);
         } else {
@@ -60,17 +60,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsLoading(false);
       }
     };
-    
+
     checkSession();
-    
+
     return () => {
       authListener.subscription.unsubscribe();
     };
   }, []);
-  
+
   const fetchUserProfile = async (session: Session) => {
     setIsLoading(true);
-    
+
     try {
       // Get user profile data
       const { data, error } = await supabase
@@ -78,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .select('*')
         .eq('id', session.user.id)
         .single();
-      
+
       if (error) {
         console.error("Profile fetch error:", error);
         // Even if profile fetch fails, we can still set basic user info from session
@@ -90,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         return;
       }
-      
+
       // Set user data in state
       setUser({
         id: session.user.id,
@@ -115,14 +115,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      
+
       if (error) throw error;
-      
+
       toast({
         title: "Logged in successfully",
         description: "Welcome back to RideLocal!",
@@ -142,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signup = async (name: string, email: string, password: string) => {
     try {
       setIsLoading(true);
-      
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -152,9 +152,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           },
         },
       });
-      
+
       if (error) throw error;
-      
+
       toast({
         title: "Account created",
         description: "Welcome to RideLocal!",
@@ -175,9 +175,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true);
       const { error } = await supabase.auth.signOut();
-      
+
       if (error) throw error;
-      
+
       toast({
         title: "Logged out",
         description: "You've been logged out successfully",
@@ -210,10 +210,3 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-}

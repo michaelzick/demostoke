@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/helpers";
 import { MapPin, Menu, X } from "lucide-react";
 
 const Navbar = () => {
@@ -23,10 +23,10 @@ const Navbar = () => {
           <MapPin className="h-6 w-6 text-ocean-deep" />
           <span className="text-xl font-bold">RideLocal</span>
         </Link>
-        
+
         {/* Mobile Menu Button */}
-        <button 
-          className="block lg:hidden" 
+        <button
+          className="block lg:hidden"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           {isMenuOpen ? (
@@ -35,7 +35,7 @@ const Navbar = () => {
             <Menu className="h-6 w-6" />
           )}
         </button>
-        
+
         {/* Desktop Navigation */}
         <nav className="hidden space-x-6 lg:flex">
           <Link to="/" className="text-sm font-medium hover:text-primary transition-colors">
@@ -48,7 +48,7 @@ const Navbar = () => {
             About
           </Link>
         </nav>
-        
+
         {/* Desktop Auth Buttons */}
         <div className="hidden lg:flex gap-4">
           {isAuthenticated ? (
@@ -75,28 +75,28 @@ const Navbar = () => {
             </>
           )}
         </div>
-        
+
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="fixed inset-0 top-16 z-50 bg-background lg:hidden">
             <nav className="flex flex-col p-6 space-y-4">
-              <Link 
-                to="/" 
-                className="text-lg font-medium" 
+              <Link
+                to="/"
+                className="text-lg font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Home
               </Link>
-              <Link 
-                to="/explore" 
-                className="text-lg font-medium" 
+              <Link
+                to="/explore"
+                className="text-lg font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Explore
               </Link>
-              <Link 
-                to="/about" 
-                className="text-lg font-medium" 
+              <Link
+                to="/about"
+                className="text-lg font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 About
@@ -104,29 +104,29 @@ const Navbar = () => {
               <div className="pt-4 border-t">
                 {isAuthenticated ? (
                   <>
-                    <Link 
-                      to="/profile" 
-                      className="block py-2 text-lg font-medium" 
+                    <Link
+                      to="/profile"
+                      className="block py-2 text-lg font-medium"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Profile
                     </Link>
-                    <Link 
-                      to="/my-equipment" 
-                      className="block py-2 text-lg font-medium" 
+                    <Link
+                      to="/my-equipment"
+                      className="block py-2 text-lg font-medium"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       My Equipment
                     </Link>
-                    <Link 
-                      to="/bookings" 
-                      className="block py-2 text-lg font-medium" 
+                    <Link
+                      to="/bookings"
+                      className="block py-2 text-lg font-medium"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Bookings
                     </Link>
-                    <button 
-                      className="block py-2 text-lg font-medium text-destructive" 
+                    <button
+                      className="block py-2 text-lg font-medium text-destructive"
                       onClick={() => { logout(); setIsMenuOpen(false); }}
                     >
                       Logout
@@ -134,16 +134,16 @@ const Navbar = () => {
                   </>
                 ) : (
                   <div className="flex flex-col gap-2">
-                    <Button 
-                      variant="outline" 
-                      className="w-full" 
+                    <Button
+                      variant="outline"
+                      className="w-full"
                       asChild
                       onClick={() => setIsMenuOpen(false)}
                     >
                       <Link to="/auth/signin">Sign In</Link>
                     </Button>
-                    <Button 
-                      className="w-full" 
+                    <Button
+                      className="w-full"
                       asChild
                       onClick={() => setIsMenuOpen(false)}
                     >

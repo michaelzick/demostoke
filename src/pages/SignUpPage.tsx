@@ -12,13 +12,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/helpers";
 import { MapPin } from "lucide-react";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
   const { signup, isLoading } = useAuth();
-  
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,12 +28,12 @@ const SignUpPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    
+
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-    
+
     try {
       await signup(name, email, password);
       // We don't navigate here as the auth state change will trigger automatically
@@ -62,7 +62,7 @@ const SignUpPage = () => {
           )}
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
-            <Input 
+            <Input
               id="name"
               placeholder="Your name"
               value={name}
@@ -72,7 +72,7 @@ const SignUpPage = () => {
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input 
+            <Input
               id="email"
               type="email"
               placeholder="your@email.com"
@@ -83,7 +83,7 @@ const SignUpPage = () => {
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input 
+            <Input
               id="password"
               type="password"
               placeholder="••••••••"
@@ -95,7 +95,7 @@ const SignUpPage = () => {
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input 
+            <Input
               id="confirmPassword"
               type="password"
               placeholder="••••••••"

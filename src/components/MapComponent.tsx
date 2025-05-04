@@ -8,7 +8,8 @@ import { MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from './ui/input';
 
-const MAPBOX_TOKEN = '';
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
+console.log('Mapbox Token:', MAPBOX_TOKEN);
 
 interface MapComponentProps {
   equipment: Equipment[];
@@ -22,16 +23,16 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
   const markers = useRef<mapboxgl.Marker[]>([]);
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   const [token, setToken] = useState<string>(() => {
     return localStorage.getItem('mapbox_token') || MAPBOX_TOKEN;
   });
   const [showTokenInput, setShowTokenInput] = useState(!token);
   const [tokenInput, setTokenInput] = useState(token);
-  
+
   useEffect(() => {
     if (!mapContainer.current || !token) return;
-    
+
     if (map.current) {
       map.current.remove();
       map.current = null;
@@ -39,7 +40,7 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
 
     try {
       mapboxgl.accessToken = token;
-      
+
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/streets-v12',
@@ -96,24 +97,24 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
     markers.current.forEach(marker => marker.remove());
     markers.current = [];
 
-    const filteredEquipment = activeCategory 
+    const filteredEquipment = activeCategory
       ? equipment.filter(item => item.category === activeCategory)
       : equipment;
 
     filteredEquipment.forEach(item => {
       const el = document.createElement('div');
       el.className = 'flex items-center justify-center';
-      
+
       const markerIcon = document.createElement('div');
       markerIcon.className = `p-1 rounded-full ${getCategoryColor(item.category)}`;
-      
+
       const icon = document.createElement('div');
       icon.className = 'text-white';
       icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`;
-      
+
       markerIcon.appendChild(icon);
       el.appendChild(markerIcon);
-      
+
       const marker = new mapboxgl.Marker(el)
         .setLngLat([item.location.lng, item.location.lat])
         .setPopup(
@@ -123,7 +124,7 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
                 <h3 class="text-sm font-medium">${item.name}</h3>
                 <p class="text-xs text-gray-500">${item.category}</p>
                 <p class="text-xs mt-1">$${item.pricePerDay}/day</p>
-                <button 
+                <button
                   class="mt-2 px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
                   onclick="window.location.href='/equipment/${item.id}'"
                 >
@@ -133,7 +134,7 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
             `)
         )
         .addTo(map.current!);
-      
+
       markers.current.push(marker);
     });
 
@@ -220,10 +221,10 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
                 <MapPin className="h-4 w-4 text-mountain-DEFAULT" />
                 <span className="text-xs font-medium">Snowboards</span>
               </div>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-xs mt-2" 
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs mt-2"
                 onClick={() => setShowTokenInput(true)}
               >
                 Change Mapbox Token
