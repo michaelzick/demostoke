@@ -5,53 +5,67 @@ import { Equipment } from "@/types";
 function generateRandomLocation(centerLat: number, centerLng: number, radiusInKm = 5) {
   // Earth's radius in kilometers
   const R = 6371;
-  
+
   // Convert radius from kilometers to degrees
   const radiusInDeg = radiusInKm / R;
-  
+
   // Random angle
   const angle = Math.random() * Math.PI * 2;
-  
+
   // Random distance within the radius
   const distance = Math.random() * radiusInDeg;
-  
+
   // Calculate offset
   const dx = distance * Math.cos(angle);
   const dy = distance * Math.sin(angle);
-  
+
   // Convert to decimal degrees
   const newLat = centerLat + (dy * 180) / Math.PI;
   const newLng = centerLng + (dx * 180) / Math.PI / Math.cos((centerLat * Math.PI) / 180);
-  
+
   return { lat: newLat, lng: newLng };
 }
 
 // Names of locations based on San Francisco neighborhoods
 const sfLocations = [
-  "Mission District", "North Beach", "Marina", "SoMa", "Haight-Ashbury", 
+  "Mission District", "North Beach", "Marina", "SoMa", "Haight-Ashbury",
   "Richmond District", "Sunset District", "Castro", "Nob Hill", "Russian Hill",
   "Pacific Heights", "Japantown", "Chinatown", "Dogpatch", "Hayes Valley"
 ];
 
 // Mock equipment data generator
 export function generateMockEquipment(count: number = 20): Equipment[] {
-  const categories = ["surfboard", "paddle", "snowboard"];
+  const categories = ["snowboard", "skis", "surfboard", "sup", "skateboard"];
+  const snowboardMaterials = ["Wood Core", "Carbon", "Fiberglass", "Cap Construction"];
+  const skiMaterials = ["Wood Core", "Carbon", "Fiberglass", "Cap Construction"];
   const surfboardMaterials = ["Polyurethane", "Epoxy", "Soft-top", "Carbon Fiber"];
   const paddleMaterials = ["Epoxy", "Inflatable", "Carbon Fiber", "Plastic"];
-  const snowboardMaterials = ["Wood Core", "Carbon", "Fiberglass", "Cap Construction"];
-  
+  const skateboardMaterials = ["Wood", "Plastic", "Aluminum", "Carbon Fiber"];
+
   // San Francisco center coordinates
   const sfLat = 37.7749;
   const sfLng = -122.4194;
-  
+
   return Array.from({ length: count }).map((_, i) => {
     const id = `equip-${i + 1}`;
     const category = categories[Math.floor(Math.random() * categories.length)];
-    
+
     // Generate different details based on category
     let name, material, suitable, imageUrl;
-    
+
     switch (category) {
+      case "snowboard":
+        name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][Math.floor(Math.random() * 4)]} Snowboard`;
+        material = snowboardMaterials[Math.floor(Math.random() * snowboardMaterials.length)];
+        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][Math.floor(Math.random() * 4)]}`;
+        imageUrl = `https://images.unsplash.com/photo-${['1605540436563-5bca919ee183', '1551698618-1dfe5d97d256', '1579755209337-56a5c8d6f4bb'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+        break;
+      case "skis":
+        name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][Math.floor(Math.random() * 4)]} Snowboard`;
+        material = skiMaterials[Math.floor(Math.random() * snowboardMaterials.length)];
+        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][Math.floor(Math.random() * 4)]}`;
+        imageUrl = `https://images.unsplash.com/photo-${['1605540436563-5bca919ee183', '1551698618-1dfe5d97d256', '1579755209337-56a5c8d6f4bb'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+        break;
       case "surfboard":
         name = `${['Shortboard', 'Longboard', 'Fish', 'Funboard', 'Gun'][Math.floor(Math.random() * 5)]} Surfboard`;
         material = surfboardMaterials[Math.floor(Math.random() * surfboardMaterials.length)];
@@ -64,10 +78,10 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         suitable = `${['Flat Water', 'Surf', 'Racing', 'Yoga'][Math.floor(Math.random() * 4)]}`;
         imageUrl = `https://images.unsplash.com/photo-${['1526426176273-2f516d2b4085', '1517156118434-bf097f975a7c', '1472978748395-da8458f44a3b'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
         break;
-      case "snowboard":
-        name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][Math.floor(Math.random() * 4)]} Snowboard`;
-        material = snowboardMaterials[Math.floor(Math.random() * snowboardMaterials.length)];
-        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][Math.floor(Math.random() * 4)]}`;
+        case "skateboard":
+        name = `${['Street', 'Cruiser', 'Longboard', 'Penny'][Math.floor(Math.random() * 4)]} Skateboard`;
+        material = skateboardMaterials[Math.floor(Math.random() * skateboardMaterials.length)];
+        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][Math.floor(Math.random() * 4)]} Skaters`;
         imageUrl = `https://images.unsplash.com/photo-${['1605540436563-5bca919ee183', '1551698618-1dfe5d97d256', '1579755209337-56a5c8d6f4bb'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
         break;
       default:
@@ -76,11 +90,11 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         suitable = "All Levels";
         imageUrl = "https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80";
     }
-    
+
     // Generate random location near San Francisco
     const location = generateRandomLocation(sfLat, sfLng, 8);
     const locationName = sfLocations[Math.floor(Math.random() * sfLocations.length)];
-    
+
     return {
       id,
       name,
