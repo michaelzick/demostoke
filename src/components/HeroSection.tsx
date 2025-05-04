@@ -54,24 +54,24 @@ const HeroSection = () => {
             </Button>
           </div>
           <div className="flex flex-wrap gap-8 justify-center">
-            <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.7s' }}>
-              <ArrowUp className="h-6 w-6" />
+            <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.3s' }}>
+              <ArrowRight className="h-6 w-6" />
               <span className="text-sm font-medium">Snowbaords</span>
             </div>
-            <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.5s' }}>
+            <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.4s' }}>
               <ArrowRight className="h-6 w-6" />
               <span className="text-sm font-medium">Skis</span>
             </div>
-            <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.3s' }}>
-              <ArrowDown className="h-6 w-6" />
+            <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.5s' }}>
+              <ArrowRight className="h-6 w-6" />
               <span className="text-sm font-medium">Surfboards</span>
             </div>
-            <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.8s' }}>
-              <ArrowLeft className="h-6 w-6" />
+            <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.6s' }}>
+              <ArrowRight className="h-6 w-6" />
               <span className="text-sm font-medium">SUPs</span>
             </div>
-            <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.4s' }}>
-              <ArrowUp className="h-6 w-6" />
+            <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.7s' }}>
+              <ArrowRight className="h-6 w-6" />
               <span className="text-sm font-medium">Skateboards</span>
             </div>
           </div>
