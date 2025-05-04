@@ -161,13 +161,15 @@ const HomePage = () => {
               <p className="text-lg mb-6">
                 List your surfboard, paddle board, or snowboard and earn money by letting others demo your gear.
               </p>
-              <Button
-                size="lg"
-                variant="outline"
-                className="bg-white/20 border-white"
-              >
-                List Your Gear
-              </Button>
+              <Link to="/add-gear">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="bg-white/20 border-white"
+                >
+                  List Your Gear
+                </Button>
+              </Link>
             </div>
             <div className="flex justify-center">
               <div className="relative">

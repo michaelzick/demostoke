@@ -45,13 +45,15 @@ const HeroSection = () => {
             <Button size="lg" asChild>
               <Link to="/explore">Find Equipment Near Me</Link>
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="bg-white/20 border-white"
-            >
-              List Your Gear
-            </Button>
+            <Link to="/add-gear">
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-white/20 border-white"
+              >
+                List Your Gear
+              </Button>
+            </Link>
           </div>
           <div className="flex flex-wrap gap-8 justify-center">
             <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.3s' }}>
