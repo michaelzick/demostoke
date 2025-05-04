@@ -161,7 +161,11 @@ const HomePage = () => {
               <p className="text-lg mb-6">
                 List your surfboard, paddle board, or snowboard and earn money by letting others demo your gear.
               </p>
-              <Button variant="secondary" size="lg">
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-white/20 border-white"
+              >
                 List Your Gear
               </Button>
             </div>
@@ -170,8 +174,8 @@ const HomePage = () => {
                 <div className="absolute -top-6 -left-6 bg-white/10 rounded-full w-40 h-40 animate-float" style={{ animationDelay: '0.5s' }}></div>
                 <div className="absolute -bottom-4 -right-4 bg-white/10 rounded-full w-24 h-24 animate-float"></div>
                 <img
-                  src="https://images.unsplash.com/photo-1582550173707-995bfcd0ee5d?auto=format&fit=crop&w=600&q=80"
-                  alt="Person with surfboard"
+                  src="https://images.unsplash.com/photo-1616449973117-0e1d99c56ed3?auto=format&fit=crop&w=600&q=80"
+                  alt="Person on surfboard"
                   className="rounded-lg relative z-10 max-h-80 object-cover"
                 />
               </div>

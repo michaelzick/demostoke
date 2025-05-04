@@ -48,7 +48,7 @@ const HeroSection = () => {
             <Button
               size="lg"
               variant="outline"
-              className="bg-white/20 border-white hover:bg-transparent"
+              className="bg-white/20 border-white"
             >
               List Your Gear
             </Button>
