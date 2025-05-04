@@ -13,11 +13,11 @@ const HomePage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  
+
   // Get featured equipment (a mix of top-rated items from each category)
   const featuredEquipment = mockEquipment
     .sort((a, b) => parseFloat(b.rating.toString()) - parseFloat(a.rating.toString()))
-    .filter((item, index, self) => 
+    .filter((item, index, self) =>
       index === self.findIndex(t => t.category === item.category) || index < 6
     )
     .slice(0, 6);
@@ -76,7 +76,7 @@ const HomePage = () => {
       <section className="py-16 bg-muted/50">
         <div className="container px-4 md:px-6">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold">Featured Equipment</h2>
+            <h2 className="text-3xl font-bold">Featured Gear</h2>
             <Button variant="outline" asChild>
               <Link to="/explore">View All</Link>
             </Button>
