@@ -50,7 +50,7 @@ const SignUpPage = () => {
           <CardTitle className="text-2xl ml-2">Create an Account</CardTitle>
         </div>
         <CardDescription>
-          Join RideLocal to find or share adventure equipment
+          Join DemoStoke to find or share adventure equipment
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>

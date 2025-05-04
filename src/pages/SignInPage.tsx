@@ -50,7 +50,7 @@ const SignInPage = () => {
       <CardHeader className="text-center">
         <div className="flex items-center justify-center mb-2">
           <MapPin className="h-6 w-6 text-ocean-DEFAULT" />
-          <CardTitle className="text-2xl ml-2">Sign In to RideLocal</CardTitle>
+          <CardTitle className="text-2xl ml-2">Sign In to DemoStoke</CardTitle>
         </div>
         <CardDescription>
           Enter your credentials to access your account

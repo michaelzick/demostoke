@@ -10,13 +10,13 @@ const Footer = () => {
           <div className="mb-8 md:mb-0">
             <div className="flex items-center gap-2 mb-4">
               <MapPin className="h-5 w-5 text-ocean-deep" />
-              <span className="text-lg font-bold">RideLocal</span>
+              <span className="text-lg font-bold">DemoStoke</span>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs">
               Connecting outdoor enthusiasts with local adventure equipment for demos.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
             <div className="space-y-3">
               <h4 className="text-sm font-medium">Product</h4>
@@ -38,7 +38,7 @@ const Footer = () => {
                 </li>
               </ul>
             </div>
-            
+
             <div className="space-y-3">
               <h4 className="text-sm font-medium">Company</h4>
               <ul className="space-y-2">
@@ -59,7 +59,7 @@ const Footer = () => {
                 </li>
               </ul>
             </div>
-            
+
             <div className="space-y-3">
               <h4 className="text-sm font-medium">Legal</h4>
               <ul className="space-y-2">
@@ -82,10 +82,10 @@ const Footer = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="border-t mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} RideLocal. All rights reserved.
+            &copy; {new Date().getFullYear()} DemoStoke. All rights reserved.
           </p>
           <div className="flex space-x-4 mt-4 md:mt-0">
             <Link to="#" className="text-muted-foreground hover:text-foreground transition-colors">

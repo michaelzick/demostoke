@@ -125,7 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       toast({
         title: "Logged in successfully",
-        description: "Welcome back to RideLocal!",
+        description: "Welcome back to DemoStoke!",
       });
     } catch (error: any) {
       toast({
@@ -157,7 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       toast({
         title: "Account created",
-        description: "Welcome to RideLocal!",
+        description: "Welcome to DemoStoke!",
       });
     } catch (error: any) {
       toast({

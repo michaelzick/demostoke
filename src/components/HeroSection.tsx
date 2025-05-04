@@ -34,7 +34,7 @@ const HeroSection = () => {
       <div className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 text-white">
         <div className="max-w-3xl text-center">
           <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4">
-            RideLocal
+            DemoStoke
           </h1>
           <p className="text-lg sm:text-xl mb-8 max-w-2xl mx-auto">
             Find snowboards, skis, surfboards, SUPs, and skateboards to demo.

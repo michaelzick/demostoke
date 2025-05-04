@@ -21,7 +21,7 @@ const Navbar = () => {
       <div className="container flex h-16 items-center justify-between px-4 md:px-6">
         <Link to="/" className="flex items-center gap-2">
           <MapPin className="h-6 w-6 text-ocean-deep" />
-          <span className="text-xl font-bold">RideLocal</span>
+          <span className="text-xl font-bold">DemoStoke</span>
         </Link>
 
         {/* Mobile Menu Button */}

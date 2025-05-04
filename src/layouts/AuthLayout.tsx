@@ -9,10 +9,10 @@ const AuthLayout = () => {
         <Link to="/" className="flex items-center justify-center">
           <img
             src="/logo.svg"
-            alt="RideLocal"
+            alt="DemoStoke Logo"
             className="h-8 w-auto"
           />
-          <span className="ml-2 text-xl font-bold">RideLocal</span>
+          <span className="ml-2 text-xl font-bold">DemoStoke</span>
         </Link>
         <div className="ml-auto">
           <Button variant="ghost" asChild>

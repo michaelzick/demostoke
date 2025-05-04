@@ -12,14 +12,14 @@ import MapComponent from "@/components/MapComponent";
 
 const EquipmentDetailPage = () => {
   const { id } = useParams<{ id: string }>();
-  
-  const equipment = useMemo(() => 
-    mockEquipment.find(item => item.id === id) || mockEquipment[0], 
+
+  const equipment = useMemo(() =>
+    mockEquipment.find(item => item.id === id) || mockEquipment[0],
     [id]
   );
-  
+
   // Similar equipment (same category)
-  const similarEquipment = useMemo(() => 
+  const similarEquipment = useMemo(() =>
     mockEquipment
       .filter(item => item.category === equipment.category && item.id !== equipment.id)
       .slice(0, 3),
@@ -48,13 +48,13 @@ const EquipmentDetailPage = () => {
         <div className="lg:col-span-2 space-y-8">
           {/* Image Gallery */}
           <div className="overflow-hidden rounded-lg">
-            <img 
-              src={equipment.imageUrl} 
+            <img
+              src={equipment.imageUrl}
               alt={equipment.name}
               className="w-full h-96 object-cover"
             />
           </div>
-          
+
           {/* Equipment Info */}
           <div>
             <div className="flex justify-between items-start mb-4">
@@ -80,9 +80,9 @@ const EquipmentDetailPage = () => {
                 <div className="text-sm text-muted-foreground">per day</div>
               </div>
             </div>
-            
+
             <p className="text-lg mb-6">{equipment.description}</p>
-            
+
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
               <div className="p-4 bg-muted rounded-lg">
                 <div className="text-sm text-muted-foreground">Size</div>
@@ -102,7 +102,7 @@ const EquipmentDetailPage = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Tabs for Additional Information */}
           <Tabs defaultValue="location">
             <TabsList className="w-full grid grid-cols-3">
@@ -112,8 +112,8 @@ const EquipmentDetailPage = () => {
             </TabsList>
             <TabsContent value="location" className="pt-4">
               <div className="h-80 rounded-lg overflow-hidden mb-4">
-                <MapComponent 
-                  equipment={[equipment]} 
+                <MapComponent
+                  equipment={[equipment]}
                   activeCategory={null}
                 />
               </div>
@@ -127,7 +127,7 @@ const EquipmentDetailPage = () => {
                 <span className="text-lg font-medium">{equipment.rating}</span>
                 <span className="text-muted-foreground">• {equipment.reviewCount} reviews</span>
               </div>
-              
+
               {/* Sample reviews */}
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
@@ -146,14 +146,14 @@ const EquipmentDetailPage = () => {
                     </div>
                     <div className="flex items-center mb-2">
                       {Array(5).fill(0).map((_, j) => (
-                        <StarIcon 
-                          key={j} 
-                          className={`h-4 w-4 ${j < 5 - i * 0.5 ? 'text-yellow-500 fill-yellow-500' : 'text-muted'}`} 
+                        <StarIcon
+                          key={j}
+                          className={`h-4 w-4 ${j < 5 - i * 0.5 ? 'text-yellow-500 fill-yellow-500' : 'text-muted'}`}
                         />
                       ))}
                     </div>
                     <p className="text-sm">
-                      {i === 1 ? 
+                      {i === 1 ?
                         "Amazing equipment! Exactly as described and in excellent condition. The owner was friendly and provided some great local tips." :
                         i === 2 ?
                         "Good experience overall. The equipment was well maintained and worked great. Would demo again!" :
@@ -177,7 +177,7 @@ const EquipmentDetailPage = () => {
                 <div>
                   <h3 className="font-medium mb-2">Insurance</h3>
                   <p className="text-sm text-muted-foreground">
-                    Equipment is covered under RideLocal's insurance policy during the demo period.
+                    Equipment is covered under DemoStoke's insurance policy during the demo period.
                     Renters are responsible for any damage beyond normal wear and tear.
                   </p>
                 </div>
@@ -193,7 +193,7 @@ const EquipmentDetailPage = () => {
             </TabsContent>
           </Tabs>
         </div>
-        
+
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Booking Card */}
@@ -204,30 +204,30 @@ const EquipmentDetailPage = () => {
                 <div className="text-2xl font-bold">${equipment.pricePerDay}</div>
                 <div className="text-sm text-muted-foreground">per day</div>
               </div>
-              
+
               <div className="mb-4">
                 <div className="flex items-center text-sm mb-2">
                   <Calendar className="h-4 w-4 mr-2" />
                   <span>
-                    {equipment.availability.available 
-                      ? "Available now" 
+                    {equipment.availability.available
+                      ? "Available now"
                       : `Available from ${formatDate(equipment.availability.nextAvailableDate)}`
                     }
                   </span>
                 </div>
               </div>
             </div>
-            
+
             <Button className="w-full mb-4" disabled={!equipment.availability.available}>
               {equipment.availability.available ? "Request Demo" : "Not Available"}
             </Button>
-            
+
             <Button variant="outline" className="w-full">
               <MessageSquare className="h-4 w-4 mr-2" />
               Contact Owner
             </Button>
           </Card>
-          
+
           {/* Owner Info */}
           <Card className="p-6">
             <div className="flex items-center gap-4 mb-4">
@@ -249,7 +249,7 @@ const EquipmentDetailPage = () => {
             </div>
             <Button variant="outline" className="w-full">View Profile</Button>
           </Card>
-          
+
           {/* Similar Equipment */}
           <div>
             <h3 className="font-medium mb-3">Similar Equipment</h3>
