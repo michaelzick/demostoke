@@ -14,6 +14,8 @@ import SignUpPage from "./pages/SignUpPage";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import EquipmentDetailPage from "./pages/EquipmentDetailPage";
+import GearListing from "@/pages/GearListing";
+import AddGearForm from "@/pages/AddGearForm";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +32,8 @@ const App = () => (
               <Route path="explore" element={<ExplorePage />} />
               <Route path="equipment/:id" element={<EquipmentDetailPage />} />
               <Route path="about" element={<AboutPage />} />
+              <Route path="gear-listing" element={<GearListing />} />
+              <Route path="add-gear" element={<AddGearForm />} />
             </Route>
             <Route path="/auth" element={<AuthLayout />}>
               <Route path="signin" element={<SignInPage />} />
