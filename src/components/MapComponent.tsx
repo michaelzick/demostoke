@@ -60,7 +60,7 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
         setMapLoaded(true);
       });
 
-      map.current.on('error', (e: { error: { message: string, code?: number } }) => {
+      map.current.on('error', (e: { error: { message: string, code?: number; }; }) => {
         console.error('Map error:', e);
         if (e.error && (e.error.code === 401 || e.error.code === 403)) {
           toast({
@@ -149,12 +149,16 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
 
   const getCategoryColor = (category: string): string => {
     switch (category.toLowerCase()) {
-      case 'surfboard':
-        return 'bg-ocean-DEFAULT';
-      case 'paddle':
-        return 'bg-ocean-deep';
-      case 'snowboard':
+      case 'snowboards':
         return 'bg-mountain-DEFAULT';
+      case 'skis':
+        return 'bg-mountain-DEFAULT';
+      case 'surfboards':
+        return 'bg-ocean-DEFAULT';
+      case 'sups':
+        return 'bg-ocean-deep';
+      case 'skateboards':
+        return 'bg-ocean-deep';
       default:
         return 'bg-primary';
     }

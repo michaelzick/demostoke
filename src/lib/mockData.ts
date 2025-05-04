@@ -35,7 +35,7 @@ const sfLocations = [
 
 // Mock equipment data generator
 export function generateMockEquipment(count: number = 20): Equipment[] {
-  const categories = ["snowboard", "skis", "surfboard", "sup", "skateboard"];
+  const categories = ["snowboards", "skis", "surfboards", "sups", "skateboards"];
   const snowboardMaterials = ["Wood Core", "Carbon", "Fiberglass", "Cap Construction"];
   const skiMaterials = ["Wood Core", "Carbon", "Fiberglass", "Cap Construction"];
   const surfboardMaterials = ["Polyurethane", "Epoxy", "Soft-top", "Carbon Fiber"];
@@ -54,7 +54,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
     let name, material, suitable, imageUrl;
 
     switch (category) {
-      case "snowboard":
+      case "snowboards":
         name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][Math.floor(Math.random() * 4)]} Snowboard`;
         material = snowboardMaterials[Math.floor(Math.random() * snowboardMaterials.length)];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][Math.floor(Math.random() * 4)]}`;
@@ -68,21 +68,21 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         // imageUrl = `https://images.unsplash.com/photo-${['1605540436563-5bca919ee183', '1551698618-1dfe5d97d256', '1579755209337-56a5c8d6f4bb'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
         imageUrl = `https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80`;
         break;
-      case "surfboard":
+      case "surfboards":
         name = `${['Shortboard', 'Longboard', 'Fish', 'Funboard', 'Gun'][Math.floor(Math.random() * 5)]} Surfboard`;
         material = surfboardMaterials[Math.floor(Math.random() * surfboardMaterials.length)];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][Math.floor(Math.random() * 4)]} Surfers`;
         // imageUrl = `https://images.unsplash.com/photo-${['1531722569936-825d3dd91b15', '1478822650010-6526e73c6599', '1605856631848-5c95701a8170'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
         imageUrl = `https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80`;
         break;
-      case "sup":
+      case "sups":
         name = `${['Touring', 'All-Around', 'Inflatable', 'Racing'][Math.floor(Math.random() * 4)]} Paddle Board`;
         material = paddleMaterials[Math.floor(Math.random() * paddleMaterials.length)];
         suitable = `${['Flat Water', 'Surf', 'Racing', 'Yoga'][Math.floor(Math.random() * 4)]}`;
         // imageUrl = `https://images.unsplash.com/photo-${['1526426176273-2f516d2b4085', '1517156118434-bf097f975a7c', '1472978748395-da8458f44a3b'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
         imageUrl = `https://images.unsplash.com/photo-1597175971918-76e969f42f74?auto=format&fit=crop&w=800&q=80`;
         break;
-        case "skateboard":
+        case "skateboards":
         name = `${['Street', 'Cruiser', 'Longboard', 'Pool'][Math.floor(Math.random() * 4)]} Skateboard`;
         material = skateboardMaterials[Math.floor(Math.random() * skateboardMaterials.length)];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][Math.floor(Math.random() * 4)]} Skaters`;

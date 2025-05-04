@@ -97,34 +97,34 @@ const HomePage = () => {
             <Card className="overflow-hidden group cursor-pointer">
               <div className="relative h-80">
                 <img
+                  src="https://images.unsplash.com/photo-1518608774889-b04d2abe7702?auto=format&fit=crop&w=800&q=80"
+                  alt="Snowboards"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <ArrowUp className="h-10 w-10 mb-2 mx-auto" />
+                    <h3 className="text-2xl font-bold mb-2">Snow</h3>
+                    <Button size="sm">
+                      <Link to="/explore?category=snowboards">Explore</Link>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </Card>
+            <Card className="overflow-hidden group cursor-pointer">
+              <div className="relative h-80">
+                <img
                   src="https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80"
                   alt="Surfboards"
                   className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                   <div className="text-center text-white">
-                    <ArrowUp className="h-10 w-10 mb-2 mx-auto" />
-                    <h3 className="text-2xl font-bold mb-2">Surfboards</h3>
-                    <Button variant="outline" className="border-white text-white hover:bg-white/20">
-                      <Link to="/explore?category=surfboard">Explore</Link>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </Card>
-            <Card className="overflow-hidden group cursor-pointer">
-              <div className="relative h-80">
-                <img
-                  src="https://images.unsplash.com/photo-1526426176273-2f516d2b4085?auto=format&fit=crop&w=800&q=80"
-                  alt="Paddle Boards"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                  <div className="text-center text-white">
                     <ArrowRight className="h-10 w-10 mb-2 mx-auto" />
-                    <h3 className="text-2xl font-bold mb-2">Paddle Boards</h3>
-                    <Button variant="outline" className="border-white text-white hover:bg-white/20">
-                      <Link to="/explore?category=paddle">Explore</Link>
+                    <h3 className="text-2xl font-bold mb-2">Surf</h3>
+                    <Button size="sm">
+                      <Link to="/explore?category=surfboards">Explore</Link>
                     </Button>
                   </div>
                 </div>
@@ -133,16 +133,16 @@ const HomePage = () => {
             <Card className="overflow-hidden group cursor-pointer">
               <div className="relative h-80">
                 <img
-                  src="https://images.unsplash.com/photo-1605540436563-5bca919ee183?auto=format&fit=crop&w=800&q=80"
-                  alt="Snowboards"
+                  src="https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80"
+                  alt="Skateboards"
                   className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                   <div className="text-center text-white">
                     <ArrowDown className="h-10 w-10 mb-2 mx-auto" />
-                    <h3 className="text-2xl font-bold mb-2">Snowboards</h3>
-                    <Button variant="outline" className="border-white text-white hover:bg-white/20">
-                      <Link to="/explore?category=snowboard">Explore</Link>
+                    <h3 className="text-2xl font-bold mb-2">Skate</h3>
+                    <Button size="sm">
+                      <Link to="/explore?category=skateboards">Explore</Link>
                     </Button>
                   </div>
                 </div>
