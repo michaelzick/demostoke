@@ -46,31 +46,44 @@ const FilterBar = ({
               All Equipment
             </Button>
             <Button
+              variant={activeCategory === "snowboards" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setActiveCategory("snowboards")}
+              className="whitespace-nowrap gap-1"
+            >
+              Snowboards
+            </Button>
+            <Button
+              variant={activeCategory === "skis" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setActiveCategory("skis")}
+              className="whitespace-nowrap gap-1"
+            >
+              Skis
+            </Button>
+            <Button
               variant={activeCategory === "surfboard" ? "default" : "outline"}
               size="sm"
               onClick={() => setActiveCategory("surfboard")}
               className="whitespace-nowrap gap-1"
             >
-              <ArrowUp className="h-4 w-4" />
               Surfboards
             </Button>
             <Button
-              variant={activeCategory === "paddle" ? "default" : "outline"}
+              variant={activeCategory === "sups" ? "default" : "outline"}
               size="sm"
-              onClick={() => setActiveCategory("paddle")}
+              onClick={() => setActiveCategory("sups")}
               className="whitespace-nowrap gap-1"
             >
-              <ArrowRight className="h-4 w-4" />
-              Paddle Boards
+              Stand-Up Paddle Boards
             </Button>
             <Button
-              variant={activeCategory === "snowboard" ? "default" : "outline"}
+              variant={activeCategory === "skateboards" ? "default" : "outline"}
               size="sm"
-              onClick={() => setActiveCategory("snowboard")}
+              onClick={() => setActiveCategory("skateboards")}
               className="whitespace-nowrap gap-1"
             >
-              <ArrowDown className="h-4 w-4" />
-              Snowboards
+              Skateboards
             </Button>
           </div>
           <div className="flex gap-2">

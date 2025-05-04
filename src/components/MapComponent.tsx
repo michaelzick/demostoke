@@ -210,25 +210,25 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
           <div className="absolute top-4 left-4 z-10 bg-background/90 p-2 rounded-md backdrop-blur-sm">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-mountain-DEFAULT" />
+                <span className="text-xs font-medium">Snowboards</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-mountain-DEFAULT" />
+                <span className="text-xs font-medium">Skis</span>
+              </div>
+              <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-ocean-DEFAULT" />
                 <span className="text-xs font-medium">Surfboards</span>
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-ocean-deep" />
-                <span className="text-xs font-medium">Paddles</span>
+                <span className="text-xs font-medium">SUPs</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-mountain-DEFAULT" />
-                <span className="text-xs font-medium">Snowboards</span>
+                <MapPin className="h-4 w-4 text-ocean-deep" />
+                <span className="text-xs font-medium">Skateboards</span>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-xs mt-2"
-                onClick={() => setShowTokenInput(true)}
-              >
-                Change Mapbox Token
-              </Button>
             </div>
           </div>
           <div ref={mapContainer} className="w-full h-full" />
