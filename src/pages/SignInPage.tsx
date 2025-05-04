@@ -17,31 +17,32 @@ import { MapPin } from "lucide-react";
 
 const SignInPage = () => {
   const navigate = useNavigate();
-  const { login, isLoading } = useAuth();
-  
+  const { login } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [localLoading, setLocalLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLocalLoading(true);
-    
+    setIsLoading(true);
+
     try {
       await login(email, password);
+      setIsLoading(false);
       navigate("/");
     } catch (err: any) {
       console.error("Login error:", err);
       setError(err.message || "Invalid email or password");
-      setLocalLoading(false);
+      setIsLoading(false);
     }
   };
 
   // We use local loading state to avoid button getting stuck
   // if the global loading state isn't properly reset
-  const buttonDisabled = isLoading || localLoading;
+  const buttonDisabled = isLoading;
   const buttonText = buttonDisabled ? "Signing in..." : "Sign In";
 
   return (
@@ -64,7 +65,7 @@ const SignInPage = () => {
           )}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input 
+            <Input
               id="email"
               type="email"
               placeholder="your@email.com"
@@ -80,7 +81,7 @@ const SignInPage = () => {
                 Forgot password?
               </Link>
             </div>
-            <Input 
+            <Input
               id="password"
               type="password"
               placeholder="••••••••"

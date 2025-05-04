@@ -7,9 +7,9 @@ import { MapPin, ArrowUp, ArrowDown, ArrowRight } from "lucide-react";
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const backgrounds = [
-    "bg-[url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')]",
-    "bg-[url('https://images.unsplash.com/photo-1600040308499-5c3327083629?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')]",
-    "bg-[url('https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')]",
+    "bg-[url('https://images.unsplash.com/photo-1617939533073-6c94c709370c?q=80&w=3544&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')]",
+    "bg-[url('https://images.unsplash.com/photo-1502680390469-be75c86b636f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')]",
+    "bg-[url('https://images.unsplash.com/photo-1509791413599-93ba127a66b7?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')]",
   ];
 
   useEffect(() => {
@@ -42,9 +42,9 @@ const HeroSection = () => {
             <Button size="lg" asChild>
               <Link to="/explore">Find Equipment Near Me</Link>
             </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
+            <Button
+              size="lg"
+              variant="outline"
               className="bg-white/20 border-white hover:bg-transparent"
             >
               List Your Gear
