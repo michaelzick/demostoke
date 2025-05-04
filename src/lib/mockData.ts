@@ -58,31 +58,36 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][Math.floor(Math.random() * 4)]} Snowboard`;
         material = snowboardMaterials[Math.floor(Math.random() * snowboardMaterials.length)];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][Math.floor(Math.random() * 4)]}`;
-        imageUrl = `https://images.unsplash.com/photo-${['1605540436563-5bca919ee183', '1551698618-1dfe5d97d256', '1579755209337-56a5c8d6f4bb'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+        // imageUrl = `https://images.unsplash.com/photo-${['1605540436563-5bca919ee183', '1551698618-1dfe5d97d256', '1579755209337-56a5c8d6f4bb'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+        imageUrl = `https://images.unsplash.com/photo-1518608774889-b04d2abe7702?auto=format&fit=crop&w=800&q=80`;
         break;
       case "skis":
         name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][Math.floor(Math.random() * 4)]} Skis`;
         material = skiMaterials[Math.floor(Math.random() * snowboardMaterials.length)];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][Math.floor(Math.random() * 4)]}`;
-        imageUrl = `https://images.unsplash.com/photo-${['1605540436563-5bca919ee183', '1551698618-1dfe5d97d256', '1579755209337-56a5c8d6f4bb'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+        // imageUrl = `https://images.unsplash.com/photo-${['1605540436563-5bca919ee183', '1551698618-1dfe5d97d256', '1579755209337-56a5c8d6f4bb'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+        imageUrl = `https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80`;
         break;
       case "surfboard":
         name = `${['Shortboard', 'Longboard', 'Fish', 'Funboard', 'Gun'][Math.floor(Math.random() * 5)]} Surfboard`;
         material = surfboardMaterials[Math.floor(Math.random() * surfboardMaterials.length)];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][Math.floor(Math.random() * 4)]} Surfers`;
-        imageUrl = `https://images.unsplash.com/photo-${['1531722569936-825d3dd91b15', '1478822650010-6526e73c6599', '1605856631848-5c95701a8170'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+        // imageUrl = `https://images.unsplash.com/photo-${['1531722569936-825d3dd91b15', '1478822650010-6526e73c6599', '1605856631848-5c95701a8170'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+        imageUrl = `https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80`;
         break;
       case "sup":
         name = `${['Touring', 'All-Around', 'Inflatable', 'Racing'][Math.floor(Math.random() * 4)]} Paddle Board`;
         material = paddleMaterials[Math.floor(Math.random() * paddleMaterials.length)];
         suitable = `${['Flat Water', 'Surf', 'Racing', 'Yoga'][Math.floor(Math.random() * 4)]}`;
-        imageUrl = `https://images.unsplash.com/photo-${['1526426176273-2f516d2b4085', '1517156118434-bf097f975a7c', '1472978748395-da8458f44a3b'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+        // imageUrl = `https://images.unsplash.com/photo-${['1526426176273-2f516d2b4085', '1517156118434-bf097f975a7c', '1472978748395-da8458f44a3b'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+        imageUrl = `https://images.unsplash.com/photo-1597175971918-76e969f42f74?auto=format&fit=crop&w=800&q=80`;
         break;
         case "skateboard":
         name = `${['Street', 'Cruiser', 'Longboard', 'Pool'][Math.floor(Math.random() * 4)]} Skateboard`;
         material = skateboardMaterials[Math.floor(Math.random() * skateboardMaterials.length)];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][Math.floor(Math.random() * 4)]} Skaters`;
-        imageUrl = `https://images.unsplash.com/photo-${['1605540436563-5bca919ee183', '1551698618-1dfe5d97d256', '1579755209337-56a5c8d6f4bb'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+        // imageUrl = `https://images.unsplash.com/photo-${['1605540436563-5bca919ee183', '1551698618-1dfe5d97d256', '1579755209337-56a5c8d6f4bb'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+        imageUrl = `https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80`;
         break;
       default:
         name = "Equipment";
