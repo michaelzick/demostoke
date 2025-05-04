@@ -75,7 +75,7 @@ const FilterBar = ({
               onClick={() => setActiveCategory("sups")}
               className="whitespace-nowrap gap-1"
             >
-              Stand-Up Paddle Boards
+              SUPs
             </Button>
             <Button
               variant={activeCategory === "skateboards" ? "default" : "outline"}
