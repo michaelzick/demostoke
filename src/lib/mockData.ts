@@ -1,21 +1,11 @@
-
 import { Equipment } from "@/types";
 
 // Helper function to generate random locations near a center point
 function generateRandomLocation(centerLat: number, centerLng: number, radiusInKm = 5) {
-  // Earth's radius in kilometers
-  const R = 6371;
-
-  // Convert radius from kilometers to degrees
-  const radiusInDeg = radiusInKm / R;
-
-  // Random angle
-  const angle = Math.random() * Math.PI * 2;
-
-  // Random distance within the radius
-  const distance = Math.random() * radiusInDeg;
-
-  // Calculate offset
+  const R = 6371; // Earth's radius in kilometers
+  const radiusInDeg = radiusInKm / R; // Convert radius from kilometers to degrees
+  const angle = Math.random() * Math.PI * 2; // Random angle
+  const distance = Math.random() * radiusInDeg; // Random distance within the radius
   const dx = distance * Math.cos(angle);
   const dy = distance * Math.sin(angle);
 
@@ -26,12 +16,16 @@ function generateRandomLocation(centerLat: number, centerLng: number, radiusInKm
   return { lat: newLat, lng: newLng };
 }
 
-// Names of locations based on San Francisco neighborhoods
-const sfLocations = [
-  "Mission District", "North Beach", "Marina", "SoMa", "Haight-Ashbury",
-  "Richmond District", "Sunset District", "Castro", "Nob Hill", "Russian Hill",
-  "Pacific Heights", "Japantown", "Chinatown", "Dogpatch", "Hayes Valley"
+// Names of locations based on Los Angeles neighborhoods
+const losAngelesLocations = [
+  "Hollywood", "Downtown LA", "Santa Monica", "Venice",
+  "Beverly Hills", "Westwood", "Silver Lake", "Echo Park",
+  "Koreatown", "Culver City", "Brentwood", "Bel Air",
+  "Pasadena", "Glendale", "Burbank"
 ];
+
+// Static IDs for equipment
+const staticIds = Array.from({ length: 30 }, (_, i) => `equip-${i + 1}`);
 
 // Mock equipment data generator
 export function generateMockEquipment(count: number = 20): Equipment[] {
@@ -42,51 +36,46 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
   const paddleMaterials = ["Epoxy", "Inflatable", "Carbon Fiber", "Plastic"];
   const skateboardMaterials = ["Wood", "Plastic", "Aluminum", "Carbon Fiber"];
 
-  // San Francisco center coordinates
-  const sfLat = 37.7749;
-  const sfLng = -122.4194;
+  // Los Angeles center coordinates
+  const losAngelesLat = 34.0522;
+  const losAngelesLng = -118.2437;
 
   return Array.from({ length: count }).map((_, i) => {
-    const id = `equip-${i + 1}`;
-    const category = categories[Math.floor(Math.random() * categories.length)];
+    const id = staticIds[i]; // Use static ID
+    const category = categories[i % categories.length]; // Cycle through categories
 
     // Generate different details based on category
     let name, material, suitable, imageUrl;
 
     switch (category) {
       case "snowboards":
-        name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][Math.floor(Math.random() * 4)]} Snowboard`;
-        material = snowboardMaterials[Math.floor(Math.random() * snowboardMaterials.length)];
-        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][Math.floor(Math.random() * 4)]}`;
-        // imageUrl = `https://images.unsplash.com/photo-${['1605540436563-5bca919ee183', '1551698618-1dfe5d97d256', '1579755209337-56a5c8d6f4bb'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+        name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][i % 4]} Snowboard`;
+        material = snowboardMaterials[i % snowboardMaterials.length];
+        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][i % 4]}`;
         imageUrl = `https://images.unsplash.com/photo-1518608774889-b04d2abe7702?auto=format&fit=crop&w=800&q=80`;
         break;
       case "skis":
-        name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][Math.floor(Math.random() * 4)]} Skis`;
-        material = skiMaterials[Math.floor(Math.random() * snowboardMaterials.length)];
-        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][Math.floor(Math.random() * 4)]}`;
-        // imageUrl = `https://images.unsplash.com/photo-${['1605540436563-5bca919ee183', '1551698618-1dfe5d97d256', '1579755209337-56a5c8d6f4bb'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+        name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][i % 4]} Skis`;
+        material = skiMaterials[i % skiMaterials.length];
+        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][i % 4]}`;
         imageUrl = `https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80`;
         break;
       case "surfboards":
-        name = `${['Shortboard', 'Longboard', 'Fish', 'Funboard', 'Gun'][Math.floor(Math.random() * 5)]} Surfboard`;
-        material = surfboardMaterials[Math.floor(Math.random() * surfboardMaterials.length)];
-        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][Math.floor(Math.random() * 4)]} Surfers`;
-        // imageUrl = `https://images.unsplash.com/photo-${['1531722569936-825d3dd91b15', '1478822650010-6526e73c6599', '1605856631848-5c95701a8170'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+        name = `${['Shortboard', 'Longboard', 'Fish', 'Funboard', 'Gun'][i % 5]} Surfboard`;
+        material = surfboardMaterials[i % surfboardMaterials.length];
+        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][i % 4]} Surfers`;
         imageUrl = `https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80`;
         break;
       case "sups":
-        name = `${['Touring', 'All-Around', 'Inflatable', 'Racing'][Math.floor(Math.random() * 4)]} Paddle Board`;
-        material = paddleMaterials[Math.floor(Math.random() * paddleMaterials.length)];
-        suitable = `${['Flat Water', 'Surf', 'Racing', 'Yoga'][Math.floor(Math.random() * 4)]}`;
-        // imageUrl = `https://images.unsplash.com/photo-${['1526426176273-2f516d2b4085', '1517156118434-bf097f975a7c', '1472978748395-da8458f44a3b'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+        name = `${['Touring', 'All-Around', 'Inflatable', 'Racing'][i % 4]} Paddle Board`;
+        material = paddleMaterials[i % paddleMaterials.length];
+        suitable = `${['Flat Water', 'Surf', 'Racing', 'Yoga'][i % 4]}`;
         imageUrl = `https://images.unsplash.com/photo-1597175971918-76e969f42f74?auto=format&fit=crop&w=800&q=80`;
         break;
-        case "skateboards":
-        name = `${['Street', 'Cruiser', 'Longboard', 'Pool'][Math.floor(Math.random() * 4)]} Skateboard`;
-        material = skateboardMaterials[Math.floor(Math.random() * skateboardMaterials.length)];
-        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][Math.floor(Math.random() * 4)]} Skaters`;
-        // imageUrl = `https://images.unsplash.com/photo-${['1605540436563-5bca919ee183', '1551698618-1dfe5d97d256', '1579755209337-56a5c8d6f4bb'][Math.floor(Math.random() * 3)]}?auto=format&fit=crop&w=800&q=80`;
+      case "skateboards":
+        name = `${['Street', 'Cruiser', 'Longboard', 'Pool'][i % 4]} Skateboard`;
+        material = skateboardMaterials[i % skateboardMaterials.length];
+        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][i % 4]} Skaters`;
         imageUrl = `https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80`;
         break;
       default:
@@ -96,9 +85,9 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         imageUrl = "https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80";
     }
 
-    // Generate random location near San Francisco
-    const location = generateRandomLocation(sfLat, sfLng, 8);
-    const locationName = sfLocations[Math.floor(Math.random() * sfLocations.length)];
+    // Generate random location near LA
+    const location = generateRandomLocation(losAngelesLat, losAngelesLng, 8);
+    const locationName = losAngelesLocations[i % losAngelesLocations.length];
 
     return {
       id,
@@ -110,9 +99,9 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
       rating: Number((Math.random() * 2 + 3).toFixed(1)), // 3.0-5.0 as a number
       reviewCount: Math.floor(Math.random() * 50) + 1,
       owner: {
-        id: `owner-${Math.floor(Math.random() * 10) + 1}`,
-        name: `${['Alex', 'Jamie', 'Taylor', 'Jordan', 'Casey', 'Riley'][Math.floor(Math.random() * 6)]} ${['S.', 'M.', 'T.', 'L.', 'K.'][Math.floor(Math.random() * 5)]}`,
-        imageUrl: `https://api.dicebear.com/6.x/avataaars/svg?seed=${Math.random()}`,
+        id: `owner-${(i % 10) + 1}`,
+        name: `${['Alex', 'Jamie', 'Taylor', 'Jordan', 'Casey', 'Riley'][i % 6]} ${['S.', 'M.', 'T.', 'L.', 'K.'][i % 5]}`,
+        imageUrl: `https://api.dicebear.com/6.x/avataaars/svg?seed=${i}`,
         rating: Number((Math.random() * 1 + 4).toFixed(1)), // 4.0-5.0 as a number
         responseRate: Math.floor(Math.random() * 20) + 80, // 80%-100%
       },
