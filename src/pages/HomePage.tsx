@@ -159,7 +159,7 @@ const HomePage = () => {
             <div>
               <h2 className="text-3xl font-bold mb-4">Have Equipment to Share?</h2>
               <p className="text-lg mb-6">
-                List your surfboard, paddle board, or snowboard and earn money by letting others demo your gear.
+                List your board or skis and earn money by letting others demo your gear.
               </p>
               <Link to="/add-gear">
                 <Button
