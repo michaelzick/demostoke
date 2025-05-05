@@ -7,9 +7,9 @@ import { Button } from './ui/button';
 import { MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from './ui/input';
+import { supabase } from '@/integrations/supabase/client';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
-console.log('Mapbox Token:', MAPBOX_TOKEN);
 
 interface MapComponentProps {
   equipment: Equipment[];
@@ -29,6 +29,49 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
   });
   const [showTokenInput, setShowTokenInput] = useState(!token);
   const [tokenInput, setTokenInput] = useState(token);
+  const [isLoadingToken, setIsLoadingToken] = useState(false);
+
+  // Fetch Mapbox token from Supabase
+  useEffect(() => {
+    async function fetchMapboxToken() {
+      try {
+        setIsLoadingToken(true);
+        const { data, error } = await supabase.functions.invoke('get-mapbox-token');
+        
+        if (error) {
+          console.error('Error fetching Mapbox token:', error);
+          // Fall back to token input if we can't get the token from Supabase
+          if (!token) {
+            setShowTokenInput(true);
+          }
+          return;
+        }
+        
+        if (data?.token) {
+          // Store in localStorage as a fallback
+          localStorage.setItem('mapbox_token', data.token);
+          setToken(data.token);
+          setShowTokenInput(false);
+        } else {
+          // If no token was returned but we have one in localStorage, keep using it
+          if (!token) {
+            setShowTokenInput(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error in fetching Mapbox token:', error);
+        if (!token) {
+          setShowTokenInput(true);
+        }
+      } finally {
+        setIsLoadingToken(false);
+      }
+    }
+
+    if (!token) {
+      fetchMapboxToken();
+    }
+  }, [token]);
 
   useEffect(() => {
     if (!mapContainer.current || !token) return;
@@ -202,7 +245,9 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
               required
             />
             <div className="space-y-2">
-              <Button type="submit" className="w-full">Apply Token</Button>
+              <Button type="submit" className="w-full" disabled={isLoadingToken}>
+                {isLoadingToken ? "Loading..." : "Apply Token"}
+              </Button>
               <p className="text-xs text-muted-foreground">
                 Your token is stored locally in your browser and is never sent to our servers.
               </p>
