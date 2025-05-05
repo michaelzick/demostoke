@@ -45,7 +45,7 @@ const Navbar = () => {
             Explore
           </Link>
           <Link to="/add-gear" className="text-sm font-medium hover:text-primary transition-colors">
-            List
+            List Your Gear
           </Link>
           <Link to="/about" className="text-sm font-medium hover:text-primary transition-colors">
             About
