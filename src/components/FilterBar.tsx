@@ -8,7 +8,6 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MapPin, ArrowUp, ArrowDown, ArrowRight } from "lucide-react";
 
 interface FilterBarProps {
   activeCategory: string | null;
