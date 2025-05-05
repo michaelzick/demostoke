@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/helpers";
-import { MapPin, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 const Navbar = () => {
   const { isAuthenticated, logout } = useAuth();
@@ -43,6 +43,9 @@ const Navbar = () => {
           </Link>
           <Link to="/explore" className="text-sm font-medium hover:text-primary transition-colors">
             Explore
+          </Link>
+          <Link to="/add-gear" className="text-sm font-medium hover:text-primary transition-colors">
+            List
           </Link>
           <Link to="/about" className="text-sm font-medium hover:text-primary transition-colors">
             About

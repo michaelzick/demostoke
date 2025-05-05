@@ -8,120 +8,70 @@ const AboutPage = () => {
   }, []);
 
   return (
-    <div className="container px-4 md:px-6 py-10">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold mb-6">About DemoStoke</h1>
+    <div className="max-w-3xl mx-auto px-4 py-10 text-gray-800">
+      <h1 className="text-4xl font-bold mb-6">About DemoStoke</h1>
 
-        <div className="prose max-w-none">
-          <p className="text-lg text-muted-foreground mb-8">
-            DemoStoke connects outdoor enthusiasts with local adventure equipment owners to facilitate gear demos before making a purchase decision.
-          </p>
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-2">The Future of Trying Before You Buy</h2>
+        <p className="mb-4">
+          DemoStoke is a platform built for riders, by riders—created from a simple idea: what if you could demo gear the way you actually ride, not how the shop wants you to?
+        </p>
+        <p>
+          We connect snow, surf, SUP, and skate enthusiasts with local gear owners, makers, and shops to offer a better way to try, rent, and share rideable equipment. No lines. No outdated rentals. Just gear that fits your style and the terrain you're on.
+        </p>
+      </section>
 
-          <div className="mb-10">
-            <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
-            <p className="mb-4">
-              Our mission is to make adventure sports more accessible and sustainable by allowing people to try before they buy and connecting the local adventure community.
-            </p>
-            <p>
-              By facilitating peer-to-peer equipment demos, we help:
-            </p>
-            <ul className="list-disc pl-6 my-4 space-y-2">
-              <li>Reduce waste from purchasing equipment that isn't the right fit</li>
-              <li>Support local outdoor enthusiasts and small businesses</li>
-              <li>Create community connections among like-minded adventurers</li>
-              <li>Make adventure sports more accessible to newcomers</li>
-            </ul>
-          </div>
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-2">For Every Kind of Rider</h2>
+        <p className="mb-2">
+          Whether you’re a weekend warrior, a traveling thrill-seeker, or just someone with a garage full of gear, DemoStoke makes it easy to find or share boards that match the moment.
+        </p>
+        <ul className="list-disc list-inside space-y-1">
+          <li><strong>Borrowers:</strong> Find and reserve quality gear near you</li>
+          <li><strong>Lenders:</strong> Make cash from your quiver—set your terms, availability, and price</li>
+          <li><strong>Shops & Shapers:</strong> Reach new customers, sponsor listings, and get feedback that informs R&D</li>
+        </ul>
+      </section>
 
-          <div className="mb-10">
-            <h2 className="text-2xl font-bold mb-4">How It Started</h2>
-            <p className="mb-4">
-              DemoStoke began when a group of friends realized how difficult it was to find the right equipment for various adventure sports.
-            </p>
-            <p>
-              As avid surfers, snowboarders, and paddleboarders, we knew that buying without trying often led to poor equipment choices.
-              We also recognized that many equipment owners were open to sharing their gear when they weren't using it.
-            </p>
-            <p className="mt-4">
-              In 2023, we launched DemoStoke to connect these two groups and create a community-driven platform for equipment demos.
-            </p>
-          </div>
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-2">Community-Powered, Value-Driven</h2>
+        <ul className="list-disc list-inside space-y-1">
+          <li>Verified users, optional insurance, and safety-first design</li>
+          <li>Deposits that protect both sides of the transaction</li>
+          <li>Local-first, peer-to-peer ethos that supports real riders and small brands</li>
+        </ul>
+      </section>
 
-          <div className="mb-10">
-            <h2 className="text-2xl font-bold mb-4">Our Team</h2>
-            <p className="mb-4">
-              We're a small, passionate team of outdoor enthusiasts and tech experts working to make adventure sports more accessible for everyone.
-            </p>
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-2">The Data Layer Behind the Lifestyle</h2>
+        <p className="mb-4">
+          As DemoStoke grows, so does the insight it provides. Our platform quietly collects data on what riders demo, love, rent, and recommend—surfacing powerful trends for brands, retailers, and gear makers.
+        </p>
+        <p>
+          We’re not just here to disrupt rentals. We’re building a new way to interact with the gear economy—smarter, more sustainable, and rooted in rider experience.
+        </p>
+      </section>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full overflow-hidden">
-                  <img
-                    src="https://api.dicebear.com/6.x/avataaars/svg?seed=team1"
-                    alt="Team Member"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="font-medium">Alex Rivera</h3>
-                  <p className="text-sm text-muted-foreground">Co-Founder & CEO</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full overflow-hidden">
-                  <img
-                    src="https://api.dicebear.com/6.x/avataaars/svg?seed=team2"
-                    alt="Team Member"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="font-medium">Jordan Chen</h3>
-                  <p className="text-sm text-muted-foreground">Co-Founder & CTO</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full overflow-hidden">
-                  <img
-                    src="https://api.dicebear.com/6.x/avataaars/svg?seed=team3"
-                    alt="Team Member"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="font-medium">Morgan Lee</h3>
-                  <p className="text-sm text-muted-foreground">Head of Operations</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full overflow-hidden">
-                  <img
-                    src="https://api.dicebear.com/6.x/avataaars/svg?seed=team4"
-                    alt="Team Member"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-                  <h3 className="font-medium">Taylor Kim</h3>
-                  <p className="text-sm text-muted-foreground">Head of Community</p>
-                </div>
-              </div>
-            </div>
-          </div>
+      <section>
+        <h2 className="text-2xl font-semibold mb-2">Built From Stoke</h2>
+        <p>
+          DemoStoke was born from a shared frustration—and a lot of passion. We believe in gear that fits the ride, and that the best way to grow the industry is to empower the community that rides it.
+        </p>
+      </section>
 
-          <div className="mb-10">
-            <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
-            <p className="mb-4">
-              Have questions, feedback, or want to get involved? We'd love to hear from you!
-            </p>
-            <div className="space-y-2">
-              <p><strong>Email:</strong> hello@DemoStoke.com</p>
-              <p><strong>Phone:</strong> (555) 123-4567</p>
-              <p><strong>Address:</strong> 123 Adventure St, San Francisco, CA 94110</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      <br />< br />
+      <h1 className="text-4xl font-bold mb-6">Meet the Founder</h1>
+
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-2">Michael Zick</h2>
+        <p className="mb-4">
+          Michael is a passionate outdoor enthusiast with a background in product management and software development. He has a deep love for snowboarding, surfing, and skateboarding, which inspired him to create DemoStoke.
+        </p>
+        <p>
+          With years of experience in the tech industry, Michael recognized the need for a platform that connects riders with local gear owners, store managers, and surfboard shapers, and significantly reduce the friction in the demo market.
+          His vision is to create a community-driven platform that empowers riders and promotes sustainable practices in the outdoor gear industry.
+        </p>
+      </section>
     </div>
   );
 };
