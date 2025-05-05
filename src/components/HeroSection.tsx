@@ -40,7 +40,7 @@ const HeroSection = () => {
             Don’t just get stoked. Demo it.
           </h2>
           <div className="flex flex-wrap gap-4 justify-center mb-8">
-            <Button size="lg" asChild>
+            <Button size="lg" asChild className='bg-primary'>
               <Link to="/explore">Find Gear Near Me</Link>
             </Button>
             <Link to="/add-gear">
