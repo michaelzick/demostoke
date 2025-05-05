@@ -36,11 +36,9 @@ const HeroSection = () => {
           <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4">
             DemoStoke
           </h1>
-          <p className="text-lg sm:text-xl mb-8 max-w-2xl mx-auto">
-            Find snowboards, skis, surfboards, SUPs, and skateboards to demo.
-            <br />
-            Locally or shipped to you.
-          </p>
+          <h2 className="text-xl sm:text-3xl mb-8 max-w-2xl mx-auto">
+            Don’t just get stoked. Demo it.
+          </h2>
           <div className="flex flex-wrap gap-4 justify-center mb-8">
             <Button size="lg" asChild>
               <Link to="/explore">Find Equipment Near Me</Link>

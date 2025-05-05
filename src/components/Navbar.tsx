@@ -82,7 +82,7 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="fixed inset-0 top-16 z-50 bg-background lg:hidden">
-            <nav className="flex flex-col p-6 space-y-4">
+            <nav className="flex flex-col p-6 space-y-4 bg-white">
               <Link
                 to="/"
                 className="text-lg font-medium"
