@@ -8,7 +8,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between">
           <div className="mb-8 md:mb-0">
             <div className="flex items-center gap-2 mb-4">
-            <img src="/public/img/demostoke-logo-ds-transparent-cropped.webp" alt="Marker Icon" className="w-6 h-6" />
+            <img src="/public/img/demostoke-square-transparent.webp" alt="Marker Icon" className="w-6 h-6" />
               <span className="text-lg font-bold">DemoStoke</span>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs">
