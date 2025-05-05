@@ -22,11 +22,11 @@ const AddGearForm = () => {
   const [damageDeposit, setDamageDeposit] = useState("");
 
   const skillLevels = {
-    snowboards: ["Beginner", "Intermediate", "Advanced", "Park Rider"],
+    snowboard: ["Beginner", "Intermediate", "Advanced", "Park Rider"],
     skis: ["Beginner", "Intermediate", "Advanced", "Park Rider"],
-    surfboards: ["Beginner", "Intermediate", "Advanced", "All Levels"],
-    sups: ["Flat Water", "Surf", "Racing", "Yoga"],
-    skateboards: ["Beginner", "Intermediate", "Advanced", "All Levels"],
+    surfboard: ["Beginner", "Intermediate", "Advanced", "All Levels"],
+    sup: ["Flat Water", "Surf", "Racing", "Yoga"],
+    skateboard: ["Beginner", "Intermediate", "Advanced", "All Levels"],
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
