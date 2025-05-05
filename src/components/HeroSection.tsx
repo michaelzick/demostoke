@@ -41,7 +41,7 @@ const HeroSection = () => {
           </h2>
           <div className="flex flex-wrap gap-4 justify-center mb-8">
             <Button size="lg" asChild>
-              <Link to="/explore">Find Equipment Near Me</Link>
+              <Link to="/explore">Find Gear Near Me</Link>
             </Button>
             <Link to="/add-gear">
               <Button
