@@ -261,8 +261,8 @@ const EquipmentDetailPage = () => {
                 <label className="text-sm font-medium mb-2 block">Select a date for your demo</label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className={cn(
                         "w-full justify-start text-left font-normal",
                         !selectedDate && "text-muted-foreground"
@@ -283,11 +283,11 @@ const EquipmentDetailPage = () => {
                         // Disable dates before today or before next available date
                         const today = new Date();
                         today.setHours(0, 0, 0, 0);
-                        
-                        const nextAvailable = equipment.availability.nextAvailableDate 
-                          ? new Date(equipment.availability.nextAvailableDate) 
+
+                        const nextAvailable = equipment.availability.nextAvailableDate
+                          ? new Date(equipment.availability.nextAvailableDate)
                           : today;
-                          
+
                         return date < nextAvailable;
                       }}
                     />
@@ -296,8 +296,8 @@ const EquipmentDetailPage = () => {
               </div>
             </div>
 
-            <Button 
-              className="w-full mb-4" 
+            <Button
+              className="w-full mb-4"
               disabled={!equipment.availability.available || !selectedDate}
               onClick={handleDemoRequest}
             >
@@ -356,7 +356,7 @@ const EquipmentDetailPage = () => {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-xs text-muted-foreground">${item.pricePerDay}/day</span>
-                        <Button variant="ghost" size="sm" asChild className="text-xs p-0 h-auto">
+                        <Button variant="outline" size="sm" asChild className="text-xs h-auto">
                           <Link to={`/equipment/${item.id}`}>View</Link>
                         </Button>
                       </div>
