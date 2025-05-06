@@ -19,8 +19,8 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
           alt={equipment.name}
           className="h-full w-full object-cover transition-all hover:scale-105"
         />
-        <Badge 
-          className="absolute top-2 right-2" 
+        <Badge
+          className="absolute top-2 right-2"
           variant="secondary"
         >
           {equipment.category}
@@ -46,10 +46,9 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0 flex justify-between">
-        <Button variant="outline" asChild size="sm">
+        <Button asChild size="sm">
           <Link to={`/equipment/${equipment.id}`}>View Details</Link>
         </Button>
-        <Button size="sm">Request Demo</Button>
       </CardFooter>
     </Card>
   );
