@@ -14,6 +14,7 @@ import SignUpPage from "./pages/SignUpPage";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import EquipmentDetailPage from "./pages/EquipmentDetailPage";
+import GearOwnerProfilePage from "@/pages/GearOwnerProfilePage";
 import GearListing from "@/pages/GearListing";
 import AddGearForm from "@/pages/AddGearForm";
 
@@ -31,6 +32,7 @@ const App = () => (
               <Route index element={<HomePage />} />
               <Route path="explore" element={<ExplorePage />} />
               <Route path="equipment/:id" element={<EquipmentDetailPage />} />
+              <Route path="/owner/:ownerId" element={<GearOwnerProfilePage />} />
               <Route path="about" element={<AboutPage />} />
               <Route path="gear-listing" element={<GearListing />} />
               <Route path="add-gear" element={<AddGearForm />} />

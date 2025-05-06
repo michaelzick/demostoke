@@ -26,7 +26,7 @@ import MapComponent from "@/components/MapComponent";
 import { cn } from "@/lib/utils";
 
 const EquipmentDetailPage = () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string; }>();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -195,8 +195,8 @@ const EquipmentDetailPage = () => {
                       {i === 1 ?
                         "Amazing equipment! Exactly as described and in excellent condition. The owner was friendly and provided some great local tips." :
                         i === 2 ?
-                        "Good experience overall. The equipment was well maintained and worked great. Would demo again!" :
-                        "Decent experience. Equipment was a bit worn but functioned well. Owner was responsive and helpful."
+                          "Good experience overall. The equipment was well maintained and worked great. Would demo again!" :
+                          "Decent experience. Equipment was a bit worn but functioned well. Owner was responsive and helpful."
                       }
                     </p>
                   </div>
@@ -329,7 +329,9 @@ const EquipmentDetailPage = () => {
               <p className="mb-2">Response rate: {equipment.owner.responseRate}%</p>
               <p className="text-muted-foreground">Member since {new Date().getFullYear() - Math.floor(Math.random() * 3 + 1)}</p>
             </div>
-            <Button variant="outline" className="w-full">View Profile</Button>
+            <Button variant="outline" className="w-full" asChild>
+              <Link to={`/owner/${equipment.owner.id}`}>View Profile</Link>
+            </Button>
           </Card>
 
           {/* Similar Equipment */}
