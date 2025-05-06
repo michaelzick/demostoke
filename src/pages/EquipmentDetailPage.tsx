@@ -24,11 +24,19 @@ import {
 } from "@/components/ui/dialog";
 import MapComponent from "@/components/MapComponent";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger 
+} from "@/components/ui/tooltip";
 
 const EquipmentDetailPage = () => {
   const { id } = useParams<{ id: string; }>();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const equipment = useMemo(() =>
     mockEquipment.find(item => item.id === id) || mockEquipment[0],
@@ -296,13 +304,22 @@ const EquipmentDetailPage = () => {
               </div>
             </div>
 
-            <Button
-              className="w-full mb-4"
-              disabled={!equipment.availability.available || !selectedDate}
-              onClick={handleDemoRequest}
-            >
-              {equipment.availability.available ? "Request Demo" : "Not Available"}
-            </Button>
+            <Tooltip delayDuration={300}>
+              <TooltipTrigger asChild>
+                <Button
+                  className="w-full mb-4"
+                  disabled={!equipment.availability.available || !selectedDate}
+                  onClick={handleDemoRequest}
+                >
+                  {equipment.availability.available ? "Request Demo" : "Not Available"}
+                </Button>
+              </TooltipTrigger>
+              {!selectedDate && (
+                <TooltipContent side="top">
+                  <p>Pick a date from the calendar above</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
 
             <Button variant="outline" className="w-full">
               <MessageSquare className="h-4 w-4 mr-2" />
