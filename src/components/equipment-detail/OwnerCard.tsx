@@ -1,0 +1,39 @@
+
+import { Link } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { StarIcon } from "lucide-react";
+import { Equipment } from "@/types";
+
+interface OwnerCardProps {
+  owner: Equipment["owner"];
+}
+
+const OwnerCard = ({ owner }: OwnerCardProps) => {
+  return (
+    <div className="p-6">
+      <div className="flex items-center gap-4 mb-4">
+        <Avatar className="h-12 w-12">
+          <AvatarImage src={owner.imageUrl} alt="Avatar" />
+          <AvatarFallback>{owner.name.charAt(0)}</AvatarFallback>
+        </Avatar>
+        <div>
+          <h3 className="font-medium">{owner.name}</h3>
+          <div className="flex items-center text-sm">
+            <StarIcon className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
+            <span>{owner.rating}</span>
+          </div>
+        </div>
+      </div>
+      <div className="text-sm mb-4">
+        <p className="mb-2">Response rate: {owner.responseRate}%</p>
+        <p className="text-muted-foreground">Member since {new Date().getFullYear() - Math.floor(Math.random() * 3 + 1)}</p>
+      </div>
+      <Button variant="outline" className="w-full" asChild>
+        <Link to={`/owner/${owner.id}`}>View Profile</Link>
+      </Button>
+    </div>
+  );
+};
+
+export default OwnerCard;
