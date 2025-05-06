@@ -21,9 +21,9 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import MapComponent from "@/components/MapComponent";
+import { cn } from "@/lib/utils";
 
 const EquipmentDetailPage = () => {
   const { id } = useParams<{ id: string }>();
