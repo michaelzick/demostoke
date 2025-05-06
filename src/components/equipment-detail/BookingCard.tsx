@@ -5,11 +5,12 @@ import { Calendar as CalendarIcon, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Equipment } from "@/types";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface BookingCardProps {
   equipment: Equipment;
@@ -18,6 +19,7 @@ interface BookingCardProps {
 const BookingCard = ({ equipment }: BookingCardProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   // Format date for display
   const formatDate = (dateString?: string) => {
@@ -49,6 +51,13 @@ const BookingCard = ({ equipment }: BookingCardProps) => {
       description: `Your demo for ${equipment.name} is scheduled on ${format(selectedDate!, "MMMM d, yyyy")}`,
     });
     setDialogOpen(false);
+  };
+
+  const getTooltipContent = () => {
+    if (!selectedDate) {
+      return "Pick a date from the calendar above";
+    }
+    return `Request a demo for ${format(selectedDate, "MMM d, yyyy")}`;
   };
 
   return (
@@ -113,22 +122,22 @@ const BookingCard = ({ equipment }: BookingCardProps) => {
         </div>
       </div>
 
-      <Tooltip delayDuration={300}>
-        <TooltipTrigger asChild>
-          <Button
-            className="w-full mb-4"
-            disabled={!equipment.availability.available || !selectedDate}
-            onClick={handleDemoRequest}
-          >
-            {equipment.availability.available ? "Request Demo" : "Not Available"}
-          </Button>
-        </TooltipTrigger>
-        {!selectedDate && (
+      <TooltipProvider>
+        <Tooltip delayDuration={isMobile ? 1000 : 300}>
+          <TooltipTrigger asChild>
+            <Button
+              className="w-full mb-4"
+              disabled={!equipment.availability.available || !selectedDate}
+              onClick={handleDemoRequest}
+            >
+              {equipment.availability.available ? "Request Demo" : "Not Available"}
+            </Button>
+          </TooltipTrigger>
           <TooltipContent side="top">
-            <p>Pick a date from the calendar above</p>
+            <p>{getTooltipContent()}</p>
           </TooltipContent>
-        )}
-      </Tooltip>
+        </Tooltip>
+      </TooltipProvider>
 
       <Button variant="outline" className="w-full">
         <MessageSquare className="h-4 w-4 mr-2" />
