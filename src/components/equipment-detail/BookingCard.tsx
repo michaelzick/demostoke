@@ -18,8 +18,16 @@ interface BookingCardProps {
 
 const BookingCard = ({ equipment }: BookingCardProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false); // Add state to control Popover
   const [dialogOpen, setDialogOpen] = useState(false);
   const isMobile = useIsMobile();
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+    if (date) {
+      setIsPopoverOpen(false); // Close the Popover when a date is selected
+    }
+  };
 
   // Format date for display
   const formatDate = (dateString?: string) => {
@@ -84,7 +92,7 @@ const BookingCard = ({ equipment }: BookingCardProps) => {
         {/* Date Picker */}
         <div className="mb-4">
           <label className="text-sm font-medium mb-2 block">Select a date for your demo</label>
-          <Popover>
+          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
@@ -102,11 +110,10 @@ const BookingCard = ({ equipment }: BookingCardProps) => {
               <Calendar
                 mode="single"
                 selected={selectedDate}
-                onSelect={setSelectedDate}
+                onSelect={handleDateSelect} // Use the handler to set the date and close the Popover
                 initialFocus
                 className="p-3 pointer-events-auto"
                 disabled={date => {
-                  // Disable dates before today or before next available date
                   const today = new Date();
                   today.setHours(0, 0, 0, 0);
 
@@ -125,13 +132,15 @@ const BookingCard = ({ equipment }: BookingCardProps) => {
       <TooltipProvider>
         <Tooltip delayDuration={isMobile ? 1000 : 300}>
           <TooltipTrigger asChild>
-            <Button
-              className="w-full mb-4"
-              disabled={!equipment.availability.available || !selectedDate}
-              onClick={handleDemoRequest}
-            >
-              {equipment.availability.available ? "Request Demo" : "Not Available"}
-            </Button>
+            <div className="w-full mb-4">
+              <Button
+                className="w-full mb-4"
+                disabled={!equipment.availability.available || !selectedDate}
+                onClick={handleDemoRequest}
+              >
+                {equipment.availability.available ? "Request Demo" : "Not Available"}
+              </Button>
+            </div>
           </TooltipTrigger>
           <TooltipContent side="top">
             <p>{getTooltipContent()}</p>
