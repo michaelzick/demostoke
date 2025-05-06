@@ -1,5 +1,7 @@
 import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom"; // Import Link for navigation
 import { mockEquipment } from "@/lib/mockData";
+import { Button } from "@/components/ui/button"; // Import Button component
 
 const GearOwnerProfilePage = () => {
   const { ownerId } = useParams(); // Get the owner ID from the URL
@@ -49,9 +51,12 @@ const GearOwnerProfilePage = () => {
               />
               <div className="p-4">
                 <h3 className="font-medium text-sm mb-2">{item.name}</h3>
-                <p className="text-xs text-muted-foreground">
-                  ${item.pricePerDay}/day
-                </p>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-muted-foreground">${item.pricePerDay}/day</p>
+                  <Button variant="outline" size="sm" asChild className="text-xs h-auto">
+                    <Link to={`/equipment/${item.id}`}>View</Link>
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
