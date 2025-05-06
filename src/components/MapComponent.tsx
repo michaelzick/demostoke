@@ -193,17 +193,17 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
   const getCategoryColor = (category: string): string => {
     switch (category.toLowerCase()) {
       case 'snowboards':
-        return 'bg-mountain-DEFAULT';
+        return 'bg-primary';
       case 'skis':
-        return 'bg-mountain-DEFAULT';
+        return 'bg-lime-600';
       case 'surfboards':
-        return 'bg-ocean-DEFAULT';
+        return 'bg-black';
       case 'sups':
-        return 'bg-ocean-deep';
+        return 'bg-orange-900';
       case 'skateboards':
         return 'bg-ocean-deep';
       default:
-        return 'bg-primary';
+        return 'bg-yellow-900';
     }
   };
 
