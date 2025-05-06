@@ -37,7 +37,7 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
       try {
         setIsLoadingToken(true);
         const { data, error } = await supabase.functions.invoke('get-mapbox-token');
-        
+
         if (error) {
           console.error('Error fetching Mapbox token:', error);
           // Fall back to token input if we can't get the token from Supabase
@@ -46,7 +46,7 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
           }
           return;
         }
-        
+
         if (data?.token) {
           // Store in localStorage as a fallback
           localStorage.setItem('mapbox_token', data.token);
@@ -87,7 +87,7 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
       map.current = new mapboxgl.Map({
         container: mapContainer.current,
         style: 'mapbox://styles/mapbox/streets-v12',
-        center: [-122.4194, 37.7749],
+        center: [-118.2437, 34.0522], // Los Angeles coordinates
         zoom: 11
       });
 
