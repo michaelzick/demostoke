@@ -197,7 +197,7 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
       case 'skis':
         return 'bg-lime-600';
       case 'surfboards':
-        return 'bg-black';
+        return 'bg-violet-900';
       case 'sups':
         return 'bg-orange-900';
       case 'skateboards':
@@ -259,23 +259,23 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
           <div className="absolute top-4 left-4 z-10 bg-background/90 p-2 rounded-md backdrop-blur-sm">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-mountain-DEFAULT" />
+                <MapPin className="h-4 w-4 bg-primary" />
                 <span className="text-xs font-medium">Snowboards</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-mountain-DEFAULT" />
+                <MapPin className="h-4 w-4 bg-lime-600" />
                 <span className="text-xs font-medium">Skis</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-ocean-DEFAULT" />
+                <MapPin className="h-4 w-4 bg-violet-900" />
                 <span className="text-xs font-medium">Surfboards</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-ocean-deep" />
+                <MapPin className="h-4 w-4 bg-orange-900" />
                 <span className="text-xs font-medium">SUPs</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-ocean-deep" />
+                <MapPin className="h-4 w-4 bg-ocean-deep" />
                 <span className="text-xs font-medium">Skateboards</span>
               </div>
             </div>
