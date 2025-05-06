@@ -1,4 +1,3 @@
-
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -7,11 +6,29 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { StarIcon, Calendar, MessageSquare, MapPin } from "lucide-react";
 import { mockEquipment } from "@/lib/mockData";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { format } from "date-fns";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { toast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import MapComponent from "@/components/MapComponent";
 
 const EquipmentDetailPage = () => {
   const { id } = useParams<{ id: string }>();
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const equipment = useMemo(() =>
     mockEquipment.find(item => item.id === id) || mockEquipment[0],
@@ -39,6 +56,28 @@ const EquipmentDetailPage = () => {
       month: 'short',
       day: 'numeric',
     }).format(date);
+  };
+
+  // Handle demo request with selected date
+  const handleDemoRequest = () => {
+    if (!selectedDate) {
+      toast({
+        title: "Please select a date",
+        description: "You need to select a date for your demo request",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setDialogOpen(true);
+  };
+
+  const confirmDemoRequest = () => {
+    toast({
+      title: "Demo Requested!",
+      description: `Your demo for ${equipment.name} is scheduled on ${format(selectedDate!, "MMMM d, yyyy")}`,
+    });
+    setDialogOpen(false);
   };
 
   return (
@@ -216,9 +255,52 @@ const EquipmentDetailPage = () => {
                   </span>
                 </div>
               </div>
+
+              {/* Date Picker */}
+              <div className="mb-4">
+                <label className="text-sm font-medium mb-2 block">Select a date for your demo</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button 
+                      variant="outline" 
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !selectedDate && "text-muted-foreground"
+                      )}
+                      disabled={!equipment.availability.available}
+                    >
+                      <Calendar className="mr-2 h-4 w-4" />
+                      {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <CalendarComponent
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={setSelectedDate}
+                      initialFocus
+                      disabled={date => {
+                        // Disable dates before today or before next available date
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        
+                        const nextAvailable = equipment.availability.nextAvailableDate 
+                          ? new Date(equipment.availability.nextAvailableDate) 
+                          : today;
+                          
+                        return date < nextAvailable;
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
             </div>
 
-            <Button className="w-full mb-4" disabled={!equipment.availability.available}>
+            <Button 
+              className="w-full mb-4" 
+              disabled={!equipment.availability.available || !selectedDate}
+              onClick={handleDemoRequest}
+            >
               {equipment.availability.available ? "Request Demo" : "Not Available"}
             </Button>
 
@@ -286,6 +368,22 @@ const EquipmentDetailPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Demo Request</DialogTitle>
+            <DialogDescription>
+              You're about to request a demo for {equipment.name} on {selectedDate && format(selectedDate, "MMMM d, yyyy")}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button onClick={confirmDemoRequest}>Confirm Request</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
