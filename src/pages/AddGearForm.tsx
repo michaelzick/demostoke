@@ -14,12 +14,14 @@ import { Textarea } from "@/components/ui/textarea";
 const AddGearForm = () => {
   const [gearType, setGearType] = useState("");
   const [zipCode, setZipCode] = useState("");
+  const [measurementUnit, setMeasurementUnit] = useState("");
   const [dimensions, setDimensions] = useState({ length: "", width: "" });
   const [skillLevel, setSkillLevel] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [price, setPrice] = useState("");
   const [duration, setDuration] = useState("day");
   const [damageDeposit, setDamageDeposit] = useState("");
+  const [role, setRole] = useState("");
 
   const skillLevels = {
     snowboard: ["Beginner", "Intermediate", "Advanced", "Park Rider"],
@@ -40,12 +42,14 @@ const AddGearForm = () => {
     console.log({
       gearType,
       zipCode,
+      measurementUnit,
       dimensions,
       skillLevel,
       images,
       price,
       duration,
       damageDeposit,
+      role,
     });
   };
 
@@ -53,6 +57,24 @@ const AddGearForm = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold mb-6 text-center">List Your Gear</h1>
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-6">
+        {/* Your Role */}
+        <div>
+          <Label htmlFor="role" className="block text-lg font-medium mb-2">
+            Your Role
+          </Label>
+          <Select onValueChange={(value) => setRole(value)}>
+            <SelectTrigger id="role">
+              <SelectValue placeholder="Select Your Role" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="private-party">Private Party</SelectItem>
+              <SelectItem value="builder">Builder (Surfboard Shaper, Etc.)</SelectItem>
+              <SelectItem value="retail-store">Retail Store</SelectItem>
+              <SelectItem value="retail-website">Retail Website</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Gear Type */}
         <div>
           <Label htmlFor="gearType" className="block text-lg font-medium mb-2">
@@ -84,6 +106,22 @@ const AddGearForm = () => {
             onChange={(e) => setZipCode(e.target.value)}
             required
           />
+        </div>
+
+        {/* Measurement Unit */}
+        <div>
+          <Label htmlFor="measurementUnit" className="block text-lg font-medium mb-2">
+            Measurement Unit
+          </Label>
+          <Select onValueChange={(value) => setMeasurementUnit(value)}>
+            <SelectTrigger id="measurementUnit">
+              <SelectValue placeholder="Select Measurement Unit" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="inches">Inches</SelectItem>
+              <SelectItem value="centimeters">Centimeters</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Dimensions */}
