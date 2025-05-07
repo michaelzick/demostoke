@@ -54,26 +54,41 @@ const HeroSection = () => {
             </Link>
           </div>
           <div className="flex flex-wrap gap-8 justify-center">
-            <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.3s' }}>
+            <Link
+              to="/explore?category=snowboards"
+              className="flex items-center gap-2 transition-transform transform hover:scale-105"
+            >
               <ArrowRight className="h-6 w-6" />
-              <span className="text-sm font-medium">Snowbaords</span>
-            </div>
-            <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.4s' }}>
+              <span className="text-sm font-medium">Snowboards</span>
+            </Link>
+            <Link
+              to="/explore?category=skis"
+              className="flex items-center gap-2 transition-transform transform hover:scale-105"
+            >
               <ArrowRight className="h-6 w-6" />
               <span className="text-sm font-medium">Skis</span>
-            </div>
-            <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.5s' }}>
+            </Link>
+            <Link
+              to="/explore?category=surfboards"
+              className="flex items-center gap-2 transition-transform transform hover:scale-105"
+            >
               <ArrowRight className="h-6 w-6" />
               <span className="text-sm font-medium">Surfboards</span>
-            </div>
-            <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.6s' }}>
+            </Link>
+            <Link
+              to="/explore?category=sups"
+              className="flex items-center gap-2 transition-transform transform hover:scale-105"
+            >
               <ArrowRight className="h-6 w-6" />
               <span className="text-sm font-medium">SUPs</span>
-            </div>
-            <div className="flex items-center gap-2 animate-float" style={{ animationDelay: '0.7s' }}>
+            </Link>
+            <Link
+              to="/explore?category=skateboards"
+              className="flex items-center gap-2 transition-transform transform hover:scale-105"
+            >
               <ArrowRight className="h-6 w-6" />
               <span className="text-sm font-medium">Skateboards</span>
-            </div>
+            </Link>
           </div>
         </div>
       </div>

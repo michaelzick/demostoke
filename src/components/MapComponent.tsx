@@ -193,17 +193,17 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
   const getCategoryColor = (category: string): string => {
     switch (category.toLowerCase()) {
       case 'snowboards':
-        return 'bg-primary';
+        return 'bg-fuchsia-600';
       case 'skis':
         return 'bg-lime-600';
       case 'surfboards':
-        return 'bg-violet-900';
+        return 'bg-blue-600';
       case 'sups':
-        return 'bg-orange-900';
+        return 'bg-violet-600';
       case 'skateboards':
-        return 'bg-ocean-deep';
+        return 'bg-red-600';
       default:
-        return 'bg-yellow-900';
+        return 'bg-black';
     }
   };
 
@@ -259,7 +259,7 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
           <div className="absolute top-4 left-4 z-10 bg-background/90 p-2 rounded-md backdrop-blur-sm">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 bg-primary" />
+                <MapPin className="h-4 w-4 bg-fuchsia-600" />
                 <span className="text-xs font-medium">Snowboards</span>
               </div>
               <div className="flex items-center gap-2">
@@ -267,15 +267,15 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
                 <span className="text-xs font-medium">Skis</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 bg-violet-900" />
+                <MapPin className="h-4 w-4 bg-blue-600" />
                 <span className="text-xs font-medium">Surfboards</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 bg-orange-900" />
+                <MapPin className="h-4 w-4 bg-violet-600" />
                 <span className="text-xs font-medium">SUPs</span>
               </div>
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 bg-ocean-deep" />
+                <MapPin className="h-4 w-4 bg-red-600" />
                 <span className="text-xs font-medium">Skateboards</span>
               </div>
             </div>
