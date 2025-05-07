@@ -43,7 +43,7 @@ const HeroSection = () => {
             <Button size="lg" asChild className='bg-primary'>
               <Link to="/explore">Find Gear Near Me</Link>
             </Button>
-            <Link to="/add-gear">
+            <Link to="/list-gear">
               <Button
                 size="lg"
                 variant="outline"

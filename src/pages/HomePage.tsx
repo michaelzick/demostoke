@@ -161,7 +161,7 @@ const HomePage = () => {
               <p className="text-lg mb-6">
                 List your board or skis and earn money by letting others demo your gear.
               </p>
-              <Link to="/add-gear">
+              <Link to="/list-gear">
                 <Button
                   size="lg"
                   variant="outline"

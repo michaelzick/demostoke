@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockEquipment } from "@/lib/mockData";
 import { useEffect, useMemo } from "react";
-import { Equipment } from "@/types";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 // Import new component modules
 import BookingCard from "@/components/equipment-detail/BookingCard";
@@ -39,6 +39,17 @@ const EquipmentDetailPage = () => {
 
   return (
     <div className="container px-4 md:px-6 py-8">
+      <Breadcrumbs
+        items={[
+          { label: "Home", path: "/" },
+          { label: "Explore", path: "/explore" },
+          {
+            label: equipment.category.charAt(0).toUpperCase() + equipment.category.slice(1),
+            path: `/explore?category=${equipment.category}`
+          },
+          { label: equipment.name, path: `/equipment/${equipment.id}` },
+        ]}
+      />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-8">
