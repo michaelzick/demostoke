@@ -61,7 +61,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         imageUrl = `https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80`;
         break;
       case "surfboards":
-        name = `${['Shortboard', 'Longboard', 'Fish', 'Funboard', 'Gun'][i % 5]} Surfboard`;
+        name = `${['Shortboard', 'Longboard', 'Fish', 'Funboard'][i % 4]} Surfboard`;
         material = surfboardMaterials[i % surfboardMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][i % 4]} Surfers`;
         imageUrl = `https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80`;
