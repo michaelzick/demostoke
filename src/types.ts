@@ -35,7 +35,7 @@ export interface Equipment {
 
 export interface User {
   id: string;
-  name: string;
-  email: string;
-  imageUrl: string;
+  name?: string;
+  email?: string;
+  imageUrl?: string;
 }
