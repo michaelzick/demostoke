@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { mockEquipment, ownerPersonas } from "@/lib/mockData";
@@ -40,7 +39,8 @@ const GearOwnerProfilePage = () => {
                 <AvatarFallback>{owner.name.charAt(0)}</AvatarFallback>
               </Avatar>
               
-              <div className="mt-16">
+              {/* Increased top margin to ensure text doesn't overlap with the avatar */}
+              <div className="mt-20">
                 <div className="flex justify-between items-start">
                   <div>
                     <h1 className="text-2xl font-bold">{owner.name}</h1>

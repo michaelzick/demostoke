@@ -13,17 +13,17 @@ const OwnerCard = ({ owner }: OwnerCardProps) => {
   return (
     <div className="p-6">
       <div className="flex items-center gap-4 mb-4">
-        <Avatar className="h-12 w-12">
+        <Avatar className="h-12 w-12 flex-shrink-0">
           <AvatarImage src={owner.imageUrl} alt="Avatar" />
           <AvatarFallback>{owner.name.charAt(0)}</AvatarFallback>
         </Avatar>
-        <div>
-          <h3 className="font-medium">{owner.name}</h3>
+        <div className="min-w-0">
+          <h3 className="font-medium truncate">{owner.name}</h3>
           <div className="flex items-center text-sm">
-            <StarIcon className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
+            <StarIcon className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1 flex-shrink-0" />
             <span>{owner.rating}</span>
             {owner.personality && (
-              <span className="ml-2 text-xs px-2 py-0.5 bg-slate-100 rounded-full">
+              <span className="ml-2 text-xs px-2 py-0.5 bg-slate-100 rounded-full truncate">
                 {owner.personality}
               </span>
             )}
