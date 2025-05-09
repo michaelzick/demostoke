@@ -1,3 +1,4 @@
+
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { mockEquipment, ownerPersonas } from "@/lib/mockData";
@@ -34,16 +35,19 @@ const GearOwnerProfilePage = () => {
           <Card className="overflow-hidden">
             <div className="bg-gradient-to-r from-blue-500 to-cyan-400 h-24"></div>
             <div className="px-6 pb-6 relative">
-              <Avatar className="h-24 w-24 border-4 border-white absolute -mt-12">
-                <AvatarImage src={owner.imageUrl} alt={owner.name} />
-                <AvatarFallback>{owner.name.charAt(0)}</AvatarFallback>
-              </Avatar>
+              {/* Adjusted positioning with absolute positioning and z-index */}
+              <div className="relative h-12 z-10">
+                <Avatar className="h-24 w-24 border-4 border-white absolute -mt-12">
+                  <AvatarImage src={owner.imageUrl} alt={owner.name} />
+                  <AvatarFallback>{owner.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+              </div>
               
-              {/* Increased top margin to ensure text doesn't overlap with the avatar */}
-              <div className="mt-20">
+              {/* Increased spacing with padding-top instead of margin-top */}
+              <div className="pt-16">
                 <div className="flex justify-between items-start">
-                  <div>
-                    <h1 className="text-2xl font-bold">{owner.name}</h1>
+                  <div className="max-w-[80%]"> {/* Constrain width to prevent overflow */}
+                    <h1 className="text-2xl font-bold truncate">{owner.name}</h1>
                     {owner.personality && (
                       <span className={`inline-block text-xs px-2 py-1 rounded-full mt-1 ${personalityBadgeColor}`}>
                         {owner.personality}
@@ -51,7 +55,7 @@ const GearOwnerProfilePage = () => {
                     )}
                   </div>
                   <div className="flex items-center bg-yellow-50 text-yellow-700 px-2 py-1 rounded">
-                    <StarIcon className="h-4 w-4 text-yellow-500 fill-yellow-500 mr-1" />
+                    <StarIcon className="h-4 w-4 text-yellow-500 fill-yellow-500 mr-1 flex-shrink-0" />
                     <span className="font-medium">{owner.rating}</span>
                   </div>
                 </div>
@@ -59,17 +63,17 @@ const GearOwnerProfilePage = () => {
                 <div className="mt-4 space-y-3 text-sm">
                   {owner.location && (
                     <div className="flex items-center">
-                      <MapPinIcon className="h-4 w-4 text-slate-500 mr-2" />
-                      <span>{owner.location}</span>
+                      <MapPinIcon className="h-4 w-4 text-slate-500 mr-2 flex-shrink-0" />
+                      <span className="truncate">{owner.location}</span>
                     </div>
                   )}
                   <div className="flex items-center">
-                    <UsersIcon className="h-4 w-4 text-slate-500 mr-2" />
+                    <UsersIcon className="h-4 w-4 text-slate-500 mr-2 flex-shrink-0" />
                     <span>Response Rate: {owner.responseRate}%</span>
                   </div>
                   {owner.memberSince && (
                     <div className="flex items-center">
-                      <CalendarIcon className="h-4 w-4 text-slate-500 mr-2" />
+                      <CalendarIcon className="h-4 w-4 text-slate-500 mr-2 flex-shrink-0" />
                       <span>Member since {owner.memberSince}</span>
                     </div>
                   )}
