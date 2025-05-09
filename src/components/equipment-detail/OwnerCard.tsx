@@ -14,7 +14,7 @@ const OwnerCard = ({ owner }: OwnerCardProps) => {
     <div className="p-6">
       <div className="flex items-center gap-4 mb-4">
         <Avatar className="h-12 w-12 flex-shrink-0">
-          <AvatarImage src={owner.imageUrl} alt="Avatar" />
+          <AvatarImage src={owner.imageUrl} alt={owner.name} />
           <AvatarFallback>{owner.name.charAt(0)}</AvatarFallback>
         </Avatar>
         <div className="min-w-0">
