@@ -8,13 +8,7 @@ export interface Equipment {
   pricePerDay: number;
   rating: number;
   reviewCount: number;
-  owner: {
-    id: string;
-    name: string;
-    imageUrl: string;
-    rating: number;
-    responseRate: number;
-  };
+  owner: GearOwner;
   location: {
     lat: number;
     lng: number;
@@ -31,6 +25,18 @@ export interface Equipment {
     available: boolean;
     nextAvailableDate?: string;
   };
+}
+
+export interface GearOwner {
+  id: string;
+  name: string;
+  imageUrl: string;
+  rating: number;
+  responseRate: number;
+  bio?: string;
+  location?: string;
+  memberSince?: string;
+  personality?: string;
 }
 
 export interface User {

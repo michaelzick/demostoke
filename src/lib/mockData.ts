@@ -1,4 +1,4 @@
-import { Equipment } from "@/types";
+import { Equipment, GearOwner } from "@/types";
 
 // Helper function to generate random locations near a center point
 function generateRandomLocation(centerLat: number, centerLng: number, radiusInKm = 5) {
@@ -27,6 +27,125 @@ const losAngelesLocations = [
 // Static IDs for equipment
 const staticIds = Array.from({ length: 30 }, (_, i) => `equip-${i + 1}`);
 
+// Define persona owners with their bios
+export const ownerPersonas: GearOwner[] = [
+  {
+    id: "owner-1",
+    name: "Rachel S.",
+    imageUrl: "https://api.dicebear.com/6.x/avataaars/svg?seed=Rachel",
+    rating: 4.8,
+    responseRate: 98,
+    bio: "Hey there! I'm Rachel, a marketing manager from San Diego who loves getting out on the water or slopes whenever I can escape the office. As a weekend warrior (1-2x/month), I've built a small collection of quality gear that I'd love to share when I'm not using it. I'm all about trying before buying, and I hope my collection helps you do the same without breaking the bank. Drop me a message with any questions!",
+    location: "San Diego, CA",
+    memberSince: "2022",
+    personality: "Weekend Warrior"
+  },
+  {
+    id: "owner-2",
+    name: "Chris T.",
+    imageUrl: "https://api.dicebear.com/6.x/avataaars/svg?seed=Chris",
+    rating: 4.9,
+    responseRate: 95,
+    bio: "What's up! I'm Chris from Truckee. I work remotely as a project manager, which means I get to hit the slopes 3-4 times a week during the season. I've collected a pretty extensive quiver over the years and love exploring different gear for various conditions. I'm active in several snowboarding forums and always hunting for that perfect ride. My gear is meticulously maintained - I treat my boards better than my car!",
+    location: "Truckee, CA",
+    memberSince: "2021",
+    personality: "Die-Hard"
+  },
+  {
+    id: "owner-3",
+    name: "Maya L.",
+    imageUrl: "https://api.dicebear.com/6.x/avataaars/svg?seed=Maya",
+    rating: 4.7,
+    responseRate: 92,
+    bio: "Hi, I'm Maya! I live the van life and work as a remote UX designer, chasing waves and powder wherever they take me. Being constantly on the move means I can't own tons of gear, but I do have some quality pieces that I lend out when I'm in your area. I know the struggle of finding good rentals in a new spot, so I make sure my gear descriptions are comprehensive and prices fair. Let me know if you need advice about local spots too!",
+    location: "Santa Cruz, CA",
+    memberSince: "2022",
+    personality: "Nomadic Renter"
+  },
+  {
+    id: "owner-4",
+    name: "Tony M.",
+    imageUrl: "https://api.dicebear.com/6.x/avataaars/svg?seed=Tony",
+    rating: 4.9,
+    responseRate: 99,
+    bio: "I'm Tony, co-owner of Mountain Edge Board Shop in South Lake Tahoe. We specialize in high-performance snowboards and splitboards. Our demo program lets you try before you buy - and if you decide to purchase after your demo, we'll apply the rental fee to your purchase! We carry brands that are hard to find elsewhere, including some limited editions. Stop by our shop for expert advice or rent through this platform for convenience.",
+    location: "South Lake Tahoe, CA",
+    memberSince: "2020",
+    personality: "Local Shop Owner"
+  },
+  {
+    id: "owner-5",
+    name: "Dustin R.",
+    imageUrl: "https://api.dicebear.com/6.x/avataaars/svg?seed=Dustin",
+    rating: 4.8,
+    responseRate: 97,
+    bio: "Dustin here - I'm a surfboard shaper based in Ventura. I've been crafting custom boards for over a decade, focusing on performance shortboards and mid-lengths that excel in California conditions. My demo program lets you experience how a custom-shaped board feels before committing. Each board listing includes detailed dimensions and design features. Leave a review after your session - your feedback helps me refine my shapes and helps others discover my work!",
+    location: "Ventura, CA",
+    memberSince: "2021",
+    personality: "Local Shaper"
+  },
+  {
+    id: "owner-6",
+    name: "Jessie K.",
+    imageUrl: "https://api.dicebear.com/6.x/avataaars/svg?seed=Jessie",
+    rating: 4.6,
+    responseRate: 94,
+    bio: "Aloha! I'm Jessie, a yoga instructor in Encinitas with a passion for surfing. I've accumulated quite a collection of boards for different conditions, and I'm happy to share them when I'm not using them. My quiver includes everything from beginner-friendly foamies to performance shortboards. I'm pretty flexible with pickup arrangements and can usually meet near the beach. The extra income helps fund my next board purchase (don't tell my partner, haha!).",
+    location: "Encinitas, CA",
+    memberSince: "2023",
+    personality: "Quiver Lender"
+  },
+  {
+    id: "owner-7",
+    name: "Jamie M.",
+    imageUrl: "https://api.dicebear.com/6.x/avataaars/svg?seed=1",
+    rating: 4.5,
+    responseRate: 90,
+    bio: "Hey there! I'm Jamie, an outdoor enthusiast who loves to share my gear with the community. I carefully maintain all my equipment and am always happy to provide tips on getting the most out of your rental. Feel free to message me with any questions!",
+    location: "Los Angeles, CA",
+    memberSince: "2022",
+    personality: "Casual Lender"
+  },
+  {
+    id: "owner-8",
+    name: "Taylor S.",
+    imageUrl: "https://api.dicebear.com/6.x/avataaars/svg?seed=2",
+    rating: 4.9,
+    responseRate: 96,
+    bio: "What's up, I'm Taylor! As a former pro athlete, I've collected some serious gear over the years. Now I'm all about helping others experience top-quality equipment without the hefty price tag. My gear is professionally maintained and always ready for your next adventure.",
+    location: "Venice, CA",
+    memberSince: "2021",
+    personality: "Pro Enthusiast"
+  },
+  {
+    id: "owner-9",
+    name: "Jordan T.",
+    imageUrl: "https://api.dicebear.com/6.x/avataaars/svg?seed=3",
+    rating: 4.7,
+    responseRate: 93,
+    bio: "Jordan here - outdoor gear collector and adventure seeker. I believe everyone should have access to quality equipment, which is why I started lending my gear. I'm constantly updating my collection with the latest and greatest, so you'll always find something exciting to try!",
+    location: "Malibu, CA",
+    memberSince: "2022",
+    personality: "Gear Aficionado"
+  },
+  {
+    id: "owner-10",
+    name: "Casey K.",
+    imageUrl: "https://api.dicebear.com/6.x/avataaars/svg?seed=4",
+    rating: 4.8,
+    responseRate: 95,
+    bio: "Hey, I'm Casey! When I'm not chasing waves or hitting the slopes, I'm sharing my passion for outdoor sports through my gear. I provide detailed guidance for beginners and can recommend the perfect equipment based on your skill level and goals. Let's get you set up for an amazing experience!",
+    location: "Huntington Beach, CA",
+    memberSince: "2021",
+    personality: "Helpful Guide"
+  }
+];
+
+// Map owner IDs to persona objects
+const ownerIdToPersona = Object.fromEntries(
+  ownerPersonas.map((persona) => [persona.id, persona])
+);
+
 // Mock equipment data generator
 export function generateMockEquipment(count: number = 20): Equipment[] {
   const categories = ["snowboards", "skis", "surfboards", "sups", "skateboards"];
@@ -46,7 +165,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
 
     // Generate different details based on category
     let name, material, suitable, imageUrl;
-
+    
     switch (category) {
       case "snowboards":
         name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][i % 4]} Snowboard`;
@@ -88,6 +207,16 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
     // Generate random location near LA
     const location = generateRandomLocation(losAngelesLat, losAngelesLng, 8);
     const locationName = losAngelesLocations[i % losAngelesLocations.length];
+    
+    // Use owner from personas
+    const ownerId = `owner-${(i % 10) + 1}`;
+    const ownerPersona = ownerIdToPersona[ownerId] || {
+      id: ownerId,
+      name: `Owner ${(i % 10) + 1}`,
+      imageUrl: `https://api.dicebear.com/6.x/avataaars/svg?seed=${i}`,
+      rating: Number((Math.random() * 1 + 4).toFixed(1)),
+      responseRate: Math.floor(Math.random() * 20) + 80,
+    };
 
     return {
       id,
@@ -98,13 +227,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
       pricePerDay: Math.floor(Math.random() * 30) + 20, // $20-$50
       rating: Number((Math.random() * 2 + 3).toFixed(1)), // 3.0-5.0 as a number
       reviewCount: Math.floor(Math.random() * 50) + 1,
-      owner: {
-        id: `owner-${(i % 10) + 1}`,
-        name: `${['Alex', 'Jamie', 'Taylor', 'Jordan', 'Casey', 'Riley'][i % 6]} ${['S.', 'M.', 'T.', 'L.', 'K.'][i % 5]}`,
-        imageUrl: `https://api.dicebear.com/6.x/avataaars/svg?seed=${i}`,
-        rating: Number((Math.random() * 1 + 4).toFixed(1)), // 4.0-5.0 as a number
-        responseRate: Math.floor(Math.random() * 20) + 80, // 80%-100%
-      },
+      owner: ownerPersona,
       location: {
         lat: location.lat,
         lng: location.lng,
