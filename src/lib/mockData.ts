@@ -52,7 +52,7 @@ export const ownerPersonas: GearOwner[] = [
     responseRate: 95,
     bio: "What's up! I'm Chris. I work remotely as a project manager, which means I get to shred 3-4 times a week during the season. \
       I've collected a bunch of gear over the years and love exploring different setups for various conditions. I'm active in several \
-      forums and always hunting for that perfect ride. My gear is meticulously maintained - I treat my gear better than my car!",
+      forums and always hunting for that perfect ride. My gear is meticulously maintained—I treat my gear better than my car!",
     location: "Los Angeles, CA",
     memberSince: "2021",
     personality: "Die-Hard"
@@ -92,7 +92,7 @@ export const ownerPersonas: GearOwner[] = [
     rating: 4.8,
     responseRate: 97,
     bio: "Dustin here. I'm a small creator of custom gear. I've been crafting for over a decade, focusing on performance and \
-      shapes that excel in California conditions. My demo program lets you experience how a customized gear feels before committing. \
+      shapes that excel in California conditions. My demo program lets you experience how the gear feels before committing. \
       Each listing includes detailed dimensions and design features. Please leave a review after your session. Your feedback helps me \
       refine my techniques and helps others discover my work!",
     location: "Los Angeles, CA",
