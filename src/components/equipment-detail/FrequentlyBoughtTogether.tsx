@@ -11,11 +11,11 @@ import {
   Waves, 
   Mountain, 
   MountainSnow, 
-  Boot, 
+  Footprints, 
   GitMerge, 
   HandMetal, 
-  Rowing, 
-  Skateboard, 
+  Ship, 
+  Keyboard, 
   Anchor, 
   CircleDot 
 } from "lucide-react";
@@ -30,11 +30,11 @@ const iconMap: Record<string, React.ElementType> = {
   'fin': Waves,
   'snowboard': Mountain,
   'ski': MountainSnow,
-  'ski-boot': Boot,
+  'ski-boot': Footprints,
   'pole': GitMerge,
   'glove': HandMetal,
-  'paddle': Rowing,
-  'skateboard': Skateboard,
+  'paddle': Ship,
+  'skateboard': Keyboard,
   'truck': Anchor,
   'wheel': CircleDot
 };
