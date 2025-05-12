@@ -44,17 +44,17 @@ export const getAddOnsForCategory = (category: string): AddOn[] => {
       return [
         {
           name: "Ski Boots",
-          imageUrl: "https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?auto=format&fit=crop&w=400&q=80",
+          imageUrl: "https://images.unsplash.com/photo-1610989178999-1d9fbb57c1a1?auto=format&fit=crop&w=400&q=80",
           pricePerDay: 14.99
         },
         {
           name: "Ski Poles",
-          imageUrl: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=400&q=80",
+          imageUrl: "https://images.unsplash.com/photo-1692022193291-239f6fedf4bb?auto=format&fit=crop&w=400&q=80",
           pricePerDay: 7.99
         },
         {
           name: "Ski Gloves",
-          imageUrl: "https://images.unsplash.com/photo-1613763083762-8d5b24cc9531?auto=format&fit=crop&w=400&q=80",
+          imageUrl: "https://images.pexels.com/photos/7406675/pexels-photo-7406675.jpeg",
           pricePerDay: 6.99
         }
       ];
