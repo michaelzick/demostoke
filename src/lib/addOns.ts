@@ -62,12 +62,12 @@ export const getAddOnsForCategory = (category: string): AddOn[] => {
       return [
         {
           name: "SUP Paddle",
-          imageUrl: "https://images.unsplash.com/photo-1626784215021-2e56bc892b0f?auto=format&fit=crop&w=400&q=80",
+          imageUrl: "https://images.unsplash.com/photo-1628437539428-41ae898c3da6?auto=format&fit=crop&w=400&q=80",
           pricePerDay: 9.99
         },
         {
           name: "SUP Leash",
-          imageUrl: "https://images.unsplash.com/photo-1610955603079-124df9495d63?auto=format&fit=crop&w=400&q=80",
+          imageUrl: "https://images.pexels.com/photos/18688607/pexels-photo-18688607/free-photo-of-man-with-paddleboard-attached-to-leg.jpeg",
           pricePerDay: 5.99
         }
       ];
@@ -75,12 +75,12 @@ export const getAddOnsForCategory = (category: string): AddOn[] => {
       return [
         {
           name: "Skateboard Trucks",
-          imageUrl: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=400&q=80",
+          imageUrl: "https://images.unsplash.com/photo-1536318431364-5cc762cfc8ec?auto=format&fit=crop&w=400&q=80",
           pricePerDay: 7.99
         },
         {
           name: "Skateboard Wheels",
-          imageUrl: "https://images.unsplash.com/photo-1547447134-cd3f5c716030?auto=format&fit=crop&w=400&q=80",
+          imageUrl: "https://images.unsplash.com/photo-1631367095408-7293f0a85d85?auto=format&fit=crop&w=400&q=80",
           pricePerDay: 6.99
         }
       ];
