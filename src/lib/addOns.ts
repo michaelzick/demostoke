@@ -31,12 +31,12 @@ export const getAddOnsForCategory = (category: string): AddOn[] => {
       return [
         {
           name: "Snowboard Boots",
-          imageUrl: "https://images.unsplash.com/photo-1608234975211-39197a77c798?auto=format&fit=crop&w=400&q=80",
+          imageUrl: "https://images.unsplash.com/photo-1711066443997-25e0ae3feb33?auto=format&fit=crop&w=400&q=80",
           pricePerDay: 12.99
         },
         {
           name: "Snowboard Bindings",
-          imageUrl: "https://images.unsplash.com/photo-1611114721482-db51427985d9?auto=format&fit=crop&w=400&q=80",
+          imageUrl: "https://images.pexels.com/photos/20146487/pexels-photo-20146487/free-photo-of-legs-in-in-ski-wear-and-snowboard-on-snow.jpeg",
           pricePerDay: 10.99
         }
       ];
