@@ -15,6 +15,7 @@ import ReviewsTab from "@/components/equipment-detail/ReviewsTab";
 import PolicyTab from "@/components/equipment-detail/PolicyTab";
 import OwnerCard from "@/components/equipment-detail/OwnerCard";
 import SimilarEquipment from "@/components/equipment-detail/SimilarEquipment";
+import FrequentlyBoughtTogether from "@/components/equipment-detail/FrequentlyBoughtTogether";
 
 const EquipmentDetailPage = () => {
   const { id } = useParams<{ id: string; }>();
@@ -68,6 +69,9 @@ const EquipmentDetailPage = () => {
             <p className="text-lg mb-6">{equipment.description}</p>
             <EquipmentSpecs specifications={equipment.specifications} />
           </div>
+
+          {/* Frequently Bought Together section */}
+          <FrequentlyBoughtTogether equipment={equipment} />
 
           {/* Tabs for Additional Information */}
           <Tabs defaultValue="location">
