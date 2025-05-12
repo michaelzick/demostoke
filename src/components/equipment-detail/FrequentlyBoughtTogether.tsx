@@ -6,18 +6,18 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { 
-  Leash, 
-  TractionPad, 
-  Fin, 
-  Snowboard, 
-  Ski, 
-  SkiBoot, 
-  Pole, 
-  Glove, 
-  Paddle, 
+  CircleOff, 
+  Grip, 
+  Waves, 
+  Mountain, 
+  MountainSnow, 
+  Boot, 
+  GitMerge, 
+  HandMetal, 
+  Rowing, 
   Skateboard, 
-  Truck, 
-  Wheel 
+  Anchor, 
+  CircleDot 
 } from "lucide-react";
 
 interface FrequentlyBoughtTogetherProps {
@@ -25,18 +25,18 @@ interface FrequentlyBoughtTogetherProps {
 }
 
 const iconMap: Record<string, React.ElementType> = {
-  'leash': Leash,
-  'traction-pad': TractionPad,
-  'fin': Fin,
-  'snowboard': Snowboard,
-  'ski': Ski,
-  'ski-boot': SkiBoot,
-  'pole': Pole,
-  'glove': Glove,
-  'paddle': Paddle,
+  'leash': CircleOff,
+  'traction-pad': Grip,
+  'fin': Waves,
+  'snowboard': Mountain,
+  'ski': MountainSnow,
+  'ski-boot': Boot,
+  'pole': GitMerge,
+  'glove': HandMetal,
+  'paddle': Rowing,
   'skateboard': Skateboard,
-  'truck': Truck,
-  'wheel': Wheel
+  'truck': Anchor,
+  'wheel': CircleDot
 };
 
 const FrequentlyBoughtTogether = ({ equipment }: FrequentlyBoughtTogetherProps) => {
