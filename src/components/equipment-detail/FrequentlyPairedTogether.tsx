@@ -33,9 +33,9 @@ const FrequentlyPairedTogether = ({ equipment }: FrequentlyBoughtTogetherProps) 
         <CardTitle className="text-lg">Frequently Paired Together</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-wrap items-center gap-3 mb-4">
+        <div className="flex flex-wrap items-start gap-3 mb-4">
           {/* Main equipment */}
-          <div className="relative flex flex-col items-center">
+          <div className="relative flex flex-col items-center mb-4">
             <div className="w-16 h-16 overflow-hidden rounded-md mb-2">
               <AspectRatio ratio={1}>
                 <img
@@ -48,28 +48,24 @@ const FrequentlyPairedTogether = ({ equipment }: FrequentlyBoughtTogetherProps) 
             <span className="text-xs text-center font-medium">{equipment.name}</span>
           </div>
 
-          {/* Plus sign between items */}
-          {addOns.length > 0 && (
-            <div className="text-xl font-bold">+</div>
-          )}
-
           {/* Add-on items */}
           {addOns.map((addOn) => {
             const isSelected = selectedAddOns.some(item => item.name === addOn.name);
-            
+
             return (
-              <div key={addOn.name} className="relative flex flex-col items-center">
-                <div className="absolute -top-2 -left-2 z-10">
+              <div key={addOn.name} className="relative flex flex-col items-center w-24">
+                <div className="absolute -left-2 z-10">
                   <Checkbox
                     checked={isSelected}
                     onCheckedChange={(checked) => handleAddOnToggle(addOn, checked === true)}
+                    className="absolute"
                   />
                 </div>
                 <div className={`w-16 h-16 overflow-hidden rounded-md mb-2 ${!isSelected ? 'opacity-50' : ''}`}>
                   <AspectRatio ratio={1}>
-                    <img 
-                      src={addOn.imageUrl} 
-                      alt={addOn.name} 
+                    <img
+                      src={addOn.imageUrl}
+                      alt={addOn.name}
                       className="w-full h-full object-cover"
                     />
                   </AspectRatio>

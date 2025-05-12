@@ -15,7 +15,7 @@ import ReviewsTab from "@/components/equipment-detail/ReviewsTab";
 import PolicyTab from "@/components/equipment-detail/PolicyTab";
 import OwnerCard from "@/components/equipment-detail/OwnerCard";
 import SimilarEquipment from "@/components/equipment-detail/SimilarEquipment";
-import FrequentlyPairedTogether from "@/components/equipment-detail/FrequentlyBoughtTogether";
+import FrequentlyPairedTogether from "@/components/equipment-detail/FrequentlyPairedTogether";
 
 const EquipmentDetailPage = () => {
   const { id } = useParams<{ id: string; }>();
