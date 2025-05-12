@@ -5,41 +5,13 @@ import { Equipment } from "@/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { 
-  CircleOff, 
-  Grip, 
-  Waves, 
-  Mountain, 
-  MountainSnow, 
-  Footprints, 
-  GitMerge, 
-  HandMetal, 
-  Ship, 
-  Keyboard, 
-  Anchor, 
-  CircleDot 
-} from "lucide-react";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface FrequentlyBoughtTogetherProps {
   equipment: Equipment;
 }
 
-const iconMap: Record<string, React.ElementType> = {
-  'leash': CircleOff,
-  'traction-pad': Grip,
-  'fin': Waves,
-  'snowboard': Mountain,
-  'ski': MountainSnow,
-  'ski-boot': Footprints,
-  'pole': GitMerge,
-  'glove': HandMetal,
-  'paddle': Ship,
-  'skateboard': Keyboard,
-  'truck': Anchor,
-  'wheel': CircleDot
-};
-
-const FrequentlyBoughtTogether = ({ equipment }: FrequentlyBoughtTogetherProps) => {
+const FrequentlyPairedTogether = ({ equipment }: FrequentlyBoughtTogetherProps) => {
   const addOns = getAddOnsForCategory(equipment.category);
   const [selectedAddOns, setSelectedAddOns] = useState<AddOn[]>([...addOns]);
   const totalPrice = calculateTotalPrice(equipment.pricePerDay, selectedAddOns);
@@ -58,18 +30,20 @@ const FrequentlyBoughtTogether = ({ equipment }: FrequentlyBoughtTogetherProps) 
   return (
     <Card className="mt-6">
       <CardHeader>
-        <CardTitle className="text-lg">Frequently Bought Together</CardTitle>
+        <CardTitle className="text-lg">Frequently Paired Together</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap items-center gap-3 mb-4">
           {/* Main equipment */}
           <div className="relative flex flex-col items-center">
             <div className="w-16 h-16 overflow-hidden rounded-md mb-2">
-              <img
-                src={equipment.imageUrl}
-                alt={equipment.name}
-                className="w-full h-full object-cover"
-              />
+              <AspectRatio ratio={1}>
+                <img
+                  src={equipment.imageUrl}
+                  alt={equipment.name}
+                  className="w-full h-full object-cover"
+                />
+              </AspectRatio>
             </div>
             <span className="text-xs text-center font-medium">{equipment.name}</span>
           </div>
@@ -82,7 +56,6 @@ const FrequentlyBoughtTogether = ({ equipment }: FrequentlyBoughtTogetherProps) 
           {/* Add-on items */}
           {addOns.map((addOn) => {
             const isSelected = selectedAddOns.some(item => item.name === addOn.name);
-            const Icon = iconMap[addOn.icon];
             
             return (
               <div key={addOn.name} className="relative flex flex-col items-center">
@@ -92,13 +65,19 @@ const FrequentlyBoughtTogether = ({ equipment }: FrequentlyBoughtTogetherProps) 
                     onCheckedChange={(checked) => handleAddOnToggle(addOn, checked === true)}
                   />
                 </div>
-                <div className={`w-16 h-16 overflow-hidden rounded-md mb-2 flex items-center justify-center bg-gray-100 ${!isSelected ? 'opacity-50' : ''}`}>
-                  {Icon && <Icon className="w-8 h-8" />}
+                <div className={`w-16 h-16 overflow-hidden rounded-md mb-2 ${!isSelected ? 'opacity-50' : ''}`}>
+                  <AspectRatio ratio={1}>
+                    <img 
+                      src={addOn.imageUrl} 
+                      alt={addOn.name} 
+                      className="w-full h-full object-cover"
+                    />
+                  </AspectRatio>
                 </div>
                 <span className={`text-xs text-center font-medium ${!isSelected ? 'text-gray-400' : ''}`}>
                   {addOn.name}
                 </span>
-                <span className="text-xs text-muted-foreground">${addOn.price}</span>
+                <span className="text-xs text-muted-foreground">${addOn.pricePerDay}/day</span>
               </div>
             );
           })}
@@ -115,12 +94,12 @@ const FrequentlyBoughtTogether = ({ equipment }: FrequentlyBoughtTogetherProps) 
             {selectedAddOns.map((addOn) => (
               <div key={addOn.name} className="flex justify-between">
                 <span>{addOn.name}</span>
-                <span>${addOn.price}</span>
+                <span>${addOn.pricePerDay}/day</span>
               </div>
             ))}
             <div className="border-t pt-2 mt-2 font-medium flex justify-between">
               <span>Total Price:</span>
-              <span>${totalPrice.toFixed(2)}</span>
+              <span>${totalPrice.toFixed(2)}/day</span>
             </div>
           </div>
         </div>
@@ -132,4 +111,4 @@ const FrequentlyBoughtTogether = ({ equipment }: FrequentlyBoughtTogetherProps) 
   );
 };
 
-export default FrequentlyBoughtTogether;
+export default FrequentlyPairedTogether;
