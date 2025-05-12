@@ -13,17 +13,17 @@ export const getAddOnsForCategory = (category: string): AddOn[] => {
       return [
         {
           name: "Surfboard Leash",
-          imageUrl: "https://images.unsplash.com/photo-1610955603079-124df9495d63?auto=format&fit=crop&w=400&q=80",
+          imageUrl: "https://images.pexels.com/photos/1753689/pexels-photo-1753689.jpeg",
           pricePerDay: 5.99
         },
         {
           name: "Traction Pad",
-          imageUrl: "https://images.unsplash.com/photo-1549488497-94b52bddac5d?auto=format&fit=crop&w=400&q=80",
+          imageUrl: "https://images.unsplash.com/photo-1647277921465-9cfb4545b4ee?auto=format&fit=crop&w=400&q=80",
           pricePerDay: 6.99
         },
         {
           name: "Fin Set",
-          imageUrl: "https://images.unsplash.com/photo-1530345586958-801a080dbc11?auto=format&fit=crop&w=400&q=80",
+          imageUrl: "https://images.unsplash.com/photo-1515061942942-2fb5aa4d63c9?auto=format&fit=crop&w=400&q=80",
           pricePerDay: 8.99
         }
       ];
