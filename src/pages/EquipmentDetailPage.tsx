@@ -106,8 +106,6 @@ const EquipmentDetailPage = () => {
           <Card>
             <OwnerCard owner={equipment.owner} />
           </Card>
-
-          {/* Remove SimilarEquipment component from here */}
         </div>
       </div>
     </div>

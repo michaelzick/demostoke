@@ -20,7 +20,7 @@ const LocationTab = ({ equipment }: LocationTabProps) => {
         Exact location provided after booking confirmation.
       </p>
       
-      {/* Similar Equipment section moved here */}
+      {/* Similar Equipment section */}
       {equipment.similarEquipment && equipment.similarEquipment.length > 0 && (
         <div className="mt-6">
           <SimilarEquipment similarEquipment={equipment.similarEquipment} />
