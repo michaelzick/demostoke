@@ -14,7 +14,7 @@ import LocationTab from "@/components/equipment-detail/LocationTab";
 import ReviewsTab from "@/components/equipment-detail/ReviewsTab";
 import PolicyTab from "@/components/equipment-detail/PolicyTab";
 import OwnerCard from "@/components/equipment-detail/OwnerCard";
-import SimilarEquipment from "@/components/equipment-detail/SimilarEquipment";
+// Remove SimilarEquipment import since it's now only used within LocationTab
 
 const EquipmentDetailPage = () => {
   const { id } = useParams<{ id: string; }>();
@@ -31,6 +31,13 @@ const EquipmentDetailPage = () => {
       .slice(0, 3),
     [equipment]
   );
+
+  // Assign similar equipment to the equipment object
+  useEffect(() => {
+    if (equipment && similarEquipment.length > 0) {
+      equipment.similarEquipment = similarEquipment;
+    }
+  }, [equipment, similarEquipment]);
 
   // Scroll to top on page load
   useEffect(() => {
@@ -69,8 +76,6 @@ const EquipmentDetailPage = () => {
             <EquipmentSpecs specifications={equipment.specifications} />
           </div>
 
-          {/* Removed FrequentlyPairedTogether from here */}
-
           {/* Tabs for Additional Information */}
           <Tabs defaultValue="location">
             <TabsList className="w-full grid grid-cols-3">
@@ -102,8 +107,7 @@ const EquipmentDetailPage = () => {
             <OwnerCard owner={equipment.owner} />
           </Card>
 
-          {/* Similar Equipment */}
-          <SimilarEquipment similarEquipment={similarEquipment} />
+          {/* Remove SimilarEquipment component from here */}
         </div>
       </div>
     </div>
