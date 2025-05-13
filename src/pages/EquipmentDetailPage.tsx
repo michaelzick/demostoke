@@ -69,8 +69,6 @@ const EquipmentDetailPage = () => {
             <EquipmentSpecs specifications={equipment.specifications} />
           </div>
 
-          {/* Removed FrequentlyPairedTogether from here */}
-
           {/* Tabs for Additional Information */}
           <Tabs defaultValue="location">
             <TabsList className="w-full grid grid-cols-3">
