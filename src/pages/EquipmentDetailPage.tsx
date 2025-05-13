@@ -6,7 +6,7 @@ import { mockEquipment } from "@/lib/mockData";
 import { useEffect, useMemo } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-// Import new component modules
+// Import component modules
 import BookingCard from "@/components/equipment-detail/BookingCard";
 import EquipmentHeader from "@/components/equipment-detail/EquipmentHeader";
 import EquipmentSpecs from "@/components/equipment-detail/EquipmentSpecs";
@@ -15,7 +15,6 @@ import ReviewsTab from "@/components/equipment-detail/ReviewsTab";
 import PolicyTab from "@/components/equipment-detail/PolicyTab";
 import OwnerCard from "@/components/equipment-detail/OwnerCard";
 import SimilarEquipment from "@/components/equipment-detail/SimilarEquipment";
-import FrequentlyPairedTogether from "@/components/equipment-detail/FrequentlyPairedTogether";
 
 const EquipmentDetailPage = () => {
   const { id } = useParams<{ id: string; }>();
@@ -70,8 +69,7 @@ const EquipmentDetailPage = () => {
             <EquipmentSpecs specifications={equipment.specifications} />
           </div>
 
-          {/* Frequently Paired Together section - note the component name stays the same, but the UI text changed */}
-          <FrequentlyPairedTogether equipment={equipment} />
+          {/* Removed FrequentlyPairedTogether from here */}
 
           {/* Tabs for Additional Information */}
           <Tabs defaultValue="location">

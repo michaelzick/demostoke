@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { Equipment } from "@/types";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
+import FrequentlyPairedTogether from "./FrequentlyPairedTogether";
 
 interface BookingCardProps {
   equipment: Equipment;
@@ -18,14 +19,14 @@ interface BookingCardProps {
 
 const BookingCard = ({ equipment }: BookingCardProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false); // Add state to control Popover
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const isMobile = useIsMobile();
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
     if (date) {
-      setIsPopoverOpen(false); // Close the Popover when a date is selected
+      setIsPopoverOpen(false);
     }
   };
 
@@ -110,7 +111,7 @@ const BookingCard = ({ equipment }: BookingCardProps) => {
               <Calendar
                 mode="single"
                 selected={selectedDate}
-                onSelect={handleDateSelect} // Use the handler to set the date and close the Popover
+                onSelect={handleDateSelect}
                 initialFocus
                 className="p-3 pointer-events-auto"
                 disabled={date => {
@@ -128,6 +129,9 @@ const BookingCard = ({ equipment }: BookingCardProps) => {
           </Popover>
         </div>
       </div>
+
+      {/* Frequently Paired Together - Moved here as requested */}
+      <FrequentlyPairedTogether equipment={equipment} />
 
       <TooltipProvider>
         <Tooltip delayDuration={isMobile ? 1000 : 300}>
