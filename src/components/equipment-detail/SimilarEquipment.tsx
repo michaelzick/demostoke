@@ -11,11 +11,11 @@ interface SimilarEquipmentProps {
 
 const SimilarEquipment = ({ similarEquipment }: SimilarEquipmentProps) => {
   return (
-    <div className="w-full">
+    <div>
       <h3 className="font-medium mb-3">Similar Equipment</h3>
       <div className="space-y-4">
         {similarEquipment.map((item) => (
-          <Card key={item.id} className="overflow-hidden w-full">
+          <Card key={item.id} className="overflow-hidden">
             <div className="flex h-24">
               <div className="w-1/3">
                 <img
