@@ -2,7 +2,8 @@
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { StarIcon } from "lucide-react";
+import { StarIcon, MessageSquare } from "lucide-react";
+
 import { GearOwner } from "@/types";
 
 interface OwnerCardProps {
@@ -33,13 +34,17 @@ const OwnerCard = ({ owner }: OwnerCardProps) => {
       <div className="text-sm mb-4">
         <p className="mb-2">Response rate: {owner.responseRate}%</p>
         <p className="text-muted-foreground">
-          {owner.memberSince 
-            ? `Member since ${owner.memberSince}` 
+          {owner.memberSince
+            ? `Member since ${owner.memberSince}`
             : `Member since ${new Date().getFullYear() - Math.floor(Math.random() * 3 + 1)}`}
         </p>
       </div>
       <Button variant="outline" className="w-full" asChild>
         <Link to={`/owner/${owner.id}`}>View Profile</Link>
+      </Button>
+      <Button variant="outline" className="w-full mt-4">
+        <MessageSquare className="h-4 w-4 mr-2" />
+        Contact Owner
       </Button>
     </div>
   );

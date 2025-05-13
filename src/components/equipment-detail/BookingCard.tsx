@@ -121,11 +121,6 @@ const BookingCard = ({ equipment }: BookingCardProps) => {
         isDateSelected={!!selectedRange.from && !!selectedRange.to}
       />
 
-      <Button variant="outline" className="w-full mt-4">
-        <MessageSquare className="h-4 w-4 mr-2" />
-        Contact Owner
-      </Button>
-
       {/* Confirmation Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>

@@ -104,6 +104,11 @@ const EquipmentDetailPage = () => {
               <PolicyTab />
             </TabsContent>
           </Tabs>
+
+          {/* Owner Info */}
+          <Card>
+            <OwnerCard owner={equipment.owner} />
+          </Card>
         </div>
 
         {/* Sidebar */}
@@ -111,11 +116,6 @@ const EquipmentDetailPage = () => {
           {/* Booking Card */}
           <Card className="p-6" ref={bookingCardRef}>
             <BookingCard equipment={equipment} />
-          </Card>
-
-          {/* Owner Info */}
-          <Card>
-            <OwnerCard owner={equipment.owner} />
           </Card>
 
           {/* Similar Equipment */}
