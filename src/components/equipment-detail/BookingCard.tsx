@@ -1,17 +1,15 @@
 
 import { useState } from "react";
-import { format } from "date-fns";
 import { Calendar as CalendarIcon, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Equipment } from "@/types";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useIsMobile } from "@/hooks/use-mobile";
 import FrequentlyPairedTogether from "./FrequentlyPairedTogether";
+import { format } from "date-fns";
 
 interface BookingCardProps {
   equipment: Equipment;
@@ -21,7 +19,6 @@ const BookingCard = ({ equipment }: BookingCardProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const isMobile = useIsMobile();
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
@@ -60,13 +57,6 @@ const BookingCard = ({ equipment }: BookingCardProps) => {
       description: `Your demo for ${equipment.name} is scheduled on ${format(selectedDate!, "MMMM d, yyyy")}`,
     });
     setDialogOpen(false);
-  };
-
-  const getTooltipContent = () => {
-    if (!selectedDate) {
-      return "Pick a date from the calendar above";
-    }
-    return `Request a demo for ${format(selectedDate, "MMM d, yyyy")}`;
   };
 
   return (
@@ -131,10 +121,10 @@ const BookingCard = ({ equipment }: BookingCardProps) => {
       </div>
 
       {/* Frequently Paired Together - Moved here as requested */}
-      <FrequentlyPairedTogether 
-        equipment={equipment} 
-        onDemoRequest={handleDemoRequest} 
-        selectedDate={selectedDate} 
+      <FrequentlyPairedTogether
+        equipment={equipment}
+        onDemoRequest={handleDemoRequest}
+        selectedDate={selectedDate}
         isDateSelected={!!selectedDate}
       />
 
