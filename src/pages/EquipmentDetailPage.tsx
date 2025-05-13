@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockEquipment } from "@/lib/mockData";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 // Import component modules
@@ -37,6 +37,16 @@ const EquipmentDetailPage = () => {
     window.scrollTo(0, 0);
   }, [id]);
 
+  // Ref for booking card
+  const bookingCardRef = useRef<HTMLDivElement>(null);
+
+  // Scroll handler for Book Now button
+  const handleBookNowClick = () => {
+    if (bookingCardRef.current) {
+      bookingCardRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  };
+
   return (
     <div className="container px-4 md:px-6 py-8">
       <Breadcrumbs
@@ -65,6 +75,14 @@ const EquipmentDetailPage = () => {
           {/* Equipment Info */}
           <div>
             <EquipmentHeader equipment={equipment} />
+            {/* Book Now button: only visible on mobile (columns stacked) */}
+            <button
+              className="block lg:hidden mt-4 w-full bg-primary text-white font-semibold py-2 px-4 rounded transition hover:bg-primary/90"
+              onClick={handleBookNowClick}
+              type="button"
+            >
+              Book Now
+            </button>
             <p className="text-lg mb-6">{equipment.description}</p>
             <EquipmentSpecs specifications={equipment.specifications} />
           </div>
@@ -91,7 +109,7 @@ const EquipmentDetailPage = () => {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Booking Card */}
-          <Card className="p-6">
+          <Card className="p-6" ref={bookingCardRef}>
             <BookingCard equipment={equipment} />
           </Card>
 
