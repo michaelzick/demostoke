@@ -14,7 +14,7 @@ interface FrequentlyBoughtTogetherProps {
   isDateSelected: boolean;
 }
 
-const FrequentlyPairedTogether = ({ 
+const FrequentlyPairedTogether = ({
   equipment,
   onDemoRequest,
   selectedDate,
@@ -43,7 +43,7 @@ const FrequentlyPairedTogether = ({
       <CardContent>
         <div className="flex flex-wrap items-start gap-3 mb-4">
           {/* Main equipment */}
-          <div className="relative flex flex-col items-center mb-4">
+          <div className="relative flex flex-col items-center mb-4 w-24">
             <div className="w-16 h-16 overflow-hidden rounded-md mb-2">
               <AspectRatio ratio={1}>
                 <img
@@ -109,8 +109,8 @@ const FrequentlyPairedTogether = ({
         </div>
       </CardContent>
       <CardFooter>
-        <Button 
-          className="w-full" 
+        <Button
+          className="w-full"
           onClick={onDemoRequest}
           disabled={!isDateSelected}
         >
