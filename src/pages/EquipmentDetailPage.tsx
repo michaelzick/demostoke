@@ -43,7 +43,7 @@ const EquipmentDetailPage = () => {
   // Scroll handler for Book Now button
   const handleBookNowClick = () => {
     if (bookingCardRef.current) {
-      bookingCardRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      bookingCardRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
