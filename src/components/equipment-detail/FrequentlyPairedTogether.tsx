@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { AddOn, calculateTotalPrice, getAddOnsForCategory } from "@/lib/addOns";
 import { Equipment } from "@/types";
@@ -10,14 +9,14 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 interface FrequentlyBoughtTogetherProps {
   equipment: Equipment;
   onDemoRequest?: () => void;
-  selectedDate?: Date;
+  selectedRange?: { from?: Date; to?: Date }; // <-- fix: should be a range object
   isDateSelected: boolean;
 }
 
 const FrequentlyPairedTogether = ({
   equipment,
   onDemoRequest,
-  selectedDate,
+  selectedRange,
   isDateSelected
 }: FrequentlyBoughtTogetherProps) => {
   const addOns = getAddOnsForCategory(equipment.category);
