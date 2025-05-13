@@ -25,7 +25,6 @@ export interface Equipment {
     available: boolean;
     nextAvailableDate?: string;
   };
-  similarEquipment?: Equipment[]; // Added property for similar equipment
 }
 
 export interface GearOwner {
