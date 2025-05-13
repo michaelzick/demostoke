@@ -9,9 +9,17 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface FrequentlyBoughtTogetherProps {
   equipment: Equipment;
+  onDemoRequest?: () => void;
+  selectedDate?: Date;
+  isDateSelected: boolean;
 }
 
-const FrequentlyPairedTogether = ({ equipment }: FrequentlyBoughtTogetherProps) => {
+const FrequentlyPairedTogether = ({ 
+  equipment,
+  onDemoRequest,
+  selectedDate,
+  isDateSelected
+}: FrequentlyBoughtTogetherProps) => {
   const addOns = getAddOnsForCategory(equipment.category);
   const [selectedAddOns, setSelectedAddOns] = useState<AddOn[]>([...addOns]);
   const totalPrice = calculateTotalPrice(equipment.pricePerDay, selectedAddOns);
@@ -101,7 +109,13 @@ const FrequentlyPairedTogether = ({ equipment }: FrequentlyBoughtTogetherProps) 
         </div>
       </CardContent>
       <CardFooter>
-        <Button className="w-full">Add All to Cart</Button>
+        <Button 
+          className="w-full" 
+          onClick={onDemoRequest}
+          disabled={!isDateSelected}
+        >
+          {isDateSelected ? "Request Demo" : "Select a Date First"}
+        </Button>
       </CardFooter>
     </Card>
   );

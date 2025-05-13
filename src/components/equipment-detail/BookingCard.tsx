@@ -131,28 +131,14 @@ const BookingCard = ({ equipment }: BookingCardProps) => {
       </div>
 
       {/* Frequently Paired Together - Moved here as requested */}
-      <FrequentlyPairedTogether equipment={equipment} />
+      <FrequentlyPairedTogether 
+        equipment={equipment} 
+        onDemoRequest={handleDemoRequest} 
+        selectedDate={selectedDate} 
+        isDateSelected={!!selectedDate}
+      />
 
-      <TooltipProvider>
-        <Tooltip delayDuration={isMobile ? 1000 : 300}>
-          <TooltipTrigger asChild>
-            <div className="w-full mb-4">
-              <Button
-                className="w-full mb-4"
-                disabled={!equipment.availability.available || !selectedDate}
-                onClick={handleDemoRequest}
-              >
-                {equipment.availability.available ? "Request Demo" : "Not Available"}
-              </Button>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="top">
-            <p>{getTooltipContent()}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
-      <Button variant="outline" className="w-full">
+      <Button variant="outline" className="w-full mt-4">
         <MessageSquare className="h-4 w-4 mr-2" />
         Contact Owner
       </Button>
