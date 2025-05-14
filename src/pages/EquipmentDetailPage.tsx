@@ -88,6 +88,7 @@ const EquipmentDetailPage = () => {
                 hover:opacity-100
                 hover:shadow-none
                 focus:outline-none
+                h-12
               "
               onClick={handleBookNowClick}
               type="button"
