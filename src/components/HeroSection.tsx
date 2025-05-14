@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { MapPin, ArrowUp, ArrowDown, ArrowRight, ArrowLeft } from "lucide-react";
+import { MapPin, Snowboard, Skis, Surfboard, Paddle, Skateboard } from "lucide-react";
 
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -37,7 +37,7 @@ const HeroSection = () => {
             DemoStoke
           </h1>
           <h2 className="text-xl sm:text-3xl mb-8 max-w-2xl mx-auto">
-            Don’t just get stoked. Demo it.
+            Don't just get stoked. Demo it.
           </h2>
           <div className="flex flex-wrap gap-4 justify-center mb-8">
             <Button size="lg" asChild className='bg-primary'>
@@ -58,35 +58,35 @@ const HeroSection = () => {
               to="/explore?category=snowboards"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <ArrowRight className="h-6 w-6" />
+              <Snowboard className="h-6 w-6" />
               <span className="text-sm font-medium">Snowboards</span>
             </Link>
             <Link
               to="/explore?category=skis"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <ArrowRight className="h-6 w-6" />
+              <Skis className="h-6 w-6" />
               <span className="text-sm font-medium">Skis</span>
             </Link>
             <Link
               to="/explore?category=surfboards"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <ArrowRight className="h-6 w-6" />
+              <Surfboard className="h-6 w-6" />
               <span className="text-sm font-medium">Surfboards</span>
             </Link>
             <Link
               to="/explore?category=sups"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <ArrowRight className="h-6 w-6" />
+              <Paddle className="h-6 w-6" />
               <span className="text-sm font-medium">SUPs</span>
             </Link>
             <Link
               to="/explore?category=skateboards"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <ArrowRight className="h-6 w-6" />
+              <Skateboard className="h-6 w-6" />
               <span className="text-sm font-medium">Skateboards</span>
             </Link>
           </div>
