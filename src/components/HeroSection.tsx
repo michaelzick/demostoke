@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { MapPin } from "lucide-react";
-import { Snowflake, Mountains, Waves, Fish, Skateboard } from "@phosphor-icons/react";
+import { MapPin, Ramp } from "lucide-react";
+import { Snowflake, Mountains, Waves, Fish } from "@phosphor-icons/react";
 
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -87,7 +87,7 @@ const HeroSection = () => {
               to="/explore?category=skateboards"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <Skateboard className="h-6 w-6" weight="fill" />
+              <Ramp className="h-6 w-6" />
               <span className="text-sm font-medium">Skateboards</span>
             </Link>
           </div>
