@@ -2,7 +2,8 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { MapPin, Mountain, Bike, Ship, Boat, Skateboarding } from "lucide-react";
+import { MapPin } from "lucide-react";
+import { Snowboard, Ski, Surfboard, FishSimple, Skateboard } from "@phosphor-icons/react";
 
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -58,35 +59,35 @@ const HeroSection = () => {
               to="/explore?category=snowboards"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <Mountain className="h-6 w-6" />
+              <Snowboard className="h-6 w-6" weight="fill" />
               <span className="text-sm font-medium">Snowboards</span>
             </Link>
             <Link
               to="/explore?category=skis"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <Mountain className="h-6 w-6" />
+              <Ski className="h-6 w-6" weight="fill" />
               <span className="text-sm font-medium">Skis</span>
             </Link>
             <Link
               to="/explore?category=surfboards"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <Ship className="h-6 w-6" />
+              <Surfboard className="h-6 w-6" weight="fill" />
               <span className="text-sm font-medium">Surfboards</span>
             </Link>
             <Link
               to="/explore?category=sups"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <Boat className="h-6 w-6" />
+              <FishSimple className="h-6 w-6" weight="fill" />
               <span className="text-sm font-medium">SUPs</span>
             </Link>
             <Link
               to="/explore?category=skateboards"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <Skateboarding className="h-6 w-6" />
+              <Skateboard className="h-6 w-6" weight="fill" />
               <span className="text-sm font-medium">Skateboards</span>
             </Link>
           </div>
