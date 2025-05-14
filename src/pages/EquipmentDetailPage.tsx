@@ -2,6 +2,7 @@
 import { useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { mockEquipment } from "@/lib/mockData";
 import { useEffect, useMemo, useRef } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -75,14 +76,25 @@ const EquipmentDetailPage = () => {
           {/* Equipment Info */}
           <div>
             <EquipmentHeader equipment={equipment} />
+
             {/* Book Now button: only visible on mobile (columns stacked) */}
-            <button
-              className="block lg:hidden mt-4 w-full bg-primary text-white font-semibold py-2 px-4 rounded transition hover:bg-primary/90"
+            <Button
+              className="
+                block
+                lg:hidden
+                fixed left-0 bottom-0 w-full z-40 rounded-none
+                bg-primary text-white font-semibold
+                hover:bg-primary
+                hover:opacity-100
+                hover:shadow-none
+                focus:outline-none
+              "
               onClick={handleBookNowClick}
               type="button"
             >
               Book Now
-            </button>
+            </Button>
+
             <p className="text-lg mb-6">{equipment.description}</p>
             <EquipmentSpecs specifications={equipment.specifications} />
           </div>
