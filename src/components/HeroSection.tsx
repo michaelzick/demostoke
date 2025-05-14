@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { MapPin, Snowboard, Skis, Surfboard, Paddle, Skateboard } from "lucide-react";
+import { MapPin, Mountain, Bike, Ship, Boat, Skateboarding } from "lucide-react";
 
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -58,35 +58,35 @@ const HeroSection = () => {
               to="/explore?category=snowboards"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <Snowboard className="h-6 w-6" />
+              <Mountain className="h-6 w-6" />
               <span className="text-sm font-medium">Snowboards</span>
             </Link>
             <Link
               to="/explore?category=skis"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <Skis className="h-6 w-6" />
+              <Mountain className="h-6 w-6" />
               <span className="text-sm font-medium">Skis</span>
             </Link>
             <Link
               to="/explore?category=surfboards"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <Surfboard className="h-6 w-6" />
+              <Ship className="h-6 w-6" />
               <span className="text-sm font-medium">Surfboards</span>
             </Link>
             <Link
               to="/explore?category=sups"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <Paddle className="h-6 w-6" />
+              <Boat className="h-6 w-6" />
               <span className="text-sm font-medium">SUPs</span>
             </Link>
             <Link
               to="/explore?category=skateboards"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <Skateboard className="h-6 w-6" />
+              <Skateboarding className="h-6 w-6" />
               <span className="text-sm font-medium">Skateboards</span>
             </Link>
           </div>

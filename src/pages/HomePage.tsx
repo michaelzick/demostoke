@@ -4,7 +4,7 @@ import HeroSection from "@/components/HeroSection";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { MapPin, Snowboard, Skis, Surfboard, Skateboard } from "lucide-react";
+import { MapPin, Mountain, Ship, Boat, Skateboarding } from "lucide-react";
 import { mockEquipment } from "@/lib/mockData";
 import EquipmentCard from "@/components/EquipmentCard";
 
@@ -47,7 +47,7 @@ const HomePage = () => {
             </div>
             <div className="flex flex-col items-center text-center p-4">
               <div className="bg-ocean-light p-4 rounded-full mb-4">
-                <Snowboard className="h-8 w-8 text-ocean-DEFAULT" />
+                <Mountain className="h-8 w-8 text-ocean-DEFAULT" />
               </div>
               <h3 className="text-xl font-medium mb-2">Request a Demo</h3>
               <p className="text-muted-foreground">
@@ -56,7 +56,7 @@ const HomePage = () => {
             </div>
             <div className="flex flex-col items-center text-center p-4">
               <div className="bg-ocean-light p-4 rounded-full mb-4">
-                <Surfboard className="h-8 w-8 text-ocean-DEFAULT" />
+                <Ship className="h-8 w-8 text-ocean-DEFAULT" />
               </div>
               <h3 className="text-xl font-medium mb-2">Enjoy & Review</h3>
               <p className="text-muted-foreground">
@@ -103,7 +103,7 @@ const HomePage = () => {
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                   <div className="text-center text-white">
-                    <Snowboard className="h-10 w-10 mb-2 mx-auto" />
+                    <Mountain className="h-10 w-10 mb-2 mx-auto" />
                     <h3 className="text-2xl font-bold mb-2">Snow</h3>
                     <Button size="sm">
                       <Link to="/explore?category=snowboards">Explore</Link>
@@ -121,7 +121,7 @@ const HomePage = () => {
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                   <div className="text-center text-white">
-                    <Surfboard className="h-10 w-10 mb-2 mx-auto" />
+                    <Ship className="h-10 w-10 mb-2 mx-auto" />
                     <h3 className="text-2xl font-bold mb-2">Surf</h3>
                     <Button size="sm">
                       <Link to="/explore?category=surfboards">Explore</Link>
@@ -139,7 +139,7 @@ const HomePage = () => {
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                   <div className="text-center text-white">
-                    <Skateboard className="h-10 w-10 mb-2 mx-auto" />
+                    <Skateboarding className="h-10 w-10 mb-2 mx-auto" />
                     <h3 className="text-2xl font-bold mb-2">Skate</h3>
                     <Button size="sm">
                       <Link to="/explore?category=skateboards">Explore</Link>
