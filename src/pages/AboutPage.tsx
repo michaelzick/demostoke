@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 
 const AboutPage = () => {
@@ -8,7 +7,7 @@ const AboutPage = () => {
   }, []);
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10 text-gray-800">
+    <div className="max-w-3xl mx-auto px-4 py-10 text-gray-800 dark:text-white">
       <h1 className="text-4xl font-bold mb-6">About DemoStoke</h1>
 
       <section className="mb-8">

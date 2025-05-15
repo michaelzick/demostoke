@@ -50,7 +50,7 @@ const GearOwnerProfilePage = () => {
               <div className="pt-16">
                 <div className="flex justify-between items-start">
                   <div className="max-w-[80%]"> {/* Constrain width to prevent overflow */}
-                    <h1 className="text-2xl font-bold truncate">{owner.name}</h1>
+                    <h1 className="text-2xl font-bold truncate dark:text-white">{owner.name}</h1>
                     {owner.personality && (
                       <span className={`inline-block text-xs px-2 py-1 rounded-full mt-1 ${personalityBadgeColor}`}>
                         {owner.personality}
@@ -87,10 +87,10 @@ const GearOwnerProfilePage = () => {
         </div>
 
         <div className="w-full md:w-2/3">
-          <h2 className="text-lg font-medium mb-4">About</h2>
+          <h2 className="text-lg font-medium mb-4 dark:text-white">About</h2>
           <Card>
             <CardContent className="p-6">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm dark:text-white">
                 {owner.bio || `Hi, I'm ${owner.name.split(" ")[0]}! I love sharing my gear with others and helping them enjoy their adventures. Feel free to reach out if you have any questions!`}
               </p>
             </CardContent>
@@ -101,9 +101,9 @@ const GearOwnerProfilePage = () => {
       <Separator className="my-8" />
 
       <div>
-        <h2 className="text-xl font-medium mb-6">Available Gear</h2>
+        <h2 className="text-xl font-medium mb-6 dark:text-white">Available Gear</h2>
         {ownerEquipment.length === 0 ? (
-          <p className="text-muted-foreground">No gear currently listed.</p>
+          <p className="text-muted-foreground dark:text-white">No gear currently listed.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {ownerEquipment.map((item) => (
@@ -117,7 +117,7 @@ const GearOwnerProfilePage = () => {
                 </div>
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-medium">{item.name}</h3>
+                    <h3 className="font-medium dark:text-white">{item.name}</h3>
                     <span className="font-medium text-green-600">${item.pricePerDay}/day</span>
                   </div>
                   <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
