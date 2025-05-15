@@ -118,7 +118,7 @@ const GearOwnerProfilePage = () => {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-medium dark:text-white">{item.name}</h3>
-                    <span className="font-medium text-green-600">${item.pricePerDay}/day</span>
+                    <span className="font-medium text-primary">${item.pricePerDay}/day</span>
                   </div>
                   <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
                     {item.description}

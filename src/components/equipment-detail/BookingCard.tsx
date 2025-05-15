@@ -55,8 +55,10 @@ const BookingCard = ({ equipment }: BookingCardProps) => {
       <div className="mb-4">
         <h3 className="text-lg font-medium mb-2">Book a Demo</h3>
         <div className="flex items-center justify-between mb-4">
-          <div className="text-2xl font-bold">${equipment.pricePerDay}</div>
-          <div className="text-sm text-muted-foreground">per day</div>
+          <div className="flex items-center">
+            <span className="text-2xl font-bold text-primary">${equipment.pricePerDay}</span>
+            <span className="ml-1 text-base text-muted-foreground">per day</span>
+          </div>
         </div>
 
         <div className="mb-4">
