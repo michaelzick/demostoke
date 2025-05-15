@@ -5,7 +5,6 @@ import { mockEquipment, ownerPersonas } from "@/lib/mockData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { StarIcon, MapPinIcon, CalendarIcon, UsersIcon } from "lucide-react";
-import { GearOwner } from "@/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 
@@ -15,14 +14,14 @@ const GearOwnerProfilePage = () => {
   }, []);
 
   const { ownerId } = useParams();
-  
+
   // First try to find the owner in the personas list
   const ownerFromPersonas = ownerPersonas.find((person) => person.id === ownerId);
-  
+
   // If not found in personas, get it from equipment
   const ownerEquipment = mockEquipment.filter((item) => item.owner.id === ownerId);
   const ownerFromEquipment = ownerEquipment[0]?.owner;
-  
+
   // Use persona if available, otherwise use data from equipment
   const owner = ownerFromPersonas || ownerFromEquipment;
 
@@ -46,7 +45,7 @@ const GearOwnerProfilePage = () => {
                   <AvatarFallback>{owner.name.charAt(0)}</AvatarFallback>
                 </Avatar>
               </div>
-              
+
               {/* Increased spacing with padding-top instead of margin-top */}
               <div className="pt-16">
                 <div className="flex justify-between items-start">
@@ -63,7 +62,7 @@ const GearOwnerProfilePage = () => {
                     <span className="font-medium">{owner.rating}</span>
                   </div>
                 </div>
-                
+
                 <div className="mt-4 space-y-3 text-sm">
                   {owner.location && (
                     <div className="flex items-center">
@@ -86,7 +85,7 @@ const GearOwnerProfilePage = () => {
             </div>
           </Card>
         </div>
-        
+
         <div className="w-full md:w-2/3">
           <h2 className="text-lg font-medium mb-4">About</h2>
           <Card>
@@ -98,7 +97,7 @@ const GearOwnerProfilePage = () => {
           </Card>
         </div>
       </div>
-      
+
       <Separator className="my-8" />
 
       <div>
