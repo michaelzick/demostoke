@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -48,7 +47,7 @@ const HeroSection = () => {
               <Button
                 size="lg"
                 variant="outline"
-                className="bg-white/20 border-white"
+                className="bg-white/20 dark:bg-zinc-800/40 border-white dark:border-zinc-700"
               >
                 List Your Gear
               </Button>
@@ -97,7 +96,7 @@ const HeroSection = () => {
         {backgrounds.map((_, index) => (
           <button
             key={index}
-            className={`h-2 w-2 rounded-full transition-all ${index === activeIndex ? 'bg-white w-6' : 'bg-white/50'
+            className={`h-2 w-2 rounded-full transition-all ${index === activeIndex ? 'bg-white dark:bg-zinc-100 w-6' : 'bg-white/50 dark:bg-zinc-400/50'
               }`}
             onClick={() => setActiveIndex(index)}
           />

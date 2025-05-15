@@ -19,7 +19,7 @@ const GearListingPage = () => {
         {mockEquipment.map((item) => (
           <div
             key={item.id}
-            className="bg-white shadow-md rounded-lg overflow-hidden"
+            className="bg-white dark:bg-zinc-900 shadow-md rounded-lg overflow-hidden"
           >
             <img
               src={item.imageUrl}

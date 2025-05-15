@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,6 +16,7 @@ import EquipmentDetailPage from "./pages/EquipmentDetailPage";
 import GearOwnerProfilePage from "@/pages/GearOwnerProfilePage";
 import GearListing from "@/pages/GearListing";
 import AddGearForm from "@/pages/AddGearForm";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const queryClient = new QueryClient();
 
@@ -24,26 +24,28 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<HomePage />} />
-              <Route path="explore" element={<ExplorePage />} />
-              <Route path="equipment/:id" element={<EquipmentDetailPage />} />
-              <Route path="/owner/:ownerId" element={<GearOwnerProfilePage />} />
-              <Route path="about" element={<AboutPage />} />
-              <Route path="gear-listing" element={<GearListing />} />
-              <Route path="list-gear" element={<AddGearForm />} />
-            </Route>
-            <Route path="/auth" element={<AuthLayout />}>
-              <Route path="signin" element={<SignInPage />} />
-              <Route path="signup" element={<SignUpPage />} />
-            </Route>
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <ThemeProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<MainLayout />}>
+                <Route index element={<HomePage />} />
+                <Route path="explore" element={<ExplorePage />} />
+                <Route path="equipment/:id" element={<EquipmentDetailPage />} />
+                <Route path="/owner/:ownerId" element={<GearOwnerProfilePage />} />
+                <Route path="about" element={<AboutPage />} />
+                <Route path="gear-listing" element={<GearListing />} />
+                <Route path="list-gear" element={<AddGearForm />} />
+              </Route>
+              <Route path="/auth" element={<AuthLayout />}>
+                <Route path="signin" element={<SignInPage />} />
+                <Route path="signup" element={<SignUpPage />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </ThemeProvider>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>

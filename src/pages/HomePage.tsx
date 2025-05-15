@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import HeroSection from "@/components/HeroSection";
 import { Card } from "@/components/ui/card";
@@ -28,7 +27,7 @@ const HomePage = () => {
       <HeroSection />
 
       {/* How it Works Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-zinc-900">
         <div className="container px-4 md:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-3">How It Works</h2>
@@ -39,7 +38,7 @@ const HomePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="flex flex-col items-center text-center p-4">
               <div className="bg-ocean-light p-4 rounded-full mb-4">
-                <MapPin className="h-8 w-8 text-ocean-DEFAULT" />
+                <MapPin className="h-8 w-8" style={{ color: '#020817' }} />
               </div>
               <h3 className="text-xl font-medium mb-2">Find Local Gear</h3>
               <p className="text-muted-foreground">
@@ -48,7 +47,7 @@ const HomePage = () => {
             </div>
             <div className="flex flex-col items-center text-center p-4">
               <div className="bg-ocean-light p-4 rounded-full mb-4">
-                <Snowflake className="h-8 w-8 text-ocean-DEFAULT" weight="fill" />
+                <Snowflake className="h-8 w-8" weight="fill" style={{ color: '#020817' }} />
               </div>
               <h3 className="text-xl font-medium mb-2">Request a Demo</h3>
               <p className="text-muted-foreground">
@@ -57,7 +56,7 @@ const HomePage = () => {
             </div>
             <div className="flex flex-col items-center text-center p-4">
               <div className="bg-ocean-light p-4 rounded-full mb-4">
-                <Waves className="h-8 w-8 text-ocean-DEFAULT" weight="fill" />
+                <Waves className="h-8 w-8" weight="fill" style={{ color: '#020817' }} />
               </div>
               <h3 className="text-xl font-medium mb-2">Enjoy & Review</h3>
               <p className="text-muted-foreground">
@@ -91,7 +90,7 @@ const HomePage = () => {
       </section>
 
       {/* Categories Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-zinc-900">
         <div className="container px-4 md:px-6">
           <h2 className="text-3xl font-bold mb-8">Browse by Category</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -166,7 +165,7 @@ const HomePage = () => {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="bg-white/20 border-white"
+                  className="bg-white/20 dark:bg-zinc-800/40 border-white dark:border-zinc-700"
                 >
                   List Your Gear
                 </Button>
@@ -174,8 +173,8 @@ const HomePage = () => {
             </div>
             <div className="flex justify-center">
               <div className="relative">
-                <div className="absolute -top-6 -left-6 bg-white/10 rounded-full w-40 h-40 animate-float" style={{ animationDelay: '0.5s' }}></div>
-                <div className="absolute -bottom-4 -right-4 bg-white/10 rounded-full w-24 h-24 animate-float"></div>
+                <div className="absolute -top-6 -left-6 bg-white/10 dark:bg-zinc-700/30 rounded-full w-40 h-40 animate-float" style={{ animationDelay: '0.5s' }}></div>
+                <div className="absolute -bottom-4 -right-4 bg-white/10 dark:bg-zinc-700/30 rounded-full w-24 h-24 animate-float"></div>
                 <img
                   src="https://images.unsplash.com/photo-1616449973117-0e1d99c56ed3?auto=format&fit=crop&w=600&q=80"
                   alt="Person on surfboard"

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,11 +9,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/helpers";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon, Laptop } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const Navbar = () => {
   const { isAuthenticated, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   return (
     <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-sm">
@@ -52,6 +53,20 @@ const Navbar = () => {
           </Link>
         </nav>
 
+        {/* Theme Switcher Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label="Toggle theme">
+              {theme === "dark" ? <Moon className="h-5 w-5" /> : theme === "light" ? <Sun className="h-5 w-5" /> : <Laptop className="h-5 w-5" />}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setTheme("light")}> <Sun className="mr-2 h-4 w-4" /> Light </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("dark")}> <Moon className="mr-2 h-4 w-4" /> Dark </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("system")}> <Laptop className="mr-2 h-4 w-4" /> System </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         {/* Desktop Auth Buttons */}
         <div className="hidden lg:flex gap-4">
           {isAuthenticated ? (
@@ -82,7 +97,7 @@ const Navbar = () => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="fixed inset-0 top-16 z-50 bg-background lg:hidden">
-            <nav className="flex flex-col p-6 space-y-4 bg-white">
+            <nav className="flex flex-col p-6 space-y-4 bg-white dark:bg-zinc-900">
               <Link
                 to="/"
                 className="text-lg font-medium"
