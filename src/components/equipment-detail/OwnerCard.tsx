@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,7 @@ const OwnerCard = ({ owner }: OwnerCardProps) => {
             <StarIcon className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1 flex-shrink-0" />
             <span>{owner.rating}</span>
             {owner.personality && (
-              <span className="ml-2 text-xs px-2 py-0.5 bg-slate-100 rounded-full truncate">
+              <span className="ml-2 text-xs px-2 py-0.5 bg-slate-100 rounded-full truncate owner-personality">
                 {owner.personality}
               </span>
             )}
