@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Calendar as CalendarIcon, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -93,7 +94,7 @@ const BookingCard = ({ equipment }: BookingCardProps) => {
                 }
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
               <Calendar
                 mode="range"
                 selected={selectedRange}
