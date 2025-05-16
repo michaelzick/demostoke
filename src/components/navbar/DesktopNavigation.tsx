@@ -9,7 +9,7 @@ type DesktopNavigationProps = {
 
 const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
   return (
-    <nav className="hidden space-x-6 lg:flex">
+    <nav className="hidden items-center space-x-6 lg:flex">
       <Link to="/" className="text-sm font-medium hover:text-primary transition-colors">
         Home
       </Link>
@@ -25,7 +25,7 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
       <Button 
         variant="ghost" 
         size="sm"
-        className="flex items-center gap-2"
+        className="flex items-center gap-2 p-0 h-auto"
         onClick={onOpenSearch}
       >
         <Search className="h-4 w-4" />

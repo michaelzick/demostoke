@@ -28,7 +28,7 @@ const Navbar = () => {
 
           <DesktopNavigation onOpenSearch={() => setIsSearchOpen(true)} />
 
-          <div className="hidden lg:flex gap-4">
+          <div className="hidden lg:flex items-center gap-4">
             <UserMenu />
           </div>
 
