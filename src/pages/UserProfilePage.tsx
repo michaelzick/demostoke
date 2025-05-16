@@ -15,25 +15,26 @@ interface UserProfile {
 }
 
 const UserProfilePage = () => {
-  const { userId } = useParams<{ userId: string }>();
+  const { userId } = useParams<{ userId: string; }>();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfile = async () => {
-      // setLoading(true);
-      // console.log(supabase);
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)  // This assumes `profiles.id` == `auth.users.id`
         .single();
 
-      console.log("Fetched profile data:", data);
-      if (!error && data && typeof data === 'object' && 'id' in (data ?? {})) setProfile(data as UserProfile);
+      if (!error && profile && typeof profile === 'object' && 'id' in (profile ?? {})) setProfile(profile as UserProfile);
       setLoading(false);
     };
-    if (userId) fetchProfile();
+    fetchProfile();
   }, [userId]);
 
   if (loading) return <div className="container px-4 py-8">Loading...</div>;
