@@ -44,17 +44,6 @@ const Navbar = () => {
             </DropdownMenu>
           </div>
 
-          {/* Search Button - New Addition */}
-          <Button 
-            variant="outline" 
-            size="icon"
-            className="absolute left-1/2 transform -translate-x-1/2 hidden md:flex"
-            onClick={() => setIsSearchOpen(true)}
-          >
-            <Search className="h-4 w-4 mr-2" />
-            <span className="sr-only md:not-sr-only md:inline">Search gear...</span>
-          </Button>
-
           {/* Mobile Menu Button */}
           <button
             className="block lg:hidden"
@@ -81,6 +70,16 @@ const Navbar = () => {
             <Link to="/about" className="text-sm font-medium hover:text-primary transition-colors">
               About
             </Link>
+            {/* Search Button - Moved to be after the About link */}
+            <Button 
+              variant="ghost" 
+              size="sm"
+              className="flex items-center gap-2"
+              onClick={() => setIsSearchOpen(true)}
+            >
+              <Search className="h-4 w-4" />
+              <span>Search</span>
+            </Button>
           </nav>
 
           {/* Desktop Auth Buttons */}
@@ -116,7 +115,7 @@ const Navbar = () => {
           {isMenuOpen && (
             <div className="fixed inset-0 top-16 z-50 bg-background lg:hidden">
               <nav className="flex flex-col p-6 space-y-4 bg-white dark:bg-zinc-900">
-                {/* Mobile Search Button - New Addition */}
+                {/* Mobile Search Button */}
                 <Button variant="outline" className="w-full justify-start" onClick={() => {
                   setIsSearchOpen(true);
                   setIsMenuOpen(false);
