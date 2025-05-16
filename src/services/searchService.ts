@@ -58,14 +58,24 @@ export const searchEquipmentWithNLP = async (query: string): Promise<Equipment[]
   // Add a short delay to simulate AI processing time
   await new Promise(resolve => setTimeout(resolve, 500));
   
+  // Check if any specific categories were mentioned
+  const categoriesRequested = Object.entries(categoryMatches)
+    .filter(([_, score]) => score > 0)
+    .map(([category]) => category);
+  
   // Filter equipment based on extracted info
   return mockEquipment.filter(item => {
+    // If specific categories were mentioned, only show those categories
+    if (categoriesRequested.length > 0 && !categoriesRequested.includes(item.category)) {
+      return false;
+    }
+    
     let score = 0;
     
-    // Category matching
+    // Category matching (only relevant if categories were specified)
     if (categoryMatches[item.category] > 0) {
       score += categoryMatches[item.category];
-    } else if (Object.values(categoryMatches).every(val => val === 0)) {
+    } else if (categoriesRequested.length === 0) {
       // If no categories were specified, don't filter by category
       score += 1;
     }
