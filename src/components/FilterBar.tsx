@@ -91,7 +91,7 @@ const FilterBar = ({
               variant="outline"
               size="sm"
               onClick={onReset}
-              className="whitespace-nowrap text-primary border-primary hover:bg-primary/10 flex items-center gap-1"
+              className="whitespace-nowrap flex items-center gap-1"
             >
               <RefreshCw size={14} />
               Reset
