@@ -12,26 +12,57 @@ interface UserProfile {
   phone?: string;
   address?: string;
   avatar_url?: string;
+  user_id?: string;
 }
 
 const UserProfilePage = () => {
   const { userId } = useParams<{ userId: string; }>();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)  // This assumes `profiles.id` == `auth.users.id`
+      if (!userId) {
+        console.error('[UserProfilePage] No userId in URL params');
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      // Always fetch the profile for the userId from the URL
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
         .single();
-
-      if (!error && profile && typeof profile === 'object' && 'id' in (profile ?? {})) setProfile(profile as UserProfile);
+      if (error) {
+        console.error('[UserProfilePage] Supabase error:', error);
+      }
+      if (!error && data && typeof data === 'object' && ('id' in (data ?? {}))) {
+        const cacheKey = `user-profile-${data.id}`;
+        setProfile(data as UserProfile);
+        localStorage.setItem(cacheKey, JSON.stringify(data));
+        console.debug('[UserProfilePage] Set cache:', cacheKey, data);
+        setLoading(false);
+        return;
+      }
+      // If not found in Supabase, try localStorage as fallback
+      const cacheKey = `user-profile-${userId}`;
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (parsed && typeof parsed === 'object' && parsed.id === userId) {
+            setProfile(parsed as UserProfile);
+            console.debug('[UserProfilePage] Loaded from cache:', cacheKey, parsed);
+            setLoading(false);
+            return;
+          }
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+      setProfile(null);
       setLoading(false);
     };
     fetchProfile();

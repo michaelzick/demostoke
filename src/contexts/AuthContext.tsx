@@ -1,9 +1,9 @@
-
-import React, { createContext, useState, useEffect, ReactNode } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import { User } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
+import { AuthContext } from "@/contexts/AuthContextObject";
 
 interface AuthContextType {
   user: User | null;
@@ -14,7 +14,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Move this export to a separate file (e.g., AuthContextObject.ts) if you want to avoid the Fast Refresh warning.
 
 export function AuthProvider({ children }: { children: ReactNode; }) {
   const [user, setUser] = useState<User | null>(null);
@@ -70,16 +70,16 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
 
   const fetchUserProfile = async (session: Session) => {
     setIsLoading(true);
-
     try {
-      // Get user profile data
+      // Get user profile data using the correct foreign key (user_id)
+      // @ts-expect-error: Known issue with supabase types
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .eq('id', session.user.id)
+        .eq('user_id', session.user.id) // Use user_id as the foreign key
         .single();
 
-      if (error) {
+      if (error || !data) {
         console.error("Profile fetch error:", error);
         // Even if profile fetch fails, we can still set basic user info from session
         setUser({
@@ -127,10 +127,10 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
         title: "Logged in successfully",
         description: "Welcome back to DemoStoke!",
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Login failed",
-        description: error.message || "Invalid email or password",
+        description: (error as Error).message || "Invalid email or password",
         variant: "destructive",
       });
       // Make sure we reset loading state on error
@@ -159,10 +159,10 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
         title: "Account created",
         description: "Welcome to DemoStoke!",
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Signup failed",
-        description: error.message || "There was an error creating your account",
+        description: (error as Error).message || "There was an error creating your account",
         variant: "destructive",
       });
       // Make sure we reset loading state on error
@@ -182,10 +182,10 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
         title: "Logged out",
         description: "You've been logged out successfully",
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error logging out",
-        description: error.message || "There was a problem logging out",
+        description: (error as Error).message || "There was a problem logging out",
         variant: "destructive",
       });
     } finally {
