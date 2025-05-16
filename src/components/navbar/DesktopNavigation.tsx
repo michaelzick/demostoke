@@ -22,15 +22,13 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
       <Link to="/about" className="text-sm font-medium hover:text-primary transition-colors">
         About
       </Link>
-      <Button 
-        variant="ghost" 
-        size="sm"
-        className="flex items-center gap-2 p-0 h-auto"
+      <button 
+        className="flex items-center text-sm font-medium hover:text-primary transition-colors"
         onClick={onOpenSearch}
       >
-        <Search className="h-4 w-4" />
+        <Search className="h-4 w-4 mr-2" />
         <span>Search</span>
-      </Button>
+      </button>
     </nav>
   );
 };
