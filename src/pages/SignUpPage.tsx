@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/helpers";
+import { useAuth } from "@/contexts/auth";
 import { MapPin } from "lucide-react";
 
 const SignUpPage = () => {
@@ -43,20 +43,20 @@ const SignUpPage = () => {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto shadow-lg">
+    <Card className="w-full max-w-md mx-auto shadow-lg dark:border-muted">
       <CardHeader className="text-center">
         <div className="flex items-center justify-center mb-2">
-          <MapPin className="h-6 w-6 text-ocean-DEFAULT" />
+          <MapPin className="h-6 w-6 text-ocean-DEFAULT dark:text-blue-400" />
           <CardTitle className="text-2xl ml-2">Create an Account</CardTitle>
         </div>
-        <CardDescription>
+        <CardDescription className="dark:text-gray-400">
           Join DemoStoke to find or share adventure equipment
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           {error && (
-            <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm">
+            <div className="bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 p-3 rounded-md text-sm">
               {error}
             </div>
           )}
@@ -68,6 +68,7 @@ const SignUpPage = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              className="dark:bg-gray-800 dark:border-gray-700"
             />
           </div>
           <div className="space-y-2">
@@ -79,6 +80,7 @@ const SignUpPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="dark:bg-gray-800 dark:border-gray-700"
             />
           </div>
           <div className="space-y-2">
@@ -91,6 +93,7 @@ const SignUpPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={8}
+              className="dark:bg-gray-800 dark:border-gray-700"
             />
           </div>
           <div className="space-y-2">
@@ -102,17 +105,23 @@ const SignUpPage = () => {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
+              className="dark:bg-gray-800 dark:border-gray-700"
             />
           </div>
           <div className="flex items-center space-x-2">
-            <input type="checkbox" id="tos" className="rounded border-gray-300" required />
+            <input 
+              type="checkbox" 
+              id="tos" 
+              className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800" 
+              required 
+            />
             <Label htmlFor="tos" className="text-sm font-normal">
               I agree to the{" "}
-              <Link to="#" className="text-primary hover:underline">
+              <Link to="#" className="text-primary hover:underline dark:text-blue-400">
                 Terms of Service
               </Link>{" "}
               and{" "}
-              <Link to="#" className="text-primary hover:underline">
+              <Link to="#" className="text-primary hover:underline dark:text-blue-400">
                 Privacy Policy
               </Link>
             </Label>
@@ -122,9 +131,9 @@ const SignUpPage = () => {
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? "Creating account..." : "Sign Up"}
           </Button>
-          <div className="text-center text-sm">
+          <div className="text-center text-sm dark:text-gray-400">
             Already have an account?{" "}
-            <Link to="/auth/signin" className="text-primary hover:underline">
+            <Link to="/auth/signin" className="text-primary hover:underline dark:text-blue-400">
               Sign in
             </Link>
           </div>

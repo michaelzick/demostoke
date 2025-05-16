@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/helpers";
+import { useAuth } from "@/contexts/auth";
 import { MapPin } from "lucide-react";
 
 const SignInPage = () => {
@@ -46,20 +46,20 @@ const SignInPage = () => {
   const buttonText = buttonDisabled ? "Signing in..." : "Sign In";
 
   return (
-    <Card className="w-full max-w-md mx-auto shadow-lg">
+    <Card className="w-full max-w-md mx-auto shadow-lg dark:border-muted">
       <CardHeader className="text-center">
         <div className="flex items-center justify-center mb-2">
-          <MapPin className="h-6 w-6 text-ocean-DEFAULT" />
+          <MapPin className="h-6 w-6 text-ocean-DEFAULT dark:text-blue-400" />
           <CardTitle className="text-2xl ml-2">Sign In to DemoStoke</CardTitle>
         </div>
-        <CardDescription>
+        <CardDescription className="dark:text-gray-400">
           Enter your credentials to access your account
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           {error && (
-            <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm">
+            <div className="bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 p-3 rounded-md text-sm">
               {error}
             </div>
           )}
@@ -72,12 +72,13 @@ const SignInPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="dark:bg-gray-800 dark:border-gray-700"
             />
           </div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
-              <Link to="/auth/forgot-password" className="text-sm text-primary hover:underline">
+              <Link to="/auth/forgot-password" className="text-sm text-primary hover:underline dark:text-blue-400">
                 Forgot password?
               </Link>
             </div>
@@ -88,10 +89,15 @@ const SignInPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className="dark:bg-gray-800 dark:border-gray-700"
             />
           </div>
           <div className="flex items-center space-x-2">
-            <input type="checkbox" id="remember" className="rounded border-gray-300" />
+            <input 
+              type="checkbox" 
+              id="remember" 
+              className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800" 
+            />
             <Label htmlFor="remember" className="text-sm font-normal">
               Remember me
             </Label>
@@ -101,9 +107,9 @@ const SignInPage = () => {
           <Button type="submit" className="w-full" disabled={buttonDisabled}>
             {buttonText}
           </Button>
-          <div className="text-center text-sm">
+          <div className="text-center text-sm dark:text-gray-400">
             Don't have an account?{" "}
-            <Link to="/auth/signup" className="text-primary hover:underline">
+            <Link to="/auth/signup" className="text-primary hover:underline dark:text-blue-400">
               Sign up
             </Link>
           </div>
