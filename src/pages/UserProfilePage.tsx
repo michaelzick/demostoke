@@ -21,18 +21,20 @@ const UserProfilePage = () => {
   const [email, setEmail] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [pageLoaded, setPageLoaded] = useState(false);
 
   useEffect(() => {
-    // Redirect if not authenticated
-    if (!isLoading && !isAuthenticated) {
-      navigate("/auth/signin");
-    }
-
-    // Set initial values from user object
-    if (user) {
-      setName(user.name || "");
-      setEmail(user.email || "");
-      setProfileImage(user.imageUrl || null);
+    // Only redirect if authentication check is complete AND user is not authenticated
+    if (!isLoading) {
+      if (!isAuthenticated) {
+        navigate("/auth/signin");
+      } else if (user) {
+        // Set initial values from user object once data is available
+        setName(user.name || "");
+        setEmail(user.email || "");
+        setProfileImage(user.imageUrl || null);
+        setPageLoaded(true);
+      }
     }
   }, [user, isAuthenticated, isLoading, navigate]);
 
@@ -68,7 +70,8 @@ const UserProfilePage = () => {
     }
   };
 
-  if (isLoading) {
+  // Show loading state while authentication or user data is loading
+  if (isLoading || !pageLoaded) {
     return (
       <div className="container max-w-3xl py-10">
         <Card>

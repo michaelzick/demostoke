@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { User } from "@/types";
 import { useToast } from "@/hooks/use-toast";
@@ -26,6 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
     // Set up listener for auth state changes first
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
+        console.log("Auth state changed:", event, currentSession?.user?.id);
         setSession(currentSession);
 
         if (currentSession) {
@@ -40,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
     // Then check active session
     const checkSession = async () => {
       try {
+        console.log("Checking session...");
         const { data, error } = await supabase.auth.getSession();
 
         if (error) {
@@ -48,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
           return;
         }
 
+        console.log("Session check result:", data.session ? "Session found" : "No session");
         setSession(data.session);
 
         if (data.session) {
@@ -70,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
 
   const fetchUserProfile = async (session: Session) => {
     setIsLoading(true);
+    console.log("Fetching user profile for ID:", session.user.id);
 
     try {
       // Get user profile data
@@ -90,6 +93,8 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
         });
         return;
       }
+
+      console.log("Profile data fetched:", data);
 
       // Set user data in state
       setUser({
@@ -197,8 +202,8 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
   return (
     <AuthContext.Provider
       value={{
-        user: session?.user || user,
-        isAuthenticated: !!session?.user || !!user,
+        user,
+        isAuthenticated: !!session,
         isLoading,
         login,
         signup,
@@ -209,4 +214,3 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
     </AuthContext.Provider>
   );
 }
-
