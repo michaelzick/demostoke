@@ -13,7 +13,7 @@ import { Menu, X, Sun, Moon, Laptop } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const Navbar = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
@@ -76,7 +76,9 @@ const Navbar = () => {
                 <Button variant="outline">My Account</Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to={`/user/${user?.id || ""}`}>Profile</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem>My Equipment</DropdownMenuItem>
                 <DropdownMenuItem>Bookings</DropdownMenuItem>
                 <DropdownMenuSeparator />
