@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -76,7 +77,9 @@ const Navbar = () => {
                 <Button variant="outline">My Account</Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>Profile</DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/profile">Profile</Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem>My Equipment</DropdownMenuItem>
                 <DropdownMenuItem>Bookings</DropdownMenuItem>
                 <DropdownMenuSeparator />

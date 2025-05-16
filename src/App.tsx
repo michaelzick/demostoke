@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,6 +17,7 @@ import EquipmentDetailPage from "./pages/EquipmentDetailPage";
 import GearOwnerProfilePage from "@/pages/GearOwnerProfilePage";
 import GearListing from "@/pages/GearListing";
 import AddGearForm from "@/pages/AddGearForm";
+import UserProfilePage from "@/pages/UserProfilePage";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const queryClient = new QueryClient();
@@ -37,6 +39,7 @@ const App = () => (
                 <Route path="about" element={<AboutPage />} />
                 <Route path="gear-listing" element={<GearListing />} />
                 <Route path="list-gear" element={<AddGearForm />} />
+                <Route path="profile" element={<UserProfilePage />} />
               </Route>
               <Route path="/auth" element={<AuthLayout />}>
                 <Route path="signin" element={<SignInPage />} />
