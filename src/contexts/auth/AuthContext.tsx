@@ -4,15 +4,8 @@ import { User } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
-
-interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  signup: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-}
+import { AuthContextType } from "./types";
+import { AuthService } from "./AuthService";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -36,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
             if (currentSession) {
               // Use setTimeout to avoid potential deadlocks with Supabase auth
               setTimeout(() => {
-                fetchUserProfile(currentSession);
+                handleSessionChange(currentSession);
               }, 0);
             } else {
               setUser(null);
@@ -47,7 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
 
         // Then check active session
         console.log("Checking session...");
-        const { data, error } = await supabase.auth.getSession();
+        const { data, error } = await AuthService.getSession();
 
         if (error) {
           console.error("Error fetching session:", error);
@@ -59,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
         setSession(data.session);
 
         if (data.session) {
-          await fetchUserProfile(data.session);
+          await handleSessionChange(data.session);
         } else {
           setIsLoading(false);
         }
@@ -76,49 +69,13 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
     initAuth();
   }, []);
 
-  const fetchUserProfile = async (session: Session) => {
+  const handleSessionChange = async (session: Session) => {
     setIsLoading(true);
-    console.log("Fetching user profile for ID:", session.user.id);
-
     try {
-      // Get user profile data
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
-
-      if (error) {
-        console.error("Profile fetch error:", error);
-        // Even if profile fetch fails, we can still set basic user info from session
-        setUser({
-          id: session.user.id,
-          name: session.user.user_metadata?.name || 'User',
-          email: session.user.email || '',
-          imageUrl: null
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      console.log("Profile data fetched:", data);
-
-      // Set user data in state
-      setUser({
-        id: session.user.id,
-        name: data.name || session.user.user_metadata?.name || 'User',
-        email: session.user.email || '',
-        imageUrl: data.avatar_url
-      });
+      const userData = await AuthService.fetchUserProfile(session);
+      setUser(userData);
     } catch (error) {
-      console.error("Error fetching user profile:", error);
-      // Fallback to basic user info if profile fetch fails
-      setUser({
-        id: session.user.id,
-        name: session.user.user_metadata?.name || 'User',
-        email: session.user.email || '',
-        imageUrl: null
-      });
+      console.error("Error handling session change:", error);
     } finally {
       setIsLoading(false);
     }
@@ -127,14 +84,8 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
   const login = async (email: string, password: string) => {
     try {
       setIsLoading(true);
-
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
+      await AuthService.loginWithEmailPassword(email, password);
+      
       toast({
         title: "Logged in successfully",
         description: "Welcome back to DemoStoke!",
@@ -154,18 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
   const signup = async (name: string, email: string, password: string) => {
     try {
       setIsLoading(true);
-
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            name,
-          },
-        },
-      });
-
-      if (error) throw error;
+      await AuthService.signupWithEmailPassword(name, email, password);
 
       toast({
         title: "Account created",
@@ -186,9 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
   const logout = async () => {
     try {
       setIsLoading(true);
-      const { error } = await supabase.auth.signOut();
-
-      if (error) throw error;
+      await AuthService.logout();
 
       // Clear user state immediately
       setUser(null);

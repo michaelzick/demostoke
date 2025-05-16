@@ -12,7 +12,7 @@ import AboutPage from "./pages/AboutPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import NotFound from "./pages/NotFound";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider } from "./contexts/auth";
 import EquipmentDetailPage from "./pages/EquipmentDetailPage";
 import GearOwnerProfilePage from "@/pages/GearOwnerProfilePage";
 import GearListing from "@/pages/GearListing";
