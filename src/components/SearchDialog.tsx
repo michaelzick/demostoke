@@ -62,7 +62,7 @@ const SearchDialog = ({ isOpen, onClose }: SearchDialogProps) => {
 
   return (
     <CommandDialog open={isOpen} onOpenChange={onClose}>
-      <div className="flex items-center border-b px-3">
+      <div className="flex items-center border-b px-3 w-full">
         <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
         <CommandInput 
           placeholder="Search for gear using natural language..." 
