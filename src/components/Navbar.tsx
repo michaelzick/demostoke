@@ -77,13 +77,13 @@ const Navbar = () => {
                 <Button variant="outline">My Account</Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
+                <DropdownMenuItem asChild className="cursor-pointer">
                   <Link to="/profile">Profile</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>My Equipment</DropdownMenuItem>
-                <DropdownMenuItem>Bookings</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">My Equipment</DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">Bookings</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+                <DropdownMenuItem onClick={logout} className="cursor-pointer">Logout</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
@@ -128,27 +128,27 @@ const Navbar = () => {
                   <>
                     <Link
                       to="/profile"
-                      className="block py-2 text-lg font-medium"
+                      className="block py-2 text-lg font-medium cursor-pointer"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Profile
                     </Link>
                     <Link
                       to="/my-equipment"
-                      className="block py-2 text-lg font-medium"
+                      className="block py-2 text-lg font-medium cursor-pointer"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       My Equipment
                     </Link>
                     <Link
                       to="/bookings"
-                      className="block py-2 text-lg font-medium"
+                      className="block py-2 text-lg font-medium cursor-pointer"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Bookings
                     </Link>
                     <button
-                      className="block py-2 text-lg font-medium text-destructive"
+                      className="block py-2 text-lg font-medium text-destructive cursor-pointer"
                       onClick={() => { logout(); setIsMenuOpen(false); }}
                     >
                       Logout
