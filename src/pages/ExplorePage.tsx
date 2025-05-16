@@ -6,11 +6,13 @@ import MapComponent from "@/components/MapComponent";
 import EquipmentCard from "@/components/EquipmentCard";
 import FilterBar from "@/components/FilterBar";
 import { Equipment } from "@/types";
+import { useToast } from "@/hooks/use-toast";
 
 const ExplorePage = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const initialCategory = queryParams.get("category");
+  const { toast } = useToast();
 
   const [activeCategory, setActiveCategory] = useState<string | null>(initialCategory);
   const [sortBy, setSortBy] = useState<string>("distance");
@@ -44,6 +46,16 @@ const ExplorePage = () => {
     setFilteredEquipment(results);
   }, [activeCategory, sortBy]);
 
+  // Handle reset
+  const handleReset = () => {
+    setActiveCategory(null);
+    setSortBy("distance");
+    toast({
+      title: "Filters Reset",
+      description: "All filters have been cleared.",
+    });
+  };
+
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -57,6 +69,7 @@ const ExplorePage = () => {
         onSortChange={setSortBy}
         viewMode={viewMode}
         setViewMode={setViewMode}
+        onReset={handleReset}
       />
       
       {viewMode === "map" ? (

@@ -8,6 +8,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { RefreshCw } from "lucide-react";
 
 interface FilterBarProps {
   activeCategory: string | null;
@@ -15,6 +16,7 @@ interface FilterBarProps {
   onSortChange: (value: string) => void;
   viewMode: 'map' | 'list';
   setViewMode: (mode: 'map' | 'list') => void;
+  onReset?: () => void;
 }
 
 const FilterBar = ({
@@ -23,6 +25,7 @@ const FilterBar = ({
   onSortChange,
   viewMode,
   setViewMode,
+  onReset,
 }: FilterBarProps) => {
   const [sortBy, setSortBy] = useState("distance");
 
@@ -83,6 +86,15 @@ const FilterBar = ({
               className="whitespace-nowrap gap-1"
             >
               Skateboards
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onReset}
+              className="whitespace-nowrap text-primary border-primary hover:bg-primary/10 flex items-center gap-1"
+            >
+              <RefreshCw size={14} />
+              Reset
             </Button>
           </div>
           <div className="flex gap-2">

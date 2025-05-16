@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { mockEquipment } from "@/lib/mockData";
 
 const SearchResultsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -24,7 +25,10 @@ const SearchResultsPage = () => {
 
   // Perform search when query changes
   useEffect(() => {
-    if (!query) return;
+    if (!query) {
+      setResults(mockEquipment);
+      return;
+    }
 
     const fetchResults = async () => {
       setIsLoading(true);
@@ -75,6 +79,17 @@ const SearchResultsPage = () => {
     }
   };
 
+  const handleReset = () => {
+    setSearchInput("");
+    setSearchParams({});
+    setActiveCategory(null);
+    setResults(mockEquipment);
+    toast({
+      title: "Filters Reset",
+      description: "All filters and search query have been cleared.",
+    });
+  };
+
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -123,6 +138,7 @@ const SearchResultsPage = () => {
         onSortChange={setSortBy}
         viewMode={viewMode}
         setViewMode={setViewMode}
+        onReset={handleReset}
       />
 
       {isLoading ? (
