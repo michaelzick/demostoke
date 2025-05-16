@@ -21,20 +21,23 @@ const UserProfilePage = () => {
   const [email, setEmail] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [pageLoaded, setPageLoaded] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
 
   useEffect(() => {
-    // Only redirect if authentication check is complete AND user is not authenticated
-    if (!isLoading) {
-      if (!isAuthenticated) {
-        navigate("/auth/signin");
-      } else if (user) {
-        // Set initial values from user object once data is available
-        setName(user.name || "");
-        setEmail(user.email || "");
-        setProfileImage(user.imageUrl || null);
-        setPageLoaded(true);
-      }
+    console.log("Profile page effect - auth status:", { isAuthenticated, isLoading, userId: user?.id });
+    
+    // If auth check is complete and user is not authenticated, redirect to sign in
+    if (!isLoading && !isAuthenticated) {
+      navigate("/auth/signin");
+      return;
+    }
+    
+    // When user data becomes available, populate the form
+    if (user) {
+      setName(user.name || "");
+      setEmail(user.email || "");
+      setProfileImage(user.imageUrl || null);
+      setProfileLoaded(true);
     }
   }, [user, isAuthenticated, isLoading, navigate]);
 
@@ -70,8 +73,8 @@ const UserProfilePage = () => {
     }
   };
 
-  // Show loading state while authentication or user data is loading
-  if (isLoading || !pageLoaded) {
+  // Show loading state while authentication is being checked or user data is loading
+  if (isLoading || (!profileLoaded && isAuthenticated)) {
     return (
       <div className="container max-w-3xl py-10">
         <Card>
