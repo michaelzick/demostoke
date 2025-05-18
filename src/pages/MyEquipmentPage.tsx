@@ -1,6 +1,7 @@
+
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Edit, Trash2, ArrowLeft } from "lucide-react";
+import { Edit, Trash2, Copy } from "lucide-react";
 import { Snowflake, Waves, Tire } from "@phosphor-icons/react"; 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,6 +37,32 @@ const MyEquipmentPage = () => {
 
   const handleUpdate = (id: string) => {
     navigate(`/edit-gear/${id}`);
+  };
+
+  const handleDuplicate = (item: UserEquipment) => {
+    // Store the item data in sessionStorage to use it in the add gear form
+    sessionStorage.setItem('duplicatedGear', JSON.stringify({
+      gearName: item.name,
+      gearType: item.category.slice(0, -1), // Remove the 's' at the end (snowboards -> snowboard)
+      description: item.description,
+      zipCode: item.location.name,
+      // Extract dimensions from specifications.size if possible
+      measurementUnit: "inches", // Default to inches
+      dimensions: {
+        length: item.specifications.size.split('x')[0]?.trim() || "",
+        width: item.specifications.size.split('x')[1]?.trim() || "",
+      },
+      skillLevel: item.specifications.suitable,
+      price: item.pricePerDay.toString(),
+      damageDeposit: "50", // Default value
+    }));
+    
+    navigate('/list-gear');
+    
+    toast({
+      title: "Duplicating Equipment",
+      description: "Creating a new listing with the selected gear's information.",
+    });
   };
 
   return (
@@ -88,16 +115,27 @@ const MyEquipmentPage = () => {
                   <div className="text-sm">
                     <span className="font-medium">Added:</span> {item.addedDate}
                   </div>
+                  <div className="text-sm">
+                    <span className="font-medium">Skill Level:</span> {item.specifications.suitable}
+                  </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between gap-4">
+              <CardFooter className="flex justify-between gap-2">
                 <Button 
-                  variant="outline" 
+                  variant="default"
                   className="flex-1"
                   onClick={() => handleUpdate(item.id)}
                 >
                   <Edit className="h-4 w-4 mr-2" />
                   Update
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => handleDuplicate(item)}
+                >
+                  <Copy className="h-4 w-4 mr-2" />
+                  Duplicate
                 </Button>
                 <Button 
                   variant="destructive" 
