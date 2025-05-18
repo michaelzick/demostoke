@@ -13,18 +13,13 @@ export const getAddOnsForCategory = (category: string): AddOn[] => {
       return [
         {
           name: "Surfboard Leash",
-          imageUrl: "https://images.pexels.com/photos/1753689/pexels-photo-1753689.jpeg",
-          pricePerDay: 5.99
-        },
-        {
-          name: "Traction Pad",
-          imageUrl: "https://images.unsplash.com/photo-1647277921465-9cfb4545b4ee?auto=format&fit=crop&w=400&q=80",
-          pricePerDay: 6.99
+          imageUrl: "https://images.evo.com/imgp/zoom/195813/777292/catch-surf-beater-8-leash-.jpg",
+          pricePerDay: 1.99
         },
         {
           name: "Fin Set",
           imageUrl: "https://images.unsplash.com/photo-1515061942942-2fb5aa4d63c9?auto=format&fit=crop&w=400&q=80",
-          pricePerDay: 8.99
+          pricePerDay: 5.99
         }
       ];
     case "snowboards":
@@ -32,12 +27,12 @@ export const getAddOnsForCategory = (category: string): AddOn[] => {
         {
           name: "Snowboard Boots",
           imageUrl: "https://images.unsplash.com/photo-1711066443997-25e0ae3feb33?auto=format&fit=crop&w=400&q=80",
-          pricePerDay: 12.99
+          pricePerDay: 10.99
         },
         {
           name: "Snowboard Bindings",
           imageUrl: "https://images.pexels.com/photos/20146487/pexels-photo-20146487/free-photo-of-legs-in-in-ski-wear-and-snowboard-on-snow.jpeg",
-          pricePerDay: 10.99
+          pricePerDay: 5.99
         }
       ];
     case "skis":
@@ -45,17 +40,17 @@ export const getAddOnsForCategory = (category: string): AddOn[] => {
         {
           name: "Ski Boots",
           imageUrl: "https://images.unsplash.com/photo-1610989178999-1d9fbb57c1a1?auto=format&fit=crop&w=400&q=80",
-          pricePerDay: 14.99
+          pricePerDay: 12.99
         },
         {
           name: "Ski Poles",
           imageUrl: "https://images.unsplash.com/photo-1692022193291-239f6fedf4bb?auto=format&fit=crop&w=400&q=80",
-          pricePerDay: 7.99
+          pricePerDay: 3.99
         },
         {
           name: "Ski Gloves",
           imageUrl: "https://images.pexels.com/photos/7406675/pexels-photo-7406675.jpeg",
-          pricePerDay: 6.99
+          pricePerDay: 1.99
         }
       ];
     case "sups":
@@ -63,12 +58,12 @@ export const getAddOnsForCategory = (category: string): AddOn[] => {
         {
           name: "SUP Paddle",
           imageUrl: "https://images.unsplash.com/photo-1628437539428-41ae898c3da6?auto=format&fit=crop&w=400&q=80",
-          pricePerDay: 9.99
+          pricePerDay: 5.99
         },
         {
           name: "SUP Leash",
           imageUrl: "https://images.pexels.com/photos/18688607/pexels-photo-18688607/free-photo-of-man-with-paddleboard-attached-to-leg.jpeg",
-          pricePerDay: 5.99
+          pricePerDay: 2.99
         }
       ];
     case "skateboards":
@@ -76,12 +71,12 @@ export const getAddOnsForCategory = (category: string): AddOn[] => {
         {
           name: "Skateboard Trucks",
           imageUrl: "https://images.unsplash.com/photo-1536318431364-5cc762cfc8ec?auto=format&fit=crop&w=400&q=80",
-          pricePerDay: 7.99
+          pricePerDay: 3.99
         },
         {
           name: "Skateboard Wheels",
           imageUrl: "https://images.unsplash.com/photo-1631367095408-7293f0a85d85?auto=format&fit=crop&w=400&q=80",
-          pricePerDay: 6.99
+          pricePerDay: 1.99
         }
       ];
     default:
