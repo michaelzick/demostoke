@@ -23,7 +23,9 @@ const UserMenu = () => {
           <DropdownMenuItem asChild className="cursor-pointer">
             <Link to="/profile">Profile</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer">My Equipment</DropdownMenuItem>
+          <DropdownMenuItem asChild className="cursor-pointer">
+            <Link to="/my-equipment">My Equipment</Link>
+          </DropdownMenuItem>
           <DropdownMenuItem className="cursor-pointer">Bookings</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={logout} className="cursor-pointer">Logout</DropdownMenuItem>

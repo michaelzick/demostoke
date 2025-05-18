@@ -19,6 +19,7 @@ import GearListing from "@/pages/GearListing";
 import AddGearForm from "@/pages/AddGearForm";
 import UserProfilePage from "@/pages/UserProfilePage";
 import SearchResultsPage from "@/pages/SearchResultsPage";
+import MyEquipmentPage from "@/pages/MyEquipmentPage";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
                 <Route path="gear-listing" element={<GearListing />} />
                 <Route path="list-gear" element={<AddGearForm />} />
                 <Route path="profile" element={<UserProfilePage />} />
+                <Route path="my-equipment" element={<MyEquipmentPage />} />
               </Route>
               <Route path="/auth" element={<AuthLayout />}>
                 <Route path="signin" element={<SignInPage />} />
