@@ -100,7 +100,9 @@ const GearSpecifications = ({
           disabled={!gearType}
         >
           <SelectTrigger id="skillLevel">
-            <SelectValue placeholder="Select Skill Level" />
+            <SelectValue placeholder={
+              gearType ? "Select Skill Level" : "Select Gear Type First"
+            } />
           </SelectTrigger>
           <SelectContent>
             {gearType &&

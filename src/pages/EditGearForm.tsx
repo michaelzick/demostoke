@@ -43,6 +43,7 @@ const EditGearForm = () => {
   
   const [dimensions, setDimensions] = useState(parseSize());
   
+  // Get skill level directly from equipment specifications
   const [skillLevel, setSkillLevel] = useState(equipment?.specifications?.suitable || "");
   const [images, setImages] = useState<File[]>([]);
   const [price, setPrice] = useState(equipment?.pricePerDay?.toString() || "");
