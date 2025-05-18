@@ -62,7 +62,7 @@ export const getAddOnsForCategory = (category: string): AddOn[] => {
         },
         {
           name: "SUP Leash",
-          imageUrl: "https://images.pexels.com/photos/18688607/pexels-photo-18688607/free-photo-of-man-with-paddleboard-attached-to-leg.jpeg",
+          imageUrl: "https://www.riverboundsports.com/wp-content/uploads/2022/06/red-paddle-coiled-sup-leash-1.webp",
           pricePerDay: 2.99
         }
       ];
