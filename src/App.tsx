@@ -17,6 +17,7 @@ import EquipmentDetailPage from "./pages/EquipmentDetailPage";
 import GearOwnerProfilePage from "@/pages/GearOwnerProfilePage";
 import GearListing from "@/pages/GearListing";
 import AddGearForm from "@/pages/AddGearForm";
+import EditGearForm from "@/pages/EditGearForm";
 import UserProfilePage from "@/pages/UserProfilePage";
 import SearchResultsPage from "@/pages/SearchResultsPage";
 import MyEquipmentPage from "@/pages/MyEquipmentPage";
@@ -42,6 +43,7 @@ const App = () => (
                 <Route path="about" element={<AboutPage />} />
                 <Route path="gear-listing" element={<GearListing />} />
                 <Route path="list-gear" element={<AddGearForm />} />
+                <Route path="edit-gear/:id" element={<EditGearForm />} />
                 <Route path="profile" element={<UserProfilePage />} />
                 <Route path="my-equipment" element={<MyEquipmentPage />} />
               </Route>

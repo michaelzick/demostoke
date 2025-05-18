@@ -1,7 +1,6 @@
-
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Edit, Trash2 } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { Edit, Trash2, ArrowLeft } from "lucide-react";
 import { Snowflake, Waves, Tire } from "@phosphor-icons/react"; 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,13 +35,7 @@ const MyEquipmentPage = () => {
   };
 
   const handleUpdate = (id: string) => {
-    // This would typically navigate to an edit form
-    toast({
-      title: "Update Equipment",
-      description: "Redirecting to update form...",
-    });
-    // For now, we'll just mock this functionality
-    navigate(`/list-gear?edit=${id}`);
+    navigate(`/edit-gear/${id}`);
   };
 
   return (
