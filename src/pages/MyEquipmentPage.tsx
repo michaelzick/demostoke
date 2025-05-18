@@ -1,7 +1,8 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SnowboardIcon, SurfboardIcon, SkateboardIcon, Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
+import { Snowflake, Waves, Tire } from "@phosphor-icons/react"; 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { mockUserEquipment, UserEquipment } from "@/lib/userEquipment";
@@ -16,11 +17,11 @@ const MyEquipmentPage = () => {
   const getEquipmentIcon = (category: string) => {
     switch (category) {
       case "snowboards":
-        return <SnowboardIcon className="h-5 w-5" />;
+        return <Snowflake className="h-5 w-5" weight="fill" />;
       case "surfboards":
-        return <SurfboardIcon className="h-5 w-5" />;
+        return <Waves className="h-5 w-5" weight="fill" />;
       case "skateboards":
-        return <SkateboardIcon className="h-5 w-5" />;
+        return <Tire className="h-5 w-5" weight="fill" />;
       default:
         return null;
     }
