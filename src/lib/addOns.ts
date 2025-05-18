@@ -49,7 +49,7 @@ export const getAddOnsForCategory = (category: string): AddOn[] => {
         },
         {
           name: "Ski Gloves",
-          imageUrl: "https://images.pexels.com/photos/7406675/pexels-photo-7406675.jpeg",
+          imageUrl: "https://www.truckgloves.com/cdn/shop/products/221014_M3-SHN_2000.jpg?v=1665783335&width=500",
           pricePerDay: 1.99
         }
       ];
