@@ -9,8 +9,8 @@ interface FormHeaderProps {
 
 const FormHeader = ({ title }: FormHeaderProps) => {
   return (
-    <div className="flex items-center mb-6">
-      <Button variant="ghost" asChild className="mr-4 p-2">
+    <div className="flex flex-col gap-2 mb-6">
+      <Button variant="ghost" asChild className="self-start p-2">
         <Link to="/my-equipment" className="flex items-center">
           <ArrowLeft className="mr-2 h-4 w-4" />
           Return to My Equipment
