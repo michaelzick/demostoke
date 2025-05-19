@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { format, parseISO, addDays } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -10,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { myBookings, bookingsForMyGear, Booking } from "@/lib/mockBookings";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // Helper function to convert dates into a format needed for the calendar
 const getDatesInRange = (startDateStr: string, endDateStr: string): Date[] => {
@@ -39,6 +39,7 @@ type ViewMode = "myBookings" | "othersBookings";
 const BookingsPage = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("myBookings");
+  const isMobile = useIsMobile();
   
   // Get all dates with bookings based on the current view mode
   const bookedDates = getBookingDates(
@@ -81,18 +82,20 @@ const BookingsPage = () => {
         <div className="md:w-1/2">
           <Card>
             <CardHeader>
-              <div className="flex justify-between items-center mb-2">
+              <div className="flex flex-col gap-4">
                 <CardTitle>Booking Calendar</CardTitle>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Button 
                     variant={viewMode === "myBookings" ? "default" : "outline"} 
                     onClick={() => setViewMode("myBookings")}
+                    className="w-full sm:w-auto"
                   >
                     Gear I've Booked
                   </Button>
                   <Button 
                     variant={viewMode === "othersBookings" ? "default" : "outline"} 
                     onClick={() => setViewMode("othersBookings")}
+                    className="w-full sm:w-auto"
                   >
                     Gear Others Have Booked
                   </Button>
