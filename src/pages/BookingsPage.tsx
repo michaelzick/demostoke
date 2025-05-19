@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { format, parseISO, addDays } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,7 +39,6 @@ type ViewMode = "myBookings" | "othersBookings";
 const BookingsPage = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("myBookings");
-  const isMobile = useIsMobile();
   
   // Get all dates with bookings based on the current view mode
   const bookedDates = getBookingDates(
@@ -79,36 +77,34 @@ const BookingsPage = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">My Bookings</h1>
       
-      <div className="flex flex-col gap-6">
-        <Card>
-          <CardHeader>
-            <div className="flex flex-col gap-4">
-              <CardTitle>Booking Calendar</CardTitle>
-              <div className="flex flex-wrap gap-2">
-                <Button 
-                  variant={viewMode === "myBookings" ? "default" : "outline"} 
-                  onClick={() => setViewMode("myBookings")}
-                  className="flex-grow sm:flex-grow-0"
-                >
-                  Gear I've Booked
-                </Button>
-                <Button 
-                  variant={viewMode === "othersBookings" ? "default" : "outline"} 
-                  onClick={() => setViewMode("othersBookings")}
-                  className="flex-grow sm:flex-grow-0"
-                >
-                  Gear Others Have Booked
-                </Button>
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="md:w-1/2">
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center mb-2">
+                <CardTitle>Booking Calendar</CardTitle>
+                <div className="flex gap-2">
+                  <Button 
+                    variant={viewMode === "myBookings" ? "default" : "outline"} 
+                    onClick={() => setViewMode("myBookings")}
+                  >
+                    Gear I've Booked
+                  </Button>
+                  <Button 
+                    variant={viewMode === "othersBookings" ? "default" : "outline"} 
+                    onClick={() => setViewMode("othersBookings")}
+                  >
+                    Gear Others Have Booked
+                  </Button>
+                </div>
               </div>
               <CardDescription>
                 {viewMode === "myBookings" 
                   ? "View and manage gear you've rented from others" 
                   : "See when your gear has been booked by others"}
               </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-center">
+            </CardHeader>
+            <CardContent>
               <Calendar
                 mode="single"
                 selected={date}
@@ -137,60 +133,62 @@ const BookingsPage = () => {
                   }
                 }}
               />
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
         
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              {date ? format(date, "MMMM d, yyyy") : "Select a date"}
-            </CardTitle>
-            <CardDescription>
-              {bookingsForSelectedDate.length === 0 
-                ? "No bookings for this date" 
-                : `${bookingsForSelectedDate.length} booking(s) for this date`}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {bookingsForSelectedDate.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <CalendarIcon className="mx-auto h-12 w-12 opacity-50 mb-2" />
-                <p>No bookings found for the selected date.</p>
-                <p className="text-sm mt-2">Select a different date or create a new booking.</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {bookingsForSelectedDate.map((booking) => (
-                  <div key={booking.id} className="border rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h3 className="font-medium">{booking.equipment.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {format(parseISO(booking.startDate), "MMM d")} - {format(parseISO(booking.endDate), "MMM d, yyyy")}
-                        </p>
+        <div className="md:w-1/2">
+          <Card>
+            <CardHeader>
+              <CardTitle>
+                {date ? format(date, "MMMM d, yyyy") : "Select a date"}
+              </CardTitle>
+              <CardDescription>
+                {bookingsForSelectedDate.length === 0 
+                  ? "No bookings for this date" 
+                  : `${bookingsForSelectedDate.length} booking(s) for this date`}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {bookingsForSelectedDate.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <CalendarIcon className="mx-auto h-12 w-12 opacity-50 mb-2" />
+                  <p>No bookings found for the selected date.</p>
+                  <p className="text-sm mt-2">Select a different date or create a new booking.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {bookingsForSelectedDate.map((booking) => (
+                    <div key={booking.id} className="border rounded-lg p-4">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h3 className="font-medium">{booking.equipment.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {format(parseISO(booking.startDate), "MMM d")} - {format(parseISO(booking.endDate), "MMM d, yyyy")}
+                          </p>
+                        </div>
+                        <Badge className={getStatusColor(booking.status)}>
+                          {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                        </Badge>
                       </div>
-                      <Badge className={getStatusColor(booking.status)}>
-                        {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                      </Badge>
+                      
+                      <div className="flex items-center mt-4">
+                        <Avatar className="h-8 w-8 mr-2">
+                          <AvatarImage src={booking.bookedBy.imageUrl} alt={booking.bookedBy.name} />
+                          <AvatarFallback>{booking.bookedBy.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <span className="text-sm">
+                          {viewMode === "myBookings" ? "Rented from " : "Booked by "}
+                          {booking.bookedBy.name === "You" ? "you" : booking.bookedBy.name}
+                        </span>
+                      </div>
                     </div>
-                    
-                    <div className="flex items-center mt-4">
-                      <Avatar className="h-8 w-8 mr-2">
-                        <AvatarImage src={booking.bookedBy.imageUrl} alt={booking.bookedBy.name} />
-                        <AvatarFallback>{booking.bookedBy.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <span className="text-sm">
-                        {viewMode === "myBookings" ? "Rented from " : "Booked by "}
-                        {booking.bookedBy.name === "You" ? "you" : booking.bookedBy.name}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
