@@ -1,6 +1,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface SignatureFieldProps extends React.HTMLAttributes<HTMLDivElement> {
   onSignatureChange: (signatureData: string | null) => void;
@@ -18,8 +19,9 @@ const SignatureField = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasSigned, setHasSigned] = useState(false);
+  const { theme } = useTheme();
 
-  // Initialize canvas
+  // Initialize canvas and adjust drawing color based on theme
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -34,8 +36,13 @@ const SignatureField = ({
 
     ctx.lineWidth = 2;
     ctx.lineCap = "round";
-    ctx.strokeStyle = "#000";
-  }, []);
+    
+    // Set stroke color based on theme
+    const isDarkMode = theme === "dark" || 
+      (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    
+    ctx.strokeStyle = isDarkMode ? "#FFFFFF" : "#000000";
+  }, [theme]);
 
   // Handle mouse/touch events
   const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
