@@ -157,9 +157,9 @@ const HomePage = () => {
         <div className="container px-4 md:px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-4">Have Equipment to Share?</h2>
+              <h2 className="text-3xl font-bold mb-4">Have Gear to Share?</h2>
               <p className="text-lg mb-6">
-                List your board or skis and earn money by letting others demo your gear.
+                Earn money by letting others demo your equipment.
               </p>
               <Link to="/list-gear">
                 <Button

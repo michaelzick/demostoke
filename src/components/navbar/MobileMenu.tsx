@@ -18,9 +18,9 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
   return (
     <div className="fixed inset-0 top-16 z-50 bg-background lg:hidden">
       <nav className="flex flex-col p-6 space-y-4 bg-white dark:bg-zinc-900">
-        <Button 
-          variant="outline" 
-          className="w-full justify-start" 
+        <Button
+          variant="outline"
+          className="w-full justify-start"
           onClick={() => {
             onOpenSearch();
             onClose();
@@ -62,7 +62,7 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
                 Profile
               </Link>
               <Link
-                to="/my-equipment"
+                to="/my-gear"
                 className="block py-2 text-lg font-medium cursor-pointer"
                 onClick={onClose}
               >

@@ -46,7 +46,7 @@ const App = () => (
                 <Route path="list-gear" element={<AddGearForm />} />
                 <Route path="edit-gear/:id" element={<EditGearForm />} />
                 <Route path="profile" element={<UserProfilePage />} />
-                <Route path="my-equipment" element={<MyEquipmentPage />} />
+                <Route path="my-gear" element={<MyEquipmentPage />} />
                 <Route path="bookings" element={<BookingsPage />} />
               </Route>
               <Route path="/auth" element={<AuthLayout />}>

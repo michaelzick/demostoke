@@ -16,17 +16,17 @@ const EditGearForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { toast } = useToast();
-  
+
   // Find the equipment by ID
   const equipment = mockUserEquipment.find(item => item.id === id);
-  
+
   // Initialize state with equipment data or defaults
   const [gearName, setGearName] = useState(equipment?.name || "");
   const [gearType, setGearType] = useState(equipment?.category.slice(0, -1) || "");
   const [description, setDescription] = useState(equipment?.description || "");
   const [zipCode, setZipCode] = useState(equipment?.location?.name || "");
   const [measurementUnit, setMeasurementUnit] = useState("inches");
-  
+
   // Parse size from specifications
   const parseSize = () => {
     const sizeStr = equipment?.specifications?.size || "";
@@ -40,10 +40,10 @@ const EditGearForm = () => {
     }
     return { length: "", width: "" };
   };
-  
+
   const [dimensions, setDimensions] = useState(parseSize());
-  
-  // Get skill level directly from equipment specifications
+
+  // Get skill level directly from gear specifications
   const [skillLevel, setSkillLevel] = useState(equipment?.specifications?.suitable || "");
   const [images, setImages] = useState<File[]>([]);
   const [price, setPrice] = useState(equipment?.pricePerDay?.toString() || "");
@@ -51,15 +51,15 @@ const EditGearForm = () => {
   const [damageDeposit, setDamageDeposit] = useState("100"); // Default deposit
   const [role, setRole] = useState("private-party");
 
-  // If no equipment is found, redirect to My Equipment page
+  // If no gear is found, redirect to My Gear page
   useEffect(() => {
     if (!equipment && id) {
       toast({
-        title: "Equipment Not Found",
-        description: "The equipment you're trying to edit could not be found.",
+        title: "Gear Not Found",
+        description: "The gear you're trying to edit could not be found.",
         variant: "destructive",
       });
-      navigate("/my-equipment");
+      navigate("/my-gear");
     }
   }, [equipment, id, navigate, toast]);
 
@@ -71,26 +71,26 @@ const EditGearForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     toast({
-      title: "Equipment Updated",
+      title: "Gear Updated",
       description: `${gearName} has been successfully updated.`,
     });
-    
-    // Navigate back to My Equipment page
-    navigate("/my-equipment");
+
+    // Navigate back to My Gear page
+    navigate("/my-gear");
   };
 
   const handleCancel = () => {
-    navigate("/my-equipment");
+    navigate("/my-gear");
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <FormHeader title={equipment?.name || "Equipment"} />
-      
+      <FormHeader title={equipment?.name || "Gear"} />
+
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-6">
-        <GearBasicInfo 
+        <GearBasicInfo
           gearName={gearName}
           setGearName={setGearName}
           gearType={gearType}
@@ -102,7 +102,7 @@ const EditGearForm = () => {
           zipCode={zipCode}
           setZipCode={setZipCode}
         />
-        
+
         <GearSpecifications
           measurementUnit={measurementUnit}
           setMeasurementUnit={setMeasurementUnit}
@@ -113,7 +113,7 @@ const EditGearForm = () => {
           gearType={gearType}
         />
 
-        <GearMedia 
+        <GearMedia
           handleImageUpload={handleImageUpload}
           currentImageUrl={equipment?.imageUrl}
         />
@@ -127,7 +127,7 @@ const EditGearForm = () => {
           setDamageDeposit={setDamageDeposit}
         />
 
-        <FormActions 
+        <FormActions
           handleSubmit={handleSubmit}
           handleCancel={handleCancel}
           isEditing={true}
