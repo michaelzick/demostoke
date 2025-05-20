@@ -4,8 +4,9 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { mockEquipment } from "@/lib/mockData";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import CustomerWaiverForm from "@/components/CustomerWaiverForm";
 
 // Import component modules
 import BookingCard from "@/components/equipment-detail/BookingCard";
@@ -19,6 +20,8 @@ import SimilarEquipment from "@/components/equipment-detail/SimilarEquipment";
 
 const EquipmentDetailPage = () => {
   const { id } = useParams<{ id: string; }>();
+  const [waiverCompleted, setWaiverCompleted] = useState(false);
+  const [showWaiver, setShowWaiver] = useState(false);
 
   const equipment = useMemo(() =>
     mockEquipment.find(item => item.id === id) || mockEquipment[0],
@@ -43,9 +46,23 @@ const EquipmentDetailPage = () => {
 
   // Scroll handler for Book Now button
   const handleBookNowClick = () => {
-    if (bookingCardRef.current) {
+    if (!waiverCompleted) {
+      setShowWaiver(true);
+    } else if (bookingCardRef.current) {
       bookingCardRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
+  };
+
+  const handleWaiverComplete = () => {
+    setWaiverCompleted(true);
+    setShowWaiver(false);
+    
+    // After waiver is completed, scroll to booking card
+    setTimeout(() => {
+      if (bookingCardRef.current) {
+        bookingCardRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 100);
   };
 
   return (
@@ -61,6 +78,29 @@ const EquipmentDetailPage = () => {
           { label: equipment.name, path: `/equipment/${equipment.id}` },
         ]}
       />
+      
+      {/* Waiver Form Modal */}
+      {showWaiver && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-zinc-900 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Complete Waiver</h2>
+              <Button 
+                variant="outline" 
+                onClick={() => setShowWaiver(false)}
+                className="h-8 w-8 p-0"
+              >
+                ×
+              </Button>
+            </div>
+            <CustomerWaiverForm 
+              equipment={equipment} 
+              onComplete={handleWaiverComplete} 
+            />
+          </div>
+        </div>
+      )}
+      
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-8">
@@ -93,7 +133,7 @@ const EquipmentDetailPage = () => {
               onClick={handleBookNowClick}
               type="button"
             >
-              Book Now
+              {waiverCompleted ? "Book Now" : "Complete Waiver & Book"}
             </Button>
 
             <p className="text-lg mb-6">{equipment.description}</p>
@@ -128,7 +168,7 @@ const EquipmentDetailPage = () => {
         <div className="space-y-6">
           {/* Booking Card */}
           <Card className="p-6" ref={bookingCardRef}>
-            <BookingCard equipment={equipment} />
+            <BookingCard equipment={equipment} waiverCompleted={waiverCompleted} onWaiverClick={() => setShowWaiver(true)} />
           </Card>
 
           {/* Similar Equipment */}

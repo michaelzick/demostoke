@@ -1,147 +1,172 @@
 
-import { useState } from "react";
-import { Calendar as CalendarIcon, MessageSquare } from "lucide-react";
+import React, { useState } from "react";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, type DateRange } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { toast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
-import { Equipment } from "@/types";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import FrequentlyPairedTogether from "./FrequentlyPairedTogether";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { format } from "date-fns";
+import { Equipment } from "@/types";
+import { toast } from "@/hooks/use-toast";
 
 interface BookingCardProps {
   equipment: Equipment;
+  waiverCompleted?: boolean;
+  onWaiverClick?: () => void;
 }
 
-const BookingCard = ({ equipment }: BookingCardProps) => {
-  const [selectedRange, setSelectedRange] = useState<DateRange>({ from: undefined, to: undefined });
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
-
-  // Format date for display
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return "Today";
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-    }).format(date);
+const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: BookingCardProps) => {
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
+  const [numDays, setNumDays] = useState(1);
+  
+  const handleStartDateChange = (date: Date | undefined) => {
+    setStartDate(date);
+    if (date && endDate && date > endDate) {
+      setEndDate(undefined);
+      setNumDays(1);
+    } else if (date && endDate) {
+      const daysDiff = Math.ceil((endDate.getTime() - date.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+      setNumDays(daysDiff);
+    }
   };
 
-  // Handle demo request with selected range
-  const handleDemoRequest = () => {
-    if (!selectedRange.from || !selectedRange.to) {
+  const handleEndDateChange = (date: Date | undefined) => {
+    setEndDate(date);
+    if (startDate && date) {
+      const daysDiff = Math.ceil((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+      setNumDays(Math.max(1, daysDiff));
+    }
+  };
+
+  const handleBooking = () => {
+    if (!waiverCompleted && onWaiverClick) {
+      onWaiverClick();
+      return;
+    }
+    
+    if (!startDate || !endDate) {
       toast({
-        title: "Please select a date range",
-        description: "You need to select a date range for your demo request",
+        title: "Please select dates",
+        description: "You need to select both start and end dates to book this equipment.",
         variant: "destructive",
       });
       return;
     }
-    setDialogOpen(true);
-  };
 
-  const confirmDemoRequest = () => {
     toast({
-      title: "Demo Requested!",
-      description: `Your demo for ${equipment.name} is scheduled from ${format(selectedRange.from!, "MMMM d, yyyy")} to ${format(selectedRange.to!, "MMMM d, yyyy")}`,
+      title: "Booking Request Sent",
+      description: "Your booking request has been sent to the owner for approval.",
     });
-    setDialogOpen(false);
   };
 
   return (
-    <>
-      <div className="mb-4">
-        <h3 className="text-lg font-medium mb-2">Book a Demo</h3>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center">
-            <span className="text-2xl font-bold text-primary">${equipment.pricePerDay}</span>
-            <span className="ml-1 text-base text-muted-foreground">per day</span>
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <div>
+          <p className="text-2xl font-bold">${equipment.pricePerDay} <span className="text-sm font-normal">/ day</span></p>
+          <div className="flex items-center mt-1">
+            <span className="text-sm">★ {equipment.rating}</span>
+            <span className="mx-1">·</span>
+            <span className="text-sm">{equipment.reviewCount} reviews</span>
           </div>
         </div>
-
-        <div className="mb-4">
-          <div className="flex items-center text-sm mb-2">
-            <CalendarIcon className="h-4 w-4 mr-2" />
-            <span>
-              {equipment.availability.available
-                ? "Available now"
-                : `Available from ${formatDate(equipment.availability.nextAvailableDate)}`
-              }
-            </span>
-          </div>
-        </div>
-
-        {/* Date Range Picker */}
-        <div className="mb-4">
-          <label className="text-sm font-medium mb-2 block">Select a date range for your demo</label>
-          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !selectedRange.from && "text-muted-foreground"
-                )}
-                disabled={!equipment.availability.available}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {selectedRange.from && selectedRange.to
-                  ? `${format(selectedRange.from, "PPP")} - ${format(selectedRange.to, "PPP")}`
-                  : <span>Pick a date range</span>
-                }
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0 pointer-events-auto" align="start">
-              <Calendar
-                mode="range"
-                selected={selectedRange}
-                onSelect={range => setSelectedRange(range ?? { from: undefined, to: undefined })}
-                initialFocus
-                className="p-3 pointer-events-auto"
-                disabled={date => {
-                  const today = new Date();
-                  today.setHours(0, 0, 0, 0);
-
-                  const nextAvailable = equipment.availability.nextAvailableDate
-                    ? new Date(equipment.availability.nextAvailableDate)
-                    : today;
-
-                  return date < nextAvailable;
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
+        <span className="text-sm bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 py-1 px-2 rounded">
+          {equipment.availability.available ? "Available" : "Unavailable until " + equipment.availability.nextAvailableDate}
+        </span>
       </div>
 
-      <FrequentlyPairedTogether
-        equipment={equipment}
-        onDemoRequest={handleDemoRequest}
-        selectedRange={selectedRange}
-        isDateSelected={!!selectedRange.from && !!selectedRange.to}
-      />
+      <Card className="p-4 bg-muted/50">
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="text-xs font-medium">START DATE</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal mt-1 h-9"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={handleStartDateChange}
+                    disabled={(date) => date < new Date()}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
 
-      {/* Confirmation Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Demo Request</DialogTitle>
-            <DialogDescription>
-              You're about to request a demo for {equipment.name} from{" "}
-              {selectedRange.from && format(selectedRange.from, "MMMM d, yyyy")} to{" "}
-              {selectedRange.to && format(selectedRange.to, "MMMM d, yyyy")}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-            <Button onClick={confirmDemoRequest}>Confirm Request</Button>
+            <div>
+              <label className="text-xs font-medium">END DATE</label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal mt-1 h-9"
+                    disabled={!startDate}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={handleEndDateChange}
+                    disabled={(date) => !startDate || date < startDate}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
-        </DialogContent>
-      </Dialog>
-    </>
+        </div>
+      </Card>
+
+      {startDate && endDate && (
+        <div className="space-y-2 pt-2">
+          <div className="flex justify-between">
+            <span>${equipment.pricePerDay} x {numDays} days</span>
+            <span>${equipment.pricePerDay * numDays}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Service fee</span>
+            <span>${Math.round(equipment.pricePerDay * numDays * 0.1)}</span>
+          </div>
+          <div className="flex justify-between font-bold pt-2 border-t">
+            <span>Total</span>
+            <span>${equipment.pricePerDay * numDays + Math.round(equipment.pricePerDay * numDays * 0.1)}</span>
+          </div>
+        </div>
+      )}
+
+      <Button 
+        onClick={handleBooking} 
+        className="w-full"
+      >
+        {!waiverCompleted ? "Complete Waiver & Book" : "Request Demo"}
+      </Button>
+
+      {!waiverCompleted && (
+        <p className="text-xs text-center text-muted-foreground">
+          You must complete a liability waiver before booking
+        </p>
+      )}
+
+      <p className="text-xs text-center text-muted-foreground">
+        You won't be charged yet. Booking requests require owner confirmation.
+      </p>
+    </div>
   );
 };
 
