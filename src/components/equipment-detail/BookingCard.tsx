@@ -23,9 +23,12 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
   const [numDays, setNumDays] = useState(1);
+  const [startDateOpen, setStartDateOpen] = useState(false);
+  const [endDateOpen, setEndDateOpen] = useState(false);
   
   const handleStartDateChange = (date: Date | undefined) => {
     setStartDate(date);
+    setStartDateOpen(false);
     if (date && endDate && date > endDate) {
       setEndDate(undefined);
       setNumDays(1);
@@ -37,6 +40,7 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
 
   const handleEndDateChange = (date: Date | undefined) => {
     setEndDate(date);
+    setEndDateOpen(false);
     if (startDate && date) {
       const daysDiff = Math.ceil((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
       setNumDays(Math.max(1, daysDiff));
@@ -85,7 +89,7 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
           <div className="grid grid-cols-2 gap-2">
             <div>
               <label className="text-xs font-medium">START DATE</label>
-              <Popover>
+              <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -101,6 +105,7 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
                     selected={startDate}
                     onSelect={handleStartDateChange}
                     disabled={(date) => date < new Date()}
+                    className="pointer-events-auto"
                   />
                 </PopoverContent>
               </Popover>
@@ -108,7 +113,7 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
 
             <div>
               <label className="text-xs font-medium">END DATE</label>
-              <Popover>
+              <Popover open={endDateOpen} onOpenChange={setEndDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
@@ -125,6 +130,7 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
                     selected={endDate}
                     onSelect={handleEndDateChange}
                     disabled={(date) => !startDate || date < startDate}
+                    className="pointer-events-auto"
                   />
                 </PopoverContent>
               </Popover>
