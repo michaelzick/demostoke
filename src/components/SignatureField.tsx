@@ -27,6 +27,11 @@ const SignatureField = ({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Reset canvas dimensions to match display size
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
     ctx.lineWidth = 2;
     ctx.lineCap = "round";
     ctx.strokeStyle = "#000";
@@ -43,15 +48,16 @@ const SignatureField = ({
     setIsDrawing(true);
     setHasSigned(true);
 
-    // Get mouse/touch position
+    // Get correct mouse/touch position relative to canvas
     let x, y;
     if ('touches' in e) {
       const rect = canvas.getBoundingClientRect();
       x = e.touches[0].clientX - rect.left;
       y = e.touches[0].clientY - rect.top;
     } else {
-      x = e.nativeEvent.offsetX;
-      y = e.nativeEvent.offsetY;
+      const rect = canvas.getBoundingClientRect();
+      x = e.clientX - rect.left;
+      y = e.clientY - rect.top;
     }
 
     ctx.beginPath();
@@ -67,15 +73,16 @@ const SignatureField = ({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Get mouse/touch position
+    // Get correct mouse/touch position relative to canvas
     let x, y;
     if ('touches' in e) {
       const rect = canvas.getBoundingClientRect();
       x = e.touches[0].clientX - rect.left;
       y = e.touches[0].clientY - rect.top;
     } else {
-      x = e.nativeEvent.offsetX;
-      y = e.nativeEvent.offsetY;
+      const rect = canvas.getBoundingClientRect();
+      x = e.clientX - rect.left;
+      y = e.clientY - rect.top;
     }
 
     ctx.lineTo(x, y);
@@ -126,9 +133,8 @@ const SignatureField = ({
       <div className="relative border rounded-md overflow-hidden">
         <canvas
           ref={canvasRef}
-          width={400}
-          height={150}
           className="w-full touch-none bg-white dark:bg-zinc-900 cursor-crosshair"
+          style={{ height: "150px" }}
           onMouseDown={startDrawing}
           onMouseMove={draw}
           onMouseUp={stopDrawing}
