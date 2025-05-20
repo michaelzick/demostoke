@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { mockEquipment } from "@/lib/mockData";
 import { useEffect, useMemo, useState, useRef } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import CustomerWaiverForm from "@/components/CustomerWaiverForm";
+import CustomerWaiverForm from "@/components/waiver/CustomerWaiverForm";
 
 // Import component modules
 import BookingCard from "@/components/equipment-detail/BookingCard";
