@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Edit, Trash2, Copy } from "lucide-react";
-import { Snowflake, Waves, Tire } from "@phosphor-icons/react"; 
+import { Snowflake, Waves, Tire } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { mockUserEquipment, UserEquipment } from "@/lib/userEquipment";
@@ -12,7 +12,7 @@ const MyEquipmentPage = () => {
   const [userEquipment, setUserEquipment] = useState<UserEquipment[]>(mockUserEquipment);
   const { toast } = useToast();
   const navigate = useNavigate();
-  
+
   // Function to get the appropriate icon based on equipment category
   const getEquipmentIcon = (category: string) => {
     switch (category) {
@@ -56,11 +56,11 @@ const MyEquipmentPage = () => {
       price: item.pricePerDay.toString(),
       damageDeposit: "50", // Default value
     }));
-    
+
     navigate('/list-gear');
-    
+
     toast({
-      title: "Duplicating Equipment",
+      title: "Duplicating Gear",
       description: "Creating a new listing with the selected gear's information.",
     });
   };
@@ -69,12 +69,12 @@ const MyEquipmentPage = () => {
     <div className="container py-10">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">My Gear</h1>
-        <Button onClick={() => navigate("/list-gear")}>Add New Equipment</Button>
+        <Button onClick={() => navigate("/list-gear")}>Add New Gear</Button>
       </div>
 
       {userEquipment.length === 0 ? (
         <div className="text-center py-20">
-          <h2 className="text-xl font-medium mb-2">You haven't listed any equipment yet</h2>
+          <h2 className="text-xl font-medium mb-2">You haven't listed any gear yet</h2>
           <p className="text-muted-foreground mb-6">Start sharing your gear with others and earn money</p>
           <Button onClick={() => navigate("/list-gear")}>List Your First Item</Button>
         </div>
@@ -83,8 +83,8 @@ const MyEquipmentPage = () => {
           {userEquipment.map((item) => (
             <Card key={item.id} className="overflow-hidden">
               <div className="relative h-48">
-                <img 
-                  src={item.imageUrl} 
+                <img
+                  src={item.imageUrl}
                   alt={item.name}
                   className="w-full h-full object-cover"
                 />
@@ -121,7 +121,7 @@ const MyEquipmentPage = () => {
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between gap-2">
-                <Button 
+                <Button
                   variant="default"
                   className="flex-1"
                   onClick={() => handleUpdate(item.id)}
@@ -129,16 +129,16 @@ const MyEquipmentPage = () => {
                   <Edit className="h-4 w-4 mr-2" />
                   Update
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="flex-1"
                   onClick={() => handleDuplicate(item)}
                 >
                   <Copy className="h-4 w-4 mr-2" />
                   Duplicate
                 </Button>
-                <Button 
-                  variant="destructive" 
+                <Button
+                  variant="destructive"
                   className="flex-1"
                   onClick={() => handleDelete(item.id)}
                 >
