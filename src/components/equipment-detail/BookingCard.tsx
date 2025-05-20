@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -66,6 +65,17 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
   // Form validation check - need both dates
   const formIsValid = startDate && endDate;
 
+  // Format the availability status text
+  const getAvailabilityStatusText = () => {
+    if (equipment.availability.available) {
+      return "Available";
+    } else if (equipment.availability.nextAvailableDate) {
+      return `Unavailable until ${equipment.availability.nextAvailableDate}`;
+    } else {
+      return "Currently Unavailable";
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -78,7 +88,7 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
           </div>
         </div>
         <span className="text-sm bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 py-1 px-2 rounded">
-          {equipment.availability.available ? "Available" : "Unavailable until " + equipment.availability.nextAvailableDate}
+          {getAvailabilityStatusText()}
         </span>
       </div>
 
