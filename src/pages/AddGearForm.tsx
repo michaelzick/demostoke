@@ -35,7 +35,7 @@ const AddGearForm = () => {
   const [gearType, setGearType] = useState("");
   const [description, setDescription] = useState("");
   const [zipCode, setZipCode] = useState("");
-  const [measurementUnit, setMeasurementUnit] = useState("");
+  const [measurementUnit, setMeasurementUnit] = useState("inches"); // Default to inches
   const [dimensions, setDimensions] = useState({ length: "", width: "" });
   const [skillLevel, setSkillLevel] = useState("");
   const [images, setImages] = useState<File[]>([]);
@@ -58,7 +58,13 @@ const AddGearForm = () => {
         setZipCode(duplicatedGear.zipCode);
         setMeasurementUnit(duplicatedGear.measurementUnit);
         setDimensions(duplicatedGear.dimensions);
-        setSkillLevel(duplicatedGear.skillLevel);
+        
+        // Important: Set the gear type first, then set the skill level in a separate effect
+        // This ensures the skill level options are available when the skill level is set
+        setTimeout(() => {
+          setSkillLevel(duplicatedGear.skillLevel);
+        }, 100);
+        
         setPrice(duplicatedGear.price);
         setDamageDeposit(duplicatedGear.damageDeposit);
         

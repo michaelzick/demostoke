@@ -34,7 +34,7 @@ export const mockUserEquipment: UserEquipment[] = [
       size: "158cm",
       weight: "3.5kg",
       material: "Carbon Fiber",
-      suitable: "Intermediate to Advanced",
+      suitable: "Advanced",
     },
     availability: {
       available: true,
