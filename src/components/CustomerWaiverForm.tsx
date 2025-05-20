@@ -78,6 +78,11 @@ const CustomerWaiverForm = ({ equipment, onComplete }: CustomerWaiverFormProps) 
     onComplete();
   };
 
+  // Required field indicator component
+  const RequiredIndicator = () => (
+    <span className="text-[#ea384c] ml-1">*</span>
+  );
+
   return (
     <div className="space-y-6">
       <div>
@@ -95,7 +100,7 @@ const CustomerWaiverForm = ({ equipment, onComplete }: CustomerWaiverFormProps) 
               name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel>Full Name<RequiredIndicator /></FormLabel>
                   <FormControl>
                     <Input placeholder="John Doe" {...field} />
                   </FormControl>
@@ -109,7 +114,7 @@ const CustomerWaiverForm = ({ equipment, onComplete }: CustomerWaiverFormProps) 
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Email<RequiredIndicator /></FormLabel>
                   <FormControl>
                     <Input type="email" placeholder="your@email.com" {...field} />
                   </FormControl>
@@ -123,7 +128,7 @@ const CustomerWaiverForm = ({ equipment, onComplete }: CustomerWaiverFormProps) 
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
+                  <FormLabel>Phone Number<RequiredIndicator /></FormLabel>
                   <FormControl>
                     <Input placeholder="(555) 123-4567" {...field} />
                   </FormControl>
@@ -137,7 +142,7 @@ const CustomerWaiverForm = ({ equipment, onComplete }: CustomerWaiverFormProps) 
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel>Address<RequiredIndicator /></FormLabel>
                   <FormControl>
                     <Input placeholder="123 Main St, City, State" {...field} />
                   </FormControl>
@@ -151,7 +156,7 @@ const CustomerWaiverForm = ({ equipment, onComplete }: CustomerWaiverFormProps) 
               name="emergencyContact"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Emergency Contact</FormLabel>
+                  <FormLabel>Emergency Contact<RequiredIndicator /></FormLabel>
                   <FormControl>
                     <Input placeholder="Contact Name" {...field} />
                   </FormControl>
@@ -165,7 +170,7 @@ const CustomerWaiverForm = ({ equipment, onComplete }: CustomerWaiverFormProps) 
               name="emergencyPhone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Emergency Contact Phone</FormLabel>
+                  <FormLabel>Emergency Contact Phone<RequiredIndicator /></FormLabel>
                   <FormControl>
                     <Input placeholder="(555) 987-6543" {...field} />
                   </FormControl>
@@ -222,7 +227,7 @@ const CustomerWaiverForm = ({ equipment, onComplete }: CustomerWaiverFormProps) 
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel>
-                      I have read and accept the terms and conditions
+                      I have read and accept the terms and conditions<RequiredIndicator />
                     </FormLabel>
                     <FormMessage />
                   </div>

@@ -111,7 +111,7 @@ const SignatureField = ({
     <div className={cn("space-y-2", className)} {...props}>
       <div className="flex items-center justify-between">
         <label className="text-sm font-medium">
-          {label} {required && <span className="text-destructive">*</span>}
+          {label} {required && <span className="text-[#ea384c] ml-1">*</span>}
         </label>
         {hasSigned && (
           <button
