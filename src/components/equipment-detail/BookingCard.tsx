@@ -48,11 +48,6 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
   };
 
   const handleBooking = () => {
-    if (!waiverCompleted && onWaiverClick) {
-      onWaiverClick();
-      return;
-    }
-    
     if (!startDate || !endDate) {
       toast({
         title: "Please select dates",
@@ -67,6 +62,9 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
       description: "Your booking request has been sent to the owner for approval.",
     });
   };
+
+  // Form validation check - need both dates
+  const formIsValid = startDate && endDate;
 
   return (
     <div className="space-y-4">
@@ -156,11 +154,22 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
         </div>
       )}
 
+      {/* Waiver button */}
+      <Button 
+        onClick={onWaiverClick}
+        variant="outline"
+        className="w-full"
+      >
+        {waiverCompleted ? "View/Edit Waiver" : "Complete Liability Waiver"}
+      </Button>
+
+      {/* Book button - disabled until waiver is completed */}
       <Button 
         onClick={handleBooking} 
         className="w-full"
+        disabled={!waiverCompleted || !formIsValid}
       >
-        {!waiverCompleted ? "Complete Waiver & Book" : "Request Demo"}
+        Request Demo
       </Button>
 
       {!waiverCompleted && (

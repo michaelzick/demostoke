@@ -46,11 +46,13 @@ const EquipmentDetailPage = () => {
 
   // Scroll handler for Book Now button
   const handleBookNowClick = () => {
-    if (!waiverCompleted) {
-      setShowWaiver(true);
-    } else if (bookingCardRef.current) {
+    if (bookingCardRef.current) {
       bookingCardRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
     }
+  };
+
+  const handleOpenWaiver = () => {
+    setShowWaiver(true);
   };
 
   const handleWaiverComplete = () => {
@@ -84,7 +86,7 @@ const EquipmentDetailPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">Complete Waiver</h2>
+              <h2 className="text-2xl font-bold">{waiverCompleted ? "Edit" : "Complete"} Waiver</h2>
               <Button 
                 variant="outline" 
                 onClick={() => setShowWaiver(false)}
@@ -133,7 +135,7 @@ const EquipmentDetailPage = () => {
               onClick={handleBookNowClick}
               type="button"
             >
-              {waiverCompleted ? "Book Now" : "Complete Waiver & Book"}
+              Book Now
             </Button>
 
             <p className="text-lg mb-6">{equipment.description}</p>
@@ -168,7 +170,11 @@ const EquipmentDetailPage = () => {
         <div className="space-y-6">
           {/* Booking Card */}
           <Card className="p-6" ref={bookingCardRef}>
-            <BookingCard equipment={equipment} waiverCompleted={waiverCompleted} onWaiverClick={() => setShowWaiver(true)} />
+            <BookingCard 
+              equipment={equipment} 
+              waiverCompleted={waiverCompleted} 
+              onWaiverClick={handleOpenWaiver} 
+            />
           </Card>
 
           {/* Similar Equipment */}
