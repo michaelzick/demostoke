@@ -27,8 +27,8 @@ const formSchema = z.object({
   address: z.string().min(5, { message: "Address is required" }),
   emergencyContact: z.string().min(2, { message: "Emergency contact is required" }),
   emergencyPhone: z.string().min(10, { message: "Emergency contact phone is required" }),
-  acceptTerms: z.literal(true, {
-    errorMap: () => ({ message: "You must accept the terms" }),
+  acceptTerms: z.boolean().refine(val => val === true, {
+    message: "You must accept the terms"
   }),
   additionalNotes: z.string().optional(),
 });
