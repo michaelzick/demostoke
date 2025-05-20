@@ -68,7 +68,7 @@ const MyEquipmentPage = () => {
   return (
     <div className="container py-10">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">My Equipment</h1>
+        <h1 className="text-3xl font-bold">My Gear</h1>
         <Button onClick={() => navigate("/list-gear")}>Add New Equipment</Button>
       </div>
 
