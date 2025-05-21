@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -37,7 +38,7 @@ const HeroSection = () => {
             DemoStoke
           </h1>
           <h2 className="text-xl sm:text-3xl mb-8 max-w-2xl mx-auto">
-            Don't just get stoked. Demo it.
+            Ride The Future
           </h2>
           <div className="flex flex-wrap gap-4 justify-center mb-8">
             <Button size="lg" asChild className='bg-primary'>
