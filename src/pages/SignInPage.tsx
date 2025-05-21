@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/auth";
 import { MapPin } from "lucide-react";
+import ReCaptcha from "@/components/ReCaptcha";
 
 const SignInPage = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const SignInPage = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +32,7 @@ const SignInPage = () => {
     setIsLoading(true);
 
     try {
-      await login(email, password);
+      await login(email, password, recaptchaToken);
       setIsLoading(false);
       navigate("/");
     } catch (err: any) {
@@ -42,7 +44,7 @@ const SignInPage = () => {
 
   // We use local loading state to avoid button getting stuck
   // if the global loading state isn't properly reset
-  const buttonDisabled = isLoading;
+  const buttonDisabled = isLoading || !recaptchaToken;
   const buttonText = buttonDisabled ? "Signing in..." : "Sign In";
 
   return (
@@ -102,6 +104,11 @@ const SignInPage = () => {
               Remember me
             </Label>
           </div>
+          
+          <ReCaptcha 
+            siteKey="6LdntkMrAAAAAJrRin-eZNAv9SyUkQXayOAv3-Fp"
+            onVerify={setRecaptchaToken}
+          />
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <Button type="submit" className="w-full" disabled={buttonDisabled}>

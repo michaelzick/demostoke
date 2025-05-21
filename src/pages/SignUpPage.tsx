@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/auth";
 import { MapPin } from "lucide-react";
+import ReCaptcha from "@/components/ReCaptcha";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const SignUpPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  const [recaptchaToken, setRecaptchaToken] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,12 +37,14 @@ const SignUpPage = () => {
     }
 
     try {
-      await signup(name, email, password);
+      await signup(name, email, password, recaptchaToken);
       // We don't navigate here as the auth state change will trigger automatically
     } catch (err: any) {
       setError(err.message || "Failed to create account");
     }
   };
+
+  const buttonDisabled = isLoading || !recaptchaToken;
 
   return (
     <Card className="w-full max-w-md mx-auto shadow-lg dark:border-muted">
@@ -126,9 +130,14 @@ const SignUpPage = () => {
               </Link>
             </Label>
           </div>
+          
+          <ReCaptcha 
+            siteKey="6LdntkMrAAAAAJrRin-eZNAv9SyUkQXayOAv3-Fp" 
+            onVerify={setRecaptchaToken}
+          />
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="w-full" disabled={buttonDisabled}>
             {isLoading ? "Creating account..." : "Sign Up"}
           </Button>
           <div className="text-center text-sm dark:text-gray-400">

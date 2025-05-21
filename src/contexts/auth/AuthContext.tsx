@@ -81,10 +81,10 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
     }
   };
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string, recaptchaToken?: string) => {
     try {
       setIsLoading(true);
-      await AuthService.loginWithEmailPassword(email, password);
+      await AuthService.loginWithEmailPassword(email, password, recaptchaToken);
       
       toast({
         title: "Logged in successfully",
@@ -102,10 +102,10 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
     }
   };
 
-  const signup = async (name: string, email: string, password: string) => {
+  const signup = async (name: string, email: string, password: string, recaptchaToken?: string) => {
     try {
       setIsLoading(true);
-      await AuthService.signupWithEmailPassword(name, email, password);
+      await AuthService.signupWithEmailPassword(name, email, password, recaptchaToken);
 
       toast({
         title: "Account created",
