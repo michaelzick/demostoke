@@ -14,13 +14,17 @@ const HomePage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Get featured equipment (a mix of top-rated items from each category)
-  const featuredEquipment = mockEquipment
+  // Get top rated equipment for the "Hot & Fresh" section
+  const hotAndFreshEquipment = mockEquipment
     .sort((a, b) => parseFloat(b.rating.toString()) - parseFloat(a.rating.toString()))
+    .slice(0, 3);
+
+  // Get a mix of equipment for the "Featured Used Gear" section
+  const featuredUsedGear = mockEquipment
     .filter((item, index, self) =>
       index === self.findIndex(t => t.category === item.category) || index < 6
     )
-    .slice(0, 6);
+    .slice(3, 6);
 
   return (
     <div>
@@ -72,17 +76,34 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Featured Equipment Section */}
-      <section className="py-16 bg-muted/50">
+      {/* Hot & Fresh Section */}
+      <section className="py-12 bg-muted/50">
         <div className="container px-4 md:px-6">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold">Featured Gear</h2>
+            <h2 className="text-3xl font-bold">Hot & Fresh</h2>
             <Button variant="outline" asChild>
               <Link to="/explore">View All</Link>
             </Button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredEquipment.map((equipment) => (
+            {hotAndFreshEquipment.map((equipment) => (
+              <EquipmentCard key={equipment.id} equipment={equipment} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Used Gear Section */}
+      <section className="py-12 bg-white dark:bg-zinc-900">
+        <div className="container px-4 md:px-6">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold">Featured Used Gear</h2>
+            <Button variant="outline" asChild>
+              <Link to="/explore">View All</Link>
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredUsedGear.map((equipment) => (
               <EquipmentCard key={equipment.id} equipment={equipment} />
             ))}
           </div>
