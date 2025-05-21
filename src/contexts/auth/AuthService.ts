@@ -4,12 +4,12 @@ import { User } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
 
 export class AuthService {
-  static async loginWithEmailPassword(email: string, password: string, recaptchaToken?: string) {
+  static async loginWithEmailPassword(email: string, password: string, captchaToken?: string) {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
       options: {
-        captchaToken: recaptchaToken,
+        captchaToken: captchaToken,
       },
     });
 
@@ -17,7 +17,7 @@ export class AuthService {
     return data;
   }
 
-  static async signupWithEmailPassword(name: string, email: string, password: string, recaptchaToken?: string) {
+  static async signupWithEmailPassword(name: string, email: string, password: string, captchaToken?: string) {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -25,7 +25,7 @@ export class AuthService {
         data: {
           name,
         },
-        captchaToken: recaptchaToken,
+        captchaToken: captchaToken,
       },
     });
 

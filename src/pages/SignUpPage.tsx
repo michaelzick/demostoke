@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/auth";
 import { MapPin } from "lucide-react";
-import ReCaptchaV3 from "@/components/ReCaptcha";
+import HCaptcha from "@/components/HCaptcha";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ const SignUpPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const [recaptchaToken, setRecaptchaToken] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,14 +37,14 @@ const SignUpPage = () => {
     }
 
     try {
-      await signup(name, email, password, recaptchaToken);
+      await signup(name, email, password, captchaToken);
       // We don't navigate here as the auth state change will trigger automatically
     } catch (err: any) {
       setError(err.message || "Failed to create account");
     }
   };
 
-  const buttonDisabled = isLoading || !recaptchaToken;
+  const buttonDisabled = isLoading || !captchaToken;
 
   return (
     <Card className="w-full max-w-md mx-auto shadow-lg dark:border-muted">
@@ -131,10 +131,9 @@ const SignUpPage = () => {
             </Label>
           </div>
           
-          <ReCaptchaV3 
-            siteKey="6LdntkMrAAAAAJrRin-eZNAv9SyUkQXayOAv3-Fp"
-            action="signup"
-            onVerify={setRecaptchaToken}
+          <HCaptcha 
+            siteKey="e30661ca-467c-43cc-899c-be56ab28c2a2"
+            onVerify={setCaptchaToken}
           />
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">

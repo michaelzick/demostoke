@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/auth";
 import { MapPin } from "lucide-react";
-import ReCaptchaV3 from "@/components/ReCaptcha";
+import HCaptcha from "@/components/HCaptcha";
 
 const SignInPage = () => {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ const SignInPage = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [recaptchaToken, setRecaptchaToken] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +32,7 @@ const SignInPage = () => {
     setIsLoading(true);
 
     try {
-      await login(email, password, recaptchaToken);
+      await login(email, password, captchaToken);
       setIsLoading(false);
       navigate("/");
     } catch (err: any) {
@@ -44,7 +44,7 @@ const SignInPage = () => {
 
   // We use local loading state to avoid button getting stuck
   // if the global loading state isn't properly reset
-  const buttonDisabled = isLoading || !recaptchaToken;
+  const buttonDisabled = isLoading || !captchaToken;
   const buttonText = isLoading ? "Signing in..." : "Sign In";
 
   return (
@@ -105,10 +105,9 @@ const SignInPage = () => {
             </Label>
           </div>
           
-          <ReCaptchaV3 
-            siteKey="6LdntkMrAAAAAJrRin-eZNAv9SyUkQXayOAv3-Fp"
-            action="login"
-            onVerify={setRecaptchaToken}
+          <HCaptcha 
+            siteKey="e30661ca-467c-43cc-899c-be56ab28c2a2"
+            onVerify={setCaptchaToken}
           />
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
