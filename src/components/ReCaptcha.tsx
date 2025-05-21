@@ -19,6 +19,7 @@ const ReCaptchaV3 = ({ siteKey, action, onVerify }: ReCaptchaProps) => {
 
   // Load the reCAPTCHA script once
   useEffect(() => {
+    // Only load the script if it's not already loaded
     if (!document.querySelector('script[src*="recaptcha"]')) {
       // Define the callback function
       window.onloadRecaptchaCallback = () => {
@@ -32,6 +33,7 @@ const ReCaptchaV3 = ({ siteKey, action, onVerify }: ReCaptchaProps) => {
       script.defer = true;
       document.head.appendChild(script);
     } else if (window.grecaptcha && window.grecaptcha.execute) {
+      // If the script is already loaded, set loaded to true
       setLoaded(true);
     }
   }, [siteKey]);
