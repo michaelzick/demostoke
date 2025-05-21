@@ -17,8 +17,8 @@ interface ReservationsChartProps {
   data: {
     date: string;
     snowboarding: number;
-    skiing: number;
-    camping: number;
+    surfing: number;
+    skateboarding: number;
   }[];
 }
 
@@ -28,12 +28,12 @@ const ReservationsChart = ({ data }: ReservationsChartProps) => {
       label: "Snowboarding",
       color: "#3b82f6",
     },
-    skiing: {
-      label: "Skiing",
+    surfing: {
+      label: "Surfing",
       color: "#ef4444",
     },
-    camping: {
-      label: "Camping",
+    skateboarding: {
+      label: "Skateboarding",
       color: "#22c55e",
     },
   };
@@ -65,16 +65,16 @@ const ReservationsChart = ({ data }: ReservationsChartProps) => {
         />
         <Line 
           type="monotone" 
-          dataKey="skiing" 
-          name="skiing" 
+          dataKey="surfing" 
+          name="surfing" 
           stroke="#ef4444" 
           strokeWidth={2} 
           dot={{ r: 4 }}
         />
         <Line 
           type="monotone" 
-          dataKey="camping" 
-          name="camping" 
+          dataKey="skateboarding" 
+          name="skateboarding" 
           stroke="#22c55e" 
           strokeWidth={2} 
           dot={{ r: 4 }}

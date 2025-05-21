@@ -4,11 +4,11 @@ import { addDays, subDays, format } from "date-fns";
 export const generateViewsData = () => {
   return [
     { name: "Burton Custom X Snowboard", views: Math.floor(Math.random() * 200) + 100 },
-    { name: "K2 Broadcast Snowboard", views: Math.floor(Math.random() * 200) + 80 },
-    { name: "Rossignol Experience 88 Ti Skis", views: Math.floor(Math.random() * 200) + 120 },
-    { name: "Atomic Bent 100 Skis", views: Math.floor(Math.random() * 200) + 90 },
-    { name: "MSR Hubba Hubba NX Tent", views: Math.floor(Math.random() * 200) + 150 },
-    { name: "Coleman Sundome Tent", views: Math.floor(Math.random() * 200) + 70 },
+    { name: "Lib Tech T.Rice Pro Snowboard", views: Math.floor(Math.random() * 200) + 80 },
+    { name: "Jones Mountain Twin Snowboard", views: Math.floor(Math.random() * 200) + 120 },
+    { name: "Firewire Seaside Surfboard", views: Math.floor(Math.random() * 200) + 90 },
+    { name: "Channel Islands Happy Surfboard", views: Math.floor(Math.random() * 200) + 150 },
+    { name: "Santa Cruz Classic Dot Skateboard", views: Math.floor(Math.random() * 200) + 70 },
   ];
 };
 
@@ -21,8 +21,8 @@ export const generateReservationsData = (days: number) => {
     data.push({
       date: format(date, "MMM dd"),
       snowboarding: Math.floor(Math.random() * 10) + 1,
-      skiing: Math.floor(Math.random() * 8) + 1,
-      camping: Math.floor(Math.random() * 12) + 1
+      surfing: Math.floor(Math.random() * 8) + 1,
+      skateboarding: Math.floor(Math.random() * 12) + 1
     });
   }
   
@@ -38,8 +38,8 @@ export const generateRevenueData = (days: number) => {
     data.push({
       date: format(date, "MMM dd"),
       snowboarding: Math.floor(Math.random() * 1000) + 200,
-      skiing: Math.floor(Math.random() * 800) + 300,
-      camping: Math.floor(Math.random() * 1200) + 150
+      surfing: Math.floor(Math.random() * 800) + 300,
+      skateboarding: Math.floor(Math.random() * 1200) + 150
     });
   }
   

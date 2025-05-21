@@ -17,8 +17,8 @@ interface RevenueChartProps {
   data: {
     date: string;
     snowboarding: number;
-    skiing: number;
-    camping: number;
+    surfing: number;
+    skateboarding: number;
   }[];
 }
 
@@ -28,12 +28,12 @@ const RevenueChart = ({ data }: RevenueChartProps) => {
       label: "Snowboarding",
       color: "rgba(59, 130, 246, 0.6)",
     },
-    skiing: {
-      label: "Skiing",
+    surfing: {
+      label: "Surfing",
       color: "rgba(239, 68, 68, 0.6)",
     },
-    camping: {
-      label: "Camping",
+    skateboarding: {
+      label: "Skateboarding",
       color: "rgba(34, 197, 94, 0.6)",
     },
   };
@@ -68,16 +68,16 @@ const RevenueChart = ({ data }: RevenueChartProps) => {
         />
         <Area
           type="monotone"
-          dataKey="skiing"
-          name="skiing"
+          dataKey="surfing"
+          name="surfing"
           stackId="1"
           stroke="#ef4444"
           fill="rgba(239, 68, 68, 0.6)"
         />
         <Area
           type="monotone"
-          dataKey="camping"
-          name="camping"
+          dataKey="skateboarding"
+          name="skateboarding"
           stackId="1"
           stroke="#22c55e"
           fill="rgba(34, 197, 94, 0.6)"
