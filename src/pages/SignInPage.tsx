@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/auth";
 import { MapPin } from "lucide-react";
-import ReCaptcha from "@/components/ReCaptcha";
+import ReCaptchaV3 from "@/components/ReCaptcha";
 
 const SignInPage = () => {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ const SignInPage = () => {
   // We use local loading state to avoid button getting stuck
   // if the global loading state isn't properly reset
   const buttonDisabled = isLoading || !recaptchaToken;
-  const buttonText = buttonDisabled ? "Signing in..." : "Sign In";
+  const buttonText = isLoading ? "Signing in..." : "Sign In";
 
   return (
     <Card className="w-full max-w-md mx-auto shadow-lg dark:border-muted">
@@ -105,8 +105,9 @@ const SignInPage = () => {
             </Label>
           </div>
           
-          <ReCaptcha 
+          <ReCaptchaV3 
             siteKey="6LdntkMrAAAAAJrRin-eZNAv9SyUkQXayOAv3-Fp"
+            action="login"
             onVerify={setRecaptchaToken}
           />
         </CardContent>

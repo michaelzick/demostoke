@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/auth";
 import { MapPin } from "lucide-react";
-import ReCaptcha from "@/components/ReCaptcha";
+import ReCaptchaV3 from "@/components/ReCaptcha";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -131,8 +131,9 @@ const SignUpPage = () => {
             </Label>
           </div>
           
-          <ReCaptcha 
-            siteKey="6LdntkMrAAAAAJrRin-eZNAv9SyUkQXayOAv3-Fp" 
+          <ReCaptchaV3 
+            siteKey="6LdntkMrAAAAAJrRin-eZNAv9SyUkQXayOAv3-Fp"
+            action="signup"
             onVerify={setRecaptchaToken}
           />
         </CardContent>
