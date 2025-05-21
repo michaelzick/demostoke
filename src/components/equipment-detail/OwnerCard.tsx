@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -11,15 +10,11 @@ interface OwnerCardProps {
 }
 
 const OwnerCard = ({ owner }: OwnerCardProps) => {
-  // Use the male avatar with neck-length brown hair as the default
-  const defaultAvatarUrl = "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?auto=format&fit=crop&w=300&q=80";
-  const avatarUrl = owner.imageUrl || defaultAvatarUrl;
-  
   return (
     <div className="p-6">
       <div className="flex items-center gap-4 mb-4">
         <Avatar className="h-12 w-12 flex-shrink-0">
-          <AvatarImage src={avatarUrl} alt={owner.name} />
+          <AvatarImage src={owner.imageUrl} alt={owner.name} />
           <AvatarFallback>{owner.name.charAt(0)}</AvatarFallback>
         </Avatar>
         <div className="min-w-0">

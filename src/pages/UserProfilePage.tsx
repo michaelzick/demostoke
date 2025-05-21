@@ -36,8 +36,7 @@ const UserProfilePage = () => {
     if (user) {
       setName(user.name || "");
       setEmail(user.email || "");
-      // Use the user's image URL if available, otherwise use a default male image with neck-length brown hair
-      setProfileImage(user.imageUrl || "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?auto=format&fit=crop&w=300&q=80");
+      setProfileImage(user.imageUrl || null);
       setProfileLoaded(true);
     }
   }, [user, isAuthenticated, isLoading, navigate]);

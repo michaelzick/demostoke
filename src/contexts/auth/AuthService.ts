@@ -48,23 +48,23 @@ export class AuthService {
 
     if (error) {
       console.error("Profile fetch error:", error);
-      // If profile fetch fails, use the default male avatar with neck-length brown hair
+      // Even if profile fetch fails, we can still set basic user info from session
       return {
         id: session.user.id,
         name: session.user.user_metadata?.name || 'User',
         email: session.user.email || '',
-        imageUrl: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?auto=format&fit=crop&w=300&q=80"
+        imageUrl: null
       };
     }
 
     console.log("Profile data fetched:", data);
 
-    // Return user data with default avatar if none is set
+    // Return user data
     return {
       id: session.user.id,
       name: data.name || session.user.user_metadata?.name || 'User',
       email: session.user.email || '',
-      imageUrl: data.avatar_url || "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?auto=format&fit=crop&w=300&q=80"
+      imageUrl: data.avatar_url
     };
   }
 }

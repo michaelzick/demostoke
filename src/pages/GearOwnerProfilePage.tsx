@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -32,10 +31,6 @@ const GearOwnerProfilePage = () => {
 
   const personalityBadgeColor = getPersonalityColor(owner.personality);
 
-  // Update the default avatar if needed
-  const defaultAvatarUrl = "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?auto=format&fit=crop&w=300&q=80";
-  const avatarUrl = owner.imageUrl || defaultAvatarUrl;
-
   return (
     <div className="container px-4 md:px-6 py-8 max-w-5xl mx-auto">
       <div className="flex flex-col md:flex-row items-start gap-6 mb-8">
@@ -46,7 +41,7 @@ const GearOwnerProfilePage = () => {
               {/* Adjusted positioning with absolute positioning and z-index */}
               <div className="relative h-12 z-10">
                 <Avatar className="h-24 w-24 border-4 border-white absolute -mt-12">
-                  <AvatarImage src={avatarUrl} alt={owner.name} />
+                  <AvatarImage src={owner.imageUrl} alt={owner.name} />
                   <AvatarFallback>{owner.name.charAt(0)}</AvatarFallback>
                 </Avatar>
               </div>
