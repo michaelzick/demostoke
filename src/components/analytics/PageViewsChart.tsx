@@ -29,8 +29,8 @@ const PageViewsChart = ({ data }: PageViewsChartProps) => {
   };
 
   return (
-    <ChartContainer className="aspect-[4/3] sm:aspect-video p-2 h-80" config={config}>
-      <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 50 }}>
+    <ChartContainer className="w-full aspect-[4/3] sm:aspect-video p-2 h-80" config={config}>
+      <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 50 }} width={500} height={300}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis 
           dataKey="name" 

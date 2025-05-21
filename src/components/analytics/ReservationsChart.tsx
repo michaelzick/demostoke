@@ -39,8 +39,8 @@ const ReservationsChart = ({ data }: ReservationsChartProps) => {
   };
 
   return (
-    <ChartContainer className="aspect-[4/3] sm:aspect-video p-1 sm:p-2 h-60 sm:h-80" config={config}>
-      <LineChart data={data} margin={{ top: 20, right: 10, left: 0, bottom: 30 }}>
+    <ChartContainer className="w-full aspect-[4/3] sm:aspect-video p-1 sm:p-2 h-60 sm:h-80" config={config}>
+      <LineChart data={data} margin={{ top: 20, right: 10, left: 0, bottom: 30 }} width={500} height={300}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis 
           dataKey="date" 
