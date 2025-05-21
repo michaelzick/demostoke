@@ -22,6 +22,7 @@ import UserProfilePage from "@/pages/UserProfilePage";
 import SearchResultsPage from "@/pages/SearchResultsPage";
 import MyEquipmentPage from "@/pages/MyEquipmentPage";
 import BookingsPage from "@/pages/BookingsPage";
+import AnalyticsPage from "@/pages/AnalyticsPage";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => (
                 <Route path="edit-gear/:id" element={<EditGearForm />} />
                 <Route path="profile" element={<UserProfilePage />} />
                 <Route path="my-gear" element={<MyEquipmentPage />} />
+                <Route path="analytics" element={<AnalyticsPage />} />
                 <Route path="bookings" element={<BookingsPage />} />
               </Route>
               <Route path="/auth" element={<AuthLayout />}>
