@@ -46,10 +46,8 @@ export const generateRevenueData = (days: number) => {
   return data;
 };
 
-export const getAnalyticsData = (dateRange: { from: Date, to: Date } | undefined) => {
-  const days = dateRange 
-    ? Math.round((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24))
-    : 30;
+export const getAnalyticsData = (dateRange: { from: Date; to: Date }) => {
+  const days = Math.round((dateRange.to.getTime() - dateRange.from.getTime()) / (1000 * 60 * 60 * 24));
   
   return {
     viewsData: generateViewsData(),

@@ -27,8 +27,12 @@ const AnalyticsPage = () => {
   });
 
   useEffect(() => {
-    if (dateRange && dateRange.from && dateRange.to) {
-      setAnalyticsData(getAnalyticsData(dateRange));
+    if (dateRange?.from && dateRange?.to) {
+      // Only call getAnalyticsData when both from and to dates are available
+      setAnalyticsData(getAnalyticsData({
+        from: dateRange.from,
+        to: dateRange.to
+      }));
     }
   }, [dateRange]);
 
