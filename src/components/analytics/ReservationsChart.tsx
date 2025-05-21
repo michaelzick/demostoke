@@ -39,17 +39,21 @@ const ReservationsChart = ({ data }: ReservationsChartProps) => {
   };
 
   return (
-    <ChartContainer className="aspect-[4/3] sm:aspect-video p-2 h-80" config={config}>
-      <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 50 }}>
+    <ChartContainer className="aspect-[4/3] sm:aspect-video p-1 sm:p-2 h-60 sm:h-80" config={config}>
+      <LineChart data={data} margin={{ top: 20, right: 10, left: 0, bottom: 30 }}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis 
           dataKey="date" 
           angle={-45} 
           textAnchor="end" 
           height={70}
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 10 }}
+          tickMargin={10}
         />
-        <YAxis tick={{ fontSize: 12 }} />
+        <YAxis 
+          tick={{ fontSize: 10 }} 
+          width={30}
+        />
         <ChartTooltip 
           content={
             <ChartTooltipContent indicator="dot" />
@@ -61,7 +65,7 @@ const ReservationsChart = ({ data }: ReservationsChartProps) => {
           name="snowboarding" 
           stroke="#3b82f6" 
           strokeWidth={2} 
-          dot={{ r: 4 }}
+          dot={{ r: 3 }}
         />
         <Line 
           type="monotone" 
@@ -69,7 +73,7 @@ const ReservationsChart = ({ data }: ReservationsChartProps) => {
           name="surfing" 
           stroke="#ef4444" 
           strokeWidth={2} 
-          dot={{ r: 4 }}
+          dot={{ r: 3 }}
         />
         <Line 
           type="monotone" 
@@ -77,7 +81,7 @@ const ReservationsChart = ({ data }: ReservationsChartProps) => {
           name="skateboarding" 
           stroke="#22c55e" 
           strokeWidth={2} 
-          dot={{ r: 4 }}
+          dot={{ r: 3 }}
         />
       </LineChart>
     </ChartContainer>

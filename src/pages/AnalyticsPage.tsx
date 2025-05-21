@@ -37,43 +37,90 @@ const AnalyticsPage = () => {
   }, [dateRange]);
 
   return (
-    <div className="container py-8 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Gear Analytics</h1>
-        <p className="text-muted-foreground">
+    <div className="container py-4 md:py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className="mb-4 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold mb-1 md:mb-2">Gear Analytics</h1>
+        <p className="text-sm md:text-base text-muted-foreground">
           View performance metrics for your gear listings
         </p>
       </div>
 
       <DateRangeSelector dateRange={dateRange} onDateRangeChange={setDateRange} />
 
-      <div className="grid gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Page Views by Gear</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <PageViewsChart data={analyticsData.viewsData} />
-          </CardContent>
-        </Card>
+      <div className="grid gap-4 md:gap-6">
+        {/* For mobile, show tabs to switch between charts */}
+        <div className="md:hidden">
+          <Tabs defaultValue="views" className="w-full">
+            <TabsList className="w-full mb-2">
+              <TabsTrigger value="views" className="flex-1">Views</TabsTrigger>
+              <TabsTrigger value="reservations" className="flex-1">Reservations</TabsTrigger>
+              <TabsTrigger value="revenue" className="flex-1">Revenue</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="views">
+              <Card>
+                <CardHeader className="py-2">
+                  <CardTitle className="text-base">Page Views by Gear</CardTitle>
+                </CardHeader>
+                <CardContent className="p-2">
+                  <PageViewsChart data={analyticsData.viewsData} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="reservations">
+              <Card>
+                <CardHeader className="py-2">
+                  <CardTitle className="text-base">Gear Reservations Over Time</CardTitle>
+                </CardHeader>
+                <CardContent className="p-2">
+                  <ReservationsChart data={analyticsData.reservationsData} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="revenue">
+              <Card>
+                <CardHeader className="py-2">
+                  <CardTitle className="text-base">Revenue by Category</CardTitle>
+                </CardHeader>
+                <CardContent className="p-2">
+                  <RevenueChart data={analyticsData.revenueData} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Gear Reservations Over Time</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ReservationsChart data={analyticsData.reservationsData} />
-          </CardContent>
-        </Card>
+        {/* Desktop view - show all cards stacked */}
+        <div className="hidden md:grid gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Page Views by Gear</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PageViewsChart data={analyticsData.viewsData} />
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Revenue by Category</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RevenueChart data={analyticsData.revenueData} />
-          </CardContent>
-        </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Gear Reservations Over Time</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ReservationsChart data={analyticsData.reservationsData} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Revenue by Category</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <RevenueChart data={analyticsData.revenueData} />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

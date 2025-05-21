@@ -69,6 +69,13 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
                 My Gear
               </Link>
               <Link
+                to="/analytics"
+                className="block py-2 text-lg font-medium cursor-pointer"
+                onClick={onClose}
+              >
+                Analytics
+              </Link>
+              <Link
                 to="/bookings"
                 className="block py-2 text-lg font-medium cursor-pointer"
                 onClick={onClose}

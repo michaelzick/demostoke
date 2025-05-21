@@ -39,19 +39,21 @@ const RevenueChart = ({ data }: RevenueChartProps) => {
   };
 
   return (
-    <ChartContainer className="aspect-[4/3] sm:aspect-video p-2 h-80" config={config}>
-      <AreaChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 50 }}>
+    <ChartContainer className="aspect-[4/3] sm:aspect-video p-1 sm:p-2 h-60 sm:h-80" config={config}>
+      <AreaChart data={data} margin={{ top: 20, right: 10, left: 0, bottom: 30 }}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis 
           dataKey="date" 
           angle={-45} 
           textAnchor="end" 
           height={70}
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 10 }}
+          tickMargin={10}
         />
         <YAxis 
-          tick={{ fontSize: 12 }}
+          tick={{ fontSize: 10 }}
           tickFormatter={(value) => `$${value}`}
+          width={45}
         />
         <ChartTooltip 
           content={
