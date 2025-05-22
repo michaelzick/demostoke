@@ -64,7 +64,7 @@ const AboutPage = () => {
       <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-2">Michael Zick</h2>
         <p className="mb-4">
-          Michael is a passionate outdoor enthusiast with a background in product management and software development. He has a deep love for snowboarding, surfing, and skateboarding, which inspired him to create DemoStoke.
+          Michael is an avid outdoor enthusiast with a background in product management and software development. He has a deep love for snowboarding, surfing, and skateboarding, which inspired him to create DemoStoke.
         </p>
         <p>
           With years of experience in the tech industry, Michael recognized the need for a platform that connects riders with local gear owners, store managers, and surfboard shapers, and significantly reduce the friction in the demo market.
