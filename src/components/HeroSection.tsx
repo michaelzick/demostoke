@@ -38,7 +38,7 @@ const HeroSection = () => {
             DemoStoke
           </h1>
           <h2 className="text-xl sm:text-3xl mb-8 max-w-2xl mx-auto">
-            Ride The Future
+            Ride what makes you feel alive.
           </h2>
           <div className="flex flex-wrap gap-4 justify-center mb-8">
             <Button size="lg" asChild className='bg-primary'>
