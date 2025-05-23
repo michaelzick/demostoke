@@ -7,11 +7,11 @@ import { Snowflake, Mountains, Waves, Fish, Tire } from "@phosphor-icons/react";
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const backgrounds = [
-    { type: 'video', url: 'https://www.dropbox.com/scl/fi/znvzshm1g7gwytbygnvsn/Surfers.mp4?rlkey=r3kw9ko4dm15mha24ip82ois7&st=g08p2e11&dl&raw=1' },
-    { type: 'video', url: 'https://www.dropbox.com/scl/fi/2z56g1a3wpvi7zl46on79/Snowboarder.mp4?rlkey=xi0b1w4v9j0gwdpc5y6mgxzwv&st=d4f16c2k&raw=1' },
-    { type: 'video', url: 'https://www.dropbox.com/scl/fi/l3cqbblgh8evbkmnjpi5q/Skier.mp4?rlkey=cmwlcovje2nh4rh11z1nmegbl&st=pnkaurog&raw=1' },
-    { type: 'video', url: "https://www.dropbox.com/scl/fi/31247kpb1rm8eajxcvc2c/Skater.mp4?rlkey=thzgifp8h6m8w65ujexrtegmh&st=6lgbs5o2&dl&raw=1" },
-    { type: 'video', url: 'https://www.dropbox.com/scl/fi/a6m98u09ylz1y9cenu5o0/SUP.mp4?rlkey=3a134qh2ah5ouvw3z6r5jp018&st=qrsyvz2p&dl&raw=1' },
+    { type: 'video', url: 'https://www.dropbox.com/scl/fi/6nz8yzousah3z2ath8g2p/surfers_compressed.mp4?rlkey=oauykp2n7vcv3sz8kjxeql746&dl&raw=1' },
+    { type: 'video', url: 'https://www.dropbox.com/scl/fi/zahmykwzc5wa8xqxabgxp/snowboarder_compressed.mp4?rlkey=7mo4nuyfft3d7vkub91ty17tf&dl&raw=1' },
+    { type: 'video', url: 'https://www.dropbox.com/scl/fi/2t2o7cmfzs8h031ofpsoi/skier_compressed.mp4?rlkey=pt6f95g3pxpg8mzvobh3rvr09&dl&raw=1' },
+    { type: 'video', url: "https://www.dropbox.com/scl/fi/e11d3675oj4ikoj4uszy1/skater_compressed.mp4?rlkey=l86qiwxrexs2e95uyhee3dfof&dl&raw=1" },
+    { type: 'video', url: 'https://www.dropbox.com/scl/fi/wzfibbrrusahu8l6sfzxs/sup_compressed.mp4?rlkey=zo04qdicsgcqp54yznxdgjj3m&dl&raw=1' },
   ];
 
   useEffect(() => {
