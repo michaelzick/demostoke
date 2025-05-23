@@ -39,9 +39,9 @@ const HowItWorksSection = () => {
             <div className="bg-ocean-light p-4 rounded-full mb-4">
               <Waves className="h-8 w-8 how-it-works-icon" weight="fill" />
             </div>
-            <h3 className="text-xl font-medium mb-2">Enjoy & Review</h3>
+            <h3 className="text-xl font-medium mb-2">Buy What You Ride</h3>
             <p className="text-muted-foreground">
-              Have a great experience and leave feedback for the next rider.
+              If you love the gear, purchase it directly from the owner or shop. If not, try something else!
             </p>
           </div>
         </div>
