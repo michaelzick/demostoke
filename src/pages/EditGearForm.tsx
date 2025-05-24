@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -54,11 +53,23 @@ const EditGearForm = () => {
     return { length: "", width: "" };
   };
 
+  // Map category to gear type that matches skillLevels keys
+  const mapCategoryToGearType = (category: string) => {
+    const categoryMap: { [key: string]: string } = {
+      "snowboards": "snowboard",
+      "skis": "skis",
+      "surfboards": "surfboard",
+      "sups": "sup",
+      "skateboards": "skateboard"
+    };
+    return categoryMap[category.toLowerCase()] || category.slice(0, -1);
+  };
+
   // Update state when equipment data is loaded
   useEffect(() => {
     if (equipment) {
       setGearName(equipment.name);
-      setGearType(equipment.category.slice(0, -1)); // Remove 's' from category
+      setGearType(mapCategoryToGearType(equipment.category));
       setDescription(equipment.description || "");
       setZipCode(equipment.location_name || "");
       setDimensions(parseSize(equipment.size || ""));
