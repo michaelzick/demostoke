@@ -5,6 +5,17 @@ import { Snowflake, Waves, Tire } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
 import { useUserEquipment, useDeleteEquipment } from "@/hooks/useUserEquipment";
@@ -204,15 +215,35 @@ const MyEquipmentPage = () => {
                   <Copy className="h-4 w-4 mr-2" />
                   Duplicate
                 </Button>
-                <Button
-                  variant="destructive"
-                  className="flex-1"
-                  onClick={() => handleDelete(item.id)}
-                  disabled={deleteEquipmentMutation.isPending}
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="destructive"
+                      className="flex-1"
+                      disabled={deleteEquipmentMutation.isPending}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Equipment</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to delete "{item.name}"? This action cannot be undone and will permanently remove this equipment from your listings.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleDelete(item.id)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </CardFooter>
             </Card>
           ))}
