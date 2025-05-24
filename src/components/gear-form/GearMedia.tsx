@@ -11,7 +11,7 @@ const GearMedia = ({ handleImageUpload, currentImageUrl }: GearMediaProps) => {
   return (
     <div>
       <Label htmlFor="images" className="block text-lg font-medium mb-2">
-        Update Images
+        Gear Images
       </Label>
       {currentImageUrl && (
         <div className="mb-2">
@@ -23,10 +23,13 @@ const GearMedia = ({ handleImageUpload, currentImageUrl }: GearMediaProps) => {
       <Input
         id="images"
         type="file"
-        multiple
         accept="image/*"
         onChange={handleImageUpload}
+        className="mb-2"
       />
+      <p className="text-sm text-muted-foreground">
+        Upload a high-quality image of your gear. Supported formats: JPEG, PNG, WebP, GIF (max 5MB)
+      </p>
     </div>
   );
 };

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadGearImage } from "@/utils/imageUpload";
 
 // Import form section components
 import FormHeader from "@/components/gear-form/FormHeader";
@@ -160,6 +161,30 @@ const AddGearForm = () => {
     setIsSubmitting(true);
 
     try {
+      let imageUrl = 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop'; // Default placeholder
+
+      // Upload image if one was selected
+      if (images.length > 0) {
+        console.log('Uploading image:', images[0].name);
+        toast({
+          title: "Uploading Image",
+          description: "Please wait while we upload your gear image...",
+        });
+        
+        try {
+          imageUrl = await uploadGearImage(images[0], user.id);
+          console.log('Image uploaded successfully:', imageUrl);
+        } catch (uploadError: any) {
+          console.error('Image upload failed:', uploadError);
+          toast({
+            title: "Image Upload Failed",
+            description: uploadError.message || "Failed to upload image. Using placeholder instead.",
+            variant: "destructive",
+          });
+          // Continue with placeholder image if upload fails
+        }
+      }
+
       // Prepare the data for database insertion
       const equipmentData = {
         user_id: user.id,
@@ -171,7 +196,7 @@ const AddGearForm = () => {
         suitable_skill_level: skillLevel,
         price_per_day: parseFloat(pricingOptions[0].price),
         status: 'available' as const,
-        image_url: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop', // Default placeholder image
+        image_url: imageUrl,
         rating: 0,
         review_count: 0,
         location_lat: null,
