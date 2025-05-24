@@ -16,7 +16,7 @@ const UserProfilePage = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -25,13 +25,13 @@ const UserProfilePage = () => {
 
   useEffect(() => {
     console.log("Profile page effect - auth status:", { isAuthenticated, isLoading, userId: user?.id });
-    
+
     // If auth check is complete and user is not authenticated, redirect to sign in
     if (!isLoading && !isAuthenticated) {
       navigate("/auth/signin");
       return;
     }
-    
+
     // When user data becomes available, populate the form
     if (user) {
       setName(user.name || "");
@@ -43,11 +43,11 @@ const UserProfilePage = () => {
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user) return;
-    
+
     setIsUpdating(true);
-    
+
     try {
       const { error } = await supabase
         .from('profiles')
@@ -55,9 +55,9 @@ const UserProfilePage = () => {
           name: name,
         })
         .eq('id', user.id);
-      
+
       if (error) throw error;
-      
+
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully.",
@@ -115,9 +115,9 @@ const UserProfilePage = () => {
             <div className="flex flex-col items-center sm:flex-row sm:items-start gap-6">
               <div className="relative">
                 {profileImage ? (
-                  <img 
-                    src={profileImage} 
-                    alt="Profile" 
+                  <img
+                    src={profileImage}
+                    alt="Profile"
                     className="h-24 w-24 rounded-full object-cover"
                   />
                 ) : (
@@ -140,18 +140,18 @@ const UserProfilePage = () => {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Name</Label>
-                <Input 
-                  id="name" 
-                  value={name} 
+                <Input
+                  id="name"
+                  value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input 
-                  id="email" 
-                  value={email} 
+                <Input
+                  id="email"
+                  value={email}
                   disabled
                   className="bg-muted"
                 />
