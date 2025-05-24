@@ -1,19 +1,21 @@
 
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Edit, Trash2, Copy } from "lucide-react";
 import { Snowflake, Waves, Tire } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { mockUserEquipment, UserEquipment } from "@/lib/userEquipment";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
+import { useUserEquipment, useDeleteEquipment } from "@/hooks/useUserEquipment";
+import { UserEquipment } from "@/types/equipment";
 
 const MyEquipmentPage = () => {
-  const [userEquipment, setUserEquipment] = useState<UserEquipment[]>(mockUserEquipment);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+  const { data: userEquipment = [], isLoading, error } = useUserEquipment();
+  const deleteEquipmentMutation = useDeleteEquipment();
 
   // Function to get the appropriate icon based on equipment category
   const getEquipmentIcon = (category: string) => {
@@ -30,10 +32,20 @@ const MyEquipmentPage = () => {
   };
 
   const handleDelete = (id: string) => {
-    setUserEquipment(userEquipment.filter(item => item.id !== id));
-    toast({
-      title: "Equipment Deleted",
-      description: "The equipment has been removed from your listings.",
+    deleteEquipmentMutation.mutate(id, {
+      onSuccess: () => {
+        toast({
+          title: "Equipment Deleted",
+          description: "The equipment has been removed from your listings.",
+        });
+      },
+      onError: (error: any) => {
+        toast({
+          title: "Error",
+          description: error.message || "Failed to delete equipment",
+          variant: "destructive",
+        });
+      },
     });
   };
 
@@ -47,15 +59,15 @@ const MyEquipmentPage = () => {
       gearName: item.name,
       gearType: item.category.slice(0, -1), // Remove the 's' at the end (snowboards -> snowboard)
       description: item.description,
-      zipCode: item.location.name,
-      // Extract dimensions from specifications.size if possible
+      zipCode: item.location_name,
+      // Extract dimensions from size if possible
       measurementUnit: "inches", // Default to inches
       dimensions: {
-        length: item.specifications.size.split('x')[0]?.trim() || "",
-        width: item.specifications.size.split('x')[1]?.trim() || "",
+        length: item.size.split('x')[0]?.trim() || "",
+        width: item.size.split('x')[1]?.trim() || "",
       },
-      skillLevel: item.specifications.suitable,
-      price: item.pricePerDay.toString(),
+      skillLevel: item.suitable_skill_level,
+      price: item.price_per_day.toString(),
       damageDeposit: "50", // Default value
     }));
 
@@ -74,6 +86,51 @@ const MyEquipmentPage = () => {
       navigate("/auth/signin");
     }
   };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  if (isLoading) {
+    return (
+      <div className="container py-10">
+        <div className="flex justify-between items-center mb-8">
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="h-10 w-32" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Card key={i}>
+              <Skeleton className="h-48 w-full" />
+              <CardHeader>
+                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-2/3" />
+              </CardContent>
+              <CardFooter>
+                <Skeleton className="h-10 w-full" />
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container py-10">
+        <div className="text-center py-20">
+          <h2 className="text-xl font-medium mb-2">Error loading your gear</h2>
+          <p className="text-muted-foreground mb-6">There was a problem loading your equipment. Please try again.</p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-10">
@@ -94,7 +151,7 @@ const MyEquipmentPage = () => {
             <Card key={item.id} className="overflow-hidden">
               <div className="relative h-48">
                 <img
-                  src={item.imageUrl}
+                  src={item.image_url}
                   alt={item.name}
                   className="w-full h-full object-cover"
                 />
@@ -110,7 +167,7 @@ const MyEquipmentPage = () => {
               <CardHeader>
                 <CardTitle className="line-clamp-1">{item.name}</CardTitle>
                 <CardDescription className="flex justify-between">
-                  <span>${item.pricePerDay}/day</span>
+                  <span>${item.price_per_day}/day</span>
                   <span className="badge bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 px-2 py-0.5 rounded text-xs">
                     {item.status.toUpperCase()}
                   </span>
@@ -120,13 +177,13 @@ const MyEquipmentPage = () => {
                 <p className="text-muted-foreground line-clamp-2">{item.description}</p>
                 <div className="mt-4">
                   <div className="text-sm">
-                    <span className="font-medium">Location:</span> {item.location.name}
+                    <span className="font-medium">Location:</span> {item.location_name}
                   </div>
                   <div className="text-sm">
-                    <span className="font-medium">Added:</span> {item.addedDate}
+                    <span className="font-medium">Added:</span> {formatDate(item.created_at)}
                   </div>
                   <div className="text-sm">
-                    <span className="font-medium">Skill Level:</span> {item.specifications.suitable}
+                    <span className="font-medium">Skill Level:</span> {item.suitable_skill_level}
                   </div>
                 </div>
               </CardContent>
@@ -151,6 +208,7 @@ const MyEquipmentPage = () => {
                   variant="destructive"
                   className="flex-1"
                   onClick={() => handleDelete(item.id)}
+                  disabled={deleteEquipmentMutation.isPending}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete
