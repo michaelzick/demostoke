@@ -15,7 +15,6 @@ export const useEditGearFormState = () => {
     { id: "1", price: "", duration: "day" }
   ]);
   const [damageDeposit, setDamageDeposit] = useState("100");
-  const [role, setRole] = useState("private-party");
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -44,8 +43,6 @@ export const useEditGearFormState = () => {
     setPricingOptions,
     damageDeposit,
     setDamageDeposit,
-    role,
-    setRole,
     handleImageUpload,
   };
 };

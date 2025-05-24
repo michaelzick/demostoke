@@ -59,8 +59,6 @@ const EditGearForm = () => {
           setGearType={formState.setGearType}
           description={formState.description}
           setDescription={formState.setDescription}
-          role={formState.role}
-          setRole={formState.setRole}
           zipCode={formState.zipCode}
           setZipCode={formState.setZipCode}
         />

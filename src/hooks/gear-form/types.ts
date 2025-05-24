@@ -41,6 +41,4 @@ export interface FormState {
   setPricingOptions: (value: PricingOption[]) => void;
   damageDeposit: string;
   setDamageDeposit: (value: string) => void;
-  role: string;
-  setRole: (value: string) => void;
 }

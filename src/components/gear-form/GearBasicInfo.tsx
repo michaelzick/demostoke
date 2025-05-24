@@ -17,8 +17,6 @@ interface GearBasicInfoProps {
   setGearType: (value: string) => void;
   description: string;
   setDescription: (value: string) => void;
-  role: string;
-  setRole: (value: string) => void;
   zipCode: string;
   setZipCode: (value: string) => void;
 }
@@ -30,8 +28,6 @@ const GearBasicInfo = ({
   setGearType,
   description,
   setDescription,
-  role,
-  setRole,
   zipCode,
   setZipCode
 }: GearBasicInfoProps) => {
@@ -49,24 +45,6 @@ const GearBasicInfo = ({
           onChange={(e) => setGearName(e.target.value)}
           required
         />
-      </div>
-      
-      {/* Your Role */}
-      <div>
-        <Label htmlFor="role" className="block text-lg font-medium mb-2">
-          Your Role <span className="text-red-500">*</span>
-        </Label>
-        <Select value={role} onValueChange={(value) => setRole(value)} required>
-          <SelectTrigger id="role">
-            <SelectValue placeholder="Select Your Role" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="private-party">Private Party</SelectItem>
-            <SelectItem value="builder">Builder (Surfboard Shaper, Etc.)</SelectItem>
-            <SelectItem value="retail-store">Retail Store</SelectItem>
-            <SelectItem value="retail-website">Retail Website</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       {/* Gear Type */}

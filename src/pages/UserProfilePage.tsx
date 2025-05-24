@@ -11,6 +11,13 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
 import { User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const UserProfilePage = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -19,6 +26,7 @@ const UserProfilePage = () => {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
@@ -36,6 +44,7 @@ const UserProfilePage = () => {
     if (user) {
       setName(user.name || "");
       setEmail(user.email || "");
+      setRole(user.role || "private-party");
       setProfileImage(user.imageUrl || null);
       setProfileLoaded(true);
     }
@@ -53,6 +62,7 @@ const UserProfilePage = () => {
         .from('profiles')
         .update({
           name: name,
+          role: role,
         })
         .eq('id', user.id);
 
@@ -157,6 +167,24 @@ const UserProfilePage = () => {
                 />
                 <p className="text-xs text-muted-foreground">
                   Email cannot be changed. Contact support for assistance.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="role">Your Role</Label>
+                <Select value={role} onValueChange={(value) => setRole(value)}>
+                  <SelectTrigger id="role">
+                    <SelectValue placeholder="Select Your Role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="private-party">Private Party</SelectItem>
+                    <SelectItem value="builder">Builder (Surfboard Shaper, Etc.)</SelectItem>
+                    <SelectItem value="retail-store">Retail Store</SelectItem>
+                    <SelectItem value="retail-website">Retail Website</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  This role will be used for all gear you list on the platform.
                 </p>
               </div>
             </div>

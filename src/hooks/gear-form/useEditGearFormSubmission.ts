@@ -20,7 +20,6 @@ interface UseEditGearFormSubmissionProps {
   images: File[];
   pricingOptions: PricingOption[];
   damageDeposit: string;
-  role: string;
 }
 
 export const useEditGearFormSubmission = ({
@@ -35,7 +34,6 @@ export const useEditGearFormSubmission = ({
   images,
   pricingOptions,
   damageDeposit,
-  role,
 }: UseEditGearFormSubmissionProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -66,7 +64,7 @@ export const useEditGearFormSubmission = ({
       return;
     }
 
-    // Use the validation hook to validate the form
+    // Use the validation hook to validate the form (role is now stored in user profile)
     const formData = {
       gearName,
       gearType,
@@ -75,7 +73,7 @@ export const useEditGearFormSubmission = ({
       measurementUnit,
       dimensions,
       skillLevel,
-      role,
+      role: user.role || "private-party", // Get role from user profile
       damageDeposit,
       pricingOptions,
     };

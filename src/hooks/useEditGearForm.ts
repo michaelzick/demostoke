@@ -39,7 +39,6 @@ export const useEditGearForm = () => {
     images: formState.images,
     pricingOptions: formState.pricingOptions,
     damageDeposit: formState.damageDeposit,
-    role: formState.role,
   });
 
   return {
