@@ -56,7 +56,7 @@ const GearBasicInfo = ({
         <Label htmlFor="role" className="block text-lg font-medium mb-2">
           Your Role <span className="text-red-500">*</span>
         </Label>
-        <Select value={role} onValueChange={(value) => setRole(value)}>
+        <Select value={role} onValueChange={(value) => setRole(value)} required>
           <SelectTrigger id="role">
             <SelectValue placeholder="Select Your Role" />
           </SelectTrigger>
@@ -74,7 +74,7 @@ const GearBasicInfo = ({
         <Label htmlFor="gearType" className="block text-lg font-medium mb-2">
           Gear Type <span className="text-red-500">*</span>
         </Label>
-        <Select value={gearType} onValueChange={(value) => setGearType(value)}>
+        <Select value={gearType} onValueChange={(value) => setGearType(value)} required>
           <SelectTrigger id="gearType">
             <SelectValue placeholder="Select Gear Type" />
           </SelectTrigger>

@@ -46,7 +46,7 @@ const GearSpecifications = ({
         <Label htmlFor="measurementUnit" className="block text-lg font-medium mb-2">
           Measurement Unit <span className="text-red-500">*</span>
         </Label>
-        <Select value={measurementUnit} onValueChange={(value) => setMeasurementUnit(value)}>
+        <Select value={measurementUnit} onValueChange={(value) => setMeasurementUnit(value)} required>
           <SelectTrigger id="measurementUnit">
             <SelectValue placeholder="Select Measurement Unit" />
           </SelectTrigger>
@@ -98,6 +98,7 @@ const GearSpecifications = ({
           value={skillLevel}
           onValueChange={(value) => setSkillLevel(value)}
           disabled={!gearType}
+          required
         >
           <SelectTrigger id="skillLevel">
             <SelectValue placeholder={

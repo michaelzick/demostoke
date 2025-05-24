@@ -79,6 +79,17 @@ const EditGearForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate required fields
+    if (!gearName || !gearType || !description || !zipCode || !measurementUnit || 
+        !dimensions.length || !dimensions.width || !skillLevel || !role || !damageDeposit) {
+      toast({
+        title: "Missing Required Fields",
+        description: "Please fill in all required fields before submitting.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Validate that at least one pricing option exists and is filled
     if (pricingOptions.length === 0 || pricingOptions.every(option => !option.price)) {
       toast({
