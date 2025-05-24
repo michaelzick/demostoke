@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadGearImage } from "@/utils/imageUpload";
+import { useGearFormValidation } from "@/hooks/useGearFormValidation";
 
 interface PricingOption {
   id: string;
@@ -31,6 +32,7 @@ export const useAddGearForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, isAuthenticated } = useAuth();
+  const { validateForm } = useGearFormValidation();
 
   // Form state
   const [gearName, setGearName] = useState("");
@@ -74,6 +76,9 @@ export const useAddGearForm = () => {
         setZipCode(duplicatedGear.zipCode);
         setMeasurementUnit(duplicatedGear.measurementUnit);
         setDimensions(duplicatedGear.dimensions);
+
+        // Set a default role for duplicated gear since it's not in the original data
+        setRole("private-party");
 
         // Important: Set the gear type first, then set the skill level in a separate effect
         // This ensures the skill level options are available when the skill level is set
@@ -129,24 +134,21 @@ export const useAddGearForm = () => {
       return;
     }
 
-    // Validate required fields
-    if (!gearName || !gearType || !description || !zipCode || !measurementUnit || 
-        !dimensions.length || !dimensions.width || !skillLevel || !role || !damageDeposit) {
-      toast({
-        title: "Missing Required Fields",
-        description: "Please fill in all required fields before submitting.",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Use the validation hook to validate the form
+    const formData = {
+      gearName,
+      gearType,
+      description,
+      zipCode,
+      measurementUnit,
+      dimensions,
+      skillLevel,
+      role,
+      damageDeposit,
+      pricingOptions,
+    };
 
-    // Validate that at least one pricing option exists and is filled
-    if (pricingOptions.length === 0 || pricingOptions.every(option => !option.price)) {
-      toast({
-        title: "Missing Pricing",
-        description: "Please add at least one pricing option.",
-        variant: "destructive",
-      });
+    if (!validateForm(formData)) {
       return;
     }
 
