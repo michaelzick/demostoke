@@ -1,7 +1,6 @@
 
 import React, { useEffect } from "react";
 import { useEditGearForm } from "@/hooks/useEditGearForm";
-import { useGearFormValidation } from "@/hooks/useGearFormValidation";
 
 // Import form section components
 import FormHeader from "@/components/gear-form/FormHeader";
@@ -18,11 +17,10 @@ const EditGearForm = () => {
     error,
     formState,
     handlers,
+    isSubmitting,
     navigate,
     toast,
   } = useEditGearForm();
-
-  const { validateForm } = useGearFormValidation();
 
   // Handle loading state
   if (isLoading) {
@@ -49,38 +47,11 @@ const EditGearForm = () => {
     return null;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const isValid = validateForm({
-      gearName: formState.gearName,
-      gearType: formState.gearType,
-      description: formState.description,
-      zipCode: formState.zipCode,
-      measurementUnit: formState.measurementUnit,
-      dimensions: formState.dimensions,
-      skillLevel: formState.skillLevel,
-      role: formState.role,
-      damageDeposit: formState.damageDeposit,
-      pricingOptions: formState.pricingOptions,
-    });
-
-    if (!isValid) return;
-
-    toast({
-      title: "Gear Updated",
-      description: `${formState.gearName} has been successfully updated.`,
-    });
-
-    // Navigate back to My Gear page
-    navigate("/my-gear");
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
       <FormHeader title={equipment.name} />
 
-      <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-6">
+      <form onSubmit={handlers.handleSubmit} className="max-w-2xl mx-auto space-y-6">
         <GearBasicInfo
           gearName={formState.gearName}
           setGearName={formState.setGearName}
@@ -117,9 +88,10 @@ const EditGearForm = () => {
         />
 
         <FormActions
-          handleSubmit={handleSubmit}
+          handleSubmit={handlers.handleSubmit}
           handleCancel={handlers.handleCancel}
           isEditing={true}
+          isSubmitting={isSubmitting}
         />
       </form>
     </div>
