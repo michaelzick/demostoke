@@ -1,13 +1,26 @@
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
+import { useAuth } from "@/helpers";
 
 type DesktopNavigationProps = {
   onOpenSearch: () => void;
 };
 
 const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const handleListGearClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isAuthenticated) {
+      navigate("/list-gear");
+    } else {
+      navigate("/auth/signin");
+    }
+  };
+
   return (
     <nav className="hidden items-center space-x-6 lg:flex">
       <Link to="/" className="text-sm font-medium hover:text-primary transition-colors">
@@ -16,9 +29,12 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
       <Link to="/explore" className="text-sm font-medium hover:text-primary transition-colors">
         Explore
       </Link>
-      <Link to="/list-gear" className="text-sm font-medium hover:text-primary transition-colors">
+      <button 
+        onClick={handleListGearClick}
+        className="text-sm font-medium hover:text-primary transition-colors"
+      >
         List Your Gear
-      </Link>
+      </button>
       <Link to="/about" className="text-sm font-medium hover:text-primary transition-colors">
         About
       </Link>

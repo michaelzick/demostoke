@@ -7,11 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { mockUserEquipment, UserEquipment } from "@/lib/userEquipment";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/helpers";
 
 const MyEquipmentPage = () => {
   const [userEquipment, setUserEquipment] = useState<UserEquipment[]>(mockUserEquipment);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   // Function to get the appropriate icon based on equipment category
   const getEquipmentIcon = (category: string) => {
@@ -65,18 +67,26 @@ const MyEquipmentPage = () => {
     });
   };
 
+  const handleListGearClick = () => {
+    if (isAuthenticated) {
+      navigate("/list-gear");
+    } else {
+      navigate("/auth/signin");
+    }
+  };
+
   return (
     <div className="container py-10">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">My Gear</h1>
-        <Button onClick={() => navigate("/list-gear")}>Add New Gear</Button>
+        <Button onClick={handleListGearClick}>Add New Gear</Button>
       </div>
 
       {userEquipment.length === 0 ? (
         <div className="text-center py-20">
           <h2 className="text-xl font-medium mb-2">You haven't listed any gear yet</h2>
           <p className="text-muted-foreground mb-6">Start sharing your gear with others and earn money</p>
-          <Button onClick={() => navigate("/list-gear")}>List Your First Item</Button>
+          <Button onClick={handleListGearClick}>List Your First Item</Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

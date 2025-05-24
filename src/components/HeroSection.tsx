@@ -1,11 +1,16 @@
+
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MapPin } from "lucide-react";
 import { Snowflake, Mountains, Waves, Fish, Tire } from "@phosphor-icons/react";
+import { useAuth } from "@/helpers";
 
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
   const backgrounds = [
     { type: 'video', url: 'https://www.dropbox.com/scl/fi/6nz8yzousah3z2ath8g2p/surfers_compressed.mp4?rlkey=oauykp2n7vcv3sz8kjxeql746&dl&raw=1' },
     { type: 'video', url: 'https://www.dropbox.com/scl/fi/zahmykwzc5wa8xqxabgxp/snowboarder_compressed.mp4?rlkey=7mo4nuyfft3d7vkub91ty17tf&dl&raw=1' },
@@ -20,6 +25,14 @@ const HeroSection = () => {
     }, 5000);
     return () => clearInterval(interval);
   }, [backgrounds.length]);
+
+  const handleListGearClick = () => {
+    if (isAuthenticated) {
+      navigate("/list-gear");
+    } else {
+      navigate("/auth/signin");
+    }
+  };
 
   return (
     <section className="relative h-[80vh] overflow-hidden">
@@ -61,15 +74,14 @@ const HeroSection = () => {
             <Button size="lg" asChild className='bg-primary'>
               <Link to="/explore">Find Gear Near Me</Link>
             </Button>
-            <Link to="/list-gear">
-              <Button
-                size="lg"
-                variant="outline"
-                className="bg-white/20 dark:bg-zinc-800/40 border-white dark:border-zinc-700"
-              >
-                List Your Gear
-              </Button>
-            </Link>
+            <Button
+              size="lg"
+              variant="outline"
+              className="bg-white/20 dark:bg-zinc-800/40 border-white dark:border-zinc-700"
+              onClick={handleListGearClick}
+            >
+              List Your Gear
+            </Button>
           </div>
           <div className="flex flex-wrap gap-8 justify-center">
             <Link

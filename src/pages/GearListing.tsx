@@ -2,15 +2,26 @@
 import React, { useState } from "react";
 import { mockEquipment } from "@/lib/mockData";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CustomerWaiverForm from "@/components/CustomerWaiverForm";
+import { useAuth } from "@/helpers";
 
 const GearListingPage = () => {
   const [waiverCompleted, setWaiverCompleted] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   
   const handleWaiverComplete = () => {
     setWaiverCompleted(true);
+  };
+
+  const handleListGearClick = () => {
+    if (isAuthenticated) {
+      navigate("/list-gear");
+    } else {
+      navigate("/auth/signin");
+    }
   };
 
   return (
@@ -20,8 +31,8 @@ const GearListingPage = () => {
         Browse through the available gear or add your own to the collection!
       </p>
       <div className="flex justify-center mb-8">
-        <Button size="lg" asChild>
-          <Link to="/list-gear">List Your Gear</Link>
+        <Button size="lg" onClick={handleListGearClick}>
+          List Your Gear
         </Button>
       </div>
 

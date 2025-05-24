@@ -1,5 +1,5 @@
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useAuth } from "@/helpers";
@@ -12,6 +12,16 @@ type MobileMenuProps = {
 
 const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
   const { isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleListGearClick = () => {
+    if (isAuthenticated) {
+      navigate("/list-gear");
+    } else {
+      navigate("/auth/signin");
+    }
+    onClose();
+  };
 
   if (!isOpen) return null;
 
@@ -44,6 +54,12 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
         >
           Explore
         </Link>
+        <button
+          onClick={handleListGearClick}
+          className="text-lg font-medium text-left"
+        >
+          List Your Gear
+        </button>
         <Link
           to="/about"
           className="text-lg font-medium"

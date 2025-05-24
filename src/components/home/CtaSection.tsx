@@ -1,8 +1,20 @@
 
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/helpers";
 
 const CtaSection = () => {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const handleListGearClick = () => {
+    if (isAuthenticated) {
+      navigate("/list-gear");
+    } else {
+      navigate("/auth/signin");
+    }
+  };
+
   return (
     <section className="py-16 bg-ocean-deep text-white">
       <div className="container px-4 md:px-6">
@@ -12,15 +24,14 @@ const CtaSection = () => {
             <p className="text-lg mb-6">
               Earn money by letting others demo your equipment.
             </p>
-            <Link to="/list-gear">
-              <Button
-                size="lg"
-                variant="outline"
-                className="bg-white/20 dark:bg-zinc-800/40 border-white dark:border-zinc-700"
-              >
-                List Your Gear
-              </Button>
-            </Link>
+            <Button
+              size="lg"
+              variant="outline"
+              className="bg-white/20 dark:bg-zinc-800/40 border-white dark:border-zinc-700"
+              onClick={handleListGearClick}
+            >
+              List Your Gear
+            </Button>
           </div>
           <div className="flex justify-center">
             <div className="relative">
