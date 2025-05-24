@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/helpers";
+import { supabase } from "@/integrations/supabase/client";
 
 // Import form section components
 import FormHeader from "@/components/gear-form/FormHeader";
@@ -35,6 +37,7 @@ interface DuplicatedGear {
 const AddGearForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user, isAuthenticated } = useAuth();
 
   // State for form fields
   const [gearName, setGearName] = useState("");
@@ -50,6 +53,19 @@ const AddGearForm = () => {
   ]);
   const [damageDeposit, setDamageDeposit] = useState("");
   const [role, setRole] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Check authentication
+  useEffect(() => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to list your gear.",
+        variant: "destructive",
+      });
+      navigate("/auth/signin");
+    }
+  }, [isAuthenticated, navigate, toast]);
 
   // Check for duplicated gear data on component mount
   useEffect(() => {
@@ -97,8 +113,28 @@ const AddGearForm = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const mapGearTypeToCategory = (gearType: string): string => {
+    const typeMap: { [key: string]: string } = {
+      "snowboard": "snowboards",
+      "skis": "skis",
+      "surfboard": "surfboards",
+      "sup": "sups",
+      "skateboard": "skateboards"
+    };
+    return typeMap[gearType] || gearType;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!user) {
+      toast({
+        title: "Authentication Error",
+        description: "Please sign in to list your gear.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     // Validate required fields
     if (!gearName || !gearType || !description || !zipCode || !measurementUnit || 
@@ -121,33 +157,72 @@ const AddGearForm = () => {
       return;
     }
 
-    // Log form data for debugging
-    console.log({
-      gearName,
-      gearType,
-      description,
-      zipCode,
-      measurementUnit,
-      dimensions,
-      skillLevel,
-      images,
-      pricingOptions,
-      damageDeposit,
-      role,
-    });
+    setIsSubmitting(true);
 
-    toast({
-      title: "Equipment Added",
-      description: `${gearName} has been successfully added to your inventory.`,
-    });
+    try {
+      // Prepare the data for database insertion
+      const equipmentData = {
+        user_id: user.id,
+        name: gearName,
+        category: mapGearTypeToCategory(gearType),
+        description: description,
+        location_name: zipCode,
+        size: `${dimensions.length} x ${dimensions.width} ${measurementUnit}`,
+        suitable_skill_level: skillLevel,
+        price_per_day: parseFloat(pricingOptions[0].price),
+        status: 'available' as const,
+        image_url: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop', // Default placeholder image
+        rating: 0,
+        review_count: 0,
+        location_lat: null,
+        location_lng: null,
+        weight: null,
+        material: null
+      };
 
-    // Navigate back to My Gear page
-    navigate("/my-gear");
+      console.log('Submitting equipment data:', equipmentData);
+
+      // Insert the equipment into the database
+      const { data, error } = await supabase
+        .from('equipment')
+        .insert([equipmentData])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Database error:', error);
+        throw error;
+      }
+
+      console.log('Equipment created successfully:', data);
+
+      toast({
+        title: "Equipment Added",
+        description: `${gearName} has been successfully added to your inventory.`,
+      });
+
+      // Navigate back to My Gear page
+      navigate("/my-gear");
+
+    } catch (error: any) {
+      console.error('Error creating equipment:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add equipment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCancel = () => {
     navigate("/my-gear");
   };
+
+  if (!isAuthenticated) {
+    return null; // Will redirect in useEffect
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -192,6 +267,7 @@ const AddGearForm = () => {
           handleSubmit={handleSubmit}
           handleCancel={handleCancel}
           isEditing={false}
+          isSubmitting={isSubmitting}
         />
       </form>
     </div>
