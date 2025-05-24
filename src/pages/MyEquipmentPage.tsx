@@ -80,6 +80,7 @@ const MyEquipmentPage = () => {
       skillLevel: item.suitable_skill_level,
       price: item.price_per_day.toString(),
       damageDeposit: "50", // Default value
+      imageUrl: item.image_url, // Include the image URL
     }));
 
     navigate('/list-gear');

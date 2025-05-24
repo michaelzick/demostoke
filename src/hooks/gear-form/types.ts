@@ -18,6 +18,7 @@ export interface DuplicatedGear {
   skillLevel: string;
   price: string;
   damageDeposit: string;
+  imageUrl?: string; // Add optional image URL
 }
 
 export interface FormState {

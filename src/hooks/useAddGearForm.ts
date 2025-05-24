@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
@@ -11,6 +11,7 @@ export const useAddGearForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAuthenticated } = useAuth();
+  const [duplicatedImageUrl, setDuplicatedImageUrl] = useState<string | undefined>();
 
   const formState = useGearFormState();
 
@@ -27,7 +28,7 @@ export const useAddGearForm = () => {
   }, [isAuthenticated, navigate, toast]);
 
   // Handle duplicated gear data
-  useDuplicatedGearData({
+  const { getDuplicatedGearData } = useDuplicatedGearData({
     setGearName: formState.setGearName,
     setGearType: formState.setGearType,
     setDescription: formState.setDescription,
@@ -39,6 +40,14 @@ export const useAddGearForm = () => {
     setPricingOptions: formState.setPricingOptions,
     setDamageDeposit: formState.setDamageDeposit,
   });
+
+  // Get duplicated image URL if available
+  useEffect(() => {
+    const duplicatedData = getDuplicatedGearData();
+    if (duplicatedData?.imageUrl) {
+      setDuplicatedImageUrl(duplicatedData.imageUrl);
+    }
+  }, [getDuplicatedGearData]);
 
   // Handle form submission
   const { handleSubmit, isSubmitting } = useGearFormSubmission({
@@ -53,6 +62,7 @@ export const useAddGearForm = () => {
     pricingOptions: formState.pricingOptions,
     damageDeposit: formState.damageDeposit,
     role: formState.role,
+    duplicatedImageUrl,
   });
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,5 +84,6 @@ export const useAddGearForm = () => {
       handleCancel,
     },
     isSubmitting,
+    duplicatedImageUrl,
   };
 };

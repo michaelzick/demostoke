@@ -20,6 +20,7 @@ interface UseGearFormSubmissionProps {
   pricingOptions: PricingOption[];
   damageDeposit: string;
   role: string;
+  duplicatedImageUrl?: string;
 }
 
 export const useGearFormSubmission = ({
@@ -34,6 +35,7 @@ export const useGearFormSubmission = ({
   pricingOptions,
   damageDeposit,
   role,
+  duplicatedImageUrl,
 }: UseGearFormSubmissionProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -85,9 +87,9 @@ export const useGearFormSubmission = ({
     setIsSubmitting(true);
 
     try {
-      let imageUrl = 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop'; // Default placeholder
+      let imageUrl = duplicatedImageUrl || 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop'; // Use duplicated image or default placeholder
 
-      // Upload image if one was selected
+      // Upload new image if one was selected
       if (images.length > 0) {
         console.log('Uploading image:', images[0].name);
         toast({
@@ -102,10 +104,10 @@ export const useGearFormSubmission = ({
           console.error('Image upload failed:', uploadError);
           toast({
             title: "Image Upload Failed",
-            description: uploadError.message || "Failed to upload image. Using placeholder instead.",
+            description: uploadError.message || "Failed to upload image. Using existing image instead.",
             variant: "destructive",
           });
-          // Continue with placeholder image if upload fails
+          // Continue with duplicated image or placeholder if upload fails
         }
       }
 

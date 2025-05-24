@@ -16,6 +16,7 @@ const AddGearForm = () => {
     formState,
     handlers,
     isSubmitting,
+    duplicatedImageUrl,
   } = useAddGearForm();
 
   if (!isAuthenticated) {
@@ -50,6 +51,7 @@ const AddGearForm = () => {
 
         <GearMedia
           handleImageUpload={handlers.handleImageUpload}
+          duplicatedImageUrl={duplicatedImageUrl}
         />
 
         <GearPricing

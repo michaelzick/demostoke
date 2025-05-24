@@ -62,13 +62,36 @@ export const useDuplicatedGearData = ({
         // Clear the sessionStorage after using it
         sessionStorage.removeItem('duplicatedGear');
 
+        let toastDescription = "The form has been pre-filled with the duplicated gear's information. You can now edit and submit it as a new listing.";
+        
+        // If there's an image URL, add it to the toast message
+        if (duplicatedGear.imageUrl) {
+          toastDescription += " The original image will be used unless you upload a new one.";
+        }
+
         toast({
           title: "Duplicated Gear Data Loaded",
-          description: "The form has been pre-filled with the duplicated gear's information. You can now edit and submit it as a new listing.",
+          description: toastDescription,
         });
       } catch (error) {
         console.error("Error parsing duplicated gear data:", error);
       }
     }
   }, [toast, setGearName, setGearType, setDescription, setZipCode, setMeasurementUnit, setDimensions, setRole, setSkillLevel, setPricingOptions, setDamageDeposit]);
+
+  // Return the duplicated gear data so it can be used by the form
+  const getDuplicatedGearData = () => {
+    const duplicatedGearJSON = sessionStorage.getItem('duplicatedGear');
+    if (duplicatedGearJSON) {
+      try {
+        return JSON.parse(duplicatedGearJSON) as DuplicatedGear;
+      } catch (error) {
+        console.error("Error parsing duplicated gear data:", error);
+        return null;
+      }
+    }
+    return null;
+  };
+
+  return { getDuplicatedGearData };
 };
