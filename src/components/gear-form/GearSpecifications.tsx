@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useEffect } from "react";
 
 interface GearSpecificationsProps {
   measurementUnit: string;
@@ -38,6 +39,19 @@ const GearSpecifications = ({
     sup: ["Flat Water", "Surf", "Racing", "Yoga"],
     skateboard: ["Beginner", "Intermediate", "Advanced", "All Levels"],
   };
+
+  // Reset skill level if it's not valid for the current gear type
+  useEffect(() => {
+    if (gearType && skillLevel) {
+      const validLevels = skillLevels[gearType as keyof typeof skillLevels] || [];
+      if (!validLevels.includes(skillLevel)) {
+        console.log('Resetting skill level - not valid for gear type:', gearType, skillLevel);
+        setSkillLevel("");
+      }
+    }
+  }, [gearType, skillLevel, setSkillLevel]);
+
+  console.log('GearSpecifications render - gearType:', gearType, 'skillLevel:', skillLevel);
 
   return (
     <>
@@ -95,8 +109,12 @@ const GearSpecifications = ({
           Skill Level <span className="text-red-500">*</span>
         </Label>
         <Select
+          key={`${gearType}-${skillLevel}`}
           value={skillLevel}
-          onValueChange={(value) => setSkillLevel(value)}
+          onValueChange={(value) => {
+            console.log('Skill level changed:', value);
+            setSkillLevel(value);
+          }}
           disabled={!gearType}
           required
         >
