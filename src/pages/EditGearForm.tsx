@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -65,15 +66,52 @@ const EditGearForm = () => {
     return categoryMap[category.toLowerCase()] || category.slice(0, -1);
   };
 
+  // Map skill level from database to dropdown options
+  const mapSkillLevel = (dbSkillLevel: string, gearType: string) => {
+    if (!dbSkillLevel || !gearType) return "";
+    
+    const skillLevels = {
+      snowboard: ["Beginner", "Intermediate", "Advanced", "Park Rider"],
+      skis: ["Beginner", "Intermediate", "Advanced", "Park Rider"],
+      surfboard: ["Beginner", "Intermediate", "Advanced", "All Levels"],
+      sup: ["Flat Water", "Surf", "Racing", "Yoga"],
+      skateboard: ["Beginner", "Intermediate", "Advanced", "All Levels"],
+    };
+
+    const validLevels = skillLevels[gearType as keyof typeof skillLevels] || [];
+    
+    // Try exact match first
+    if (validLevels.includes(dbSkillLevel)) {
+      return dbSkillLevel;
+    }
+    
+    // Try case-insensitive match
+    const matchedLevel = validLevels.find(level => 
+      level.toLowerCase() === dbSkillLevel.toLowerCase()
+    );
+    
+    return matchedLevel || "";
+  };
+
   // Update state when equipment data is loaded
   useEffect(() => {
     if (equipment) {
+      console.log('Equipment loaded:', equipment);
+      const mappedGearType = mapCategoryToGearType(equipment.category);
+      console.log('Mapped gear type:', mappedGearType);
+      console.log('Original skill level:', equipment.suitable_skill_level);
+      
       setGearName(equipment.name);
-      setGearType(mapCategoryToGearType(equipment.category));
+      setGearType(mappedGearType);
       setDescription(equipment.description || "");
       setZipCode(equipment.location_name || "");
       setDimensions(parseSize(equipment.size || ""));
-      setSkillLevel(equipment.suitable_skill_level || "");
+      
+      // Map skill level after setting gear type
+      const mappedSkillLevel = mapSkillLevel(equipment.suitable_skill_level || "", mappedGearType);
+      console.log('Mapped skill level:', mappedSkillLevel);
+      setSkillLevel(mappedSkillLevel);
+      
       setPricingOptions([
         { id: "1", price: equipment.price_per_day.toString(), duration: "day" }
       ]);
