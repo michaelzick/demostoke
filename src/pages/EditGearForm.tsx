@@ -12,6 +12,12 @@ import GearMedia from "@/components/gear-form/GearMedia";
 import GearPricing from "@/components/gear-form/GearPricing";
 import FormActions from "@/components/gear-form/FormActions";
 
+interface PricingOption {
+  id: string;
+  price: string;
+  duration: string;
+}
+
 const EditGearForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -46,8 +52,9 @@ const EditGearForm = () => {
   // Get skill level directly from gear specifications
   const [skillLevel, setSkillLevel] = useState(equipment?.specifications?.suitable || "");
   const [images, setImages] = useState<File[]>([]);
-  const [price, setPrice] = useState(equipment?.pricePerDay?.toString() || "");
-  const [duration, setDuration] = useState("day");
+  const [pricingOptions, setPricingOptions] = useState<PricingOption[]>([
+    { id: "1", price: equipment?.pricePerDay?.toString() || "", duration: "day" }
+  ]);
   const [damageDeposit, setDamageDeposit] = useState("100"); // Default deposit
   const [role, setRole] = useState("private-party");
 
@@ -71,6 +78,16 @@ const EditGearForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate that at least one pricing option exists and is filled
+    if (pricingOptions.length === 0 || pricingOptions.every(option => !option.price)) {
+      toast({
+        title: "Missing Pricing",
+        description: "Please add at least one pricing option.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     toast({
       title: "Gear Updated",
@@ -119,10 +136,8 @@ const EditGearForm = () => {
         />
 
         <GearPricing
-          price={price}
-          setPrice={setPrice}
-          duration={duration}
-          setDuration={setDuration}
+          pricingOptions={pricingOptions}
+          setPricingOptions={setPricingOptions}
           damageDeposit={damageDeposit}
           setDamageDeposit={setDamageDeposit}
         />

@@ -40,7 +40,7 @@ const GearBasicInfo = ({
       {/* Gear Name */}
       <div>
         <Label htmlFor="gearName" className="block text-lg font-medium mb-2">
-          Gear Name
+          Gear Name <span className="text-red-500">*</span>
         </Label>
         <Input
           id="gearName"
@@ -54,7 +54,7 @@ const GearBasicInfo = ({
       {/* Your Role */}
       <div>
         <Label htmlFor="role" className="block text-lg font-medium mb-2">
-          Your Role
+          Your Role <span className="text-red-500">*</span>
         </Label>
         <Select value={role} onValueChange={(value) => setRole(value)}>
           <SelectTrigger id="role">
@@ -72,7 +72,7 @@ const GearBasicInfo = ({
       {/* Gear Type */}
       <div>
         <Label htmlFor="gearType" className="block text-lg font-medium mb-2">
-          Gear Type
+          Gear Type <span className="text-red-500">*</span>
         </Label>
         <Select value={gearType} onValueChange={(value) => setGearType(value)}>
           <SelectTrigger id="gearType">
@@ -91,7 +91,7 @@ const GearBasicInfo = ({
       {/* Description */}
       <div>
         <Label htmlFor="description" className="block text-lg font-medium mb-2">
-          Description
+          Description <span className="text-red-500">*</span>
         </Label>
         <Textarea
           id="description"
@@ -105,7 +105,7 @@ const GearBasicInfo = ({
       {/* Zip Code/Location */}
       <div>
         <Label htmlFor="zipCode" className="block text-lg font-medium mb-2">
-          Location
+          Location <span className="text-red-500">*</span>
         </Label>
         <Input
           id="zipCode"

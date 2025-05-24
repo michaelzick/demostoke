@@ -44,7 +44,7 @@ const GearSpecifications = ({
       {/* Measurement Unit */}
       <div>
         <Label htmlFor="measurementUnit" className="block text-lg font-medium mb-2">
-          Measurement Unit
+          Measurement Unit <span className="text-red-500">*</span>
         </Label>
         <Select value={measurementUnit} onValueChange={(value) => setMeasurementUnit(value)}>
           <SelectTrigger id="measurementUnit">
@@ -61,7 +61,7 @@ const GearSpecifications = ({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="length" className="block text-lg font-medium mb-2">
-            Length
+            Length <span className="text-red-500">*</span>
           </Label>
           <Input
             id="length"
@@ -75,7 +75,7 @@ const GearSpecifications = ({
         </div>
         <div>
           <Label htmlFor="width" className="block text-lg font-medium mb-2">
-            Width
+            Width <span className="text-red-500">*</span>
           </Label>
           <Input
             id="width"
@@ -92,7 +92,7 @@ const GearSpecifications = ({
       {/* Skill Level */}
       <div>
         <Label htmlFor="skillLevel" className="block text-lg font-medium mb-2">
-          Skill Level
+          Skill Level <span className="text-red-500">*</span>
         </Label>
         <Select
           value={skillLevel}

@@ -11,6 +11,12 @@ import GearMedia from "@/components/gear-form/GearMedia";
 import GearPricing from "@/components/gear-form/GearPricing";
 import FormActions from "@/components/gear-form/FormActions";
 
+interface PricingOption {
+  id: string;
+  price: string;
+  duration: string;
+}
+
 interface DuplicatedGear {
   gearName: string;
   gearType: string;
@@ -35,12 +41,13 @@ const AddGearForm = () => {
   const [gearType, setGearType] = useState("");
   const [description, setDescription] = useState("");
   const [zipCode, setZipCode] = useState("");
-  const [measurementUnit, setMeasurementUnit] = useState("inches"); // Default to inches
+  const [measurementUnit, setMeasurementUnit] = useState("inches");
   const [dimensions, setDimensions] = useState({ length: "", width: "" });
   const [skillLevel, setSkillLevel] = useState("");
   const [images, setImages] = useState<File[]>([]);
-  const [price, setPrice] = useState("");
-  const [duration, setDuration] = useState("day");
+  const [pricingOptions, setPricingOptions] = useState<PricingOption[]>([
+    { id: "1", price: "", duration: "day" }
+  ]);
   const [damageDeposit, setDamageDeposit] = useState("");
   const [role, setRole] = useState("");
 
@@ -65,7 +72,10 @@ const AddGearForm = () => {
           setSkillLevel(duplicatedGear.skillLevel);
         }, 100);
 
-        setPrice(duplicatedGear.price);
+        // Set pricing options from duplicated data
+        setPricingOptions([
+          { id: "1", price: duplicatedGear.price, duration: "day" }
+        ]);
         setDamageDeposit(duplicatedGear.damageDeposit);
 
         // Clear the sessionStorage after using it
@@ -90,6 +100,16 @@ const AddGearForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate that at least one pricing option exists and is filled
+    if (pricingOptions.length === 0 || pricingOptions.every(option => !option.price)) {
+      toast({
+        title: "Missing Pricing",
+        description: "Please add at least one pricing option.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Log form data for debugging
     console.log({
       gearName,
@@ -100,8 +120,7 @@ const AddGearForm = () => {
       dimensions,
       skillLevel,
       images,
-      price,
-      duration,
+      pricingOptions,
       damageDeposit,
       role,
     });
@@ -152,10 +171,8 @@ const AddGearForm = () => {
         />
 
         <GearPricing
-          price={price}
-          setPrice={setPrice}
-          duration={duration}
-          setDuration={setDuration}
+          pricingOptions={pricingOptions}
+          setPricingOptions={setPricingOptions}
           damageDeposit={damageDeposit}
           setDamageDeposit={setDamageDeposit}
         />
