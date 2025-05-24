@@ -1,8 +1,8 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { mockUserEquipment } from "@/lib/userEquipment";
 import { useToast } from "@/hooks/use-toast";
+import { useEquipmentById } from "@/hooks/useEquipmentById";
 
 // Import form section components
 import FormHeader from "@/components/gear-form/FormHeader";
@@ -23,19 +23,26 @@ const EditGearForm = () => {
   const { id } = useParams();
   const { toast } = useToast();
 
-  // Find the equipment by ID
-  const equipment = mockUserEquipment.find(item => item.id === id);
+  // Fetch the equipment by ID
+  const { data: equipment, isLoading, error } = useEquipmentById(id || "");
 
   // Initialize state with equipment data or defaults
-  const [gearName, setGearName] = useState(equipment?.name || "");
-  const [gearType, setGearType] = useState(equipment?.category.slice(0, -1) || "");
-  const [description, setDescription] = useState(equipment?.description || "");
-  const [zipCode, setZipCode] = useState(equipment?.location?.name || "");
+  const [gearName, setGearName] = useState("");
+  const [gearType, setGearType] = useState("");
+  const [description, setDescription] = useState("");
+  const [zipCode, setZipCode] = useState("");
   const [measurementUnit, setMeasurementUnit] = useState("inches");
+  const [dimensions, setDimensions] = useState({ length: "", width: "" });
+  const [skillLevel, setSkillLevel] = useState("");
+  const [images, setImages] = useState<File[]>([]);
+  const [pricingOptions, setPricingOptions] = useState<PricingOption[]>([
+    { id: "1", price: "", duration: "day" }
+  ]);
+  const [damageDeposit, setDamageDeposit] = useState("100");
+  const [role, setRole] = useState("private-party");
 
   // Parse size from specifications
-  const parseSize = () => {
-    const sizeStr = equipment?.specifications?.size || "";
+  const parseSize = (sizeStr: string) => {
     if (sizeStr.includes("x")) {
       const [length, width] = sizeStr.split("x").map(s => s.trim().replace(/[^\d.]/g, ''));
       return { length, width };
@@ -47,28 +54,45 @@ const EditGearForm = () => {
     return { length: "", width: "" };
   };
 
-  const [dimensions, setDimensions] = useState(parseSize());
-
-  // Get skill level directly from gear specifications
-  const [skillLevel, setSkillLevel] = useState(equipment?.specifications?.suitable || "");
-  const [images, setImages] = useState<File[]>([]);
-  const [pricingOptions, setPricingOptions] = useState<PricingOption[]>([
-    { id: "1", price: equipment?.pricePerDay?.toString() || "", duration: "day" }
-  ]);
-  const [damageDeposit, setDamageDeposit] = useState("100"); // Default deposit
-  const [role, setRole] = useState("private-party");
-
-  // If no gear is found, redirect to My Gear page
+  // Update state when equipment data is loaded
   useEffect(() => {
-    if (!equipment && id) {
+    if (equipment) {
+      setGearName(equipment.name);
+      setGearType(equipment.category.slice(0, -1)); // Remove 's' from category
+      setDescription(equipment.description || "");
+      setZipCode(equipment.location_name || "");
+      setDimensions(parseSize(equipment.size || ""));
+      setSkillLevel(equipment.suitable_skill_level || "");
+      setPricingOptions([
+        { id: "1", price: equipment.price_per_day.toString(), duration: "day" }
+      ]);
+    }
+  }, [equipment]);
+
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h2 className="text-xl font-medium mb-2">Loading gear...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle error or equipment not found
+  if (error || !equipment) {
+    useEffect(() => {
       toast({
         title: "Gear Not Found",
         description: "The gear you're trying to edit could not be found.",
         variant: "destructive",
       });
       navigate("/my-gear");
-    }
-  }, [equipment, id, navigate, toast]);
+    }, []);
+
+    return null;
+  }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -115,7 +139,7 @@ const EditGearForm = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <FormHeader title={equipment?.name || "Gear"} />
+      <FormHeader title={equipment.name} />
 
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-6">
         <GearBasicInfo
@@ -143,7 +167,7 @@ const EditGearForm = () => {
 
         <GearMedia
           handleImageUpload={handleImageUpload}
-          currentImageUrl={equipment?.imageUrl}
+          currentImageUrl={equipment.image_url}
         />
 
         <GearPricing
