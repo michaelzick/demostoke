@@ -25,7 +25,11 @@ export const useUserEquipment = () => {
         throw error;
       }
 
-      return data || [];
+      // Cast the data to UserEquipment[] to ensure proper typing
+      return (data || []).map(item => ({
+        ...item,
+        status: item.status as 'available' | 'booked' | 'unavailable'
+      })) as UserEquipment[];
     },
     enabled: !!user?.id,
   });
