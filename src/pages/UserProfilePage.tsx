@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -89,7 +88,7 @@ const UserProfilePage = () => {
 
       // Upload the new image
       const imageUrl = await uploadProfileImage(file, user.id);
-      
+
       // Update the profile in the database
       const { error } = await supabase
         .from('profiles')
@@ -105,18 +104,19 @@ const UserProfilePage = () => {
         title: "Profile photo updated",
         description: "Your profile photo has been updated successfully.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error uploading profile image:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to upload image. Please try again.';
       toast({
         title: "Error uploading image",
-        description: error.message || "Failed to upload image. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
-      
+
       // Fallback to dicebear avatar on error
       const fallbackAvatar = generateDicebearAvatar(user.id);
       setProfileImage(fallbackAvatar);
-      
+
       // Update database with fallback avatar
       await supabase
         .from('profiles')
@@ -144,7 +144,7 @@ const UserProfilePage = () => {
 
       // Generate a new dicebear avatar
       const fallbackAvatar = generateDicebearAvatar(user.id);
-      
+
       // Update the profile in the database
       const { error } = await supabase
         .from('profiles')
@@ -160,11 +160,12 @@ const UserProfilePage = () => {
         title: "Profile photo deleted",
         description: "Your profile photo has been removed and replaced with a default avatar.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting profile image:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete image. Please try again.';
       toast({
         title: "Error deleting image",
-        description: error.message || "Failed to delete image. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -198,10 +199,11 @@ const UserProfilePage = () => {
         title: "Profile updated",
         description: "Your profile has been updated successfully.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'There was an error updating your profile.';
       toast({
         title: "Error updating profile",
-        description: error.message || "There was an error updating your profile.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -266,9 +268,9 @@ const UserProfilePage = () => {
                 <h3 className="font-medium">{name || "User"}</h3>
                 <p className="text-sm text-muted-foreground">{email}</p>
                 <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    type="button" 
+                  <Button
+                    variant="outline"
+                    type="button"
                     size="sm"
                     onClick={handleChangePhotoClick}
                     disabled={isUploadingImage || isDeletingImage}
@@ -285,9 +287,9 @@ const UserProfilePage = () => {
                       </>
                     )}
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    type="button" 
+                  <Button
+                    variant="outline"
+                    type="button"
                     size="sm"
                     onClick={handleDeletePhoto}
                     disabled={isUploadingImage || isDeletingImage}
