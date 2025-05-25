@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
 import { User, Upload, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { uploadProfileImage, generateDicebearAvatar } from "@/utils/profileImageUpload";
+import { uploadProfileImage, deleteProfileImage, generateDicebearAvatar } from "@/utils/profileImageUpload";
 import {
   Select,
   SelectContent,
@@ -81,7 +82,12 @@ const UserProfilePage = () => {
     setIsUploadingImage(true);
 
     try {
-      // Upload the image
+      // Delete old profile image if it exists and is from profile-images bucket
+      if (profileImage && !profileImage.includes('dicebear.com')) {
+        await deleteProfileImage(profileImage, user.id);
+      }
+
+      // Upload the new image
       const imageUrl = await uploadProfileImage(file, user.id);
       
       // Update the profile in the database
@@ -131,6 +137,11 @@ const UserProfilePage = () => {
     setIsDeletingImage(true);
 
     try {
+      // Delete the current profile image if it exists and is from profile-images bucket
+      if (profileImage && !profileImage.includes('dicebear.com')) {
+        await deleteProfileImage(profileImage, user.id);
+      }
+
       // Generate a new dicebear avatar
       const fallbackAvatar = generateDicebearAvatar(user.id);
       
