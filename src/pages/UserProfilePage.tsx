@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
-import { User, Upload } from "lucide-react";
+import { User, Upload, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadProfileImage, generateDicebearAvatar } from "@/utils/profileImageUpload";
 import {
@@ -32,6 +31,7 @@ const UserProfilePage = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isDeletingImage, setIsDeletingImage] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
 
   useEffect(() => {
@@ -122,6 +122,42 @@ const UserProfilePage = () => {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+    }
+  };
+
+  const handleDeletePhoto = async () => {
+    if (!user) return;
+
+    setIsDeletingImage(true);
+
+    try {
+      // Generate a new dicebear avatar
+      const fallbackAvatar = generateDicebearAvatar(user.id);
+      
+      // Update the profile in the database
+      const { error } = await supabase
+        .from('profiles')
+        .update({ avatar_url: fallbackAvatar })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      // Update local state
+      setProfileImage(fallbackAvatar);
+
+      toast({
+        title: "Profile photo deleted",
+        description: "Your profile photo has been removed and replaced with a default avatar.",
+      });
+    } catch (error: any) {
+      console.error('Error deleting profile image:', error);
+      toast({
+        title: "Error deleting image",
+        description: error.message || "Failed to delete image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeletingImage(false);
     }
   };
 
@@ -224,7 +260,7 @@ const UserProfilePage = () => {
                     type="button" 
                     size="sm"
                     onClick={handleChangePhotoClick}
-                    disabled={isUploadingImage}
+                    disabled={isUploadingImage || isDeletingImage}
                   >
                     {isUploadingImage ? (
                       <>
@@ -235,6 +271,25 @@ const UserProfilePage = () => {
                       <>
                         <Upload className="h-4 w-4 mr-2" />
                         Change Photo
+                      </>
+                    )}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    type="button" 
+                    size="sm"
+                    onClick={handleDeletePhoto}
+                    disabled={isUploadingImage || isDeletingImage}
+                  >
+                    {isDeletingImage ? (
+                      <>
+                        <Trash2 className="h-4 w-4 mr-2 animate-spin" />
+                        Deleting...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Photo
                       </>
                     )}
                   </Button>
