@@ -87,7 +87,7 @@ export const useGearFormSubmission = ({
     setIsSubmitting(true);
 
     try {
-      let imageUrl = duplicatedImageUrl || 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=300&fit=crop'; // Use duplicated image or default placeholder
+      let imageUrl = duplicatedImageUrl || '/img/demostoke-logo-ds-transparent-cropped.webp'; // Use DS logo as default placeholder
 
       // Upload new image if one was selected
       if (images.length > 0) {
@@ -104,10 +104,10 @@ export const useGearFormSubmission = ({
           console.error('Image upload failed:', uploadError);
           toast({
             title: "Image Upload Failed",
-            description: uploadError.message || "Failed to upload image. Using existing image instead.",
+            description: uploadError.message || "Failed to upload image. Using DS logo instead.",
             variant: "destructive",
           });
-          // Continue with duplicated image or placeholder if upload fails
+          // Continue with DS logo if upload fails
         }
       }
 
