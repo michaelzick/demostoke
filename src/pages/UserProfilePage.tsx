@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,8 +9,9 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
-import { User } from "lucide-react";
+import { User, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadProfileImage, generateDicebearAvatar } from "@/utils/profileImageUpload";
 import {
   Select,
   SelectContent,
@@ -23,12 +24,14 @@ const UserProfilePage = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
 
   useEffect(() => {
@@ -45,10 +48,86 @@ const UserProfilePage = () => {
       setName(user.name || "");
       setEmail(user.email || "");
       setRole(user.role || "private-party");
-      setProfileImage(user.imageUrl || null);
+      // Use user's avatar or generate a dicebear avatar as fallback
+      setProfileImage(user.imageUrl || generateDicebearAvatar(user.id));
       setProfileLoaded(true);
     }
   }, [user, isAuthenticated, isLoading, navigate]);
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select an image file.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please select an image smaller than 5MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploadingImage(true);
+
+    try {
+      // Upload the image
+      const imageUrl = await uploadProfileImage(file, user.id);
+      
+      // Update the profile in the database
+      const { error } = await supabase
+        .from('profiles')
+        .update({ avatar_url: imageUrl })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      // Update local state
+      setProfileImage(imageUrl);
+
+      toast({
+        title: "Profile photo updated",
+        description: "Your profile photo has been updated successfully.",
+      });
+    } catch (error: any) {
+      console.error('Error uploading profile image:', error);
+      toast({
+        title: "Error uploading image",
+        description: error.message || "Failed to upload image. Please try again.",
+        variant: "destructive",
+      });
+      
+      // Fallback to dicebear avatar on error
+      const fallbackAvatar = generateDicebearAvatar(user.id);
+      setProfileImage(fallbackAvatar);
+      
+      // Update database with fallback avatar
+      await supabase
+        .from('profiles')
+        .update({ avatar_url: fallbackAvatar })
+        .eq('id', user.id);
+    } finally {
+      setIsUploadingImage(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleChangePhotoClick = () => {
+    fileInputRef.current?.click();
+  };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,9 +218,34 @@ const UserProfilePage = () => {
               <div className="flex-1 space-y-2 text-center sm:text-left">
                 <h3 className="font-medium">{name || "User"}</h3>
                 <p className="text-sm text-muted-foreground">{email}</p>
-                <Button variant="outline" type="button" size="sm">
-                  Change Photo
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    type="button" 
+                    size="sm"
+                    onClick={handleChangePhotoClick}
+                    disabled={isUploadingImage}
+                  >
+                    {isUploadingImage ? (
+                      <>
+                        <Upload className="h-4 w-4 mr-2 animate-spin" />
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-4 w-4 mr-2" />
+                        Change Photo
+                      </>
+                    )}
+                  </Button>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
               </div>
             </div>
 
