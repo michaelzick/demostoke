@@ -93,6 +93,11 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
     }
   };
 
+  // Helper function to format currency with proper decimal places
+  const formatCurrency = (amount: number): string => {
+    return parseFloat(amount.toFixed(2)).toFixed(2);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -208,7 +213,7 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
                   <span className={`text-xs text-center font-medium ${!isSelected ? 'text-gray-400' : ''}`}>
                     {addOn.name}
                   </span>
-                  <span className="text-xs text-muted-foreground">${addOn.pricePerDay}/day</span>
+                  <span className="text-xs text-muted-foreground">${formatCurrency(addOn.pricePerDay)}/day</span>
                 </div>
               );
             })}
@@ -224,21 +229,21 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
             <div className="text-sm space-y-1">
               <div className="flex justify-between">
                 <span>{equipment.name}</span>
-                <span>${equipment.pricePerDay} x {numDays} days = ${equipment.pricePerDay * numDays}</span>
+                <span>${formatCurrency(equipment.pricePerDay)} x {numDays} days = ${formatCurrency(equipment.pricePerDay * numDays)}</span>
               </div>
               {selectedAddOns.map((addOn) => (
                 <div key={addOn.name} className="flex justify-between">
                   <span>{addOn.name}</span>
-                  <span>${addOn.pricePerDay} x {numDays} days = ${addOn.pricePerDay * numDays}</span>
+                  <span>${formatCurrency(addOn.pricePerDay)} x {numDays} days = ${formatCurrency(addOn.pricePerDay * numDays)}</span>
                 </div>
               ))}
               <div className="flex justify-between">
                 <span>Service fee</span>
-                <span>${Math.round(totalPrice * numDays * 0.1)}</span>
+                <span>${formatCurrency(totalPrice * numDays * 0.1)}</span>
               </div>
               <div className="border-t pt-2 mt-2 font-medium flex justify-between">
                 <span>Total</span>
-                <span>${totalPrice * numDays + Math.round(totalPrice * numDays * 0.1)}</span>
+                <span>${formatCurrency(totalPrice * numDays + totalPrice * numDays * 0.1)}</span>
               </div>
             </div>
           </div>
