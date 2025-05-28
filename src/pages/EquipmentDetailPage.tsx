@@ -17,11 +17,14 @@ import ReviewsTab from "@/components/equipment-detail/ReviewsTab";
 import PolicyTab from "@/components/equipment-detail/PolicyTab";
 import OwnerCard from "@/components/equipment-detail/OwnerCard";
 import SimilarEquipment from "@/components/equipment-detail/SimilarEquipment";
+import FrequentlyPairedTogether from "@/components/equipment-detail/FrequentlyPairedTogether";
 
 const EquipmentDetailPage = () => {
   const { id } = useParams<{ id: string; }>();
   const [waiverCompleted, setWaiverCompleted] = useState(false);
   const [showWaiver, setShowWaiver] = useState(false);
+  const [selectedRange, setSelectedRange] = useState<{ from?: Date; to?: Date }>({});
+  const [isDateSelected, setIsDateSelected] = useState(false);
 
   const equipment = useMemo(() =>
     mockEquipment.find(item => item.id === id) || mockEquipment[0],
@@ -65,6 +68,11 @@ const EquipmentDetailPage = () => {
         bookingCardRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     }, 100);
+  };
+
+  const handleDemoRequest = () => {
+    // Handle demo request logic here
+    console.log("Demo requested for equipment:", equipment.name);
   };
 
   return (
@@ -176,6 +184,14 @@ const EquipmentDetailPage = () => {
               onWaiverClick={handleOpenWaiver} 
             />
           </Card>
+
+          {/* Frequently Paired Together */}
+          <FrequentlyPairedTogether
+            equipment={equipment}
+            onDemoRequest={handleDemoRequest}
+            selectedRange={selectedRange}
+            isDateSelected={isDateSelected}
+          />
 
           {/* Similar Equipment */}
           <SimilarEquipment similarEquipment={similarEquipment} />
