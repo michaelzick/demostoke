@@ -72,8 +72,8 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
     });
   };
 
-  // Form validation check - need both dates
-  const formIsValid = startDate && endDate;
+  // Form validation check - need both dates (convert to boolean)
+  const formIsValid = Boolean(startDate && endDate);
 
   return (
     <div className="space-y-4">
