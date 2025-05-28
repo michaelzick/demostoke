@@ -32,11 +32,11 @@ const HomePage = () => {
       <FeaturedGearSection
         title="Trending"
         equipment={featuredUsedGear}
-        className="bg-white dark:bg-zinc-900"
-      />
+        />
       <FeaturedGearSection
         title="Fresh Picks"
         equipment={hotAndFreshEquipment}
+        className="bg-white dark:bg-zinc-900"
       />
       <CategoriesSection />
       <CtaSection />
