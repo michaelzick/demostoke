@@ -15,6 +15,11 @@ const PriceSummary = ({ equipment, selectedAddOns, numDays, totalPrice }: PriceS
     return parseFloat(amount.toFixed(2)).toFixed(2);
   };
 
+  // Service fee is 10% of one day's total price (equipment + add-ons)
+  const serviceFee = totalPrice * 0.1;
+  const subtotal = totalPrice * numDays;
+  const finalTotal = subtotal + serviceFee;
+
   return (
     <div className="space-y-2 pt-2">
       <div className="p-3 bg-muted/50 rounded-md">
@@ -32,11 +37,11 @@ const PriceSummary = ({ equipment, selectedAddOns, numDays, totalPrice }: PriceS
           ))}
           <div className="flex justify-between">
             <span>Service fee</span>
-            <span>${formatCurrency(totalPrice * numDays * 0.1)}</span>
+            <span>${formatCurrency(serviceFee)}</span>
           </div>
           <div className="border-t pt-2 mt-2 font-medium flex justify-between">
             <span>Total</span>
-            <span>${formatCurrency(totalPrice * numDays + totalPrice * numDays * 0.1)}</span>
+            <span>${formatCurrency(finalTotal)}</span>
           </div>
         </div>
       </div>
