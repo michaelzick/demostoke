@@ -18,6 +18,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const UserProfilePage = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -287,25 +298,42 @@ const UserProfilePage = () => {
                       </>
                     )}
                   </Button>
-                  <Button
-                    variant="outline"
-                    type="button"
-                    size="sm"
-                    onClick={handleDeletePhoto}
-                    disabled={isUploadingImage || isDeletingImage}
-                  >
-                    {isDeletingImage ? (
-                      <>
-                        <Trash2 className="h-4 w-4 mr-2 animate-spin" />
-                        Deleting...
-                      </>
-                    ) : (
-                      <>
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete Photo
-                      </>
-                    )}
-                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        type="button"
+                        size="sm"
+                        disabled={isUploadingImage || isDeletingImage}
+                      >
+                        {isDeletingImage ? (
+                          <>
+                            <Trash2 className="h-4 w-4 mr-2 animate-spin" />
+                            Deleting...
+                          </>
+                        ) : (
+                          <>
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete Photo
+                          </>
+                        )}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Profile Photo</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete your profile photo? This action cannot be undone. Your photo will be replaced with a default avatar.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeletePhoto}>
+                          Delete Photo
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
                 <input
                   ref={fileInputRef}
