@@ -24,6 +24,9 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
   const paddleMaterials = ["Epoxy", "Inflatable", "Carbon Fiber", "Plastic"];
   const skateboardMaterials = ["Wood", "Plastic", "Aluminum", "Carbon Fiber"];
 
+  // Individual owners for skateboards (cycling through personas)
+  const skateboardOwnerIds = ["owner-1", "owner-2", "owner-3", "owner-4", "owner-5", "owner-6", "owner-7", "owner-8", "owner-9", "owner-10"];
+
   return Array.from({ length: count }).map((_, i) => {
     const id = staticIds[i]; // Use static ID
     const category = categories[i % categories.length]; // Cycle through categories
@@ -42,7 +45,8 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         ownerId = "shop-the-pow-house";
         break;
       case "skateboards":
-        ownerId = "party-skate-collective";
+        // Use individual owners for skateboards, cycling through them
+        ownerId = skateboardOwnerIds[i % skateboardOwnerIds.length];
         break;
       default:
         ownerId = `owner-${(i % 10) + 1}`;
@@ -80,7 +84,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         name = `${['Street', 'Cruiser', 'Longboard', 'Pool'][i % 4]} Skateboard`;
         material = skateboardMaterials[i % skateboardMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][i % 4]} Skaters`;
-        imageUrl = `https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80`;
+        imageUrl = `https://images.unsplash.com/photo-1520045892732-304bc3ac45f1d?auto=format&fit=crop&w=800&q=80`;
         break;
       default:
         name = "Equipment";

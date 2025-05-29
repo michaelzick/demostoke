@@ -38,17 +38,5 @@ export const shopOwners: GearOwner[] = [
     memberSince: "2010",
     personality: "Mountain Sports Shop",
     shopId: "the-pow-house"
-  },
-  {
-    id: "party-skate-collective",
-    name: "LA Skate Collective",
-    imageUrl: "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=300&q=80",
-    rating: 4.6,
-    responseRate: 94,
-    bio: "The LA Skate Collective formed in 2020 when a group of passionate skateboarders decided to pool their resources and share their extensive board collection with the broader skating community. What started as friends lending boards to each other has evolved into one of LA's most trusted sources for quality skateboard rentals.\n\nOur collective represents the diversity of LA's skate scene. We have street skaters from downtown, vert riders from the legendary pools, longboard cruisers from the beach paths, and everything in between. This diversity is reflected in our board collection, which includes setups for every style of skating and skill level.\n\nEach board in our collection has been carefully selected and maintained by experienced skaters who understand the importance of quality equipment. We carry complete setups from respected brands like Santa Cruz, Powell Peralta, Independent, and Bones, as well as custom builds featuring local shaper work and unique graphics.\n\nWhat sets us apart is our community-focused approach. When you rent from us, you're not just getting a board—you're getting insider knowledge about the best spots, current scene happenings, and safety tips from riders who skate these streets daily. We provide recommendations based on your skill level and what you want to experience, whether that's cruising the Venice boardwalk or hitting technical street spots.\n\nWe're committed to keeping skateboarding accessible and building community. A portion of our rental proceeds goes toward maintaining local DIY spots and supporting youth skate programs. We believe skateboarding should be available to everyone, regardless of economic background.\n\nOur rental process is flexible and skater-friendly. We understand that sessions can run long and plans can change, so we work with you to ensure you get the most out of your time on four wheels. Hit us up for recommendations on spots, events, or just to talk skating—we're always down to help fellow skaters discover what makes LA's scene so special.",
-    location: "Los Angeles, CA",
-    memberSince: "2020",
-    personality: "Community Collective",
-    partyId: "skate-collective"
   }
 ];
