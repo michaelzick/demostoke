@@ -1,4 +1,3 @@
-
 import { Equipment, GearOwner } from "@/types";
 import { generateRandomLocation, losAngelesLocations, losAngelesLat, losAngelesLng } from "./locations";
 import { shopOwners } from "./shopOwners";
@@ -84,7 +83,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         name = `${['Street', 'Cruiser', 'Longboard', 'Pool'][i % 4]} Skateboard`;
         material = skateboardMaterials[i % skateboardMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][i % 4]} Skaters`;
-        imageUrl = `https://images.unsplash.com/photo-1520045892732-304bc3ac45f1e?auto=format&fit=crop&w=800&q=80`;
+        imageUrl = `https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=800&q=80`;
         break;
       default:
         name = "Equipment";
