@@ -48,31 +48,27 @@ export const searchBlogPostsWithNLP = async (query: string, posts: BlogPost[]): 
       'advanced': ['advanced', 'expert', 'pro', 'master', 'technique'],
       'gear': ['gear', 'equipment', 'setup', 'board', 'selection'],
       'technique': ['technique', 'tips', 'how to', 'method', 'skill'],
-      'safety': ['safety', 'protection', 'avalanche', 'precaution'],
-      'yoga': ['yoga', 'balance', 'mindfulness', 'meditation'],
-      'powder': ['powder', 'deep snow', 'backcountry'],
-      'wave': ['wave', 'surf', 'ocean', 'water'],
-      'park': ['park', 'bowl', 'ramp', 'transition'],
-      'street': ['street', 'urban', 'rail', 'ledge']
+      'safety': ['safety', 'protection', 'avalanche', 'precaution']
     };
-    
-    Object.values(keywords).flat().forEach(keyword => {
-      if (lowerQuery.includes(keyword)) {
+
+    // Add keyword matching scores
+    Object.entries(keywords).forEach(([category, synonyms]) => {
+      if (synonyms.some(word => lowerQuery.includes(word))) {
         score += 2;
       }
     });
-    
-    return { post, score };
+
+    return {
+      post,
+      score
+    };
   });
-  
-  // Filter posts with score > 0 and sort by score
-  const filteredPosts = scoredPosts
-    .filter(({ score }) => score > 0)
+
+  // Filter out posts with no score and sort by score descending
+  const results = scoredPosts
+    .filter(item => item.score > 0)
     .sort((a, b) => b.score - a.score)
-    .map(({ post }) => post);
-  
-  // Add a delay to simulate AI processing
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  return filteredPosts;
+    .map(item => item.post);
+
+  return results;
 };

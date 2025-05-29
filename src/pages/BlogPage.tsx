@@ -65,7 +65,7 @@ const BlogPage = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-16">
+      <div className="text-white py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
@@ -74,7 +74,7 @@ const BlogPage = () => {
             <p className="text-xl mb-8 text-blue-100">
               Discover tips, techniques, and stories from the world of outdoor gear
             </p>
-            
+
             {/* Search Bar */}
             <div className="flex max-w-md mx-auto gap-2">
               <div className="relative flex-1">
@@ -88,19 +88,19 @@ const BlogPage = () => {
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               </div>
-              <Button 
-                onClick={handleSearch} 
+              <Button
+                onClick={handleSearch}
                 disabled={isSearching}
                 className="bg-white text-blue-600 hover:bg-blue-50"
               >
                 {isSearching ? "Searching..." : "Search"}
               </Button>
             </div>
-            
+
             {searchQuery && (
               <div className="mt-4">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={clearSearch}
                   className="text-white border-white hover:bg-white hover:text-blue-600"
                 >
@@ -157,8 +157,8 @@ const BlogPage = () => {
                     </div>
                   </div>
                   <CardTitle className="line-clamp-2">
-                    <Link 
-                      to={`/blog/${post.id}`} 
+                    <Link
+                      to={`/blog/${post.id}`}
                       className="hover:text-primary transition-colors"
                     >
                       {post.title}
