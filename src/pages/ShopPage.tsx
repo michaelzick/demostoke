@@ -21,6 +21,8 @@ interface Shop {
   rating: number;
   reviewCount: number;
   categories: string[];
+  foundedYear: string;
+  aboutSection: string;
 }
 
 const shops: { [key: string]: Shop } = {
@@ -28,40 +30,46 @@ const shops: { [key: string]: Shop } = {
     id: "the-boarder",
     name: "The Boarder",
     description: "Los Angeles' premier surfboard shop with over 20 years of experience. We specialize in high-performance boards and custom shapes for all skill levels.",
-    imageUrl: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80",
     address: "1234 Venice Blvd, Venice, CA 90291",
     phone: "(310) 555-0123",
     website: "www.theboarder.com",
     hours: "Mon-Sun: 9AM-7PM",
     rating: 4.8,
     reviewCount: 127,
-    categories: ["surfboards"]
+    categories: ["surfboards"],
+    foundedYear: "2003",
+    aboutSection: "Founded in 2003, The Boarder has been Los Angeles' premier surfboard destination for over two decades. Located in the heart of Venice Beach, we're more than just a shop—we're a community of surfers passionate about the craft of board making and the art of riding waves.\n\nOur team consists of seasoned shapers, professional surfers, and wave enthusiasts who understand that every surfer is unique. Whether you're taking your first steps into the lineup or you're a seasoned pro looking for that perfect custom board, we have the expertise and inventory to match you with your ideal ride.\n\nWe specialize in high-performance shortboards, classic longboards, and everything in between. Our custom shaping service allows you to work directly with master craftsmen to create a board tailored specifically to your style, local breaks, and performance goals."
   },
   "rei": {
     id: "rei",
     name: "REI",
     description: "Your local REI Co-op store offering premium stand-up paddleboards and outdoor gear. We're committed to helping you get outside and enjoy nature.",
-    imageUrl: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "https://logos-world.net/wp-content/uploads/2021/03/REI-Logo.png",
     address: "5678 Sunset Blvd, Los Angeles, CA 90028",
     phone: "(323) 555-0456",
     website: "www.rei.com",
     hours: "Mon-Sat: 10AM-9PM, Sun: 11AM-6PM",
     rating: 4.7,
     reviewCount: 89,
-    categories: ["sups"]
+    categories: ["sups"],
+    foundedYear: "1938",
+    aboutSection: "REI has been inspiring outdoor adventures since 1938, and our Los Angeles location continues that tradition by connecting people with the transformative power of the outdoors. As a co-op, we're owned by our members and driven by a shared passion for outdoor exploration and environmental stewardship.\n\nOur stand-up paddleboard selection represents the best in outdoor water sports equipment. We carry top brands known for their innovation, durability, and performance across various water conditions. From inflatable SUPs perfect for travel and storage to rigid boards designed for performance and touring, our curated selection ensures you'll find the right board for your adventures.\n\nWhat sets REI apart is our commitment to education and community. Our knowledgeable staff aren't just salespeople—they're outdoor enthusiasts who regularly use the gear we sell."
   },
   "the-pow-house": {
     id: "the-pow-house",
     name: "The Pow House",
     description: "Mountain sports headquarters featuring the latest snowboards and skis. From beginner setups to pro-level gear, we've got everything for your winter adventures.",
-    imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1486718448742-163732cd1544?auto=format&fit=crop&w=800&q=80",
     address: "9012 Mountain View Dr, Pasadena, CA 91103",
     phone: "(626) 555-0789",
     website: "www.thepowhouse.com",
     hours: "Mon-Fri: 10AM-8PM, Sat-Sun: 9AM-9PM",
     rating: 4.9,
     reviewCount: 156,
-    categories: ["snowboards", "skis"]
+    categories: ["snowboards", "skis"],
+    foundedYear: "2010",
+    aboutSection: "The Pow House opened in 2010 with a simple mission: to be Southern California's ultimate destination for mountain sports enthusiasts. Located in Pasadena, we serve as the gateway between LA's urban energy and the epic mountain terrain just hours away.\n\nOur snowboard and ski selection is carefully curated to handle everything from the groomers at Mountain High to the backcountry powder of the Eastern Sierra. We carry boards and skis from industry leaders like Burton, Lib Tech, K2, Salomon, and Atomic, as well as boutique brands that push the boundaries of design and performance.\n\nWhat makes The Pow House special is our deep understanding of the unique challenges SoCal riders face. We know you might be surfing in the morning and snowboarding in the afternoon, so we stock versatile, high-performance gear that travels well and performs in varying conditions."
   }
 };
 
@@ -105,6 +113,7 @@ const ShopPage = () => {
               <span className="text-lg">{shop.rating}</span>
               <span className="text-gray-300">({shop.reviewCount} reviews)</span>
             </div>
+            <p className="text-sm mb-2">Est. {shop.foundedYear}</p>
             <div className="flex flex-wrap gap-2">
               {shop.categories.map((category) => (
                 <Badge key={category} variant="secondary" className="capitalize">
@@ -122,12 +131,14 @@ const ShopPage = () => {
           <div className="lg:col-span-1">
             <Card>
               <CardHeader>
-                <CardTitle>Shop Information</CardTitle>
+                <CardTitle>About {shop.name}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-muted-foreground">{shop.description}</p>
+                <div className="whitespace-pre-line text-sm text-muted-foreground leading-relaxed">
+                  {shop.aboutSection}
+                </div>
                 
-                <div className="space-y-3">
+                <div className="space-y-3 pt-4 border-t">
                   <div className="flex items-start gap-3">
                     <MapPinIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
                     <div>

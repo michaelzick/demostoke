@@ -20,6 +20,7 @@ interface PrivateParty {
   responseRate: number;
   categories: string[];
   personality: string;
+  detailedBio: string;
 }
 
 const privateParties: { [key: string]: PrivateParty } = {
@@ -33,7 +34,8 @@ const privateParties: { [key: string]: PrivateParty } = {
     rating: 4.6,
     responseRate: 94,
     categories: ["skateboards"],
-    personality: "Community Collective"
+    personality: "Community Collective",
+    detailedBio: "The LA Skate Collective formed in 2020 when a group of passionate skateboarders decided to pool their resources and share their extensive board collection with the broader skating community. What started as friends lending boards to each other has evolved into one of LA's most trusted sources for quality skateboard rentals.\n\nOur collective represents the diversity of LA's skate scene. We have street skaters from downtown, vert riders from the legendary pools, longboard cruisers from the beach paths, and everything in between. This diversity is reflected in our board collection, which includes setups for every style of skating and skill level.\n\nEach board in our collection has been carefully selected and maintained by experienced skaters who understand the importance of quality equipment. We carry complete setups from respected brands like Santa Cruz, Powell Peralta, Independent, and Bones, as well as custom builds featuring local shaper work and unique graphics.\n\nWhat sets us apart is our community-focused approach. When you rent from us, you're not just getting a board—you're getting insider knowledge about the best spots, current scene happenings, and safety tips from riders who skate these streets daily."
   }
 };
 
@@ -112,7 +114,9 @@ const PrivatePartyPage = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-muted-foreground leading-relaxed">{party.bio}</p>
+                <div className="whitespace-pre-line text-sm text-muted-foreground leading-relaxed">
+                  {party.detailedBio}
+                </div>
                 
                 <div className="space-y-3 pt-4 border-t">
                   <div className="flex justify-between">
