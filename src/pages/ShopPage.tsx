@@ -60,7 +60,7 @@ const shops: { [key: string]: Shop } = {
     id: "the-pow-house",
     name: "The Pow House",
     description: "Mountain sports headquarters featuring the latest snowboards and skis. From beginner setups to pro-level gear, we've got everything for your winter adventures.",
-    imageUrl: "https://images.unsplash.com/photo-1486718448742-163732cd1544?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/img/logos/pow-house-logo.png",
     address: "9012 Mountain View Dr, Pasadena, CA 91103",
     phone: "(626) 555-0789",
     website: "www.thepowhouse.com",
