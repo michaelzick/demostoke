@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
@@ -66,6 +65,13 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
           onClick={onClose}
         >
           About
+        </Link>
+        <Link
+          to="/blog"
+          className="text-lg font-medium"
+          onClick={onClose}
+        >
+          Blog
         </Link>
         <div className="pt-4 border-t">
           {isAuthenticated ? (

@@ -49,13 +49,13 @@ const Footer = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    Partners
+                  <Link to="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    Blog
                   </Link>
                 </li>
                 <li>
                   <Link to="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    Blog
+                    Partners
                   </Link>
                 </li>
               </ul>

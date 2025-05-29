@@ -38,6 +38,9 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
       <Link to="/about" className="text-sm font-medium hover:text-primary transition-colors">
         About
       </Link>
+      <Link to="/blog" className="text-sm font-medium hover:text-primary transition-colors">
+        Blog
+      </Link>
       <button 
         className="flex items-center text-sm font-medium hover:text-primary transition-colors"
         onClick={onOpenSearch}

@@ -9,6 +9,8 @@ import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
 import ExplorePage from "./pages/ExplorePage";
 import AboutPage from "./pages/AboutPage";
+import BlogPage from "./pages/BlogPage";
+import BlogPostPage from "./pages/BlogPostPage";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import NotFound from "./pages/NotFound";
@@ -47,6 +49,8 @@ const App = () => (
                 <Route path="/shop/:shopId" element={<ShopPage />} />
                 <Route path="/party/:partyId" element={<PrivatePartyPage />} />
                 <Route path="about" element={<AboutPage />} />
+                <Route path="blog" element={<BlogPage />} />
+                <Route path="blog/:postId" element={<BlogPostPage />} />
                 <Route path="gear-listing" element={<GearListing />} />
                 <Route path="list-gear" element={<AddGearForm />} />
                 <Route path="edit-gear/:id" element={<EditGearForm />} />
