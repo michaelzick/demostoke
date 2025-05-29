@@ -1,5 +1,4 @@
-
-import { BlogPost } from "@/lib/blogData";
+import { BlogPost } from "@/lib/blog";
 
 export const searchBlogPostsWithNLP = async (query: string, posts: BlogPost[]): Promise<BlogPost[]> => {
   console.log(`Processing blog search query: "${query}"`);

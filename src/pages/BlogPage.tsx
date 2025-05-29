@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Clock, User, Calendar } from "lucide-react";
-import { blogPosts, BlogPost } from "@/lib/blogData";
+import { blogPosts, BlogPost } from "@/lib/blog";
 import { searchBlogPostsWithNLP } from "@/services/blogSearchService";
 
 const BlogPage = () => {
