@@ -23,6 +23,8 @@ import SearchResultsPage from "@/pages/SearchResultsPage";
 import MyEquipmentPage from "@/pages/MyEquipmentPage";
 import BookingsPage from "@/pages/BookingsPage";
 import AnalyticsPage from "@/pages/AnalyticsPage";
+import ShopPage from "@/pages/ShopPage";
+import PrivatePartyPage from "@/pages/PrivatePartyPage";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const queryClient = new QueryClient();
@@ -42,6 +44,8 @@ const App = () => (
                 <Route path="search" element={<SearchResultsPage />} />
                 <Route path="equipment/:id" element={<EquipmentDetailPage />} />
                 <Route path="/owner/:ownerId" element={<GearOwnerProfilePage />} />
+                <Route path="/shop/:shopId" element={<ShopPage />} />
+                <Route path="/party/:partyId" element={<PrivatePartyPage />} />
                 <Route path="about" element={<AboutPage />} />
                 <Route path="gear-listing" element={<GearListing />} />
                 <Route path="list-gear" element={<AddGearForm />} />

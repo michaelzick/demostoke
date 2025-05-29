@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { StarIcon } from "lucide-react";
+import { StarIcon, StoreIcon, UsersIcon } from "lucide-react";
 import { Equipment } from "@/types";
 
 interface EquipmentCardProps {
@@ -11,6 +11,16 @@ interface EquipmentCardProps {
 }
 
 const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
+  // Determine if this is from a shop or private party based on owner
+  const isShop = equipment.owner.shopId;
+  const isPrivateParty = equipment.owner.partyId;
+  
+  const ownerLinkPath = isShop 
+    ? `/shop/${equipment.owner.shopId}` 
+    : isPrivateParty 
+    ? `/party/${equipment.owner.partyId}`
+    : `/owner/${equipment.owner.id}`;
+
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
       <div className="relative aspect-[4/3] w-full overflow-hidden">
@@ -25,6 +35,25 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         >
           {equipment.category}
         </Badge>
+        {/* Shop or Private Party indicator */}
+        {isShop && (
+          <Badge
+            className="absolute top-2 left-2 bg-blue-600 hover:bg-blue-700"
+            variant="default"
+          >
+            <StoreIcon className="h-3 w-3 mr-1" />
+            Shop
+          </Badge>
+        )}
+        {isPrivateParty && (
+          <Badge
+            className="absolute top-2 left-2 bg-green-600 hover:bg-green-700"
+            variant="default"
+          >
+            <UsersIcon className="h-3 w-3 mr-1" />
+            Private
+          </Badge>
+        )}
       </div>
       <CardContent className="p-4">
         <div className="flex justify-between items-start gap-2 mb-2">
@@ -35,7 +64,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
           </div>
         </div>
         <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{equipment.description}</p>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-2">
           <div>
             <p className="text-sm font-medium">${equipment.pricePerDay}/day</p>
             <p className="text-xs text-muted-foreground">{equipment.location.name}</p>
@@ -43,6 +72,17 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <span>{equipment.distance}mi away</span>
           </div>
+        </div>
+        {/* Owner info with link */}
+        <div className="border-t pt-2">
+          <Link 
+            to={ownerLinkPath}
+            className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+          >
+            {isShop && <StoreIcon className="h-3 w-3" />}
+            {isPrivateParty && <UsersIcon className="h-3 w-3" />}
+            <span className="truncate">From {equipment.owner.name}</span>
+          </Link>
         </div>
       </CardContent>
       <CardFooter className="p-4 pt-0 flex justify-between">

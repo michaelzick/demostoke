@@ -1,4 +1,3 @@
-
 import { Equipment, GearOwner } from "@/types";
 
 // Helper function to generate random locations near a center point
@@ -27,6 +26,58 @@ const losAngelesLocations = [
 
 // Static IDs for equipment
 const staticIds = Array.from({ length: 30 }, (_, i) => `equip-${i + 1}`);
+
+// Define shop owners
+const shopOwners: GearOwner[] = [
+  {
+    id: "shop-the-boarder",
+    name: "The Boarder",
+    imageUrl: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&w=300&q=80",
+    rating: 4.8,
+    responseRate: 99,
+    bio: "Los Angeles' premier surfboard shop with over 20 years of experience. We specialize in high-performance boards and custom shapes for all skill levels.",
+    location: "Venice, CA",
+    memberSince: "2003",
+    personality: "Surf Shop",
+    shopId: "the-boarder"
+  },
+  {
+    id: "shop-rei",
+    name: "REI",
+    imageUrl: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&w=300&q=80",
+    rating: 4.7,
+    responseRate: 98,
+    bio: "Your local REI Co-op store offering premium stand-up paddleboards and outdoor gear. We're committed to helping you get outside and enjoy nature.",
+    location: "Los Angeles, CA",
+    memberSince: "1994",
+    personality: "Outdoor Retailer",
+    shopId: "rei"
+  },
+  {
+    id: "shop-the-pow-house",
+    name: "The Pow House",
+    imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=300&q=80",
+    rating: 4.9,
+    responseRate: 99,
+    bio: "Mountain sports headquarters featuring the latest snowboards and skis. From beginner setups to pro-level gear, we've got everything for your winter adventures.",
+    location: "Pasadena, CA",
+    memberSince: "2010",
+    personality: "Mountain Sports Shop",
+    shopId: "the-pow-house"
+  },
+  {
+    id: "party-skate-collective",
+    name: "LA Skate Collective",
+    imageUrl: "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=300&q=80",
+    rating: 4.6,
+    responseRate: 94,
+    bio: "A group of skateboard enthusiasts sharing our collection with the community. We've been collecting boards for over 10 years and love helping others find the perfect setup.",
+    location: "Los Angeles, CA",
+    memberSince: "2020",
+    personality: "Community Collective",
+    partyId: "skate-collective"
+  }
+];
 
 // Define persona owners with their bios
 export const ownerPersonas: GearOwner[] = [
@@ -164,9 +215,12 @@ export const ownerPersonas: GearOwner[] = [
   }
 ];
 
-// Map owner IDs to persona objects
-const ownerIdToPersona = Object.fromEntries(
-  ownerPersonas.map((persona) => [persona.id, persona])
+// Combine shop owners and persona owners
+const allOwners = [...shopOwners, ...ownerPersonas];
+
+// Map owner IDs to owner objects
+const ownerIdToOwner = Object.fromEntries(
+  allOwners.map((owner) => [owner.id, owner])
 );
 
 // Mock equipment data generator
@@ -185,6 +239,26 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
   return Array.from({ length: count }).map((_, i) => {
     const id = staticIds[i]; // Use static ID
     const category = categories[i % categories.length]; // Cycle through categories
+
+    // Assign owner based on category
+    let ownerId: string;
+    switch (category) {
+      case "surfboards":
+        ownerId = "shop-the-boarder";
+        break;
+      case "sups":
+        ownerId = "shop-rei";
+        break;
+      case "snowboards":
+      case "skis":
+        ownerId = "shop-the-pow-house";
+        break;
+      case "skateboards":
+        ownerId = "party-skate-collective";
+        break;
+      default:
+        ownerId = `owner-${(i % 10) + 1}`;
+    }
 
     // Generate different details based on category
     let name, material, suitable, imageUrl;
@@ -231,11 +305,10 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
     const location = generateRandomLocation(losAngelesLat, losAngelesLng, 8);
     const locationName = losAngelesLocations[i % losAngelesLocations.length];
 
-    // Use owner from personas
-    const ownerId = `owner-${(i % 10) + 1}`;
-    const ownerPersona = ownerIdToPersona[ownerId] || {
+    // Use owner from combined list
+    const ownerData = ownerIdToOwner[ownerId] || {
       id: ownerId,
-      name: `Owner ${(i % 10) + 1}`,
+      name: `Owner ${ownerId}`,
       imageUrl: `https://api.dicebear.com/6.x/avataaars/svg?seed=${i}`,
       rating: Number((Math.random() * 1 + 4).toFixed(1)),
       responseRate: Math.floor(Math.random() * 20) + 80,
@@ -250,7 +323,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
       pricePerDay: Math.floor(Math.random() * 30) + 20, // $20-$50
       rating: Number((Math.random() * 2 + 3).toFixed(1)), // 3.0-5.0 as a number
       reviewCount: Math.floor(Math.random() * 50) + 1,
-      owner: ownerPersona,
+      owner: ownerData,
       location: {
         lat: location.lat,
         lng: location.lng,
