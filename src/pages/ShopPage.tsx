@@ -25,12 +25,12 @@ interface Shop {
   aboutSection: string;
 }
 
-const shops: { [key: string]: Shop } = {
+const shops: { [key: string]: Shop; } = {
   "the-boarder": {
     id: "the-boarder",
     name: "The Boarder",
     description: "Los Angeles' premier surfboard shop with over 20 years of experience. We specialize in high-performance boards and custom shapes for all skill levels.",
-    imageUrl: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/img/logos/the-boarder-logo.webp",
     address: "1234 Venice Blvd, Venice, CA 90291",
     phone: "(310) 555-0123",
     website: "www.theboarder.com",
@@ -45,7 +45,7 @@ const shops: { [key: string]: Shop } = {
     id: "rei",
     name: "REI",
     description: "Your local REI Co-op store offering premium stand-up paddleboards and outdoor gear. We're committed to helping you get outside and enjoy nature.",
-    imageUrl: "https://logos-world.net/wp-content/uploads/2021/03/REI-Logo.png",
+    imageUrl: "/img/logos/rei-logo.webp",
     address: "5678 Sunset Blvd, Los Angeles, CA 90028",
     phone: "(323) 555-0456",
     website: "www.rei.com",
@@ -60,7 +60,7 @@ const shops: { [key: string]: Shop } = {
     id: "the-pow-house",
     name: "The Pow House",
     description: "Mountain sports headquarters featuring the latest snowboards and skis. From beginner setups to pro-level gear, we've got everything for your winter adventures.",
-    imageUrl: "/img/logos/pow-house-logo.png",
+    imageUrl: "/img/logos/the-pow-house-logo.webp",
     address: "9012 Mountain View Dr, Pasadena, CA 91103",
     phone: "(626) 555-0789",
     website: "www.thepowhouse.com",
@@ -74,7 +74,7 @@ const shops: { [key: string]: Shop } = {
 };
 
 const ShopPage = () => {
-  const { shopId } = useParams<{ shopId: string }>();
+  const { shopId } = useParams<{ shopId: string; }>();
   const shop = shopId ? shops[shopId] : null;
 
   useEffect(() => {
@@ -96,7 +96,7 @@ const ShopPage = () => {
   }
 
   // Filter equipment for this shop based on categories
-  const shopEquipment = mockEquipment.filter(item => 
+  const shopEquipment = mockEquipment.filter(item =>
     shop.categories.includes(item.category)
   );
 
@@ -137,7 +137,7 @@ const ShopPage = () => {
                 <div className="whitespace-pre-line text-sm text-muted-foreground leading-relaxed">
                   {shop.aboutSection}
                 </div>
-                
+
                 <div className="space-y-3 pt-4 border-t">
                   <div className="flex items-start gap-3">
                     <MapPinIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
@@ -146,7 +146,7 @@ const ShopPage = () => {
                       <p className="text-sm text-muted-foreground">{shop.address}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start gap-3">
                     <PhoneIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
                     <div>
@@ -154,7 +154,7 @@ const ShopPage = () => {
                       <p className="text-sm text-muted-foreground">{shop.phone}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start gap-3">
                     <GlobeIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
                     <div>
@@ -162,7 +162,7 @@ const ShopPage = () => {
                       <p className="text-sm text-muted-foreground">{shop.website}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-start gap-3">
                     <ClockIcon className="h-5 w-5 text-muted-foreground mt-0.5" />
                     <div>
@@ -181,13 +181,13 @@ const ShopPage = () => {
               <h2 className="text-2xl font-bold">Available Equipment</h2>
               <Badge variant="outline">{shopEquipment.length} items</Badge>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {shopEquipment.map((equipment) => (
                 <EquipmentCard key={equipment.id} equipment={equipment} />
               ))}
             </div>
-            
+
             {shopEquipment.length === 0 && (
               <div className="text-center py-12">
                 <h3 className="text-xl font-medium mb-2">No equipment available</h3>
