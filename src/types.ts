@@ -37,6 +37,8 @@ export interface GearOwner {
   location?: string;
   memberSince?: string;
   personality?: string;
+  shopId?: string;
+  partyId?: string;
 }
 
 export interface User {
