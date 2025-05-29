@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useAuth } from "@/helpers";
+import SquiggleUnderline from "./SquiggleUnderline";
 
 type DesktopNavigationProps = {
   onOpenSearch: () => void;
@@ -22,31 +23,37 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
   };
 
   return (
-    <nav className="hidden items-center space-x-6 lg:flex">
-      <Link to="/" className="text-sm font-medium hover:text-primary transition-colors">
+    <nav className="hidden items-center space-x-8 lg:flex">
+      <Link to="/" className="relative group text-base font-medium hover:text-primary transition-colors py-2">
         Home
+        <SquiggleUnderline />
       </Link>
-      <Link to="/explore" className="text-sm font-medium hover:text-primary transition-colors">
+      <Link to="/explore" className="relative group text-base font-medium hover:text-primary transition-colors py-2">
         Explore
+        <SquiggleUnderline />
       </Link>
       <button 
         onClick={handleListGearClick}
-        className="text-sm font-medium hover:text-primary transition-colors"
+        className="relative group text-base font-medium hover:text-primary transition-colors py-2"
       >
         List Your Gear
+        <SquiggleUnderline />
       </button>
-      <Link to="/about" className="text-sm font-medium hover:text-primary transition-colors">
+      <Link to="/about" className="relative group text-base font-medium hover:text-primary transition-colors py-2">
         About
+        <SquiggleUnderline />
       </Link>
-      <Link to="/blog" className="text-sm font-medium hover:text-primary transition-colors">
+      <Link to="/blog" className="relative group text-base font-medium hover:text-primary transition-colors py-2">
         Blog
+        <SquiggleUnderline />
       </Link>
       <button 
-        className="flex items-center text-sm font-medium hover:text-primary transition-colors"
+        className="relative group flex items-center text-base font-medium hover:text-primary transition-colors py-2"
         onClick={onOpenSearch}
       >
         <Search className="h-4 w-4 mr-2" />
         <span>Search</span>
+        <SquiggleUnderline />
       </button>
     </nav>
   );
