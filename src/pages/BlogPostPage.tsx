@@ -53,7 +53,7 @@ const BlogPostPage = () => {
       <div className="relative h-96 bg-cover bg-center" style={{ backgroundImage: `url(${post.heroImage})` }}>
         <div className="absolute inset-0 bg-black/40" />
         <div className="absolute top-8 left-8">
-          <Button variant="secondary" asChild>
+          <Button asChild>
             <Link to="/blog">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Blog
