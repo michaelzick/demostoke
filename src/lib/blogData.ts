@@ -1,4 +1,3 @@
-
 export interface BlogPost {
   id: string;
   title: string;
@@ -45,8 +44,8 @@ The learning curve for powder can be steep, but once you get it, you'll understa
     author: "Jake Morrison",
     publishedAt: "2024-01-15",
     readTime: 5,
-    heroImage: "https://images.unsplash.com/photo-1551524164-6cf64ac230c5?auto=format&fit=crop&w=1200&q=80",
-    thumbnail: "https://images.unsplash.com/photo-1551524164-6cf64ac230c5?auto=format&fit=crop&w=400&q=80",
+    heroImage: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=1200&q=80",
+    thumbnail: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=400&q=80",
     tags: ["powder", "technique", "gear", "backcountry"]
   },
   {
