@@ -11,33 +11,41 @@ export const supsPosts: BlogPost[] = [
 **Why SUP Yoga?**
 
 **Enhanced Core Engagement**
+
 The unstable surface of a paddleboard forces your core muscles to work continuously, providing a more intense workout than traditional yoga. Every pose becomes a balance challenge.
 
 **Mental Focus and Mindfulness**
+
 The water environment naturally promotes mindfulness. The gentle movement of the board, sounds of water, and outdoor setting create a meditative atmosphere that enhances yoga practice.
 
 **Connection with Nature**
+
 Practicing yoga on water deepens your connection to the natural environment. Sunrise and sunset sessions offer particularly magical experiences.
 
 **Full-Body Integration**
+
 The instability requires all muscle groups to work together, improving overall body awareness and coordination.
 
 **Essential Equipment**
 
 **SUP Board Selection**
+
 Choose a board specifically designed for yoga or a wide, stable all-around board:
+
 - Width: At least 33-36 inches for stability
 - Length: 10-11 feet for good tracking
 - Volume: Higher volume for better stability
 - Deck pad: Full-length pad for comfortable practice
 
 **Safety Equipment**
+
 - Personal Flotation Device (PFD) - required by law in many areas
 - Leash - ankle leash to stay connected to your board
 - Whistle - for emergency signaling
 - Sun protection - sunscreen, hat, UV-protective clothing
 
 **Optional Accessories**
+
 - Waterproof bag for valuables
 - Yoga mat designed for SUP (extra grip)
 - Water and snacks in waterproof containers
@@ -45,21 +53,27 @@ Choose a board specifically designed for yoga or a wide, stable all-around board
 **Getting Started Safely**
 
 **Choose Calm Waters**
+
 Begin in protected, shallow waters:
+
 - Lakes or calm bays ideal for beginners
 - Avoid areas with boat traffic
 - Check weather conditions before heading out
 - Practice in knee-deep water initially
 
 **Master Board Basics First**
+
 Before attempting yoga poses:
+
 - Learn proper paddling technique
 - Practice getting on and off the board
 - Understand how your board responds to movement
 - Build comfort being on the water
 
 **Start with Simple Poses**
+
 Begin with basic poses before progressing to complex sequences:
+
 - Focus on poses you're comfortable with on land
 - Modify poses as needed for the water environment
 - Use your hands for additional balance when needed
@@ -67,41 +81,53 @@ Begin with basic poses before progressing to complex sequences:
 **Fundamental SUP Yoga Poses**
 
 **Sukhasana (Easy Pose)**
+
 Perfect starting position for centering yourself:
+
 - Sit cross-legged in the center of the board
 - Focus on breath and board awareness
 - Establish your connection to the water
 
 **Tabletop Position**
+
 Essential base for many flowing sequences:
+
 - Hands and knees on the board
 - Distribute weight evenly
 - Maintain neutral spine alignment
 - Foundation for cat-cow movements
 
 **Child's Pose**
+
 Excellent resting position and balance recovery:
+
 - Knees apart, big toes touching
 - Sit back on heels, arms extended forward
 - Use when you need to reset balance
 - Safe position if feeling unstable
 
 **Downward Facing Dog**
+
 Classic pose with SUP modifications:
+
 - Hands firmly planted on the board
 - Engage core for stability
 - May need wider hand placement
 - Great for building upper body strength
 
 **Low Lunge**
+
 Builds strength while challenging balance:
+
 - One foot forward between hands
 - Back leg extended and strong
 - Use core engagement for stability
 - Excellent for hip flexibility
 
 **Warrior Poses**
+
 Powerful standing poses for strength building:
+
 - Start with Warrior II for stability
 - Progress to Warrior I as balance improves
 - Use soft knees for better balance
@@ -110,6 +136,7 @@ Powerful standing poses for strength building:
 **Building Your Practice**
 
 **Session Structure**
+
 - Warm-up: Gentle movements and breathing
 - Center practice: Core strengthening poses
 - Standing sequence: Balance-challenging poses
@@ -117,6 +144,7 @@ Powerful standing poses for strength building:
 - Savasana: Final relaxation
 
 **Breathing Techniques**
+
 - Deep diaphragmatic breathing for stability
 - Coordinate breath with movement
 - Use breath to maintain calm focus
@@ -125,18 +153,21 @@ Powerful standing poses for strength building:
 **Balance Strategies**
 
 **Visual Focus**
+
 - Find a fixed point on the horizon
 - Avoid looking down at the water
 - Soft gaze rather than intense staring
 - Use peripheral vision for board awareness
 
 **Core Engagement**
+
 - Maintain active core throughout practice
 - Think "belly button to spine"
 - Engage deeper core muscles, not just abs
 - Core stability prevents excessive swaying
 
 **Weight Distribution**
+
 - Keep weight centered over the board
 - Use micro-movements for balance
 - Spread contact points when possible
@@ -145,12 +176,14 @@ Powerful standing poses for strength building:
 **Falling and Recovery**
 
 **Embrace the Fall**
+
 - Falling is part of the learning process
 - Fall away from the board when possible
 - Protect your head and neck
 - Swim back to your board calmly
 
 **Getting Back On**
+
 - Approach from the side of the board
 - Use a strong pull-up motion
 - Get belly on board first, then rotate to sitting
@@ -159,18 +192,21 @@ Powerful standing poses for strength building:
 **Common Challenges and Solutions**
 
 **Fear of Falling**
+
 - Start in very shallow water
 - Practice falling and getting back on
 - Build confidence gradually
 - Remember the water is your safety net
 
 **Balance Difficulties**
+
 - Begin with wider stance poses
 - Use hands for additional support
 - Focus on core engagement
 - Accept wobbling as part of the practice
 
 **Environmental Factors**
+
 - Start in calm conditions
 - Be aware of wind and current
 - Choose protected locations
@@ -179,18 +215,21 @@ Powerful standing poses for strength building:
 **Progressing Your Practice**
 
 **Week 1-2: Foundation**
+
 - Focus on basic poses and balance
 - Build comfort on the board
 - Establish breathing patterns
 - Practice falling and recovery
 
 **Week 3-4: Building Sequences**
+
 - Link poses together
 - Add gentle flowing movements
 - Increase time in challenging poses
 - Explore different pose variations
 
 **Month 2+: Advanced Practice**
+
 - Attempt more challenging poses
 - Practice in varied conditions
 - Develop personal sequences
@@ -199,24 +238,28 @@ Powerful standing poses for strength building:
 **Safety Guidelines**
 
 **Weather Awareness**
+
 - Check conditions before launching
 - Avoid strong winds or storms
 - Be aware of temperature changes
 - Have a backup plan for changing conditions
 
 **Communication**
+
 - Let someone know your plans
 - Carry communication device if remote
 - Practice with others when possible
 - Know local emergency procedures
 
 **Physical Preparation**
+
 - Warm up properly before practice
 - Stay hydrated during sessions
 - Listen to your body's limits
 - Cool down after practice
 
 **Finding Community**
+
 - Join local SUP yoga classes
 - Connect with instructors for guidance
 - Participate in group sessions
@@ -242,9 +285,11 @@ Remember that every session on the water teaches you something new about balance
 **Understanding SUP Touring**
 
 **What Defines SUP Touring**
+
 SUP touring involves extended paddleboard journeys, typically lasting several hours to multiple days. These adventures combine paddling with camping, navigation, and wilderness skills.
 
 **Types of SUP Tours**
+
 - Day tours: 4-8 hour paddles with lunch stops
 - Overnight tours: 1-2 nights with camping
 - Multi-day expeditions: 3+ days in remote areas
@@ -255,7 +300,9 @@ SUP touring involves extended paddleboard journeys, typically lasting several ho
 **Essential Touring Equipment**
 
 **Specialized Touring Board**
+
 Choose boards designed for distance and cargo capacity:
+
 - Length: 11-14 feet for better tracking and speed
 - Width: 30-33 inches for balance between speed and stability
 - Volume: Higher volume to support gear weight
@@ -263,6 +310,7 @@ Choose boards designed for distance and cargo capacity:
 - Bungee storage: Extensive deck rigging for gear attachment
 
 **Navigation Equipment**
+
 - Waterproof map case with detailed charts
 - Compass with adjustable declination
 - GPS device or smartphone with offline maps
@@ -270,6 +318,7 @@ Choose boards designed for distance and cargo capacity:
 - Tide charts and current information
 
 **Safety and Communication**
+
 - VHF marine radio for coastal touring
 - Personal Locator Beacon (PLB) for remote areas
 - First aid kit in waterproof container
@@ -279,6 +328,7 @@ Choose boards designed for distance and cargo capacity:
 **Camping and Overnight Gear**
 
 **Shelter Systems**
+
 - Lightweight, quick-setup tent
 - Waterproof footprint or groundsheet
 - Compact sleeping bag rated for conditions
@@ -286,6 +336,7 @@ Choose boards designed for distance and cargo capacity:
 - Backup shelter option (bivy or tarp)
 
 **Cooking Equipment**
+
 - Lightweight camp stove and fuel
 - Compact cookset and utensils
 - Water purification system
@@ -293,6 +344,7 @@ Choose boards designed for distance and cargo capacity:
 - Biodegradable soap for cleanup
 
 **Clothing Systems**
+
 - Moisture-wicking base layers
 - Insulating layers for temperature regulation
 - Waterproof/breathable outer shell
@@ -302,6 +354,7 @@ Choose boards designed for distance and cargo capacity:
 **Packing and Weight Distribution**
 
 **Waterproof Storage Systems**
+
 - Large dry bags for major gear categories
 - Smaller dry bags for organization
 - Clear bags for easy identification
@@ -309,6 +362,7 @@ Choose boards designed for distance and cargo capacity:
 - Backup waterproofing for critical items
 
 **Weight Distribution Principles**
+
 - Heavy items low and centered on board
 - Frequently used items easily accessible
 - Weight balanced fore and aft
@@ -316,6 +370,7 @@ Choose boards designed for distance and cargo capacity:
 - Test loaded board before departure
 
 **Deck Rigging Techniques**
+
 - Use quality bungee systems
 - Secure all gear with backup attachment
 - Practice loading and unloading sequences
@@ -325,6 +380,7 @@ Choose boards designed for distance and cargo capacity:
 **Route Planning and Logistics**
 
 **Research and Preparation**
+
 - Study detailed maps and charts
 - Identify camping spots and resupply points
 - Check regulations and permit requirements
@@ -332,6 +388,7 @@ Choose boards designed for distance and cargo capacity:
 - Plan emergency exit routes
 
 **Daily Distance Planning**
+
 - Beginner tours: 8-12 miles per day
 - Intermediate tours: 12-18 miles per day
 - Advanced tours: 18+ miles per day
@@ -339,6 +396,7 @@ Choose boards designed for distance and cargo capacity:
 - Build in flexibility for weather delays
 
 **Tidal and Current Considerations**
+
 - Plan around tidal cycles for efficiency
 - Understand how currents affect travel times
 - Use tides to assist rather than fight them
@@ -348,6 +406,7 @@ Choose boards designed for distance and cargo capacity:
 **Safety Protocols for Touring**
 
 **Group Management**
+
 - Establish communication protocols
 - Assign roles and responsibilities
 - Maintain visual contact while paddling
@@ -355,6 +414,7 @@ Choose boards designed for distance and cargo capacity:
 - Emergency action plans for separation
 
 **Weather Monitoring**
+
 - Check forecasts multiple times daily
 - Understand how to interpret weather signs
 - Have plans for various weather scenarios
@@ -362,6 +422,7 @@ Choose boards designed for distance and cargo capacity:
 - Monitor barometric pressure changes
 
 **Emergency Preparedness**
+
 - Detailed float plan with trusted contacts
 - Emergency contact information accessible
 - Multiple communication options
@@ -371,6 +432,7 @@ Choose boards designed for distance and cargo capacity:
 **Nutrition and Hydration**
 
 **Meal Planning**
+
 - High-energy, compact foods
 - Balance of carbohydrates, proteins, and fats
 - Foods that don't require refrigeration
@@ -378,6 +440,7 @@ Choose boards designed for distance and cargo capacity:
 - Easy preparation with minimal cleanup
 
 **Water Management**
+
 - Carry more water than you think you need
 - Multiple purification methods
 - Know reliable water sources along route
@@ -387,6 +450,7 @@ Choose boards designed for distance and cargo capacity:
 **Skills Development**
 
 **Advanced Paddling Techniques**
+
 - Efficient touring stroke for distance
 - Bracing and recovery in rough conditions
 - Rescue techniques for loaded boards
@@ -394,6 +458,7 @@ Choose boards designed for distance and cargo capacity:
 - Energy conservation strategies
 
 **Camping Skills**
+
 - Leave No Trace principles
 - Efficient camp setup and breakdown
 - Food storage and wildlife considerations
@@ -403,6 +468,7 @@ Choose boards designed for distance and cargo capacity:
 **Building Touring Experience**
 
 **Progressive Development**
+
 - Start with day tours to build endurance
 - Graduate to overnight trips
 - Increase distance and duration gradually
@@ -410,6 +476,7 @@ Choose boards designed for distance and cargo capacity:
 - Develop route-finding skills
 
 **Skill-Building Activities**
+
 - Practice loading and paddling with gear
 - Navigation exercises in familiar areas
 - Camping skills practice
@@ -419,6 +486,7 @@ Choose boards designed for distance and cargo capacity:
 **Popular Touring Destinations**
 
 **Coastal Touring**
+
 - Sea of Cortez, Mexico
 - San Juan Islands, Washington
 - Maine's Acadia region
@@ -426,6 +494,7 @@ Choose boards designed for distance and cargo capacity:
 - Great Lakes shorelines
 
 **River Touring**
+
 - Green River, Utah
 - Buffalo National River, Arkansas
 - Current River, Missouri
@@ -435,6 +504,7 @@ Choose boards designed for distance and cargo capacity:
 **Environmental Considerations**
 
 **Leave No Trace Principles**
+
 - Plan ahead and prepare
 - Travel and camp on durable surfaces
 - Dispose of waste properly
@@ -444,6 +514,7 @@ Choose boards designed for distance and cargo capacity:
 - Be considerate of other visitors
 
 **Wildlife Interactions**
+
 - Proper food storage techniques
 - Maintaining safe distances from wildlife
 - Understanding local wildlife behavior

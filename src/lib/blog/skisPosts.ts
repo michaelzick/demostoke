@@ -21,6 +21,7 @@ Ski bases are made of polyethylene (P-tex), a porous material that absorbs wax. 
 All-Temp Wax: Perfect for most recreational skiers, these waxes work well in a wide range of temperatures (typically 15°F to 40°F). They're convenient and forgiving, making them ideal for beginners.
 
 Temperature-Specific Wax: Designed for specific temperature ranges, these waxes offer superior performance when conditions match their intended use:
+
 - Cold wax: Below 20°F
 - Warm wax: Above 30°F
 - Racing wax: Ultra-specific formulations for competition
@@ -40,29 +41,36 @@ Fluorinated vs. Non-Fluorinated: Traditional fluorinated waxes offer superior pe
 **Step-by-Step Waxing Process**
 
 **Preparation**
+
 Clean your ski bases thoroughly with base cleaner to remove old wax and dirt. Ensure your workspace is well-ventilated and your skis are securely mounted in vises or clamps.
 
 **Temperature Setting**
+
 Set your iron to the appropriate temperature for your chosen wax (usually indicated on the wax packaging). Start with lower temperatures to avoid base damage.
 
 **Wax Application**
+
 - Touch the wax to the iron and let it drip onto the ski base
 - Create an even pattern of wax drips across the entire base
 - Use the iron to spread the wax evenly, maintaining constant motion
 - Never let the iron sit in one spot to avoid base damage
 
 **Cooling Period**
+
 Allow the wax to cool completely (at least 30 minutes). The wax should appear opaque when properly cooled.
 
 **Scraping**
+
 Using a sharp plastic scraper held at a 45-degree angle, remove excess wax from the base. Apply firm, consistent pressure and work from tip to tail.
 
 **Brushing**
+
 Use a brass or boar's hair brush to remove any remaining wax particles and create a smooth, fast surface. Brush from tip to tail with firm strokes.
 
 **Edge Maintenance**
 
-While waxing, don't forget about your edges:
+**While waxing, don't forget about your edges:**
+
 - Remove any rust or nicks with a file
 - Maintain proper edge angles (typically 1-3 degrees)
 - Deburr edges to prevent catching
@@ -93,7 +101,8 @@ Racing Preparation: Competitive skiers often use multiple wax layers and specifi
 
 **When to Seek Professional Help**
 
-Consider professional tuning for:
+**Consider professional tuning for:**
+
 - Major base repairs (core shots, deep gouges)
 - Significant edge damage
 - Annual comprehensive tune-ups
@@ -129,40 +138,56 @@ Avalanches occur when a weak layer in the snowpack fails under the weight of sno
 
 **Types of Avalanches**
 
-**Slab Avalanches**: The most dangerous for backcountry travelers. A cohesive layer of snow breaks away and slides as a unit. These can be triggered remotely and travel long distances.
+**Slab Avalanches**
 
-**Loose Snow Avalanches**: Start at a single point and gather snow as they descend, creating a fan-shaped debris field. Generally less dangerous but can still cause serious harm.
+The most dangerous for backcountry travelers. A cohesive layer of snow breaks away and slides as a unit. These can be triggered remotely and travel long distances.
 
-**Wet Avalanches**: Occur when liquid water weakens snow bonds, typically during warm weather or rain events.
+**Loose Snow Avalanches**
+
+Start at a single point and gather snow as they descend, creating a fan-shaped debris field. Generally less dangerous but can still cause serious harm.
+
+**Wet Avalanches**
+
+Occur when liquid water weakens snow bonds, typically during warm weather or rain events.
 
 **Essential Safety Equipment**
 
 Every backcountry skier must carry and know how to use:
 
-**Avalanche Transceiver**: Digital beacons that transmit and receive signals for buried victim location. Practice with your specific model regularly.
+**Avalanche Transceiver**
 
-**Probe**: Collapsible pole used to precisely locate buried victims after initial transceiver search. Choose probes at least 240cm long.
+Digital beacons that transmit and receive signals for buried victim location. Practice with your specific model regularly.
 
-**Shovel**: Metal blade essential for efficient rescue digging. Plastic shovels are inadequate for rescue situations.
+**Probe**
+
+Collapsible pole used to precisely locate buried victims after initial transceiver search. Choose probes at least 240cm long.
+
+**Shovel**
+
+Metal blade essential for efficient rescue digging. Plastic shovels are inadequate for rescue situations.
 
 **Risk Assessment Framework**
 
 **Weather Conditions**
+
 - Recent snowfall amounts and wind patterns
 - Temperature trends and warming rates
 - Precipitation type and intensity
 
 **Snowpack Analysis**
+
 - Layer identification through snow pits
 - Stability tests (compression test, extended column test)
 - Recent avalanche activity observations
 
 **Terrain Evaluation**
+
 - Slope angle measurement
 - Aspect consideration (wind loading, sun exposure)
 - Terrain traps and escape routes
 
 **Human Factors**
+
 - Group decision-making processes
 - Risk tolerance and experience levels
 - Time pressures and objective hazards
@@ -170,12 +195,14 @@ Every backcountry skier must carry and know how to use:
 **Planning Your Trip**
 
 **Pre-Trip Preparation**
+
 - Check current avalanche forecasts and bulletins
 - Study topographic maps and identify safe zones
 - Plan conservative routes with bailout options
 - Inform others of your plans and expected return
 
 **Route Selection**
+
 - Choose terrain appropriate for current conditions
 - Identify safe zones for regrouping and evaluation
 - Plan escape routes and avoid terrain traps
@@ -184,12 +211,14 @@ Every backcountry skier must carry and know how to use:
 **Travel Protocols**
 
 **Group Management**
+
 - Travel one at a time through avalanche terrain
 - Maintain visual and voice contact
 - Designate spotters in safe positions
 - Have a plan for rescue scenarios
 
 **Exposure Minimization**
+
 - Cross slopes quickly and efficiently
 - Avoid lingering in hazardous areas
 - Choose ridgelines and valley floors when possible
@@ -198,6 +227,7 @@ Every backcountry skier must carry and know how to use:
 **Rescue Procedures**
 
 **If Someone is Caught**
+
 1. Mark last seen point
 2. Watch victim throughout slide
 3. Mark final seen point
@@ -205,6 +235,7 @@ Every backcountry skier must carry and know how to use:
 5. Begin signal search immediately
 
 **Search Strategy**
+
 - Signal search to locate general area
 - Coarse search to narrow signal
 - Fine search to pinpoint location
@@ -214,11 +245,13 @@ Every backcountry skier must carry and know how to use:
 **Education and Training**
 
 **Formal Courses**
+
 Level 1: Basic avalanche awareness and rescue
 Level 2: Advanced snowpack analysis and trip planning
 Level 3: Professional-level instruction and rescue
 
 **Ongoing Learning**
+
 - Regular practice with rescue equipment
 - Snowpack observation and analysis
 - Reading avalanche bulletins and forecasts
@@ -227,24 +260,28 @@ Level 3: Professional-level instruction and rescue
 **Technology Tools**
 
 **Avalanche Forecasting Apps**
+
 - AvyLab: Interactive avalanche education
 - UAC Mobile: Comprehensive forecast information
 - Mountain-Forecast: Weather and avalanche data
 
 **Planning Software**
+
 - CalTopo: Advanced mapping and route planning
 - Gaia GPS: Offline maps and tracking
 - FatMap: 3D terrain visualization
 
 **Building Experience Safely**
 
-Start with:
+**Start with:**
+
 - Guided instruction and mentorship
 - Conservative terrain choices
 - Favorable weather windows
 - Experienced partners
 
-Progress to:
+**Progress to:**
+
 - Independent assessment skills
 - Complex terrain evaluation
 - Advanced rescue scenarios
@@ -252,7 +289,8 @@ Progress to:
 
 **Red Flags to Avoid**
 
-Never enter avalanche terrain when:
+**Never enter avalanche terrain when:**
+
 - Recent heavy snowfall (>30cm in 24 hours)
 - High winds creating wind slabs
 - Rapid warming or rain events
@@ -261,13 +299,15 @@ Never enter avalanche terrain when:
 
 **Group Dynamics**
 
-Poor decision-making often results from:
+**Poor decision-making often results from:**
+
 - Social pressure to continue
 - "Summit fever" or goal fixation
 - Inadequate communication
 - Inexperienced leadership
 
-Foster good group dynamics through:
+**Foster good group dynamics through:**
+
 - Open communication about concerns
 - Democratic decision-making processes
 - Willingness to turn back

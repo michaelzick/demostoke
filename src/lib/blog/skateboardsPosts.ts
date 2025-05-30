@@ -1,4 +1,3 @@
-
 import { BlogPost } from './types';
 
 export const skateboardsPosts: BlogPost[] = [
@@ -11,26 +10,31 @@ export const skateboardsPosts: BlogPost[] = [
 **Essential Skateboard Components**
 
 **Deck Selection**
+
 The foundation of your setup, skateboard decks vary in size, shape, and construction:
 
 **Size Considerations:**
+
 - Width: 7.5" - 8.75" (most common range)
 - Length: 29" - 33" (varies with width and brand)
 - Wheelbase: Distance between truck mounting holes
 
 **Width Guidelines:**
+
 - 7.5" - 7.75": Street skating, technical tricks
 - 7.75" - 8.25": Versatile for street and park
 - 8.25" - 8.5": Park, bowl, and transition skating
 - 8.5"+: Cruising, old school, and big feet
 
 **Deck Construction:**
+
 - 7-ply maple: Standard construction, good durability
 - 8-ply or 9-ply: Extra strength for heavy riders
 - Bamboo core: Lighter weight, flexible feel
 - Carbon fiber: Premium strength and pop
 
 **Shape Variations:**
+
 - Popsicle: Modern symmetrical shape
 - Old school: Wider, more pointed nose
 - Cruiser: Longer, often with kicktail only
@@ -39,12 +43,14 @@ The foundation of your setup, skateboard decks vary in size, shape, and construc
 **Truck Selection and Setup**
 
 **Truck Basics**
+
 Trucks connect your wheels to your deck and allow for turning. Key measurements include:
 - Axle width should match deck width
 - Standard truck widths: 139mm, 144mm, 149mm, 159mm, 169mm
 - Height affects ride feel and wheel clearance
 
 **Truck Components:**
+
 - Baseplate: Mounts to deck, determines turning geometry
 - Hanger: Holds axles and affects turn radius
 - Kingpin: Central bolt that holds truck together
@@ -52,12 +58,14 @@ Trucks connect your wheels to your deck and allow for turning. Key measurements 
 - Pivot cup: Allows smooth truck rotation
 
 **Bushing Selection:**
+
 Bushings dramatically affect how your board turns:
 - Soft bushings (78A-87A): Loose, surfy feel
 - Medium bushings (88A-92A): Balanced performance
 - Hard bushings (93A-100A): Stable, less turn
 
 **Truck Tuning:**
+
 - Kingpin tightness: Looser for carving, tighter for stability
 - Front/rear balance: Many prefer slightly looser front truck
 - Bushing combinations: Mix durometer for custom feel
@@ -66,6 +74,7 @@ Bushings dramatically affect how your board turns:
 **Wheel Selection**
 
 **Wheel Specifications**
+
 Wheels affect speed, grip, and trick performance:
 - Diameter: 50mm-60mm+ (measured in millimeters)
 - Durometer: Hardness rated on A-scale (78A-101A)
@@ -73,17 +82,20 @@ Wheels affect speed, grip, and trick performance:
 - Core placement: Affects acceleration and roll speed
 
 **Size Guidelines:**
+
 - 50mm-53mm: Street skating, technical tricks
 - 54mm-56mm: Versatile street/park riding
 - 57mm-60mm: Cruising, rough surfaces
 - 60mm+: Longboarding, transportation
 
 **Hardness Selection:**
+
 - 78A-87A: Soft, smooth ride, good grip
 - 88A-95A: Medium, versatile performance
 - 96A-101A: Hard, fast, good for tricks
 
 **Wheel Shapes:**
+
 - Rounded edges: Better for sliding and tricks
 - Square edges: Maximum grip and contact
 - Beveled edges: Compromise between round and square
@@ -91,6 +103,7 @@ Wheels affect speed, grip, and trick performance:
 **Bearing Installation and Maintenance**
 
 **Bearing Basics**
+
 Skateboard bearings use ABEC rating system:
 - ABEC 3: Basic quality, adequate for most riders
 - ABEC 5: Good quality, smooth rolling
@@ -98,12 +111,14 @@ Skateboard bearings use ABEC rating system:
 - ABEC 9: Premium quality, racing precision
 
 **Bearing Installation:**
+
 - Press bearings fully into wheel
 - Use bearing tool or truck axle for installation
 - Ensure bearings sit flush with wheel
 - Install bearing spacers if using them
 
 **Maintenance Schedule:**
+
 - Clean bearings every 2-3 months
 - Replace when worn or contaminated
 - Use appropriate lubricants (bearing oil or grease)
@@ -112,12 +127,14 @@ Skateboard bearings use ABEC rating system:
 **Hardware and Accessories**
 
 **Mounting Hardware**
+
 - Bolts: 7/8" for standard setups, 1" with shock pads
 - Phillips or Allen head options
 - Colored hardware for customization
 - Thread locker for loose bolt prevention
 
 **Optional Components:**
+
 - Shock pads: Reduce vibration and board stress
 - Riser pads: Increase height and prevent wheel bite
 - Rail guards: Protect deck during grinds
@@ -126,6 +143,7 @@ Skateboard bearings use ABEC rating system:
 **Assembly Process**
 
 **Step-by-Step Setup**
+
 1. Apply grip tape to deck (if not pre-gripped)
 2. Mark and drill truck mounting holes
 3. Install trucks with appropriate hardware
@@ -135,6 +153,7 @@ Skateboard bearings use ABEC rating system:
 7. Test setup and fine-tune
 
 **Grip Tape Application:**
+
 - Clean deck surface thoroughly
 - Apply from center outward to avoid bubbles
 - Use blade to cut around deck edge
@@ -143,12 +162,14 @@ Skateboard bearings use ABEC rating system:
 **Customization Options**
 
 **Graphics and Aesthetics**
+
 - Custom deck graphics or stickers
 - Colored wheels and bushings
 - Matching or contrasting hardware
 - Personalized grip tape patterns
 
 **Performance Modifications**
+
 - Different bushing combinations
 - Precision bearings for smoother roll
 - Specialized wheels for specific terrain
@@ -157,18 +178,21 @@ Skateboard bearings use ABEC rating system:
 **Maintenance and Care**
 
 **Regular Inspection**
+
 - Check for loose hardware weekly
 - Inspect bearings for wear or contamination
 - Monitor wheel wear patterns
 - Examine deck for stress cracks
 
 **Cleaning Routine**
+
 - Wipe down deck after sessions
 - Clean bearings when they slow down
 - Remove debris from trucks and hardware
 - Replace worn components promptly
 
 **Storage Considerations**
+
 - Store in dry environment
 - Avoid extreme temperatures
 - Support deck properly to prevent warping
@@ -177,12 +201,14 @@ Skateboard bearings use ABEC rating system:
 **Common Setup Mistakes**
 
 **Sizing Errors**
+
 - Trucks too wide or narrow for deck
 - Wheels too large causing wheel bite
 - Hardware too short for proper mounting
 - Bearings installed incorrectly
 
 **Tuning Problems**
+
 - Trucks too tight or loose for riding style
 - Mismatched bushing durometers
 - Uneven truck tightness front to rear
@@ -191,12 +217,14 @@ Skateboard bearings use ABEC rating system:
 **Budget Considerations**
 
 **Complete Setups vs. Individual Parts**
+
 - Complete boards: Convenient, often less expensive
 - Individual parts: Better quality control, customization
 - Used components: Budget-friendly but inspect carefully
 - Gradual upgrades: Improve one component at a time
 
 **Quality vs. Price Balance**
+
 - Invest more in trucks and bearings (longer lasting)
 - Wheels need regular replacement
 - Decks are personal preference and style
@@ -204,7 +232,255 @@ Skateboard bearings use ABEC rating system:
 
 Remember that your skateboard setup should match your riding style, skill level, and the terrain you skate most often. Start with a balanced setup and make adjustments based on your experience and preferences.
 
-The perfect setup evolves as you develop as a skater, so don't be afraid to experiment with different components to find what works best for you.`,
+The perfect setup evolves as you develop as a skater, so don't be afraid to experiment with different components to find what works best for you.
+
+**What Defines Street Skating**
+
+Street skating uses urban architecture and obstacles as skateable features:
+
+- Stairs and handrails
+- Ledges and manual pads
+- Banks and transition walls
+- Gaps and launch ramps
+- Natural and found obstacles
+
+**Street vs. Park Skating**
+
+While park skating happens in designed environments, street skating adapts to existing urban features:
+
+- More variable and unpredictable surfaces
+- Natural obstacles with unique characteristics
+- Greater emphasis on creativity and adaptation
+- Integration with urban environment and architecture
+
+**Essential Street Skating Skills**
+
+**Fundamental Techniques**
+
+Before attempting street obstacles, master these basics:
+
+**Riding Fundamentals:**
+
+- Comfortable pushing and turning
+- Confident stopping and speed control
+- Basic manual and nose manual
+- Kickturns and reverts
+- Drop-in confidence
+
+**Core Trick Foundation:**
+
+- Ollie: Essential for clearing obstacles
+- Shuvit: Basic rotation trick
+- Kickflip: Fundamental flip trick
+- Frontside/backside 180s: Rotation basics
+- Pop shuvit: Combining pop and rotation
+
+**Identifying Skateable Features**
+
+Develop an eye for street spots:
+
+- Ledges: Height, length, surface quality
+- Stairs: Number of steps, landing space, approach angle
+- Rails: Height, angle, material, run-up distance
+- Banks: Angle, surface, transition quality
+- Gaps: Distance, landing surface, safety factors
+
+**Assessing Spot Quality**
+
+- Surface condition and materials
+- Approach and landing areas
+- Safety considerations and escape routes
+- Legal and social considerations
+- Traffic and pedestrian factors
+
+**Spot Preparation**
+
+- Clear debris and obstacles
+- Check for rough or damaged surfaces
+- Assess lighting conditions
+- Consider waxing rough ledges
+- Plan setup and breakdown logistics
+
+**Fundamental Street Obstacles**
+
+**Ledges and Manual Pads**
+
+Perfect for learning basic tricks:
+
+- Start with low, smooth ledges
+- Practice board slides and lipslides
+- Work on manual combinations
+- Progress to higher and longer obstacles
+
+**Common Ledge Tricks:**
+
+- 50-50 grind: Both trucks on ledge
+- 5-0 grind: Back truck only
+- Boardslide: Board perpendicular to ledge
+- Lipslide: Opposite of boardslide
+- Feeble and smith grinds: Technical variations
+
+**Stairs and Sets**
+
+Building confidence with stair skating:
+
+- Start with small 2-3 stair sets
+- Focus on clean ollies and landings
+- Practice different flip tricks down stairs
+- Learn to handle rough landings
+- Progress gradually to larger sets
+
+**Stair Progression:**
+
+- Rolling down stairs for comfort
+- Ollie small sets (2-3 stairs)
+- Add flip tricks to small sets
+- Tackle medium sets (4-7 stairs)
+- Advanced: Large sets and technical tricks
+
+**Handrails and Round Rails**
+
+Technical grinding features:
+
+- Start with low, easy rails
+- Learn approach angles and lock-in techniques
+- Master basic grinds before progressing
+- Understand rail materials and their characteristics
+- Practice commitment and confidence building
+
+**Technical Skill Development**
+
+**Approach and Setup**
+
+- Proper speed for different obstacles
+- Angle of approach for grinds and slides
+- Foot positioning and weight distribution
+- Mental preparation and visualization
+- Timing and rhythm development
+
+**Lock-in Techniques**
+
+- Clean trick execution into grinds
+- Proper weight distribution on obstacles
+- Balance and adjustment during grinds
+- Understanding pressure points and balance
+- Developing muscle memory for consistency
+
+**Exit Strategies**
+
+- Clean exits from grinds and slides
+- Landing techniques for various obstacles
+- Recovery from failed attempts
+- Safety rollouts and bail techniques
+- Maintaining flow through trick sequences
+
+**Street Skating Etiquette**
+
+**Respecting Spots**
+
+- Don't damage property or leave debris
+- Respect "No Skating" signs and private property
+- Share spots courteously with other skaters
+- Keep noise levels reasonable
+- Clean up after sessions
+
+**Interaction with Public**
+
+- Be polite and respectful to pedestrians
+- Follow local laws and regulations
+- Avoid confrontational situations
+- Represent skateboarding positively
+- Know when to move along
+
+**Skater Etiquette**
+
+- Take turns at spots fairly
+- Help newer skaters learn and progress
+- Share spot information responsibly
+- Respect different skill levels and styles
+- Support the local skate scene
+
+**Safety in Street Skating**
+
+**Risk Assessment**
+
+- Evaluate consequences of falls
+- Consider environmental hazards
+- Assess your skill level honestly
+- Have spotters for dangerous attempts
+- Know your limits and respect them
+
+**Protective Gear Considerations**
+
+- Helmet for high-consequence spots
+- Knee pads for transition or bowl-style spots
+- Wrist guards for learning new tricks
+- Appropriate footwear for grip and protection
+- Consider shin guards for rail skating
+
+**Environmental Awareness**
+
+- Watch for pedestrians and traffic
+- Be aware of weather conditions affecting surfaces
+- Check for loose or broken obstacles
+- Understand lighting conditions
+- Plan for emergency situations
+
+**Building Street Skills Progressively**
+
+**Beginner Progression**
+
+- Master flatground tricks first
+- Start with low, forgiving obstacles
+- Focus on technique over difficulty
+- Build confidence gradually
+- Learn from more experienced skaters
+
+**Intermediate Development**
+
+- Combine tricks into flowing lines
+- Tackle more technical obstacles
+- Develop personal style and preferences
+- Learn to adapt tricks to different spots
+- Begin filming and documenting progress
+
+**Advanced Street Skating**
+
+- Seek out challenging and unique spots
+- Develop signature tricks and combinations
+- Focus on consistency and style
+- Contribute to the skating community
+- Consider competitive opportunities
+
+**Mental Aspects of Street Skating**
+
+**Overcoming Fear**
+
+- Start with smaller versions of obstacles
+- Practice visualization techniques
+- Build confidence through repetition
+- Learn proper falling techniques
+- Accept that progression involves some falls
+
+**Developing Flow**
+
+- Link tricks together smoothly
+- Use the entire street environment
+- Develop rhythm and timing
+- Practice improvisation and creativity
+- Focus on making skating look effortless
+
+**Creative Expression**
+
+- Find unique ways to use common obstacles
+- Develop personal style and approach
+- Experiment with different trick combinations
+- Look for undiscovered spots and features
+- Push the boundaries of what's possible
+
+Street skating offers unlimited creative potential and personal expression. Every urban environment presents new challenges and opportunities for progression.
+
+Remember that street skating is about more than just tricks - it's about seeing the world differently and finding creative ways to interact with your environment. Respect the spots you skate, the people around you, and the progression process itself.`,
     category: "skateboards",
     author: "Tyler Johnson",
     publishedAt: "2025-01-17",
@@ -222,7 +498,9 @@ The perfect setup evolves as you develop as a skater, so don't be afraid to expe
 **Understanding Street Skating**
 
 **What Defines Street Skating**
+
 Street skating uses urban architecture and obstacles as skateable features:
+
 - Stairs and handrails
 - Ledges and manual pads
 - Banks and transition walls
@@ -230,7 +508,9 @@ Street skating uses urban architecture and obstacles as skateable features:
 - Natural and found obstacles
 
 **Street vs. Park Skating**
+
 While park skating happens in designed environments, street skating adapts to existing urban features:
+
 - More variable and unpredictable surfaces
 - Natural obstacles with unique characteristics
 - Greater emphasis on creativity and adaptation
@@ -239,9 +519,11 @@ While park skating happens in designed environments, street skating adapts to ex
 **Essential Street Skating Skills**
 
 **Fundamental Techniques**
+
 Before attempting street obstacles, master these basics:
 
 **Riding Fundamentals:**
+
 - Comfortable pushing and turning
 - Confident stopping and speed control
 - Basic manual and nose manual
@@ -249,6 +531,7 @@ Before attempting street obstacles, master these basics:
 - Drop-in confidence
 
 **Core Trick Foundation:**
+
 - Ollie: Essential for clearing obstacles
 - Shuvit: Basic rotation trick
 - Kickflip: Fundamental flip trick
@@ -258,7 +541,9 @@ Before attempting street obstacles, master these basics:
 **Reading Street Terrain**
 
 **Identifying Skateable Features**
+
 Develop an eye for street spots:
+
 - Ledges: Height, length, surface quality
 - Stairs: Number of steps, landing space, approach angle
 - Rails: Height, angle, material, run-up distance
@@ -266,6 +551,7 @@ Develop an eye for street spots:
 - Gaps: Distance, landing surface, safety factors
 
 **Assessing Spot Quality**
+
 - Surface condition and materials
 - Approach and landing areas
 - Safety considerations and escape routes
@@ -273,6 +559,7 @@ Develop an eye for street spots:
 - Traffic and pedestrian factors
 
 **Spot Preparation**
+
 - Clear debris and obstacles
 - Check for rough or damaged surfaces
 - Assess lighting conditions
@@ -282,13 +569,16 @@ Develop an eye for street spots:
 **Fundamental Street Obstacles**
 
 **Ledges and Manual Pads**
+
 Perfect for learning basic tricks:
+
 - Start with low, smooth ledges
 - Practice board slides and lipslides
 - Work on manual combinations
 - Progress to higher and longer obstacles
 
 **Common Ledge Tricks:**
+
 - 50-50 grind: Both trucks on ledge
 - 5-0 grind: Back truck only
 - Boardslide: Board perpendicular to ledge
@@ -296,7 +586,9 @@ Perfect for learning basic tricks:
 - Feeble and smith grinds: Technical variations
 
 **Stairs and Sets**
+
 Building confidence with stair skating:
+
 - Start with small 2-3 stair sets
 - Focus on clean ollies and landings
 - Practice different flip tricks down stairs
@@ -304,6 +596,7 @@ Building confidence with stair skating:
 - Progress gradually to larger sets
 
 **Stair Progression:**
+
 - Rolling down stairs for comfort
 - Ollie small sets (2-3 stairs)
 - Add flip tricks to small sets
@@ -311,7 +604,9 @@ Building confidence with stair skating:
 - Advanced: Large sets and technical tricks
 
 **Handrails and Round Rails**
+
 Technical grinding features:
+
 - Start with low, easy rails
 - Learn approach angles and lock-in techniques
 - Master basic grinds before progressing
@@ -321,6 +616,7 @@ Technical grinding features:
 **Technical Skill Development**
 
 **Approach and Setup**
+
 - Proper speed for different obstacles
 - Angle of approach for grinds and slides
 - Foot positioning and weight distribution
@@ -328,6 +624,7 @@ Technical grinding features:
 - Timing and rhythm development
 
 **Lock-in Techniques**
+
 - Clean trick execution into grinds
 - Proper weight distribution on obstacles
 - Balance and adjustment during grinds
@@ -335,6 +632,7 @@ Technical grinding features:
 - Developing muscle memory for consistency
 
 **Exit Strategies**
+
 - Clean exits from grinds and slides
 - Landing techniques for various obstacles
 - Recovery from failed attempts
@@ -344,6 +642,7 @@ Technical grinding features:
 **Street Skating Etiquette**
 
 **Respecting Spots**
+
 - Don't damage property or leave debris
 - Respect "No Skating" signs and private property
 - Share spots courteously with other skaters
@@ -351,6 +650,7 @@ Technical grinding features:
 - Clean up after sessions
 
 **Interaction with Public**
+
 - Be polite and respectful to pedestrians
 - Follow local laws and regulations
 - Avoid confrontational situations
@@ -358,6 +658,7 @@ Technical grinding features:
 - Know when to move along
 
 **Skater Etiquette**
+
 - Take turns at spots fairly
 - Help newer skaters learn and progress
 - Share spot information responsibly
@@ -367,6 +668,7 @@ Technical grinding features:
 **Safety in Street Skating**
 
 **Risk Assessment**
+
 - Evaluate consequences of falls
 - Consider environmental hazards
 - Assess your skill level honestly
@@ -374,6 +676,7 @@ Technical grinding features:
 - Know your limits and respect them
 
 **Protective Gear Considerations**
+
 - Helmet for high-consequence spots
 - Knee pads for transition or bowl-style spots
 - Wrist guards for learning new tricks
@@ -381,6 +684,7 @@ Technical grinding features:
 - Consider shin guards for rail skating
 
 **Environmental Awareness**
+
 - Watch for pedestrians and traffic
 - Be aware of weather conditions affecting surfaces
 - Check for loose or broken obstacles
@@ -390,6 +694,7 @@ Technical grinding features:
 **Building Street Skills Progressively**
 
 **Beginner Progression**
+
 - Master flatground tricks first
 - Start with low, forgiving obstacles
 - Focus on technique over difficulty
@@ -397,6 +702,7 @@ Technical grinding features:
 - Learn from more experienced skaters
 
 **Intermediate Development**
+
 - Combine tricks into flowing lines
 - Tackle more technical obstacles
 - Develop personal style and preferences
@@ -404,6 +710,7 @@ Technical grinding features:
 - Begin filming and documenting progress
 
 **Advanced Street Skating**
+
 - Seek out challenging and unique spots
 - Develop signature tricks and combinations
 - Focus on consistency and style
@@ -413,6 +720,7 @@ Technical grinding features:
 **Mental Aspects of Street Skating**
 
 **Overcoming Fear**
+
 - Start with smaller versions of obstacles
 - Practice visualization techniques
 - Build confidence through repetition
@@ -420,6 +728,7 @@ Technical grinding features:
 - Accept that progression involves some falls
 
 **Developing Flow**
+
 - Link tricks together smoothly
 - Use the entire street environment
 - Develop rhythm and timing
@@ -427,6 +736,7 @@ Technical grinding features:
 - Focus on making skating look effortless
 
 **Creative Expression**
+
 - Find unique ways to use common obstacles
 - Develop personal style and approach
 - Experiment with different trick combinations
