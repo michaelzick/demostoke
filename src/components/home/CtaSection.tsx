@@ -33,7 +33,7 @@ const CtaSection = () => {
               List Your Gear
             </Button>
           </div>
-          <div className="flex justify-center">
+          <div className="flex justify-end">
             <div className="relative">
               <div className="absolute -top-6 -left-6 bg-white/10 dark:bg-zinc-700/30 rounded-full w-40 h-40 animate-float homepage-float-1"></div>
               <div className="absolute -bottom-4 -right-4 bg-white/10 dark:bg-zinc-700/30 rounded-full w-24 h-24 animate-float"></div>
