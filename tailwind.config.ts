@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -76,6 +75,10 @@ export default {
 				mountain: {
 					DEFAULT: '#6B7280', 
 					dark: '#374151',
+				},
+				shop: {
+					DEFAULT: 'rgb(211, 255, 0)',
+					foreground: '#000000',
 				},
 			},
 			borderRadius: {

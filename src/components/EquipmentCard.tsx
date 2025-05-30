@@ -38,7 +38,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         {/* Shop or Private Party indicator */}
         {isShop && (
           <Badge
-            className="absolute top-2 left-2 bg-blue-600 hover:bg-blue-700"
+            className="absolute top-2 left-2 bg-shop text-shop-foreground hover:bg-shop/90"
             variant="default"
           >
             <StoreIcon className="h-3 w-3 mr-1" />
