@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,10 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 const ContactUsPage = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
@@ -36,16 +40,16 @@ const ContactUsPage = () => {
   };
 
   // Check if all required fields are filled and captcha is completed
-  const isFormValid = formData.firstName && 
-                     formData.lastName && 
-                     formData.email && 
-                     formData.subject &&
-                     formData.message && 
-                     captchaToken;
+  const isFormValid = formData.firstName &&
+    formData.lastName &&
+    formData.email &&
+    formData.subject &&
+    formData.message &&
+    captchaToken;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isFormValid) {
       toast({
         title: "Error",
@@ -84,7 +88,7 @@ const ContactUsPage = () => {
         console.error('Supabase function error:', error);
         throw new Error(error.message || 'Failed to send email');
       }
-      
+
       toast({
         title: "Success",
         description: "Your message has been sent successfully. We'll get back to you soon!",
@@ -99,7 +103,7 @@ const ContactUsPage = () => {
         message: ""
       });
       setCaptchaToken("");
-      
+
     } catch (error) {
       console.error('Contact form error:', error);
       toast({
