@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,13 @@ interface OwnerCardProps {
 }
 
 const OwnerCard = ({ owner }: OwnerCardProps) => {
+  // Determine the correct profile link based on owner type
+  const profileLinkPath = owner.shopId 
+    ? `/shop/${owner.shopId}` 
+    : owner.partyId 
+    ? `/party/${owner.partyId}`
+    : `/owner/${owner.id}`;
+
   return (
     <div className="p-6">
       <div className="flex items-center gap-4 mb-4">
@@ -39,7 +47,7 @@ const OwnerCard = ({ owner }: OwnerCardProps) => {
         </p>
       </div>
       <Button variant="outline" className="w-full" asChild>
-        <Link to={`/owner/${owner.id}`}>View Profile</Link>
+        <Link to={profileLinkPath}>View Profile</Link>
       </Button>
       <Button variant="outline" className="w-full mt-4">
         <MessageSquare className="h-4 w-4 mr-2" />
