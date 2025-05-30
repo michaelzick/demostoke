@@ -16,6 +16,7 @@ const ContactUsPage = () => {
     firstName: "",
     lastName: "",
     email: "",
+    subject: "",
     message: ""
   });
   const [captchaToken, setCaptchaToken] = useState("");
@@ -33,23 +34,21 @@ const ContactUsPage = () => {
     setCaptchaToken(token);
   };
 
+  // Check if all required fields are filled and captcha is completed
+  const isFormValid = formData.firstName && 
+                     formData.lastName && 
+                     formData.email && 
+                     formData.subject &&
+                     formData.message && 
+                     captchaToken;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate required fields
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.message) {
+    if (!isFormValid) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (!captchaToken) {
-      toast({
-        title: "Error",
-        description: "Please complete the captcha verification.",
+        description: "Please fill in all required fields and complete the captcha.",
         variant: "destructive"
       });
       return;
@@ -58,8 +57,24 @@ const ContactUsPage = () => {
     setIsSubmitting(true);
 
     try {
-      // Simulate form submission
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch('/api/send-contact-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          subject: `[DemoStoke] ${formData.subject}`,
+          message: formData.message,
+          captchaToken
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send email');
+      }
       
       toast({
         title: "Success",
@@ -71,11 +86,13 @@ const ContactUsPage = () => {
         firstName: "",
         lastName: "",
         email: "",
+        subject: "",
         message: ""
       });
       setCaptchaToken("");
       
     } catch (error) {
+      console.error('Contact form error:', error);
       toast({
         title: "Error",
         description: "Failed to send message. Please try again.",
@@ -144,6 +161,22 @@ const ContactUsPage = () => {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="subject">
+                Subject
+                <RequiredIndicator />
+              </Label>
+              <Input
+                id="subject"
+                name="subject"
+                type="text"
+                value={formData.subject}
+                onChange={handleInputChange}
+                placeholder="Brief description of your inquiry"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="message">
                 Message
                 <RequiredIndicator />
@@ -168,7 +201,7 @@ const ContactUsPage = () => {
               <Button
                 type="submit"
                 className="flex-1"
-                disabled={isSubmitting}
+                disabled={!isFormValid || isSubmitting}
               >
                 {isSubmitting ? "Sending..." : "Submit"}
               </Button>
