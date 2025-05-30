@@ -45,8 +45,8 @@ If you're an experienced rider looking for a daily driver that excels in carving
     author: "Sarah Chen",
     publishedAt: "2025-01-15",
     readTime: 7,
-    heroImage: "https://snowboardrobot.com/wp-content/uploads/2020/09/never-summer-proto-ultra-snowboard-2021.jpg",
-    thumbnail: "https://snowboardrobot.com/wp-content/uploads/2020/09/never-summer-proto-ultra-snowboard-2021.jpg",
+    heroImage: "https://www.outdoorsports.com/cdn/shop/files/NEVERS_2_109a2da9-eae2-4d78-8617-ae3319d5ffe1.png?v=1724440627",
+    thumbnail: "https://www.outdoorsports.com/cdn/shop/files/NEVERS_2_109a2da9-eae2-4d78-8617-ae3319d5ffe1.png?v=1724440627",
     tags: ["gear reviews", "snowboards", "all-mountain", "never summer", "advanced"]
   },
   {

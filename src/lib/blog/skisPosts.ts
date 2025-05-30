@@ -110,8 +110,8 @@ Remember, consistency is more important than perfection. Regular waxing with bas
     author: "David Park",
     publishedAt: "2025-01-18",
     readTime: 9,
-    heroImage: "https://images.unsplash.com/photo-1551524164-aa4b4ac6bdbf?auto=format&fit=crop&w=1200&q=80",
-    thumbnail: "https://images.unsplash.com/photo-1551524164-aa4b4ac6bdbf?auto=format&fit=crop&w=400&q=80",
+    heroImage: "https://shop-raze-cat.com/cdn/shop/articles/warum-ski-wachsen-und-welches-wachs-sollte-ich-benutzen-raze-cat.jpg?v=1712086056",
+    thumbnail: "https://shop-raze-cat.com/cdn/shop/articles/warum-ski-wachsen-und-welches-wachs-sollte-ich-benutzen-raze-cat.jpg?v=1712086056",
     tags: ["skis", "maintenance", "waxing", "diy", "performance"]
   },
   {
@@ -280,8 +280,8 @@ Remember: no powder run is worth your life or the lives of your partners. When i
     author: "Lisa Thompson",
     publishedAt: "2025-01-10",
     readTime: 12,
-    heroImage: "https://images.unsplash.com/photo-1551524164-d8b8cc2b7c3e?auto=format&fit=crop&w=1200&q=80",
-    thumbnail: "https://images.unsplash.com/photo-1551524164-d8b8cc2b7c3e?auto=format&fit=crop&w=400&q=80",
+    heroImage: "https://www.weather.gov/images/wrn/Infographics/2021/ww-avalanche.png",
+    thumbnail: "https://www.weather.gov/images/wrn/Infographics/2021/ww-avalanche.png",
     tags: ["skis", "safety", "backcountry", "avalanche", "education"]
   }
 ];

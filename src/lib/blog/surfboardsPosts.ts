@@ -346,8 +346,8 @@ The best surfers combine technical forecast reading with intuitive understanding
     author: "Maya Patel",
     publishedAt: "2025-01-14",
     readTime: 9,
-    heroImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80",
-    thumbnail: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=400&q=80",
+    heroImage: "https://images.ctfassets.net/xhzuh2up4xai/1GZGyT2Xcd0W8CYYHVyEg7/ae886cec8bb759d248841e3840da6ce6/How-to-Read-a-Surf-Forecast-_-Swell-Charts.jpg",
+    thumbnail: "https://images.ctfassets.net/xhzuh2up4xai/1GZGyT2Xcd0W8CYYHVyEg7/ae886cec8bb759d248841e3840da6ce6/How-to-Read-a-Surf-Forecast-_-Swell-Charts.jpg",
     tags: ["surfboards", "forecasting", "waves", "planning", "technique"]
   }
 ];

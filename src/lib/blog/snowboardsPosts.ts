@@ -68,8 +68,8 @@ The perfect snowboard is the one that matches your riding style and helps you pr
     author: "Jake Mitchell",
     publishedAt: "2025-01-20",
     readTime: 8,
-    heroImage: "https://images.unsplash.com/photo-1551524164-6ca04ac833fb?auto=format&fit=crop&w=1200&q=80",
-    thumbnail: "https://images.unsplash.com/photo-1551524164-6ca04ac833fb?auto=format&fit=crop&w=400&q=80",
+    heroImage: "https://www.cardiffsnow.com/cdn/shop/files/IProvo-Cardiff-Snow-2023-120_2_1.jpg?v=1696439963",
+    thumbnail: "https://www.cardiffsnow.com/cdn/shop/files/IProvo-Cardiff-Snow-2023-120_2_1.jpg?v=1696439963",
     tags: ["snowboards", "buying guide", "beginner", "gear selection", "all-mountain"]
   },
   {
@@ -165,8 +165,8 @@ The key to mastering these advanced techniques is consistent practice and patien
     author: "Emma Rodriguez",
     publishedAt: "2025-01-12",
     readTime: 10,
-    heroImage: "https://images.unsplash.com/photo-1551524164-05c2d2b7e40c?auto=format&fit=crop&w=1200&q=80",
-    thumbnail: "https://images.unsplash.com/photo-1551524164-05c2d2b7e40c?auto=format&fit=crop&w=400&q=80",
+    heroImage: "https://neversummer.com/cdn/shop/articles/10TipsBlog.jpg?v=1653255663",
+    thumbnail: "https://neversummer.com/cdn/shop/articles/10TipsBlog.jpg?v=1653255663",
     tags: ["snowboards", "advanced", "technique", "skills", "progression"]
   }
 ];

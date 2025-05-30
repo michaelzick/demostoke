@@ -209,8 +209,8 @@ The perfect setup evolves as you develop as a skater, so don't be afraid to expe
     author: "Tyler Johnson",
     publishedAt: "2025-01-17",
     readTime: 11,
-    heroImage: "https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=1200&q=80",
-    thumbnail: "https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=400&q=80",
+    heroImage: "https://www.skateboarding.com/.image/t_share/MjEyNTA5ODY4NjQ3NTIzOTY4/how-to-set-up-a-skateboard.jpg",
+    thumbnail: "https://www.skateboarding.com/.image/t_share/MjEyNTA5ODY4NjQ3NTIzOTY4/how-to-set-up-a-skateboard.jpg",
     tags: ["skateboards", "setup", "customization", "maintenance", "gear"]
   },
   {
@@ -440,8 +440,8 @@ Remember that street skating is about more than just tricks - it's about seeing 
     author: "Sofia Garcia",
     publishedAt: "2025-01-09",
     readTime: 10,
-    heroImage: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=1200&q=80",
-    thumbnail: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=400&q=80",
+    heroImage: "https://cdn.shopify.com/s/files/1/0530/0695/8744/t/22/assets/how-to-skate-street-obstacles---curbs-stairs-and-rails-1681128667214.webp?v=1681128668",
+    thumbnail: "https://cdn.shopify.com/s/files/1/0530/0695/8744/t/22/assets/how-to-skate-street-obstacles---curbs-stairs-and-rails-1681128667214.webp?v=1681128668",
     tags: ["skateboards", "street skating", "tricks", "urban", "progression"]
   }
 ];

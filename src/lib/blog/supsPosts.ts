@@ -229,8 +229,8 @@ Remember that every session on the water teaches you something new about balance
     author: "Jennifer Walsh",
     publishedAt: "2025-01-13",
     readTime: 10,
-    heroImage: "https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?auto=format&fit=crop&w=1200&q=80",
-    thumbnail: "https://images.unsplash.com/photo-1544551763-77ef2d0cfc6c?auto=format&fit=crop&w=400&q=80",
+    heroImage: "https://www.gilisports.com/cdn/shop/articles/what-is-sup-yoga-featured_1900x.jpg?v=1616791847",
+    thumbnail: "https://www.gilisports.com/cdn/shop/articles/what-is-sup-yoga-featured_1900x.jpg?v=1616791847",
     tags: ["sups", "yoga", "beginner", "balance", "mindfulness"]
   },
   {
@@ -457,8 +457,8 @@ Remember that the journey is as important as the destination. Take time to appre
     author: "Alex Rivera",
     publishedAt: "2025-01-11",
     readTime: 12,
-    heroImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80",
-    thumbnail: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=400&q=80",
+    heroImage: "https://www.inflatableboarder.com/wp-content/uploads/2022/10/thurso-expedition138-2.jpg",
+    thumbnail: "https://www.inflatableboarder.com/wp-content/uploads/2022/10/thurso-expedition138-2.jpg",
     tags: ["sups", "touring", "adventure", "camping", "navigation"]
   }
 ];
