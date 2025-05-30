@@ -10,7 +10,7 @@ const Footer = () => {
             <div className="flex items-center gap-2 mb-4">
               <Link to="/" className="flex items-center gap-2">
                 <img src="/img/demostoke-logo-ds-transparent-cropped.webp" alt="Marker Icon" className="w-6 h-6" />
-                <span className="text-lg font-bold" style={{ fontFamily: 'Tahoma, sans-serif', color: 'hsl(221.2 83.2% 53.3%)' }}>DemoStoke</span>
+                <span className="text-lg font-bold" style={{ fontFamily: 'Tahoma, sans-serif', color: 'hsl(186 100% 48%)' }}>DemoStoke</span>
               </Link>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs">
