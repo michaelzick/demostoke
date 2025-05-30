@@ -52,9 +52,9 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Send email to the specified address
+    // Send email to mzick@zickonezero.com
     const emailResponse = await resend.emails.send({
-      from: "DemoStoke Contact Form <onboarding@resend.dev>",
+      from: "DemoStoke Contact Form <mzick@zickonezero.com>",
       to: ["mzick@zickonezero.com"],
       subject: subject,
       html: `
