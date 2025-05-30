@@ -193,7 +193,7 @@ const ContactUsPage = () => {
             </div>
 
             <HCaptcha
-              siteKey="10000000-ffff-ffff-ffff-000000000001"
+              siteKey="e30661ca-467c-43cc-899c-be56ab28c2a2"
               onVerify={handleCaptchaVerify}
             />
 
