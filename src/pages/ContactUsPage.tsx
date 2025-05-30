@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import HCaptcha from "@/components/HCaptcha";
 import { RequiredIndicator } from "@/components/waiver/RequiredIndicator";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const ContactUsPage = () => {
   const navigate = useNavigate();
@@ -57,23 +58,31 @@ const ContactUsPage = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/send-contact-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      console.log("Submitting contact form with data:", {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        subject: formData.subject,
+        messageLength: formData.message.length,
+        hasCaptcha: !!captchaToken
+      });
+
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
           subject: `[DemoStoke] ${formData.subject}`,
           message: formData.message,
           captchaToken
-        }),
+        }
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to send email');
+      console.log("Function response:", { data, error });
+
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw new Error(error.message || 'Failed to send email');
       }
       
       toast({

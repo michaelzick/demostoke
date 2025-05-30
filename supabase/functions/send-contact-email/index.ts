@@ -20,29 +20,71 @@ interface ContactEmailRequest {
 }
 
 const handler = async (req: Request): Promise<Response> => {
+  console.log("Contact email function called with method:", req.method);
+
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { firstName, lastName, email, subject, message, captchaToken }: ContactEmailRequest = await req.json();
+    const requestBody = await req.json();
+    console.log("Request body received:", {
+      ...requestBody,
+      captchaToken: requestBody.captchaToken ? "***present***" : "missing"
+    });
+
+    const { firstName, lastName, email, subject, message, captchaToken }: ContactEmailRequest = requestBody;
+
+    // Check if all required fields are present
+    if (!firstName || !lastName || !email || !subject || !message || !captchaToken) {
+      console.error("Missing required fields:", {
+        firstName: !!firstName,
+        lastName: !!lastName,
+        email: !!email,
+        subject: !!subject,
+        message: !!message,
+        captchaToken: !!captchaToken
+      });
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
 
     // Verify hCaptcha token
+    console.log("Verifying hCaptcha token...");
+    const hcaptchaSecret = Deno.env.get("HCAPTCHA_SECRET");
+    if (!hcaptchaSecret) {
+      console.error("HCAPTCHA_SECRET environment variable not set");
+      return new Response(
+        JSON.stringify({ error: "Server configuration error - missing captcha secret" }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
     const captchaResponse = await fetch('https://hcaptcha.com/siteverify', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams({
-        secret: Deno.env.get("HCAPTCHA_SECRET") || "",
+        secret: hcaptchaSecret,
         response: captchaToken,
       }),
     });
 
     const captchaResult = await captchaResponse.json();
+    console.log("Captcha verification result:", captchaResult);
     
     if (!captchaResult.success) {
+      console.error("Captcha verification failed:", captchaResult);
       return new Response(
         JSON.stringify({ error: "Captcha verification failed" }),
         {
@@ -52,9 +94,23 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Send email to mzick@zickonezero.com
+    // Check if Resend API key is configured
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
+    if (!resendApiKey) {
+      console.error("RESEND_API_KEY environment variable not set");
+      return new Response(
+        JSON.stringify({ error: "Server configuration error - missing email API key" }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
+    console.log("Sending email via Resend...");
+    // Send email to mzick@zickonezero.com using info.demostoke.com as sender
     const emailResponse = await resend.emails.send({
-      from: "DemoStoke Contact Form <mzick@zickonezero.com>",
+      from: "DemoStoke Contact Form <noreply@info.demostoke.com>",
       to: ["mzick@zickonezero.com"],
       subject: subject,
       html: `
@@ -71,9 +127,9 @@ const handler = async (req: Request): Promise<Response> => {
       replyTo: email,
     });
 
-    console.log("Contact email sent successfully:", emailResponse);
+    console.log("Email sent successfully:", emailResponse);
 
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ success: true, data: emailResponse }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
@@ -83,7 +139,10 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error: any) {
     console.error("Error in send-contact-email function:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message || "Internal server error",
+        details: error.toString()
+      }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
