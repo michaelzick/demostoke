@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -90,9 +91,9 @@ const GearOwnerProfilePage = () => {
           <h2 className="text-lg font-medium mb-4 dark:text-white">About</h2>
           <Card>
             <CardContent className="p-6">
-              <p className="text-sm dark:text-white">
+              <div className="whitespace-pre-line text-sm text-muted-foreground leading-relaxed">
                 {owner.bio || `Hi, I'm ${owner.name.split(" ")[0]}! I love sharing my gear with others and helping them enjoy their adventures. Feel free to reach out if you have any questions!`}
-              </p>
+              </div>
             </CardContent>
           </Card>
         </div>
