@@ -45,8 +45,8 @@ If you're an experienced rider looking for a daily driver that excels in carving
     author: "Sarah Chen",
     publishedAt: "2025-01-15",
     readTime: 7,
-    heroImage: "https://images.unsplash.com/photo-1551524164-687a55dd1126?auto=format&fit=crop&w=1200&q=80",
-    thumbnail: "https://images.unsplash.com/photo-1551524164-687a55dd1126?auto=format&fit=crop&w=400&q=80",
+    heroImage: "https://snowboardrobot.com/wp-content/uploads/2020/09/never-summer-proto-ultra-snowboard-2021.jpg",
+    thumbnail: "https://snowboardrobot.com/wp-content/uploads/2020/09/never-summer-proto-ultra-snowboard-2021.jpg",
     tags: ["gear reviews", "snowboards", "all-mountain", "never summer", "advanced"]
   },
   {
@@ -107,8 +107,8 @@ If you find yourself struggling to have fun in typical beach break surf or want 
     author: "Marcus Torres",
     publishedAt: "2025-01-08",
     readTime: 6,
-    heroImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80",
-    thumbnail: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=400&q=80",
+    heroImage: "https://www.stokedfortravel.com/wp-content/uploads/2021/04/firewire-glazer-review-rob-machado-surfboards-6-1920x960.jpg",
+    thumbnail: "https://www.stokedfortravel.com/wp-content/uploads/2021/04/firewire-glazer-review-rob-machado-surfboards-6-1920x960.jpg",
     tags: ["gear reviews", "surfboards", "small waves", "firewire", "rob machado"]
   }
 ];
