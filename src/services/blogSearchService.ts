@@ -1,3 +1,4 @@
+
 import { BlogPost } from "@/lib/blog";
 
 export const searchBlogPostsWithNLP = async (query: string, posts: BlogPost[]): Promise<BlogPost[]> => {
@@ -46,9 +47,10 @@ export const searchBlogPostsWithNLP = async (query: string, posts: BlogPost[]): 
     const keywords = {
       'beginner': ['beginner', 'start', 'first', 'guide', 'basics'],
       'advanced': ['advanced', 'expert', 'pro', 'master', 'technique'],
-      'gear': ['gear', 'equipment', 'setup', 'board', 'selection'],
+      'gear': ['gear', 'equipment', 'setup', 'board', 'selection', 'review'],
       'technique': ['technique', 'tips', 'how to', 'method', 'skill'],
-      'safety': ['safety', 'protection', 'avalanche', 'precaution']
+      'safety': ['safety', 'protection', 'avalanche', 'precaution'],
+      'reviews': ['review', 'test', 'rating', 'performance', 'verdict']
     };
 
     // Add keyword matching scores

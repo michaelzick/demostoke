@@ -13,17 +13,30 @@ const BlogPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<BlogPost[]>(blogPosts);
   const [isSearching, setIsSearching] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState<string>("");
+
+  const filters = [
+    { label: "Gear Reviews", value: "gear reviews" },
+    { label: "Snowboards", value: "snowboards" },
+    { label: "Skis", value: "skis" },
+    { label: "Surfboards", value: "surfboards" },
+    { label: "SUPs", value: "sups" },
+    { label: "Skateboards", value: "skateboards" }
+  ];
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
-      setSearchResults(blogPosts);
+      applyFilter(selectedFilter);
       return;
     }
 
     setIsSearching(true);
     try {
       const results = await searchBlogPostsWithNLP(searchQuery, blogPosts);
-      setSearchResults(results);
+      const filteredResults = selectedFilter 
+        ? results.filter(post => post.category === selectedFilter || post.tags.includes(selectedFilter))
+        : results;
+      setSearchResults(filteredResults);
     } catch (error) {
       console.error("Search error:", error);
       setSearchResults([]);
@@ -38,8 +51,23 @@ const BlogPage = () => {
     }
   };
 
+  const applyFilter = (filter: string) => {
+    setSelectedFilter(filter);
+    
+    if (!filter) {
+      setSearchResults(blogPosts);
+      return;
+    }
+
+    const filtered = blogPosts.filter(post => 
+      post.category === filter || post.tags.includes(filter)
+    );
+    setSearchResults(filtered);
+  };
+
   const clearSearch = () => {
     setSearchQuery("");
+    setSelectedFilter("");
     setSearchResults(blogPosts);
   };
 
@@ -57,7 +85,8 @@ const BlogPage = () => {
       skis: "bg-purple-100 text-purple-800",
       surfboards: "bg-cyan-100 text-cyan-800",
       sups: "bg-green-100 text-green-800",
-      skateboards: "bg-orange-100 text-orange-800"
+      skateboards: "bg-orange-100 text-orange-800",
+      "gear reviews": "bg-yellow-100 text-yellow-800"
     };
     return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800";
   };
@@ -97,7 +126,40 @@ const BlogPage = () => {
               </Button>
             </div>
 
-            {searchQuery && (
+            {/* Filter Pills */}
+            <div className="mt-6">
+              <div className="flex flex-wrap justify-center gap-2">
+                <Button
+                  variant={selectedFilter === "" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => applyFilter("")}
+                  className={`px-4 py-2 text-sm ${
+                    selectedFilter === "" 
+                      ? "bg-white text-blue-600 hover:bg-blue-50" 
+                      : "bg-transparent border-white text-white hover:bg-white hover:text-blue-600"
+                  }`}
+                >
+                  All Posts
+                </Button>
+                {filters.map((filter) => (
+                  <Button
+                    key={filter.value}
+                    variant={selectedFilter === filter.value ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => applyFilter(filter.value)}
+                    className={`px-4 py-2 text-sm ${
+                      selectedFilter === filter.value 
+                        ? "bg-white text-blue-600 hover:bg-blue-50" 
+                        : "bg-transparent border-white text-white hover:bg-white hover:text-blue-600"
+                    }`}
+                  >
+                    {filter.label}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {(searchQuery || selectedFilter) && (
               <div className="mt-4">
                 <Button
                   variant="outline"
@@ -114,10 +176,10 @@ const BlogPage = () => {
 
       {/* Blog Posts */}
       <div className="container mx-auto px-4 py-12">
-        {searchQuery && (
+        {(searchQuery || selectedFilter) && (
           <div className="mb-8">
             <h2 className="text-2xl font-semibold mb-2">
-              Search Results for "{searchQuery}"
+              {searchQuery ? `Search Results for "${searchQuery}"` : `Filtered by: ${filters.find(f => f.value === selectedFilter)?.label || selectedFilter}`}
             </h2>
             <p className="text-muted-foreground">
               {searchResults.length} {searchResults.length === 1 ? "post" : "posts"} found
