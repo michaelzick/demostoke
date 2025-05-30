@@ -47,7 +47,7 @@ const handler = async (req: Request): Promise<Response> => {
         captchaToken: !!captchaToken
       });
       return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
+        JSON.stringify({ error: "Missing required fields. Please fill in all fields and complete the captcha." }),
         {
           status: 400,
           headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -85,8 +85,18 @@ const handler = async (req: Request): Promise<Response> => {
     
     if (!captchaResult.success) {
       console.error("Captcha verification failed:", captchaResult);
+      let errorMessage = "Captcha verification failed.";
+      if (captchaResult['error-codes']) {
+        if (captchaResult['error-codes'].includes('sitekey-secret-mismatch')) {
+          errorMessage = "Captcha configuration error. Please contact support.";
+        } else if (captchaResult['error-codes'].includes('invalid-input-response')) {
+          errorMessage = "Invalid captcha response. Please try again.";
+        } else if (captchaResult['error-codes'].includes('timeout-or-duplicate')) {
+          errorMessage = "Captcha expired. Please complete it again.";
+        }
+      }
       return new Response(
-        JSON.stringify({ error: "Captcha verification failed" }),
+        JSON.stringify({ error: errorMessage }),
         {
           status: 400,
           headers: { "Content-Type": "application/json", ...corsHeaders },
@@ -140,8 +150,8 @@ const handler = async (req: Request): Promise<Response> => {
     console.error("Error in send-contact-email function:", error);
     return new Response(
       JSON.stringify({ 
-        error: error.message || "Internal server error",
-        details: error.toString()
+        error: "Failed to send message. Please try again.",
+        details: error.message || error.toString()
       }),
       {
         status: 500,

@@ -46,9 +46,11 @@ const HCaptcha = ({ siteKey, onVerify }: HCaptchaProps) => {
           window.hcaptcha.render('h-captcha-container', {
             sitekey: siteKey,
             callback: (token: string) => {
+              console.log('hCaptcha verification successful');
               onVerify(token);
             },
             'expired-callback': () => {
+              console.log('hCaptcha expired');
               onVerify('');
             },
             'error-callback': () => {
