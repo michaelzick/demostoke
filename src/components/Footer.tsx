@@ -1,5 +1,6 @@
 
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 const Footer = () => {
   return (
@@ -13,9 +14,12 @@ const Footer = () => {
                 <span className="text-lg font-bold" style={{ fontFamily: 'Tahoma, sans-serif', color: 'hsl(186 100% 48%)' }}>DemoStoke</span>
               </Link>
             </div>
-            <p className="text-sm text-muted-foreground max-w-xs">
+            <p className="text-sm text-muted-foreground max-w-xs mb-4">
               Connecting outdoor enthusiasts with local adventure equipment for demos.
             </p>
+            <Button asChild>
+              <Link to="/contact-us">Contact Us</Link>
+            </Button>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-8">

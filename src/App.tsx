@@ -27,6 +27,7 @@ import BookingsPage from "@/pages/BookingsPage";
 import AnalyticsPage from "@/pages/AnalyticsPage";
 import ShopPage from "@/pages/ShopPage";
 import PrivatePartyPage from "@/pages/PrivatePartyPage";
+import ContactUsPage from "@/pages/ContactUsPage";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const queryClient = new QueryClient();
@@ -58,6 +59,7 @@ const App = () => (
                 <Route path="my-gear" element={<MyEquipmentPage />} />
                 <Route path="analytics" element={<AnalyticsPage />} />
                 <Route path="bookings" element={<BookingsPage />} />
+                <Route path="contact-us" element={<ContactUsPage />} />
               </Route>
               <Route path="/auth" element={<AuthLayout />}>
                 <Route path="signin" element={<SignInPage />} />
