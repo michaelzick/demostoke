@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
@@ -67,7 +66,7 @@ const HeroSection = () => {
           <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4" style={{ fontFamily: 'Tahoma, sans-serif', color: 'hsl(186 100% 48%)' }}>
             DemoStoke
           </h1>
-          <h2 className="text-xl sm:text-3xl mb-8 max-w-2xl mx-auto">
+          <h2 className="text-xl sm:text-3xl mb-8 max-w-2xl mx-auto text-shop">
             Ride what makes you feel alive.
           </h2>
           <div className="flex flex-wrap gap-4 justify-center mb-8">
