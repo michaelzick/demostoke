@@ -10,14 +10,19 @@ import { useToast } from "@/hooks/use-toast";
 
 const ExplorePage = () => {
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const initialCategory = queryParams.get("category");
   const { toast } = useToast();
 
-  const [activeCategory, setActiveCategory] = useState<string | null>(initialCategory);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("distance");
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
   const [filteredEquipment, setFilteredEquipment] = useState<Equipment[]>(mockEquipment);
+
+  // Update active category when URL changes
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const categoryFromUrl = queryParams.get("category");
+    setActiveCategory(categoryFromUrl);
+  }, [location.search]);
 
   // Apply filters and sorting
   useEffect(() => {
