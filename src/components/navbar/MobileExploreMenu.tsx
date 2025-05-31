@@ -18,6 +18,11 @@ const gearCategories = [
 const MobileExploreMenu = ({ onClose }: MobileExploreMenuProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
+  const handleCategoryClick = () => {
+    setIsExpanded(false);
+    onClose();
+  };
+
   return (
     <div>
       <button
@@ -39,7 +44,7 @@ const MobileExploreMenu = ({ onClose }: MobileExploreMenuProps) => {
               key={gear.category}
               to={`/explore?category=${gear.category}`}
               className="block text-base font-medium py-1 hover:text-primary transition-colors"
-              onClick={onClose}
+              onClick={handleCategoryClick}
             >
               {gear.name}
             </Link>

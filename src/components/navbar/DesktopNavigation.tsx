@@ -11,6 +11,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { useState } from "react";
 
 type DesktopNavigationProps = {
   onOpenSearch: () => void;
@@ -27,6 +28,7 @@ const gearCategories = [
 const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [isExploreOpen, setIsExploreOpen] = useState(false);
 
   const handleListGearClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -37,6 +39,10 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
     }
   };
 
+  const handleCategoryClick = () => {
+    setIsExploreOpen(false);
+  };
+
   return (
     <nav className="hidden items-center space-x-8 lg:flex">
       <Link to="/" className="relative group text-base font-medium hover:text-primary transition-colors py-2">
@@ -44,9 +50,9 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
         <SquiggleUnderline />
       </Link>
       
-      <NavigationMenu>
+      <NavigationMenu value={isExploreOpen ? "explore" : ""} onValueChange={(value) => setIsExploreOpen(value === "explore")}>
         <NavigationMenuList>
-          <NavigationMenuItem>
+          <NavigationMenuItem value="explore">
             <NavigationMenuTrigger className="relative group text-base font-medium hover:text-primary transition-colors py-2 bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent">
               Explore
               <SquiggleUnderline />
@@ -58,6 +64,7 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
                     key={gear.category}
                     to={`/explore?category=${gear.category}`}
                     className="block px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors"
+                    onClick={handleCategoryClick}
                   >
                     {gear.name}
                   </Link>
