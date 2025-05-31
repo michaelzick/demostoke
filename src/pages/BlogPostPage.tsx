@@ -1,17 +1,32 @@
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Clock, User, Calendar, Share2 } from "lucide-react";
+import { ArrowLeft, Clock, User, Calendar, Share2, ArrowUp } from "lucide-react";
 import { blogPosts } from "@/lib/blog";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const BlogPostPage = () => {
   const { postId } = useParams<{ postId: string }>();
   const post = blogPosts.find(p => p.id === postId);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [postId]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show button when the hero section (height 384px = h-96) is scrolled past
+      setShowBackToTop(window.scrollY > 384);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   if (!post) {
     return (
@@ -179,6 +194,17 @@ const BlogPostPage = () => {
           </article>
         </div>
       </div>
+
+      {/* Floating Back to Top Button */}
+      {showBackToTop && (
+        <Button
+          onClick={scrollToTop}
+          className="fixed bottom-6 left-6 z-50 rounded-full w-12 h-12 p-0 shadow-lg hover:shadow-xl transition-all duration-300"
+          size="icon"
+        >
+          <ArrowUp className="h-5 w-5" />
+        </Button>
+      )}
     </div>
   );
 };
