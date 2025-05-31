@@ -1,7 +1,9 @@
+
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useAuth } from "@/helpers";
+import MobileExploreMenu from "./MobileExploreMenu";
 
 type MobileMenuProps = {
   isOpen: boolean;
@@ -46,13 +48,9 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
         >
           Home
         </Link>
-        <Link
-          to="/explore"
-          className="text-lg font-medium"
-          onClick={onClose}
-        >
-          Explore
-        </Link>
+        
+        <MobileExploreMenu onClose={onClose} />
+        
         <button
           onClick={handleListGearClick}
           className="text-lg font-medium text-left"

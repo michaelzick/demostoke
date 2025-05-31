@@ -4,10 +4,25 @@ import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useAuth } from "@/helpers";
 import SquiggleUnderline from "./SquiggleUnderline";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 
 type DesktopNavigationProps = {
   onOpenSearch: () => void;
 };
+
+const gearCategories = [
+  { name: "Snowboards", category: "snowboards" },
+  { name: "Skis", category: "skis" },
+  { name: "Surfboards", category: "surfboards" },
+  { name: "SUPs", category: "sups" },
+  { name: "Skateboards", category: "skateboards" },
+];
 
 const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
   const { isAuthenticated } = useAuth();
@@ -28,10 +43,31 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
         Home
         <SquiggleUnderline />
       </Link>
-      <Link to="/explore" className="relative group text-base font-medium hover:text-primary transition-colors py-2">
-        Explore
-        <SquiggleUnderline />
-      </Link>
+      
+      <NavigationMenu>
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger className="relative group text-base font-medium hover:text-primary transition-colors py-2 bg-transparent hover:bg-transparent focus:bg-transparent data-[active]:bg-transparent data-[state=open]:bg-transparent">
+              Explore
+              <SquiggleUnderline />
+            </NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <div className="grid w-48 gap-1 p-2 bg-background border rounded-md shadow-lg">
+                {gearCategories.map((gear) => (
+                  <Link
+                    key={gear.category}
+                    to={`/explore?category=${gear.category}`}
+                    className="block px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors"
+                  >
+                    {gear.name}
+                  </Link>
+                ))}
+              </div>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
+
       <button 
         onClick={handleListGearClick}
         className="relative group text-base font-medium hover:text-primary transition-colors py-2"
