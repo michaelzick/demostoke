@@ -45,7 +45,7 @@ const shops: { [key: string]: Shop; } = {
     id: "rei",
     name: "REI",
     description: "Your local REI Co-op store offering premium stand-up paddleboards and outdoor gear. We're committed to helping you get outside and enjoy nature.",
-    imageUrl: "/img/logos/rei-logo.webp",
+    imageUrl: "/img/logos/rei-tents.webp",
     address: "5678 Sunset Blvd, Los Angeles, CA 90028",
     phone: "(323) 555-0456",
     website: "www.rei.com",
