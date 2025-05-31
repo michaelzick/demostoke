@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { searchEquipmentWithNLP } from "@/services/searchService";
@@ -90,6 +89,13 @@ const SearchResultsPage = () => {
     });
   };
 
+  const handleSuggestionClick = (searchQuery: string) => {
+    // Clear existing filters and search, then perform new search
+    setSearchInput(searchQuery);
+    setActiveCategory(null);
+    setSearchParams({ q: searchQuery });
+  };
+
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -165,13 +171,13 @@ const SearchResultsPage = () => {
                 Try adjusting your search terms or browse our categories below.
               </p>
               <div className="flex flex-wrap gap-2 justify-center">
-                <Button variant="outline" onClick={() => setSearchParams({ q: "beginner surfboard" })}>
+                <Button variant="outline" onClick={() => handleSuggestionClick("beginner surfboard")}>
                   Beginner Surfboards
                 </Button>
-                <Button variant="outline" onClick={() => setSearchParams({ q: "all-mountain snowboard" })}>
+                <Button variant="outline" onClick={() => handleSuggestionClick("all-mountain snowboard")}>
                   All-Mountain Snowboards
                 </Button>
-                <Button variant="outline" onClick={() => setSearchParams({ q: "skateboard in Venice" })}>
+                <Button variant="outline" onClick={() => handleSuggestionClick("skateboard in Venice")}>
                   Skateboards in Venice
                 </Button>
               </div>
