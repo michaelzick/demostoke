@@ -32,6 +32,13 @@ const ListYourGearPage = () => {
     }
   };
 
+  const handleScrollToGetStarted = () => {
+    const el = document.getElementById("get-started");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const benefits = [
     {
       icon: DollarSign,
@@ -92,7 +99,7 @@ const ListYourGearPage = () => {
 
       {/* Getting Started Options */}
       <div className="mb-12" id="get-started">
-        <h2 className="text-3xl font-bold text-center mb-8">How to Get Started</h2>
+        <h2 className="text-3xl font-bold text-center mb-8">Get Started</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Manual Entry Option */}
           <Card>
@@ -221,7 +228,7 @@ const ListYourGearPage = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
-                onClick={() => handleGetStarted("/list-gear/add-gear-form")}
+                onClick={handleScrollToGetStarted}
                 size="lg"
                 className="px-8"
               >
