@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/helpers";
-import { ArrowLeft, Home, Upload, RefreshCw } from "lucide-react";
+import { ArrowLeft, Home, Upload, Sync } from "lucide-react";
 import { Link } from "react-router-dom";
 import FormHeader from "@/components/gear-form/FormHeader";
 import GearBasicInfo from "@/components/gear-form/GearBasicInfo";
@@ -145,7 +145,7 @@ const GearListingSidebar = ({ onManualEntry, onLightspeedPOS }: {
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton>
-                      <RefreshCw />
+                      <Sync />
                       <span>Sync With POS</span>
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
