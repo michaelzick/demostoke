@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/helpers";
 import { 
   Plus, 
-  Sync, 
+  RefreshCw, 
   Clock, 
   DollarSign, 
   Users, 
@@ -151,7 +150,7 @@ const ListYourGearPage = () => {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-3">
-                <Sync className="h-6 w-6 text-purple-600" />
+                <RefreshCw className="h-6 w-6 text-purple-600" />
                 POS Integration
               </CardTitle>
               <CardDescription>
