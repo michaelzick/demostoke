@@ -11,9 +11,9 @@ const FormHeader = ({ title }: FormHeaderProps) => {
   return (
     <div className="flex flex-col gap-2 mb-6">
       <Button variant="ghost" asChild className="self-start p-2">
-        <Link to="/my-gear" className="flex items-center">
+        <Link to="/list-gear" className="flex items-center">
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Return to My Gear
+          Back to List Your Gear
         </Link>
       </Button>
       <h1 className="text-4xl font-bold">{title}</h1>
