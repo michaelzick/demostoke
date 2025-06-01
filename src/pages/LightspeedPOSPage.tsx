@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,11 @@ import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 const LightspeedPOSPage = () => {
+  // Scroll to top on page load
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [credentials, setCredentials] = useState({
     clientId: "",
     clientSecret: "",
@@ -107,7 +112,7 @@ const LightspeedPOSPage = () => {
                 Connection Status
               </CardTitle>
               <CardDescription>
-                {isConnected 
+                {isConnected
                   ? "Your Lightspeed POS is connected and ready to sync."
                   : "Enter your Lightspeed POS credentials to connect your account."
                 }
@@ -158,10 +163,10 @@ const LightspeedPOSPage = () => {
                   />
                 </div>
               </div>
-              
+
               {!isConnected && (
-                <Button 
-                  onClick={handleConnect} 
+                <Button
+                  onClick={handleConnect}
                   disabled={isLoading || !credentials.clientId || !credentials.clientSecret}
                   className="w-full"
                 >
@@ -237,8 +242,8 @@ const LightspeedPOSPage = () => {
                     </div>
                   </div>
 
-                  <Button 
-                    onClick={handleSync} 
+                  <Button
+                    onClick={handleSync}
                     disabled={isLoading}
                     className="w-full"
                   >
@@ -322,7 +327,7 @@ const LightspeedPOSPage = () => {
               <Alert>
                 <Info className="h-4 w-4" />
                 <AlertDescription>
-                  <strong>API Rate Limits:</strong> Lightspeed POS has rate limits of 10 requests per second. 
+                  <strong>API Rate Limits:</strong> Lightspeed POS has rate limits of 10 requests per second.
                   DemoStoke automatically handles these limits during sync operations.
                 </AlertDescription>
               </Alert>

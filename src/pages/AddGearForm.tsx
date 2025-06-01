@@ -1,7 +1,5 @@
 
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/helpers";
 import FormHeader from "@/components/gear-form/FormHeader";
 import GearBasicInfo from "@/components/gear-form/GearBasicInfo";
 import GearSpecifications from "@/components/gear-form/GearSpecifications";
@@ -11,26 +9,17 @@ import FormActions from "@/components/gear-form/FormActions";
 import { useAddGearForm } from "@/hooks/useAddGearForm";
 
 const AddGearForm = () => {
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
+  // Scroll to top on page load
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const {
     formState,
     handlers,
     isSubmitting,
     duplicatedImageUrl,
   } = useAddGearForm();
-
-  const handleManualEntry = () => {
-    // Already on manual entry page, do nothing
-  };
-
-  const handleLightspeedPOS = () => {
-    if (isAuthenticated) {
-      navigate("/list-gear/lightspeed-pos");
-    } else {
-      navigate("/auth/signin");
-    }
-  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">

@@ -27,6 +27,11 @@ export const useAddGearForm = () => {
     }
   }, [isAuthenticated, navigate, toast]);
 
+  // Scroll to top on page load
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Handle duplicated gear data
   const { getDuplicatedGearData } = useDuplicatedGearData({
     setGearName: formState.setGearName,
