@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/helpers";
-import { 
-  Plus, 
-  RefreshCw, 
-  Clock, 
-  DollarSign, 
-  Users, 
+import {
+  Plus,
+  RefreshCw,
+  Clock,
+  DollarSign,
+  Users,
   BarChart3,
   ArrowRight,
   CheckCircle,
@@ -68,7 +68,7 @@ const ListYourGearPage = () => {
           List Your Gear
         </h1>
         <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-          Transform your unused outdoor equipment into a profitable rental business. 
+          Transform your unused outdoor equipment into a profitable rental business.
           Join thousands of gear owners earning extra income while helping fellow outdoor enthusiasts.
         </p>
         <div className="flex flex-wrap justify-center gap-2 mb-8">
@@ -135,8 +135,8 @@ const ListYourGearPage = () => {
                   </div>
                 </div>
               </div>
-              <Button 
-                onClick={() => handleGetStarted("/add-gear")} 
+              <Button
+                onClick={() => handleGetStarted("/list-gear/add-gear-form")}
                 className="w-full"
                 size="lg"
               >
@@ -181,9 +181,9 @@ const ListYourGearPage = () => {
                   </div>
                 </div>
               </div>
-              <Button 
-                onClick={() => handleGetStarted("/lightspeed-pos")} 
-                variant="outline" 
+              <Button
+                onClick={() => handleGetStarted("/list-gear/lightspeed-pos")}
+                variant="outline"
                 className="w-full"
                 size="lg"
               >
@@ -227,15 +227,15 @@ const ListYourGearPage = () => {
               Join our community of gear owners and start generating income from your unused equipment today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                onClick={() => handleGetStarted("/add-gear")}
+              <Button
+                onClick={() => handleGetStarted("/list-gear/add-gear-form")}
                 size="lg"
                 className="px-8"
               >
                 Get Started Now
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="lg"
                 asChild
               >

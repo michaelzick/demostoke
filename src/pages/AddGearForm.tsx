@@ -38,7 +38,7 @@ const AddGearForm = () => {
 
   const handleLightspeedPOS = () => {
     if (isAuthenticated) {
-      navigate("/lightspeed-pos");
+      navigate("/list-gear/lightspeed-pos");
     } else {
       navigate("/auth/signin");
     }
@@ -78,8 +78,8 @@ const AddGearForm = () => {
 
       <form onSubmit={handlers.handleSubmit} className="space-y-8">
         <FormHeader title="Add New Gear" />
-        
-        <GearBasicInfo 
+
+        <GearBasicInfo
           gearName={formState.gearName}
           setGearName={formState.setGearName}
           gearType={formState.gearType}
@@ -89,8 +89,8 @@ const AddGearForm = () => {
           zipCode={formState.zipCode}
           setZipCode={formState.setZipCode}
         />
-        
-        <GearSpecifications 
+
+        <GearSpecifications
           measurementUnit={formState.measurementUnit}
           setMeasurementUnit={formState.setMeasurementUnit}
           dimensions={formState.dimensions}
@@ -99,20 +99,20 @@ const AddGearForm = () => {
           setSkillLevel={formState.setSkillLevel}
           gearType={formState.gearType}
         />
-        
-        <GearMedia 
+
+        <GearMedia
           handleImageUpload={handlers.handleImageUpload}
           duplicatedImageUrl={duplicatedImageUrl}
         />
-        
-        <GearPricing 
+
+        <GearPricing
           pricingOptions={formState.pricingOptions}
           setPricingOptions={formState.setPricingOptions}
           damageDeposit={formState.damageDeposit}
           setDamageDeposit={formState.setDamageDeposit}
         />
-        
-        <FormActions 
+
+        <FormActions
           handleSubmit={handlers.handleSubmit}
           handleCancel={handlers.handleCancel}
           isEditing={false}

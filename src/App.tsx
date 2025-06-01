@@ -54,9 +54,9 @@ const App = () => (
                 <Route path="blog" element={<BlogPage />} />
                 <Route path="blog/:postId" element={<BlogPostPage />} />
                 <Route path="list-gear" element={<ListYourGearPage />} />
-                <Route path="add-gear" element={<AddGearForm />} />
+                <Route path="/list-gear/add-gear-form" element={<AddGearForm />} />
                 <Route path="edit-gear/:id" element={<EditGearForm />} />
-                <Route path="lightspeed-pos" element={<LightspeedPOSPage />} />
+                <Route path="/list-gear/lightspeed-pos" element={<LightspeedPOSPage />} />
                 <Route path="profile" element={<UserProfilePage />} />
                 <Route path="my-gear" element={<MyEquipmentPage />} />
                 <Route path="analytics" element={<AnalyticsPage />} />
