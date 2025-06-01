@@ -17,7 +17,6 @@ import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/auth";
 import EquipmentDetailPage from "./pages/EquipmentDetailPage";
 import GearOwnerProfilePage from "@/pages/GearOwnerProfilePage";
-import GearListing from "@/pages/GearListing";
 import AddGearForm from "@/pages/AddGearForm";
 import EditGearForm from "@/pages/EditGearForm";
 import UserProfilePage from "@/pages/UserProfilePage";
@@ -53,7 +52,6 @@ const App = () => (
                 <Route path="about" element={<AboutPage />} />
                 <Route path="blog" element={<BlogPage />} />
                 <Route path="blog/:postId" element={<BlogPostPage />} />
-                <Route path="gear-listing" element={<GearListing />} />
                 <Route path="list-gear" element={<AddGearForm />} />
                 <Route path="edit-gear/:id" element={<EditGearForm />} />
                 <Route path="lightspeed-pos" element={<LightspeedPOSPage />} />

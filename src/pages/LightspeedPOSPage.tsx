@@ -74,7 +74,7 @@ const LightspeedPOSPage = () => {
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="flex items-center gap-4 mb-6">
         <Button variant="ghost" asChild>
-          <Link to="/gear-listing" className="flex items-center">
+          <Link to="/list-gear" className="flex items-center">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to List Your Gear
           </Link>
