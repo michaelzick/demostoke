@@ -28,6 +28,7 @@ import ShopPage from "@/pages/ShopPage";
 import PrivatePartyPage from "@/pages/PrivatePartyPage";
 import ContactUsPage from "@/pages/ContactUsPage";
 import LightspeedPOSPage from "@/pages/LightspeedPOSPage";
+import ListYourGearPage from "@/pages/ListYourGearPage";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const queryClient = new QueryClient();
@@ -52,7 +53,8 @@ const App = () => (
                 <Route path="about" element={<AboutPage />} />
                 <Route path="blog" element={<BlogPage />} />
                 <Route path="blog/:postId" element={<BlogPostPage />} />
-                <Route path="list-gear" element={<AddGearForm />} />
+                <Route path="list-gear" element={<ListYourGearPage />} />
+                <Route path="add-gear" element={<AddGearForm />} />
                 <Route path="edit-gear/:id" element={<EditGearForm />} />
                 <Route path="lightspeed-pos" element={<LightspeedPOSPage />} />
                 <Route path="profile" element={<UserProfilePage />} />
