@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,12 +9,17 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ExternalLink, CheckCircle, AlertCircle, Info } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { useAddGearForm } from "@/hooks/useAddGearForm";
 
 const LightspeedPOSPage = () => {
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const {
+    handlers,
+  } = useAddGearForm();
 
   const [credentials, setCredentials] = useState({
     clientId: "",
@@ -165,13 +169,22 @@ const LightspeedPOSPage = () => {
               </div>
 
               {!isConnected && (
-                <Button
-                  onClick={handleConnect}
-                  disabled={isLoading || !credentials.clientId || !credentials.clientSecret}
-                  className="w-full"
-                >
-                  {isLoading ? "Connecting..." : "Connect to Lightspeed POS"}
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleConnect}
+                    disabled={isLoading || !credentials.clientId || !credentials.clientSecret}
+                    className="w-full"
+                  >
+                    {isLoading ? "Connecting..." : "Connect to Lightspeed POS"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => handlers.handleCancel()}
+                    className="w-full"
+                  >
+                    Cancel
+                  </Button>
+                </div>
               )}
 
               {isConnected && (
