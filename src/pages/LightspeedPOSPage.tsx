@@ -288,8 +288,8 @@ const LightspeedPOSPage = () => {
                       Visit the Lightspeed Partner Portal and create a new application to get your Client ID and Secret.
                     </p>
                     <Button variant="outline" size="sm" className="mt-2" asChild>
-                      <a href="https://developers.lightspeedhq.com/" target="_blank" rel="noopener noreferrer">
-                        Lightspeed Developer Portal <ExternalLink className="ml-1 h-3 w-3" />
+                      <a href="https://cloud.lightspeedapp.com/oauth/register.php" target="_blank" rel="noopener noreferrer">
+                        Lightspeed Retail API Signup <ExternalLink className="ml-1 h-3 w-3" />
                       </a>
                     </Button>
                   </div>
@@ -298,23 +298,6 @@ const LightspeedPOSPage = () => {
                 <div className="flex gap-3">
                   <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">
                     2
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">Configure OAuth</h3>
-                    <p className="text-sm text-muted-foreground">
-                      Set up OAuth 2.0 authentication and obtain an access token for your account.
-                    </p>
-                    <div className="mt-2 p-3 bg-muted rounded-md">
-                      <code className="text-sm">
-                        Redirect URI: https://yourdomain.com/lightspeed-callback
-                      </code>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">
-                    3
                   </div>
                   <div>
                     <h3 className="font-semibold">Get Your Account ID</h3>
@@ -326,7 +309,7 @@ const LightspeedPOSPage = () => {
 
                 <div className="flex gap-3">
                   <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">
-                    4
+                    3
                   </div>
                   <div>
                     <h3 className="font-semibold">Configure DemoStoke</h3>
@@ -354,13 +337,13 @@ const LightspeedPOSPage = () => {
                     </a>
                   </Button>
                   <Button variant="outline" size="sm" asChild>
-                    <a href="https://developers.lightspeedhq.com/retail/authentication/authentication/" target="_blank" rel="noopener noreferrer">
+                    <a href="https://api-portal.lsk.lightspeed.app/quick-start/authentication/authentication-tutorial" target="_blank" rel="noopener noreferrer">
                       OAuth 2.0 Authentication Guide <ExternalLink className="ml-1 h-3 w-3" />
                     </a>
                   </Button>
                   <Button variant="outline" size="sm" asChild>
-                    <a href="https://developers.lightspeedhq.com/retail/endpoints/item/" target="_blank" rel="noopener noreferrer">
-                      Item Management API <ExternalLink className="ml-1 h-3 w-3" />
+                    <a href="https://www.youtube.com/watch?v=bgAN9JbELSo&t=34s" target="_blank" rel="noopener noreferrer">
+                      Lightspeed POS Tutorial <ExternalLink className="ml-1 h-3 w-3" />
                     </a>
                   </Button>
                 </div>
