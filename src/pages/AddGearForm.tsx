@@ -26,12 +26,10 @@ const AddGearForm = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const {
-    formData,
-    setFormData,
+    formState,
+    handlers,
     isSubmitting,
-    handleSubmit,
-    resetForm,
-    validationErrors,
+    duplicatedImageUrl,
   } = useAddGearForm();
 
   const handleManualEntry = () => {
@@ -78,34 +76,47 @@ const AddGearForm = () => {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
-        <FormHeader />
+      <form onSubmit={handlers.handleSubmit} className="space-y-8">
+        <FormHeader title="Add New Gear" />
         
         <GearBasicInfo 
-          formData={formData}
-          setFormData={setFormData}
-          validationErrors={validationErrors}
+          gearName={formState.gearName}
+          setGearName={formState.setGearName}
+          gearType={formState.gearType}
+          setGearType={formState.setGearType}
+          description={formState.description}
+          setDescription={formState.setDescription}
+          zipCode={formState.zipCode}
+          setZipCode={formState.setZipCode}
         />
         
         <GearSpecifications 
-          formData={formData}
-          setFormData={setFormData}
+          measurementUnit={formState.measurementUnit}
+          setMeasurementUnit={formState.setMeasurementUnit}
+          dimensions={formState.dimensions}
+          setDimensions={formState.setDimensions}
+          skillLevel={formState.skillLevel}
+          setSkillLevel={formState.setSkillLevel}
+          gearType={formState.gearType}
         />
         
         <GearMedia 
-          formData={formData}
-          setFormData={setFormData}
+          handleImageUpload={handlers.handleImageUpload}
+          duplicatedImageUrl={duplicatedImageUrl}
         />
         
         <GearPricing 
-          formData={formData}
-          setFormData={setFormData}
-          validationErrors={validationErrors}
+          pricingOptions={formState.pricingOptions}
+          setPricingOptions={formState.setPricingOptions}
+          damageDeposit={formState.damageDeposit}
+          setDamageDeposit={formState.setDamageDeposit}
         />
         
         <FormActions 
+          handleSubmit={handlers.handleSubmit}
+          handleCancel={handlers.handleCancel}
+          isEditing={false}
           isSubmitting={isSubmitting}
-          onReset={resetForm}
         />
       </form>
     </div>
