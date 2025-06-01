@@ -6,6 +6,17 @@ import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CustomerWaiverForm from "@/components/CustomerWaiverForm";
 import { useAuth } from "@/helpers";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 
 const GearListingPage = () => {
   const [waiverCompleted, setWaiverCompleted] = useState(false);
@@ -16,9 +27,17 @@ const GearListingPage = () => {
     setWaiverCompleted(true);
   };
 
-  const handleListGearClick = () => {
+  const handleManualEntry = () => {
     if (isAuthenticated) {
       navigate("/list-gear");
+    } else {
+      navigate("/auth/signin");
+    }
+  };
+
+  const handleLightspeedPOS = () => {
+    if (isAuthenticated) {
+      navigate("/lightspeed-pos");
     } else {
       navigate("/auth/signin");
     }
@@ -31,9 +50,30 @@ const GearListingPage = () => {
         Browse through the available gear or add your own to the collection!
       </p>
       <div className="flex justify-center mb-8">
-        <Button size="lg" onClick={handleListGearClick}>
-          List Your Gear
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="lg" className="flex items-center gap-2">
+              List Your Gear
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuItem onClick={handleManualEntry}>
+              Manual Entry
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                Sync With POS
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem onClick={handleLightspeedPOS}>
+                  Lightspeed POS
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <Tabs defaultValue="browse" className="mb-8">

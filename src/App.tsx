@@ -28,6 +28,7 @@ import AnalyticsPage from "@/pages/AnalyticsPage";
 import ShopPage from "@/pages/ShopPage";
 import PrivatePartyPage from "@/pages/PrivatePartyPage";
 import ContactUsPage from "@/pages/ContactUsPage";
+import LightspeedPOSPage from "@/pages/LightspeedPOSPage";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const queryClient = new QueryClient();
@@ -55,6 +56,7 @@ const App = () => (
                 <Route path="gear-listing" element={<GearListing />} />
                 <Route path="list-gear" element={<AddGearForm />} />
                 <Route path="edit-gear/:id" element={<EditGearForm />} />
+                <Route path="lightspeed-pos" element={<LightspeedPOSPage />} />
                 <Route path="profile" element={<UserProfilePage />} />
                 <Route path="my-gear" element={<MyEquipmentPage />} />
                 <Route path="analytics" element={<AnalyticsPage />} />
