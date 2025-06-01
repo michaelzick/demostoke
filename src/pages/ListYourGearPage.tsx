@@ -71,13 +71,6 @@ const ListYourGearPage = () => {
           Transform your unused outdoor equipment into a profitable rental business.
           Join thousands of gear owners earning extra income while helping fellow outdoor enthusiasts.
         </p>
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
-          <Badge variant="secondary" className="text-sm py-1 px-3">🏂 Snowboards</Badge>
-          <Badge variant="secondary" className="text-sm py-1 px-3">🎿 Skis</Badge>
-          <Badge variant="secondary" className="text-sm py-1 px-3">🏄 Surfboards</Badge>
-          <Badge variant="secondary" className="text-sm py-1 px-3">🛹 Skateboards</Badge>
-          <Badge variant="secondary" className="text-sm py-1 px-3">🚣 SUPs</Badge>
-        </div>
       </div>
 
       {/* Benefits Section */}

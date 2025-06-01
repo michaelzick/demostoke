@@ -94,7 +94,7 @@ export const useEditGearFormSubmission = ({
           title: "Uploading Image",
           description: "Please wait while we upload your gear image...",
         });
-        
+
         try {
           imageUrl = await uploadGearImage(images[0], user.id);
           console.log('Image uploaded successfully:', imageUrl);

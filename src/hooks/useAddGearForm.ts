@@ -72,7 +72,7 @@ export const useAddGearForm = () => {
   };
 
   const handleCancel = () => {
-    navigate("/my-gear");
+    navigate("/list-gear");
   };
 
   return {

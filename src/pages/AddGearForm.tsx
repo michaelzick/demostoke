@@ -1,19 +1,7 @@
 
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/helpers";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
 import FormHeader from "@/components/gear-form/FormHeader";
 import GearBasicInfo from "@/components/gear-form/GearBasicInfo";
 import GearSpecifications from "@/components/gear-form/GearSpecifications";
@@ -46,36 +34,6 @@ const AddGearForm = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-6 text-center">List Your Gear</h1>
-        <div className="flex justify-center mb-8">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="lg" className="flex items-center gap-2">
-                List Your Gear
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-              <DropdownMenuItem onClick={handleManualEntry}>
-                Manual Entry
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  Sync With POS
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent>
-                  <DropdownMenuItem onClick={handleLightspeedPOS}>
-                    Lightspeed POS
-                  </DropdownMenuItem>
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-
       <form onSubmit={handlers.handleSubmit} className="space-y-8">
         <FormHeader title="Add New Gear" />
 
