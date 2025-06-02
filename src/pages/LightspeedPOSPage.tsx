@@ -100,8 +100,8 @@ const LightspeedPOSPage = () => {
       <Tabs defaultValue="setup" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="setup">Setup</TabsTrigger>
-          <TabsTrigger value="sync">Sync Inventory</TabsTrigger>
-          <TabsTrigger value="help">Help & Documentation</TabsTrigger>
+          <TabsTrigger value="sync">Inventory</TabsTrigger>
+          <TabsTrigger value="help">Help</TabsTrigger>
         </TabsList>
 
         <TabsContent value="setup" className="space-y-6">
