@@ -6,8 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, ExternalLink, CheckCircle, AlertCircle, Info } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ExternalLink, CheckCircle, AlertCircle, Info } from "lucide-react";
+import FormHeader from "@/components/gear-form/FormHeader";
 import { useToast } from "@/hooks/use-toast";
 import { useAddGearForm } from "@/hooks/useAddGearForm";
 
@@ -81,17 +81,9 @@ const LightspeedPOSPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" asChild>
-          <Link to="/list-gear" className="flex items-center">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to List Your Gear
-          </Link>
-        </Button>
-      </div>
+      <FormHeader title="Lightspeed POS Integration" />
 
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-4">Lightspeed POS Integration</h1>
         <p className="text-lg text-muted-foreground">
           Connect your Lightspeed Retail POS system to automatically sync your inventory with DemoStoke.
         </p>
