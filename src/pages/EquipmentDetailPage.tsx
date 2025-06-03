@@ -34,9 +34,15 @@ const EquipmentDetailPage = () => {
   const { data: equipment, isLoading, error } = useEquipmentById(shouldFetchFromDb ? id : "");
 
   // Convert UserEquipment to Equipment format for components that expect it
+  const ensurePricingOptionsTuple = (options: unknown): [import("@/types").PricingOption] => {
+    if (Array.isArray(options) && options.length > 0) {
+      return options as [import("@/types").PricingOption];
+    }
+    return [{ id: 'default', price: Number(equipment?.price_per_day ?? 0), duration: 'day' }];
+  };
+
   const equipmentForDisplay = useMemo(() => {
     if (equipment) {
-      // If DB equipment, ensure pricingOptions is always defined (even if empty)
       return {
         id: equipment.id,
         name: equipment.name,
@@ -68,19 +74,22 @@ const EquipmentDetailPage = () => {
         availability: {
           available: equipment.status === 'available',
         },
-        // Defensive: always provide an array for pricingOptions, and cast to [PricingOption] if at least one exists, otherwise fallback to a default
-        pricingOptions: Array.isArray((equipment as { pricingOptions?: unknown[] }).pricingOptions) && (equipment as { pricingOptions: unknown[] }).pricingOptions.length > 0
-          ? (equipment as { pricingOptions: [import("@/types").PricingOption] }).pricingOptions
-          : [{ id: 'default', price: Number(equipment.price_per_day), duration: 'day' }],
+        pricingOptions: ensurePricingOptionsTuple((equipment as { pricingOptions?: unknown[] }).pricingOptions),
       };
     }
     // If no equipment found from DB, try to find in mockEquipment
     if (id) {
       const mock = mockEquipment.find(e => e.id === id);
-      if (mock) return mock;
+      if (mock) {
+        // Ensure mock also has a tuple for pricingOptions
+        return {
+          ...mock,
+          pricingOptions: ensurePricingOptionsTuple(mock.pricingOptions),
+        };
+      }
     }
     return null;
-  }, [equipment, id]);
+  }, [equipment, id, ensurePricingOptionsTuple]);
 
   // Similar equipment (same category)
   const similarEquipment = useMemo(() => {
