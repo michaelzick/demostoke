@@ -46,6 +46,8 @@ export const useEditGearForm = () => {
 
   // Geocode zipCode to lat/lng when it changes
   // (Debounced for UX, but here we use useEffect for simplicity)
+
+  // >>> New comment to trigger Lovable rebuild <<<
   useEffect(() => {
     async function doGeocode() {
       if (formState.zipCode) {
