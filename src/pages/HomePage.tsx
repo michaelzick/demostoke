@@ -80,6 +80,11 @@ const HomePage = () => {
     formData.message &&
     captchaToken;
 
+  const handleDontShowAgain = () => {
+    localStorage.setItem("hideEmailModal", "1");
+    setShowModal(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -127,6 +132,9 @@ const HomePage = () => {
         description: "Your message has been sent successfully. We'll get back to you soon!",
       });
 
+      // Mark modal as sent in localStorage
+      handleDontShowAgain();
+
       // Reset form
       setFormData({
         firstName: "",
@@ -147,11 +155,6 @@ const HomePage = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleDontShowAgain = () => {
-    localStorage.setItem("hideEmailModal", "1");
-    setShowModal(false);
   };
 
   return (
