@@ -36,6 +36,7 @@ const EquipmentDetailPage = () => {
   // Convert UserEquipment to Equipment format for components that expect it
   const equipmentForDisplay = useMemo(() => {
     if (equipment) {
+      // If DB equipment, ensure pricingOptions is always defined (even if empty)
       return {
         id: equipment.id,
         name: equipment.name,
@@ -67,6 +68,10 @@ const EquipmentDetailPage = () => {
         availability: {
           available: equipment.status === 'available',
         },
+        // Defensive: always provide an array for pricingOptions, and cast to [PricingOption] if at least one exists, otherwise fallback to a default
+        pricingOptions: Array.isArray((equipment as { pricingOptions?: unknown[] }).pricingOptions) && (equipment as { pricingOptions: unknown[] }).pricingOptions.length > 0
+          ? (equipment as { pricingOptions: [import("@/types").PricingOption] }).pricingOptions
+          : [{ id: 'default', price: Number(equipment.price_per_day), duration: 'day' }],
       };
     }
     // If no equipment found from DB, try to find in mockEquipment
@@ -78,12 +83,21 @@ const EquipmentDetailPage = () => {
   }, [equipment, id]);
 
   // Similar equipment (same category)
-  const similarEquipment = useMemo(() =>
-    mockEquipment
+  const similarEquipment = useMemo(() => {
+    if (!equipmentForDisplay) return [];
+    // If DB data exists (equipment is from DB), filter from all DB equipment (if available in your app)
+    if (shouldFetchFromDb && equipment) {
+      // If you have a list of all DB equipment, use it here. For now, fallback to mockEquipment for demo.
+      // Replace mockEquipment with your DB equipment array if available.
+      return mockEquipment
+        .filter(item => item.category === equipmentForDisplay.category && item.id !== equipmentForDisplay.id)
+        .slice(0, 3);
+    }
+    // Otherwise, use mock data
+    return mockEquipment
       .filter(item => item.category === equipmentForDisplay.category && item.id !== equipmentForDisplay.id)
-      .slice(0, 3),
-    [equipmentForDisplay]
-  );
+      .slice(0, 3);
+  }, [shouldFetchFromDb, equipment, equipmentForDisplay]);
 
   // Scroll to top on page load
   useEffect(() => {
