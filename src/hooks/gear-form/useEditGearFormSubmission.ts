@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +20,8 @@ interface UseEditGearFormSubmissionProps {
   images: File[];
   pricingOptions: PricingOption[];
   damageDeposit: string;
+  lat: number | null;
+  lng: number | null;
 }
 
 export const useEditGearFormSubmission = ({
@@ -35,6 +36,8 @@ export const useEditGearFormSubmission = ({
   images,
   pricingOptions,
   damageDeposit,
+  lat,
+  lng,
 }: UseEditGearFormSubmissionProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -99,11 +102,11 @@ export const useEditGearFormSubmission = ({
         try {
           imageUrl = await uploadGearImage(images[0], user.id);
           console.log('Image uploaded successfully:', imageUrl);
-        } catch (uploadError: any) {
+        } catch (uploadError: unknown) {
           console.error('Image upload failed:', uploadError);
           toast({
             title: "Image Upload Failed",
-            description: uploadError.message || "Failed to upload image. Keeping existing image.",
+            description: uploadError instanceof Error ? uploadError.message : "Failed to upload image. Keeping existing image.",
             variant: "destructive",
           });
           // Keep existing image if upload fails
@@ -124,6 +127,8 @@ export const useEditGearFormSubmission = ({
         suitable_skill_level: skillLevel,
         price_per_day: parseFloat(pricingOptions[0].price),
         image_url: imageUrl,
+        location_lat: lat,
+        location_lng: lng
       };
 
       console.log('Updating equipment data:', equipmentData);
@@ -181,11 +186,11 @@ export const useEditGearFormSubmission = ({
       // Navigate back to My Gear page
       navigate("/my-gear");
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating equipment:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to update equipment. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to update equipment. Please try again.",
         variant: "destructive",
       });
     } finally {

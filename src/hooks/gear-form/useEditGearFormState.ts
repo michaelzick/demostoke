@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { PricingOption } from "./types";
 
@@ -15,6 +14,9 @@ export const useEditGearFormState = () => {
     { id: "1", price: "", duration: "day" }
   ]);
   const [damageDeposit, setDamageDeposit] = useState("100");
+  const [locationName, setLocationName] = useState("");
+  const [lat, setLat] = useState<number | null>(null);
+  const [lng, setLng] = useState<number | null>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -44,5 +46,11 @@ export const useEditGearFormState = () => {
     damageDeposit,
     setDamageDeposit,
     handleImageUpload,
+    locationName,
+    setLocationName,
+    lat,
+    setLat,
+    lng,
+    setLng,
   };
 };

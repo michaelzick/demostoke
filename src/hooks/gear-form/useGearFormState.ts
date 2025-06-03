@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { PricingOption } from "./types";
 
@@ -16,6 +15,9 @@ export const useGearFormState = () => {
   ]);
   const [damageDeposit, setDamageDeposit] = useState("");
   const [role, setRole] = useState("");
+  const [locationName, setLocationName] = useState("");
+  const [lat, setLat] = useState<number | null>(null);
+  const [lng, setLng] = useState<number | null>(null);
 
   return {
     gearName,
@@ -40,5 +42,11 @@ export const useGearFormState = () => {
     setDamageDeposit,
     role,
     setRole,
+    locationName,
+    setLocationName,
+    lat,
+    setLat,
+    lng,
+    setLng,
   };
 };

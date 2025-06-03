@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +20,8 @@ interface UseGearFormSubmissionProps {
   damageDeposit: string;
   role: string;
   duplicatedImageUrl?: string;
+  lat?: number | null;
+  lng?: number | null;
 }
 
 export const useGearFormSubmission = ({
@@ -36,6 +37,8 @@ export const useGearFormSubmission = ({
   damageDeposit,
   role,
   duplicatedImageUrl,
+  lat,
+  lng,
 }: UseGearFormSubmissionProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -129,8 +132,8 @@ export const useGearFormSubmission = ({
         image_url: imageUrl,
         rating: 0,
         review_count: 0,
-        location_lat: null,
-        location_lng: null,
+        location_lat: lat ?? null,
+        location_lng: lng ?? null,
         weight: null,
         material: null
       };

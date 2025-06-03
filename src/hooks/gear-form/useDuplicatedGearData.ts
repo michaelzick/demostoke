@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { DuplicatedGear, PricingOption } from "./types";
@@ -14,6 +13,9 @@ interface UseDuplicatedGearDataProps {
   setSkillLevel: (value: string) => void;
   setPricingOptions: (value: PricingOption[]) => void;
   setDamageDeposit: (value: string) => void;
+  setLocationName?: (value: string) => void;
+  setLat?: (lat: number) => void;
+  setLng?: (lng: number) => void;
 }
 
 export const useDuplicatedGearData = ({
@@ -27,6 +29,9 @@ export const useDuplicatedGearData = ({
   setSkillLevel,
   setPricingOptions,
   setDamageDeposit,
+  setLocationName,
+  setLat,
+  setLng,
 }: UseDuplicatedGearDataProps) => {
   const { toast } = useToast();
 
@@ -59,6 +64,11 @@ export const useDuplicatedGearData = ({
         ]);
         setDamageDeposit(duplicatedGear.damageDeposit);
 
+        // Set location fields if available
+        if (setLocationName && duplicatedGear.locationName) setLocationName(duplicatedGear.locationName);
+        if (setLat && typeof duplicatedGear.lat === 'number') setLat(duplicatedGear.lat);
+        if (setLng && typeof duplicatedGear.lng === 'number') setLng(duplicatedGear.lng);
+
         // Clear the sessionStorage after using it
         sessionStorage.removeItem('duplicatedGear');
 
@@ -77,7 +87,7 @@ export const useDuplicatedGearData = ({
         console.error("Error parsing duplicated gear data:", error);
       }
     }
-  }, [toast, setGearName, setGearType, setDescription, setZipCode, setMeasurementUnit, setDimensions, setRole, setSkillLevel, setPricingOptions, setDamageDeposit]);
+  }, [toast, setGearName, setGearType, setDescription, setZipCode, setMeasurementUnit, setDimensions, setRole, setSkillLevel, setPricingOptions, setDamageDeposit, setLocationName, setLat, setLng]);
 
   // Return the duplicated gear data so it can be used by the form
   const getDuplicatedGearData = () => {

@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useEditGearForm } from "@/hooks/useEditGearForm";
 
@@ -61,6 +60,12 @@ const EditGearForm = () => {
           setDescription={formState.setDescription}
           zipCode={formState.zipCode}
           setZipCode={formState.setZipCode}
+          locationName={formState.locationName}
+          setLocationName={formState.setLocationName}
+          lat={formState.lat}
+          setLat={formState.setLat}
+          lng={formState.lng}
+          setLng={formState.setLng}
         />
 
         <GearSpecifications
