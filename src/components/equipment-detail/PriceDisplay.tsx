@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Equipment } from "@/types";
 import { usePricingOptions } from "@/hooks/usePricingOptions";
@@ -8,7 +7,23 @@ interface PriceDisplayProps {
 }
 
 const PriceDisplay = ({ equipment }: PriceDisplayProps) => {
-  const { data: pricingOptions = [], isLoading } = usePricingOptions(equipment.id);
+  const { data: dbPricingOptions = [], isLoading } = usePricingOptions(equipment.id);
+
+  // Helper to get mock pricing options from equipment
+  function getMockPricingOptions(equipment: unknown) {
+    if (equipment && typeof equipment === 'object' && 'pricingOptions' in equipment) {
+      const eq = equipment as { pricingOptions?: { id: string; price: number; duration: string }[] };
+      if (Array.isArray(eq.pricingOptions)) {
+        return eq.pricingOptions;
+      }
+    }
+    return [];
+  }
+  const mockPricingOptions = getMockPricingOptions(equipment);
+
+  // Only show DB pricing if there is DB data for this equipment
+  const showDbPricing = dbPricingOptions.length > 0;
+  const pricingOptions = showDbPricing ? dbPricingOptions : mockPricingOptions;
 
   const getAvailabilityStatusText = () => {
     if (equipment.availability.available) {
