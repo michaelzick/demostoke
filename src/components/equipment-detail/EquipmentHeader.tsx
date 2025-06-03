@@ -28,7 +28,7 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
         </div>
       </div>
       <div className="text-right">
-        <div className="text-2xl font-bold text-primary">${equipment.pricePerDay}</div>
+        <div className="text-2xl font-bold text-primary">${equipment.pricingOptions[0].price}</div>
         <div className="text-sm text-muted-foreground">per day</div>
       </div>
     </div>

@@ -1,3 +1,8 @@
+export type PricingOption = {
+  price: number;
+  duration: string; // e.g., "day", "week", "month"
+  id: string; // Unique identifier for the pricing option
+};
 
 export interface Equipment {
   id: string;
@@ -6,6 +11,7 @@ export interface Equipment {
   description: string;
   imageUrl: string;
   pricePerDay: number;
+  pricingOptions: [PricingOption];
   rating: number;
   reviewCount: number;
   owner: GearOwner;
