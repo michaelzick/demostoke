@@ -1,8 +1,6 @@
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState, useRef } from "react";
-import Breadcrumbs from "@/components/Breadcrumbs";
-import CustomerWaiverForm from "@/components/waiver/CustomerWaiverForm";
 import { useEquipmentById } from "@/hooks/useEquipmentById";
 import { Skeleton } from "@/components/ui/skeleton";
 import { mockEquipment } from "@/lib/mockData";
@@ -22,6 +20,11 @@ const EquipmentDetailPage = () => {
   const [waiverCompleted, setWaiverCompleted] = useState(false);
   const [showWaiver, setShowWaiver] = useState(false);
   const bookingCardRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to top on page load
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   // Only fetch from DB if id is a valid UUID
   const shouldFetchFromDb = id && isValidUUID(id);
@@ -69,7 +72,7 @@ const EquipmentDetailPage = () => {
         availability: {
           available: equipment.status === 'available',
         },
-        pricingOptions: ensurePricingOptionsTuple((equipment as { pricingOptions?: unknown[] }).pricingOptions, Number(equipment.price_per_day)),
+        pricingOptions: ensurePricingOptionsTuple((equipment as { pricingOptions?: unknown[]; }).pricingOptions, Number(equipment.price_per_day)),
       };
     }
     return null;
