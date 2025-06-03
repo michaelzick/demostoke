@@ -131,6 +131,10 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         available: Math.random() > 0.2, // 80% are available
         nextAvailableDate: Math.random() > 0.2 ? undefined : new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       },
+      pricingOptions: [
+        { id: '1', price: Math.floor(Math.random() * 30) + 20, duration: 'day' },
+        { id: '2', price: Math.floor(Math.random() * 150) + 100, duration: 'week' },
+      ],
     };
   });
 }
