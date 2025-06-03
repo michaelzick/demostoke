@@ -19,8 +19,6 @@ interface GearBasicInfoProps {
   setDescription: (value: string) => void;
   zipCode: string;
   setZipCode: (value: string) => void;
-  locationName: string;
-  setLocationName: (value: string) => void;
   lat: number | null;
   setLat: (lat: number) => void;
   lng: number | null;
@@ -36,8 +34,6 @@ const GearBasicInfo = ({
   setDescription,
   zipCode,
   setZipCode,
-  locationName,
-  setLocationName,
   lat,
   setLat,
   lng,
@@ -92,23 +88,10 @@ const GearBasicInfo = ({
         />
       </div>
 
-      {/* Zip Code/Location */}
-      <div>
-        <Label htmlFor="zipCode" className="block text-lg font-medium mb-2">
-          Location (Zip Code) <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          id="zipCode"
-          type="text"
-          value={zipCode}
-          onChange={(e) => setZipCode(e.target.value)}
-          required
-        />
-      </div>
-      {/* New: World Location Selector */}
+      {/* Location Selector with Lat/Lng */}
       <LocationSelector
-        locationName={locationName}
-        setLocationName={setLocationName}
+        zipCode={zipCode}
+        setZipCode={setZipCode}
         lat={lat}
         setLat={setLat}
         lng={lng}

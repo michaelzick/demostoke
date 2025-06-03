@@ -47,12 +47,12 @@ export const useEditGearForm = () => {
     lng: formState.lng,
   });
 
-  // Geocode locationName to lat/lng when it changes
+  // Geocode zipCode to lat/lng when it changes
   // (Debounced for UX, but here we use useEffect for simplicity)
   useEffect(() => {
     async function doGeocode() {
-      if (formState.locationName) {
-        const geo = await geocodeLocation(formState.locationName);
+      if (formState.zipCode) {
+        const geo = await geocodeLocation(formState.zipCode + ", USA");
         if (geo) {
           formState.setLat(geo.lat);
           formState.setLng(geo.lng);
@@ -60,8 +60,8 @@ export const useEditGearForm = () => {
       }
     }
     doGeocode();
-    // Only run when locationName changes
-  }, [formState.locationName, formState]);
+    // Only run when zipCode changes
+  }, [formState.zipCode, formState]);
 
   return {
     equipment,

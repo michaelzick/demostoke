@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
 interface LocationSelectorProps {
-  locationName: string;
-  setLocationName: (value: string) => void;
+  zipCode: string;
+  setZipCode: (value: string) => void;
   lat: number | null;
   lng: number | null;
   setLat: (lat: number) => void;
@@ -12,27 +12,26 @@ interface LocationSelectorProps {
 }
 
 const LocationSelector: React.FC<LocationSelectorProps> = ({
-  locationName,
-  setLocationName,
+  zipCode,
+  setZipCode,
   lat,
   lng,
   setLat,
   setLng,
 }) => {
-  // For simplicity, use a text input for location name and two number inputs for lat/lng
-  // In a real app, you could use a map picker or autocomplete
   return (
     <div>
-      <Label htmlFor="locationName" className="block text-lg font-medium mb-2">
-        Location Name <span className="text-red-500">*</span>
+      <Label htmlFor="zipCode" className="block text-lg font-medium mb-2">
+        Zip Code <span className="text-red-500">*</span>
       </Label>
       <Input
-        id="locationName"
+        id="zipCode"
         type="text"
-        value={locationName}
-        onChange={e => setLocationName(e.target.value)}
-        placeholder="Enter a location (e.g. Paris, France)"
+        value={zipCode}
+        onChange={e => setZipCode(e.target.value)}
+        placeholder="Enter a ZIP code"
         required
+        pattern="[0-9]{5}(-[0-9]{4})?"
       />
       <div className="flex gap-4 mt-2">
         <div>
