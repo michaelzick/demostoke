@@ -67,7 +67,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         <div className="flex items-center justify-between mb-2">
           <div>
             <p className="text-sm font-medium">${equipment.pricePerDay}/day</p>
-            <p className="text-xs text-muted-foreground">{equipment.location.name}</p>
+            <p className="text-xs text-muted-foreground">{equipment.location.zip || "ZIP Code"}</p>
           </div>
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <span>{equipment.distance}mi away</span>

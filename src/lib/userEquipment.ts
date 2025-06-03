@@ -96,6 +96,7 @@ export const mockUserEquipment: UserEquipment[] = [
       lat: 34.0522,
       lng: -118.2437,
       name: "Echo Park",
+      zip: "90026"
     },
     distance: 0,
     specifications: {

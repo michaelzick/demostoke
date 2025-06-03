@@ -38,7 +38,7 @@ export const useEquipmentDataLoader = ({
       setGearName(equipment.name);
       setGearType(mappedGearType);
       setDescription(equipment.description || "");
-      setZipCode(equipment.location_name || "");
+      setZipCode(equipment.location_zip || "");
       setDimensions(parseSize(equipment.size || ""));
       
       // Map skill level after setting gear type

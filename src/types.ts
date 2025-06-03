@@ -18,7 +18,7 @@ export interface Equipment {
   location: {
     lat: number;
     lng: number;
-    name: string;
+    zip: string;
   };
   distance: number;
   specifications: {

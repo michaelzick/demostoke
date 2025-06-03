@@ -124,7 +124,7 @@ export const useGearFormSubmission = ({
         name: gearName,
         category: mapGearTypeToCategory(gearType),
         description: description,
-        location_name: zipCode,
+        location_zip: zipCode,
         size: sizeString,
         suitable_skill_level: skillLevel,
         price_per_day: parseFloat(pricingOptions[0].price),
