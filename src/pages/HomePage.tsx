@@ -144,6 +144,7 @@ const HomePage = () => {
         message: ""
       });
       setCaptchaToken("");
+      setShowModal(false); // Close the modal on success
 
     } catch (error) {
       console.error('Contact form error:', error);
