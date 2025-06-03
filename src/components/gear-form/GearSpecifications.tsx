@@ -16,8 +16,9 @@ interface GearSpecificationsProps {
   dimensions: {
     length: string;
     width: string;
+    thickness?: string;
   };
-  setDimensions: (value: { length: string; width: string }) => void;
+  setDimensions: (value: { length: string; width: string; thickness?: string }) => void;
   skillLevel: string;
   setSkillLevel: (value: string) => void;
   gearType: string;
@@ -72,14 +73,15 @@ const GearSpecifications = ({
       </div>
 
       {/* Dimensions */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <div>
           <Label htmlFor="length" className="block text-lg font-medium mb-2">
-            Length (Numbers Only) <span className="text-red-500">*</span>
+            Length <span className="text-red-500">*</span>
           </Label>
           <Input
             id="length"
             type="number"
+            placeholder="Numbers only"
             value={dimensions.length}
             onChange={(e) =>
               setDimensions({ ...dimensions, length: e.target.value })
@@ -89,16 +91,31 @@ const GearSpecifications = ({
         </div>
         <div>
           <Label htmlFor="width" className="block text-lg font-medium mb-2">
-            Width (Numbers Only) <span className="text-red-500">*</span>
+            Width <span className="text-red-500">*</span>
           </Label>
           <Input
             id="width"
             type="number"
+            placeholder="Numbers only"
             value={dimensions.width}
             onChange={(e) =>
               setDimensions({ ...dimensions, width: e.target.value })
             }
             required
+          />
+        </div>
+        <div>
+          <Label htmlFor="thickness" className="block text-lg font-medium mb-2">
+            Thickness
+          </Label>
+          <Input
+            id="thickness"
+            type="number"
+            placeholder="Numbers only"
+            value={dimensions.thickness || ""}
+            onChange={(e) =>
+              setDimensions({ ...dimensions, thickness: e.target.value })
+            }
           />
         </div>
       </div>
