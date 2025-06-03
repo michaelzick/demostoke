@@ -1,11 +1,13 @@
+
 import { useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { mockEquipment } from "@/lib/mockData";
 import { useEffect, useMemo, useState, useRef } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import CustomerWaiverForm from "@/components/waiver/CustomerWaiverForm";
+import { useEquipmentById } from "@/hooks/useEquipmentById";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Import component modules
 import BookingCard from "@/components/equipment-detail/BookingCard";
@@ -15,26 +17,13 @@ import LocationTab from "@/components/equipment-detail/LocationTab";
 import ReviewsTab from "@/components/equipment-detail/ReviewsTab";
 import PolicyTab from "@/components/equipment-detail/PolicyTab";
 import OwnerCard from "@/components/equipment-detail/OwnerCard";
-import SimilarEquipment from "@/components/equipment-detail/SimilarEquipment";
-import FrequentlyPairedTogether from "@/components/equipment-detail/FrequentlyPairedTogether";
 
 const EquipmentDetailPage = () => {
   const { id } = useParams<{ id: string; }>();
   const [waiverCompleted, setWaiverCompleted] = useState(false);
   const [showWaiver, setShowWaiver] = useState(false);
 
-  const equipment = useMemo(() =>
-    mockEquipment.find(item => item.id === id) || mockEquipment[0],
-    [id]
-  );
-
-  // Similar equipment (same category)
-  const similarEquipment = useMemo(() =>
-    mockEquipment
-      .filter(item => item.category === equipment.category && item.id !== equipment.id)
-      .slice(0, 3),
-    [equipment]
-  );
+  const { data: equipment, isLoading, error } = useEquipmentById(id || "");
 
   // Scroll to top on page load
   useEffect(() => {
@@ -67,16 +56,107 @@ const EquipmentDetailPage = () => {
     }, 100);
   };
 
+  // Convert UserEquipment to Equipment format for components that expect it
+  const equipmentForDisplay = useMemo(() => {
+    if (!equipment) return null;
+    
+    return {
+      id: equipment.id,
+      name: equipment.name,
+      category: equipment.category,
+      description: equipment.description || "",
+      imageUrl: equipment.image_url || "",
+      pricePerDay: Number(equipment.price_per_day),
+      rating: Number(equipment.rating || 0),
+      reviewCount: equipment.review_count || 0,
+      owner: {
+        id: equipment.user_id,
+        name: "Equipment Owner",
+        imageUrl: "https://api.dicebear.com/6.x/avataaars/svg?seed=" + equipment.user_id,
+        rating: 4.9,
+        responseRate: 98,
+      },
+      location: {
+        lat: Number(equipment.location_lat || 0),
+        lng: Number(equipment.location_lng || 0),
+        name: equipment.location_name || "Location",
+      },
+      distance: 0,
+      specifications: {
+        size: equipment.size || "N/A",
+        weight: equipment.weight || "N/A",
+        material: equipment.material || "N/A",
+        suitable: equipment.suitable_skill_level || "All Levels",
+      },
+      availability: {
+        available: equipment.status === 'available',
+      },
+    };
+  }, [equipment]);
+
+  if (isLoading) {
+    return (
+      <div className="container px-4 md:px-6 py-8">
+        <Skeleton className="h-6 w-64 mb-8" />
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Image Gallery */}
+            <Skeleton className="w-full h-96 rounded-lg" />
+
+            {/* Equipment Info */}
+            <div>
+              <Skeleton className="h-8 w-3/4 mb-4" />
+              <Skeleton className="h-4 w-1/2 mb-6" />
+              <Skeleton className="h-20 w-full mb-6" />
+              
+              {/* Specs skeleton */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <Skeleton key={i} className="h-16 rounded-lg" />
+                ))}
+              </div>
+            </div>
+
+            {/* Tabs skeleton */}
+            <div className="space-y-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-32 w-full" />
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            <Card className="p-6">
+              <Skeleton className="h-40 w-full" />
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !equipment || !equipmentForDisplay) {
+    return (
+      <div className="container px-4 md:px-6 py-8">
+        <div className="text-center py-20">
+          <h2 className="text-xl font-medium mb-2">Equipment not found</h2>
+          <p className="text-muted-foreground mb-6">
+            {error ? "There was an error loading this equipment." : "This equipment doesn't exist or you don't have permission to view it."}
+          </p>
+          <Button onClick={() => window.history.back()}>Go Back</Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container px-4 md:px-6 py-8">
       <Breadcrumbs
         items={[
           { label: "Home", path: "/" },
-          { label: "Explore", path: "/explore" },
-          {
-            label: equipment.category.charAt(0).toUpperCase() + equipment.category.slice(1),
-            path: `/explore?category=${equipment.category}`
-          },
+          { label: "My Gear", path: "/my-gear" },
           { label: equipment.name, path: `/equipment/${equipment.id}` },
         ]}
       />
@@ -96,7 +176,7 @@ const EquipmentDetailPage = () => {
               </Button>
             </div>
             <CustomerWaiverForm 
-              equipment={equipment} 
+              equipment={equipmentForDisplay} 
               onComplete={handleWaiverComplete} 
             />
           </div>
@@ -109,7 +189,7 @@ const EquipmentDetailPage = () => {
           {/* Image Gallery */}
           <div className="overflow-hidden rounded-lg">
             <img
-              src={equipment.imageUrl}
+              src={equipment.image_url || "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80"}
               alt={equipment.name}
               className="w-full h-96 object-cover"
             />
@@ -117,7 +197,7 @@ const EquipmentDetailPage = () => {
 
           {/* Equipment Info */}
           <div>
-            <EquipmentHeader equipment={equipment} />
+            <EquipmentHeader equipment={equipmentForDisplay} />
 
             {/* Book Now button: only visible on mobile (columns stacked) */}
             <Button
@@ -139,7 +219,7 @@ const EquipmentDetailPage = () => {
             </Button>
 
             <p className="text-lg mb-6">{equipment.description}</p>
-            <EquipmentSpecs specifications={equipment.specifications} />
+            <EquipmentSpecs specifications={equipmentForDisplay.specifications} />
           </div>
 
           {/* Tabs for Additional Information */}
@@ -150,10 +230,10 @@ const EquipmentDetailPage = () => {
               <TabsTrigger value="policy">Policies</TabsTrigger>
             </TabsList>
             <TabsContent value="location">
-              <LocationTab equipment={equipment} />
+              <LocationTab equipment={equipmentForDisplay} />
             </TabsContent>
             <TabsContent value="reviews">
-              <ReviewsTab rating={equipment.rating} reviewCount={equipment.reviewCount} />
+              <ReviewsTab rating={equipmentForDisplay.rating} reviewCount={equipmentForDisplay.reviewCount} />
             </TabsContent>
             <TabsContent value="policy">
               <PolicyTab />
@@ -162,7 +242,7 @@ const EquipmentDetailPage = () => {
 
           {/* Owner Info */}
           <Card>
-            <OwnerCard owner={equipment.owner} />
+            <OwnerCard owner={equipmentForDisplay.owner} />
           </Card>
         </div>
 
@@ -171,14 +251,11 @@ const EquipmentDetailPage = () => {
           {/* Booking Card */}
           <Card className="p-6" ref={bookingCardRef}>
             <BookingCard 
-              equipment={equipment} 
+              equipment={equipmentForDisplay} 
               waiverCompleted={waiverCompleted} 
               onWaiverClick={handleOpenWaiver} 
             />
           </Card>
-
-          {/* Similar Equipment */}
-          <SimilarEquipment similarEquipment={similarEquipment} />
         </div>
       </div>
     </div>
