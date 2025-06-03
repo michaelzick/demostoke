@@ -15,7 +15,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 const getDatesInRange = (startDateStr: string, endDateStr: string): Date[] => {
   const startDate = parseISO(startDateStr);
   const endDate = parseISO(endDateStr);
-  
+
   const dates: Date[] = [];
   let currentDate = startDate;
 
@@ -29,7 +29,7 @@ const getDatesInRange = (startDateStr: string, endDateStr: string): Date[] => {
 
 // Find all dates that have bookings
 const getBookingDates = (bookings: Booking[]): Date[] => {
-  return bookings.flatMap(booking => 
+  return bookings.flatMap(booking =>
     getDatesInRange(booking.startDate, booking.endDate)
   );
 };
@@ -40,28 +40,28 @@ const BookingsPage = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("myBookings");
   const isMobile = useIsMobile();
-  
+
   // Get all dates with bookings based on the current view mode
   const bookedDates = getBookingDates(
     viewMode === "myBookings" ? myBookings : bookingsForMyGear
   );
-  
+
   // Get bookings for the selected date
   const getBookingsForDate = (date: Date | undefined): Booking[] => {
     if (!date) return [];
-    
+
     const dateStr = format(date, "yyyy-MM-dd");
     const bookingsToCheck = viewMode === "myBookings" ? myBookings : bookingsForMyGear;
-    
+
     return bookingsToCheck.filter(booking => {
       const bookingStartDate = parseISO(booking.startDate);
       const bookingEndDate = parseISO(booking.endDate);
       const selectedDate = parseISO(dateStr);
-      
+
       return selectedDate >= bookingStartDate && selectedDate <= bookingEndDate;
     });
   };
-  
+
   const bookingsForSelectedDate = getBookingsForDate(date);
 
   const getStatusColor = (status: string) => {
@@ -77,7 +77,7 @@ const BookingsPage = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">My Bookings</h1>
-      
+
       <div className="flex flex-col md:flex-row gap-6">
         <div className="md:w-1/2">
           <Card>
@@ -85,15 +85,15 @@ const BookingsPage = () => {
               <div className="flex flex-col gap-4">
                 <CardTitle>Booking Calendar</CardTitle>
                 <div className="flex flex-col sm:flex-row gap-2">
-                  <Button 
-                    variant={viewMode === "myBookings" ? "default" : "outline"} 
+                  <Button
+                    variant={viewMode === "myBookings" ? "default" : "outline"}
                     onClick={() => setViewMode("myBookings")}
                     className="w-full sm:w-auto"
                   >
                     Gear I've Booked
                   </Button>
-                  <Button 
-                    variant={viewMode === "othersBookings" ? "default" : "outline"} 
+                  <Button
+                    variant={viewMode === "othersBookings" ? "default" : "outline"}
                     onClick={() => setViewMode("othersBookings")}
                     className="w-full sm:w-auto"
                   >
@@ -102,8 +102,8 @@ const BookingsPage = () => {
                 </div>
               </div>
               <CardDescription>
-                {viewMode === "myBookings" 
-                  ? "View and manage gear you've rented from others" 
+                {viewMode === "myBookings"
+                  ? "View and manage gear you've rented from others"
                   : "See when your gear has been booked by others"}
               </CardDescription>
             </CardHeader>
@@ -124,7 +124,7 @@ const BookingsPage = () => {
                     const hasBooking = bookedDates.some(
                       bookedDate => format(bookedDate, "yyyy-MM-dd") === format(date, "yyyy-MM-dd")
                     );
-                    
+
                     return (
                       <div className="relative w-full h-full flex items-center justify-center">
                         {date.getDate()}
@@ -139,7 +139,7 @@ const BookingsPage = () => {
             </CardContent>
           </Card>
         </div>
-        
+
         <div className="md:w-1/2">
           <Card>
             <CardHeader>
@@ -147,8 +147,8 @@ const BookingsPage = () => {
                 {date ? format(date, "MMMM d, yyyy") : "Select a date"}
               </CardTitle>
               <CardDescription>
-                {bookingsForSelectedDate.length === 0 
-                  ? "No bookings for this date" 
+                {bookingsForSelectedDate.length === 0
+                  ? "No bookings for this date"
                   : `${bookingsForSelectedDate.length} booking(s) for this date`}
               </CardDescription>
             </CardHeader>
@@ -174,14 +174,14 @@ const BookingsPage = () => {
                           {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                         </Badge>
                       </div>
-                      
+
                       <div className="flex items-center mt-4">
                         <Avatar className="h-8 w-8 mr-2">
                           <AvatarImage src={booking.bookedBy.imageUrl} alt={booking.bookedBy.name} />
                           <AvatarFallback>{booking.bookedBy.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <span className="text-sm">
-                          {viewMode === "myBookings" ? "Rented from " : "Booked by "}
+                          {viewMode === "myBookings" ? "Demoed by " : "Booked by "}
                           {booking.bookedBy.name === "You" ? "you" : booking.bookedBy.name}
                         </span>
                       </div>
