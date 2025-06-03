@@ -17,9 +17,7 @@ import LocationTab from "@/components/equipment-detail/LocationTab";
 import ReviewsTab from "@/components/equipment-detail/ReviewsTab";
 import PolicyTab from "@/components/equipment-detail/PolicyTab";
 import OwnerCard from "@/components/equipment-detail/OwnerCard";
-
-// Define a type for pricing options
-interface PricingOption { id: string; price: number; duration: string; }
+import SimilarEquipment from "@/components/equipment-detail/SimilarEquipment";
 
 // Helper to check for valid UUID
 function isValidUUID(id: string) {
@@ -34,9 +32,6 @@ const EquipmentDetailPage = () => {
   // Only fetch from DB if id is a valid UUID
   const shouldFetchFromDb = id && isValidUUID(id);
   const { data: equipment, isLoading, error } = useEquipmentById(shouldFetchFromDb ? id : "");
-
-  // Only use dbPricingOptions if using DB equipment, otherwise use mockPricingOptions
-  const showDbPricing = shouldFetchFromDb && equipment && isValidUUID(equipment.id);
 
   // Convert UserEquipment to Equipment format for components that expect it
   const equipmentForDisplay = useMemo(() => {
@@ -82,8 +77,13 @@ const EquipmentDetailPage = () => {
     return null;
   }, [equipment, id]);
 
-  // Get mock pricing options if available (must be after equipmentForDisplay is defined)
-  const mockPricingOptions: PricingOption[] = (equipmentForDisplay && (equipmentForDisplay as { pricingOptions?: PricingOption[]; }).pricingOptions) || [];
+  // Similar equipment (same category)
+  const similarEquipment = useMemo(() =>
+    mockEquipment
+      .filter(item => item.category === equipmentForDisplay.category && item.id !== equipmentForDisplay.id)
+      .slice(0, 3),
+    [equipmentForDisplay]
+  );
 
   // Scroll to top on page load
   useEffect(() => {
@@ -206,6 +206,9 @@ const EquipmentDetailPage = () => {
                   onWaiverClick={handleOpenWaiver}
                 />
               </Card>
+
+              {/* Similar Equipment */}
+              <SimilarEquipment similarEquipment={similarEquipment} />
             </div>
           </div>
         </div>
@@ -372,6 +375,9 @@ const EquipmentDetailPage = () => {
               onWaiverClick={handleOpenWaiver}
             />
           </Card>
+
+          {/* Similar Equipment */}
+          <SimilarEquipment similarEquipment={similarEquipment} />
         </div>
       </div>
     </div>
