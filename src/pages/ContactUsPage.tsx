@@ -216,7 +216,7 @@ const ContactUsPage = () => {
                 className="flex-1"
                 disabled={!isFormValid || isSubmitting}
               >
-                {isSubmitting ? "Sending..." : "Submit"}
+                {isSubmitting ? "Sending..." : "Send It!"}
               </Button>
               <Button
                 type="button"

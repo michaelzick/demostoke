@@ -231,11 +231,19 @@ const HomePage = () => {
             <DialogFooter>
               <Button
                 type="button"
-                variant="outline"
+                variant="ghost"
                 onClick={handleDontShowAgain}
                 disabled={isSubmitting}
               >
                 Don't Show Again
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowModal(false)}
+                disabled={isSubmitting}
+              >
+                Cancel
               </Button>
               <Button type="submit" disabled={!isFormValid || isSubmitting}>
                 {isSubmitting ? "Sending..." : "Send It!"}
