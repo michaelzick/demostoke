@@ -75,11 +75,11 @@ const GearSpecifications = ({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="length" className="block text-lg font-medium mb-2">
-            Length <span className="text-red-500">*</span>
+            Length (Numbers Only) <span className="text-red-500">*</span>
           </Label>
           <Input
             id="length"
-            type="text"
+            type="number"
             value={dimensions.length}
             onChange={(e) =>
               setDimensions({ ...dimensions, length: e.target.value })
@@ -89,11 +89,11 @@ const GearSpecifications = ({
         </div>
         <div>
           <Label htmlFor="width" className="block text-lg font-medium mb-2">
-            Width <span className="text-red-500">*</span>
+            Width (Numbers Only) <span className="text-red-500">*</span>
           </Label>
           <Input
             id="width"
-            type="text"
+            type="number"
             value={dimensions.width}
             onChange={(e) =>
               setDimensions({ ...dimensions, width: e.target.value })
