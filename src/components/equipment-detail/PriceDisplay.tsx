@@ -1,12 +1,15 @@
 
 import React from "react";
 import { Equipment } from "@/types";
+import { usePricingOptions } from "@/hooks/usePricingOptions";
 
 interface PriceDisplayProps {
   equipment: Equipment;
 }
 
 const PriceDisplay = ({ equipment }: PriceDisplayProps) => {
+  const { data: pricingOptions = [], isLoading } = usePricingOptions(equipment.id);
+
   const getAvailabilityStatusText = () => {
     if (equipment.availability.available) {
       return "Available";
@@ -17,10 +20,41 @@ const PriceDisplay = ({ equipment }: PriceDisplayProps) => {
     }
   };
 
+  const formatDuration = (duration: string) => {
+    switch (duration) {
+      case 'hour': return 'hr';
+      case 'day': return 'day';
+      case 'week': return 'week';
+      default: return duration;
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-between items-center">
+        <div>
+          <div className="animate-pulse bg-gray-200 h-8 w-24 rounded mb-2"></div>
+          <div className="animate-pulse bg-gray-200 h-4 w-32 rounded"></div>
+        </div>
+        <div className="animate-pulse bg-gray-200 h-6 w-20 rounded"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex justify-between items-center">
       <div>
-        <p className="text-2xl font-bold">${equipment.pricePerDay} <span className="text-sm font-normal">/ day</span></p>
+        {pricingOptions.length > 0 ? (
+          <div className="space-y-1">
+            {pricingOptions.map((option, index) => (
+              <p key={option.id} className={index === 0 ? "text-2xl font-bold" : "text-lg"}>
+                ${option.price} <span className="text-sm font-normal">/ {formatDuration(option.duration)}</span>
+              </p>
+            ))}
+          </div>
+        ) : (
+          <p className="text-2xl font-bold">${equipment.pricePerDay} <span className="text-sm font-normal">/ day</span></p>
+        )}
         <div className="flex items-center mt-1">
           <span className="text-sm">★ {equipment.rating}</span>
           <span className="mx-1">·</span>

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -15,7 +16,7 @@ interface UseEditGearFormSubmissionProps {
   description: string;
   zipCode: string;
   measurementUnit: string;
-  dimensions: { length: string; width: string };
+  dimensions: { length: string; width: string; thickness?: string };
   skillLevel: string;
   images: File[];
   pricingOptions: PricingOption[];
@@ -110,12 +111,16 @@ export const useEditGearFormSubmission = ({
       }
 
       // Prepare the data for database update
+      const sizeString = dimensions.thickness 
+        ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness} ${measurementUnit}`
+        : `${dimensions.length} x ${dimensions.width} ${measurementUnit}`;
+
       const equipmentData = {
         name: gearName,
         category: mapGearTypeToCategory(gearType),
         description: description,
         location_name: zipCode,
-        size: `${dimensions.length} x ${dimensions.width} ${measurementUnit}`,
+        size: sizeString,
         suitable_skill_level: skillLevel,
         price_per_day: parseFloat(pricingOptions[0].price),
         image_url: imageUrl,
@@ -138,6 +143,35 @@ export const useEditGearFormSubmission = ({
       }
 
       console.log('Equipment updated successfully:', data);
+
+      // Delete existing pricing options and insert new ones
+      const { error: deleteError } = await supabase
+        .from('pricing_options')
+        .delete()
+        .eq('equipment_id', equipment.id);
+
+      if (deleteError) {
+        console.error('Error deleting old pricing options:', deleteError);
+        throw deleteError;
+      }
+
+      // Insert new pricing options
+      const pricingData = pricingOptions.map(option => ({
+        equipment_id: equipment.id,
+        price: parseFloat(option.price),
+        duration: option.duration
+      }));
+
+      const { error: pricingError } = await supabase
+        .from('pricing_options')
+        .insert(pricingData);
+
+      if (pricingError) {
+        console.error('Pricing options error:', pricingError);
+        throw pricingError;
+      }
+
+      console.log('Pricing options updated successfully');
 
       toast({
         title: "Equipment Updated",

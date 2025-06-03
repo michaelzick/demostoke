@@ -1,19 +1,5 @@
 
-// Parse size from specifications
-export const parseSize = (sizeStr: string) => {
-  if (sizeStr.includes("x")) {
-    const [length, width] = sizeStr.split("x").map(s => s.trim().replace(/[^\d.]/g, ''));
-    return { length, width };
-  } else if (sizeStr.includes('"')) {
-    return { length: sizeStr.replace(/[^0-9.]/g, ''), width: "" };
-  } else if (sizeStr.includes('cm')) {
-    return { length: sizeStr.replace(/[^0-9.]/g, ''), width: "" };
-  }
-  return { length: "", width: "" };
-};
-
-// Map category to gear type that matches skillLevels keys
-export const mapCategoryToGearType = (category: string) => {
+export const mapCategoryToGearType = (category: string): string => {
   const categoryMap: { [key: string]: string } = {
     "snowboards": "snowboard",
     "skis": "skis",
@@ -21,32 +7,77 @@ export const mapCategoryToGearType = (category: string) => {
     "sups": "sup",
     "skateboards": "skateboard"
   };
-  return categoryMap[category.toLowerCase()] || category.slice(0, -1);
+  return categoryMap[category] || category;
 };
 
-// Map skill level from database to dropdown options
-export const mapSkillLevel = (dbSkillLevel: string, gearType: string) => {
-  if (!dbSkillLevel || !gearType) return "";
-  
-  const skillLevels = {
-    snowboard: ["Beginner", "Intermediate", "Advanced", "Park Rider"],
-    skis: ["Beginner", "Intermediate", "Advanced", "Park Rider"],
-    surfboard: ["Beginner", "Intermediate", "Advanced", "All Levels"],
-    sup: ["Flat Water", "Surf", "Racing", "Yoga"],
-    skateboard: ["Beginner", "Intermediate", "Advanced", "All Levels"],
+export const mapSkillLevel = (skillLevel: string, gearType: string): string => {
+  // Define skill level mappings for each gear type
+  const skillLevelMappings: { [key: string]: { [key: string]: string } } = {
+    snowboard: {
+      "Beginner": "Beginner",
+      "Intermediate": "Intermediate", 
+      "Advanced": "Advanced",
+      "Park Rider": "Park Rider",
+      "All Levels": "Beginner" // Default fallback
+    },
+    skis: {
+      "Beginner": "Beginner",
+      "Intermediate": "Intermediate",
+      "Advanced": "Advanced", 
+      "Park Rider": "Park Rider",
+      "All Levels": "Beginner" // Default fallback
+    },
+    surfboard: {
+      "Beginner": "Beginner",
+      "Intermediate": "Intermediate",
+      "Advanced": "Advanced",
+      "All Levels": "All Levels"
+    },
+    sup: {
+      "Flat Water": "Flat Water",
+      "Surf": "Surf",
+      "Racing": "Racing",
+      "Yoga": "Yoga",
+      "All Levels": "Flat Water" // Default fallback
+    },
+    skateboard: {
+      "Beginner": "Beginner",
+      "Intermediate": "Intermediate",
+      "Advanced": "Advanced",
+      "All Levels": "All Levels"
+    }
   };
 
-  const validLevels = skillLevels[gearType as keyof typeof skillLevels] || [];
+  const gearSkillLevels = skillLevelMappings[gearType];
+  if (!gearSkillLevels) {
+    console.warn(`No skill level mapping found for gear type: ${gearType}`);
+    return skillLevel;
+  }
+
+  // Return mapped skill level or original if no mapping exists
+  return gearSkillLevels[skillLevel] || skillLevel;
+};
+
+export const parseSize = (sizeString: string): { length: string; width: string; thickness?: string } => {
+  const parts = sizeString.split(' x ').map(part => part.trim());
   
-  // Try exact match first
-  if (validLevels.includes(dbSkillLevel)) {
-    return dbSkillLevel;
+  if (parts.length >= 3) {
+    // Extract thickness (remove unit from the last part)
+    const thicknessPart = parts[2].replace(/[a-zA-Z\s]+$/, '');
+    return {
+      length: parts[0] || "",
+      width: parts[1] || "",
+      thickness: thicknessPart || ""
+    };
+  } else if (parts.length === 2) {
+    // Remove unit from width (last part)
+    const widthPart = parts[1].replace(/[a-zA-Z\s]+$/, '');
+    return {
+      length: parts[0] || "",
+      width: widthPart || "",
+      thickness: ""
+    };
   }
   
-  // Try case-insensitive match
-  const matchedLevel = validLevels.find(level => 
-    level.toLowerCase() === dbSkillLevel.toLowerCase()
-  );
-  
-  return matchedLevel || "";
+  return { length: "", width: "", thickness: "" };
 };

@@ -14,7 +14,7 @@ interface UseGearFormSubmissionProps {
   description: string;
   zipCode: string;
   measurementUnit: string;
-  dimensions: { length: string; width: string };
+  dimensions: { length: string; width: string; thickness?: string };
   skillLevel: string;
   images: File[];
   pricingOptions: PricingOption[];
@@ -112,13 +112,17 @@ export const useGearFormSubmission = ({
       }
 
       // Prepare the data for database insertion
+      const sizeString = dimensions.thickness 
+        ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness} ${measurementUnit}`
+        : `${dimensions.length} x ${dimensions.width} ${measurementUnit}`;
+
       const equipmentData = {
         user_id: user.id,
         name: gearName,
         category: mapGearTypeToCategory(gearType),
         description: description,
         location_name: zipCode,
-        size: `${dimensions.length} x ${dimensions.width} ${measurementUnit}`,
+        size: sizeString,
         suitable_skill_level: skillLevel,
         price_per_day: parseFloat(pricingOptions[0].price),
         status: 'available' as const,
@@ -134,18 +138,36 @@ export const useGearFormSubmission = ({
       console.log('Submitting equipment data:', equipmentData);
 
       // Insert the equipment into the database
-      const { data, error } = await supabase
+      const { data: equipmentResult, error: equipmentError } = await supabase
         .from('equipment')
         .insert([equipmentData])
         .select()
         .single();
 
-      if (error) {
-        console.error('Database error:', error);
-        throw error;
+      if (equipmentError) {
+        console.error('Database error:', equipmentError);
+        throw equipmentError;
       }
 
-      console.log('Equipment created successfully:', data);
+      console.log('Equipment created successfully:', equipmentResult);
+
+      // Now insert all pricing options
+      const pricingData = pricingOptions.map(option => ({
+        equipment_id: equipmentResult.id,
+        price: parseFloat(option.price),
+        duration: option.duration
+      }));
+
+      const { error: pricingError } = await supabase
+        .from('pricing_options')
+        .insert(pricingData);
+
+      if (pricingError) {
+        console.error('Pricing options error:', pricingError);
+        throw pricingError;
+      }
+
+      console.log('Pricing options created successfully');
 
       toast({
         title: "Equipment Added",

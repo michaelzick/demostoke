@@ -83,6 +83,38 @@ export type Database = {
           },
         ]
       }
+      pricing_options: {
+        Row: {
+          created_at: string
+          duration: string
+          equipment_id: string
+          id: string
+          price: number
+        }
+        Insert: {
+          created_at?: string
+          duration: string
+          equipment_id: string
+          id?: string
+          price: number
+        }
+        Update: {
+          created_at?: string
+          duration?: string
+          equipment_id?: string
+          id?: string
+          price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pricing_options_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

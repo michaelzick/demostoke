@@ -1,6 +1,6 @@
 
 import { useNavigate } from "react-router-dom";
-import { Edit, Trash2, Copy } from "lucide-react";
+import { Edit, Trash2, Copy, ExternalLink } from "lucide-react";
 import { Snowflake, Waves, Tire } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -64,6 +64,10 @@ const MyEquipmentPage = () => {
     navigate(`/edit-gear/${id}`);
   };
 
+  const handleViewDetails = (id: string) => {
+    navigate(`/equipment/${id}`);
+  };
+
   const handleDuplicate = (item: UserEquipment) => {
     // Store the item data in sessionStorage to use it in the add gear form
     sessionStorage.setItem('duplicatedGear', JSON.stringify({
@@ -76,6 +80,7 @@ const MyEquipmentPage = () => {
       dimensions: {
         length: item.size.split('x')[0]?.trim() || "",
         width: item.size.split('x')[1]?.trim() || "",
+        thickness: item.size.split('x')[2]?.trim() || "",
       },
       skillLevel: item.suitable_skill_level,
       price: item.price_per_day.toString(),
@@ -161,7 +166,7 @@ const MyEquipmentPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {userEquipment.map((item) => (
             <Card key={item.id} className="overflow-hidden">
-              <div className="relative h-48">
+              <div className="relative h-48 cursor-pointer" onClick={() => handleViewDetails(item.id)}>
                 <img
                   src={item.image_url}
                   alt={item.name}
@@ -175,8 +180,11 @@ const MyEquipmentPage = () => {
                     </span>
                   </div>
                 </div>
+                <div className="absolute top-2 left-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
+                  <ExternalLink className="h-4 w-4" />
+                </div>
               </div>
-              <CardHeader>
+              <CardHeader className="cursor-pointer" onClick={() => handleViewDetails(item.id)}>
                 <CardTitle className="line-clamp-1">{item.name}</CardTitle>
                 <CardDescription className="flex justify-between">
                   <span>${item.price_per_day}/day</span>
