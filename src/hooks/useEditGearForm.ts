@@ -24,10 +24,7 @@ export const useEditGearForm = () => {
     setZipCode: formState.setZipCode,
     setDimensions: formState.setDimensions,
     setSkillLevel: formState.setSkillLevel,
-    setPricingOptions: formState.setPricingOptions,
-    setLocationName: formState.setLocationName,
-    setLat: formState.setLat,
-    setLng: formState.setLng,
+    setPricingOptions: formState.setPricingOptions
   });
 
   // Handle form submission

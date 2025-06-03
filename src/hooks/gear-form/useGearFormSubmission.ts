@@ -99,23 +99,23 @@ export const useGearFormSubmission = ({
           title: "Uploading Image",
           description: "Please wait while we upload your gear image...",
         });
-        
-        try {
-          imageUrl = await uploadGearImage(images[0], user.id);
-          console.log('Image uploaded successfully:', imageUrl);
-        } catch (uploadError: any) {
-          console.error('Image upload failed:', uploadError);
-          toast({
-            title: "Image Upload Failed",
-            description: uploadError.message || "Failed to upload image. Using DS logo instead.",
-            variant: "destructive",
-          });
+
+    try {
+      imageUrl = await uploadGearImage(images[0], user.id);
+      console.log('Image uploaded successfully:', imageUrl);
+    } catch (uploadError: unknown) {
+      console.error('Image upload failed:', uploadError);
+      toast({
+        title: "Image Upload Failed",
+        description: uploadError instanceof Error ? uploadError.message : "Failed to upload image. Using DS logo instead.",
+        variant: "destructive",
+      });
           // Continue with DS logo if upload fails
         }
       }
 
       // Prepare the data for database insertion
-      const sizeString = dimensions.thickness 
+      const sizeString = dimensions.thickness
         ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness} ${measurementUnit}`
         : `${dimensions.length} x ${dimensions.width} ${measurementUnit}`;
 
@@ -180,11 +180,11 @@ export const useGearFormSubmission = ({
       // Navigate back to My Gear page
       navigate("/my-gear");
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating equipment:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to add equipment. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to add equipment. Please try again.",
         variant: "destructive",
       });
     } finally {

@@ -73,7 +73,7 @@ const GearBasicInfo = ({
           </SelectContent>
         </Select>
       </div>
-      
+
       {/* Description */}
       <div>
         <Label htmlFor="description" className="block text-lg font-medium mb-2">

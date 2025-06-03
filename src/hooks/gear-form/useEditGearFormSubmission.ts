@@ -114,7 +114,7 @@ export const useEditGearFormSubmission = ({
       }
 
       // Prepare the data for database update
-      const sizeString = dimensions.thickness 
+      const sizeString = dimensions.thickness
         ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness} ${measurementUnit}`
         : `${dimensions.length} x ${dimensions.width} ${measurementUnit}`;
 

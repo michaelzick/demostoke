@@ -14,10 +14,10 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
   // Determine if this is from a shop or private party based on owner
   const isShop = equipment.owner.shopId;
   const isPrivateParty = equipment.owner.partyId;
-  
-  const ownerLinkPath = isShop 
-    ? `/shop/${equipment.owner.shopId}` 
-    : isPrivateParty 
+
+  const ownerLinkPath = isShop
+    ? `/shop/${equipment.owner.shopId}`
+    : isPrivateParty
     ? `/party/${equipment.owner.partyId}`
     : `/owner/${equipment.owner.id}`;
 
@@ -75,7 +75,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         </div>
         {/* Owner info with link */}
         <div className="border-t pt-2">
-          <Link 
+          <Link
             to={ownerLinkPath}
             className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
           >
