@@ -8,7 +8,6 @@ import CustomerWaiverForm from "@/components/waiver/CustomerWaiverForm";
 import { useEquipmentById } from "@/hooks/useEquipmentById";
 import { Skeleton } from "@/components/ui/skeleton";
 import { mockEquipment } from "@/lib/mockData";
-import { usePricingOptions } from "@/hooks/usePricingOptions";
 
 // Import component modules
 import BookingCard from "@/components/equipment-detail/BookingCard";
@@ -35,11 +34,6 @@ const EquipmentDetailPage = () => {
   // Only fetch from DB if id is a valid UUID
   const shouldFetchFromDb = id && isValidUUID(id);
   const { data: equipment, isLoading, error } = useEquipmentById(shouldFetchFromDb ? id : "");
-
-  // Only fetch pricing options from DB if using DB equipment (not mock data)
-  const { data: dbPricingOptions = [], isLoading: isPricingLoading } = usePricingOptions(
-    shouldFetchFromDb && equipment && isValidUUID(equipment.id) ? equipment.id : ""
-  );
 
   // Only use dbPricingOptions if using DB equipment, otherwise use mockPricingOptions
   const showDbPricing = shouldFetchFromDb && equipment && isValidUUID(equipment.id);
@@ -78,7 +72,6 @@ const EquipmentDetailPage = () => {
         availability: {
           available: equipment.status === 'available',
         },
-        // Remove pricing_options from the returned object (not in UserEquipment type)
       };
     }
     // If no equipment found from DB, try to find in mockEquipment
@@ -122,10 +115,6 @@ const EquipmentDetailPage = () => {
       }
     }, 100);
   };
-
-  // Remove all references to equipment.pricing_options and equipmentForDisplay.pricing_options for DB fetches
-  // Only use dbPricingOptions (from usePricingOptions) for DB equipment, and mockPricingOptions for mock data
-  // Remove hasDbPricing and mockPricing variables
 
   // Render error or fallback to mock equipment first
   if (error || !equipment || !equipmentForDisplay) {
@@ -184,19 +173,6 @@ const EquipmentDetailPage = () => {
                 </Button>
                 <p className="text-lg mb-6">{equipmentForDisplay.description}</p>
                 <EquipmentSpecs specifications={equipmentForDisplay.specifications} />
-                {/* Pricing Section (mock data only) */}
-                {mockPricingOptions.length > 0 && (
-                  <div className="mt-6">
-                    <h3 className="text-lg font-semibold mb-2">Pricing</h3>
-                    <ul>
-                      {mockPricingOptions.map((option: { id: string; price: number; duration: string; }) => (
-                        <li key={option.id} className="mb-1">
-                          {option.duration}: ${option.price}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
               </div>
               {/* Tabs for Additional Information */}
               <Tabs defaultValue="location">
@@ -360,19 +336,6 @@ const EquipmentDetailPage = () => {
 
             <p className="text-lg mb-6">{equipment.description}</p>
             <EquipmentSpecs specifications={equipmentForDisplay.specifications} />
-            {/* Pricing Section (DB only) */}
-            {showDbPricing && dbPricingOptions.length > 0 && (
-              <div className="mt-6">
-                <h3 className="text-lg font-semibold mb-2">Pricing</h3>
-                <ul>
-                  {dbPricingOptions.map((option, idx) => (
-                    <li key={option.id} className="mb-1">
-                      {option.duration}: ${option.price}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
 
           {/* Tabs for Additional Information */}
