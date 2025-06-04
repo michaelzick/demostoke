@@ -44,7 +44,7 @@ const GearPricing = ({
   };
 
   const updatePricingOption = (id: string, field: keyof PricingOption, value: string) => {
-    setPricingOptions(pricingOptions.map(option => 
+    setPricingOptions(pricingOptions.map(option =>
       option.id === id ? { ...option, [field]: value } : option
     ));
   };
@@ -68,7 +68,7 @@ const GearPricing = ({
             Add Price
           </Button>
         </div>
-        
+
         {pricingOptions.length === 0 && (
           <div className="text-gray-500 text-sm mb-4">
             No pricing options added. Click "Add Price" to add your first pricing option.
@@ -95,8 +95,8 @@ const GearPricing = ({
                   Duration <span className="text-red-500">*</span>
                 </Label>
                 <div className="flex gap-2">
-                  <Select 
-                    value={option.duration} 
+                  <Select
+                    value={option.duration}
                     onValueChange={(value) => updatePricingOption(option.id, 'duration', value)}
                   >
                     <SelectTrigger id={`duration-${option.id}`}>

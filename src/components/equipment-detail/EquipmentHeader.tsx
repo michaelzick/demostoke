@@ -2,6 +2,7 @@
 import { Badge } from "@/components/ui/badge";
 import { StarIcon, MapPin } from "lucide-react";
 import { Equipment } from "@/types";
+import PriceDisplay from "./PriceDisplay";
 
 interface EquipmentHeaderProps {
   equipment: Equipment;
@@ -27,10 +28,9 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
           <span>{equipment.distance} miles away</span>
         </div>
       </div>
-      <div className="text-right">
-        <div className="text-2xl font-bold text-primary">${equipment.price_per_day}</div>
-        <div className="text-sm text-muted-foreground">per day</div>
-      </div>
+      {/* <div className="text-2xl font-bold text-primary">${equipment.price_per_day}</div>
+        <div className="text-sm text-muted-foreground">per day</div> */}
+      <PriceDisplay equipment={equipment} equipmentHeader />
     </div>
   );
 };

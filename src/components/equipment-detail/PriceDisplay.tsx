@@ -4,15 +4,16 @@ import { usePricingOptions } from "@/hooks/usePricingOptions";
 
 interface PriceDisplayProps {
   equipment: Equipment;
+  equipmentHeader?: boolean; // Optional prop to indicate if this is used in the header
 }
 
-const PriceDisplay = ({ equipment }: PriceDisplayProps) => {
+const PriceDisplay = ({ equipment, equipmentHeader }: PriceDisplayProps) => {
   const { data: dbPricingOptions = [], isLoading } = usePricingOptions(equipment.id);
 
   // Helper to get mock pricing options from equipment
   function getMockPricingOptions(equipment: unknown) {
     if (equipment && typeof equipment === 'object' && 'pricingOptions' in equipment) {
-      const eq = equipment as { pricingOptions?: { id: string; price: number; duration: string }[] };
+      const eq = equipment as { pricingOptions?: { id: string; price: number; duration: string; }[]; };
       if (Array.isArray(eq.pricingOptions)) {
         return eq.pricingOptions;
       }
@@ -70,15 +71,17 @@ const PriceDisplay = ({ equipment }: PriceDisplayProps) => {
         ) : (
           <p className="text-2xl font-bold">${equipment.price_per_day} <span className="text-sm font-normal">/ day</span></p>
         )}
-        <div className="flex items-center mt-1">
-          <span className="text-sm">★ {equipment.rating}</span>
-          <span className="mx-1">·</span>
-          <span className="text-sm">{equipment.review_count} reviews</span>
-        </div>
+        {!equipmentHeader && (
+          <div className="flex items-center mt-1">
+            <span className="text-sm">★ {equipment.rating}</span>
+            <span className="mx-1">·</span>
+            <span className="text-sm">{equipment.review_count} reviews</span>
+          </div>
+        )}
       </div>
-      <span className="text-sm bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 py-1 px-2 rounded">
+      {!equipmentHeader && <span className="text-sm bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 py-1 px-2 rounded">
         {getAvailabilityStatusText()}
-      </span>
+      </span>}
     </div>
   );
 };

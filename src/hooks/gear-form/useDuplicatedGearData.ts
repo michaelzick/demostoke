@@ -9,7 +9,7 @@ interface UseDuplicatedGearDataProps {
   setDescription: (value: string) => void;
   setZipCode: (value: string) => void;
   setMeasurementUnit: (value: string) => void;
-  setDimensions: (value: { length: string; width: string }) => void;
+  setDimensions: (value: { length: string; width: string; }) => void;
   setRole: (value: string) => void;
   setSkillLevel: (value: string) => void;
   setPricingOptions: (value: PricingOption[]) => void;
@@ -63,7 +63,7 @@ export const useDuplicatedGearData = ({
         sessionStorage.removeItem('duplicatedGear');
 
         let toastDescription = "The form has been pre-filled with the duplicated gear's information. You can now edit and submit it as a new listing.";
-        
+
         // If there's an image URL, add it to the toast message
         if (duplicatedGear.imageUrl) {
           toastDescription += " The original image will be used unless you upload a new one.";
