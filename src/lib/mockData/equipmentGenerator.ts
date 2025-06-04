@@ -118,7 +118,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
       location: {
         lat: location.lat,
         lng: location.lng,
-        name: locationName,
+        zip: locationName,
       },
       distance: +(Math.random() * 8).toFixed(1), // 0-8 miles
       specifications: {

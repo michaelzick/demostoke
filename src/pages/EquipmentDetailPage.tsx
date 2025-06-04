@@ -60,7 +60,7 @@ const EquipmentDetailPage = () => {
         location: {
           lat: Number(equipment.location_lat || 0),
           lng: Number(equipment.location_lng || 0),
-          name: equipment.location_name || "Location",
+          zip: equipment.location_zip || "Location",
         },
         distance: 0,
         specifications: {

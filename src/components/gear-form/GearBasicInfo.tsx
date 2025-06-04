@@ -65,7 +65,7 @@ const GearBasicInfo = ({
           </SelectContent>
         </Select>
       </div>
-      
+
       {/* Description */}
       <div>
         <Label htmlFor="description" className="block text-lg font-medium mb-2">
@@ -83,7 +83,7 @@ const GearBasicInfo = ({
       {/* Zip Code/Location */}
       <div>
         <Label htmlFor="zipCode" className="block text-lg font-medium mb-2">
-          Location <span className="text-red-500">*</span>
+          Zip Code <span className="text-red-500">*</span>
         </Label>
         <Input
           id="zipCode"

@@ -96,7 +96,7 @@ export const useGearFormSubmission = ({
           title: "Uploading Image",
           description: "Please wait while we upload your gear image...",
         });
-        
+
         try {
           imageUrl = await uploadGearImage(images[0], user.id);
           console.log('Image uploaded successfully:', imageUrl);
@@ -112,7 +112,7 @@ export const useGearFormSubmission = ({
       }
 
       // Prepare the data for database insertion
-      const sizeString = dimensions.thickness 
+      const sizeString = dimensions.thickness
         ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness} ${measurementUnit}`
         : `${dimensions.length} x ${dimensions.width} ${measurementUnit}`;
 
@@ -121,7 +121,7 @@ export const useGearFormSubmission = ({
         name: gearName,
         category: mapGearTypeToCategory(gearType),
         description: description,
-        location_name: zipCode,
+        location_zip: zipCode,
         size: sizeString,
         suitable_skill_level: skillLevel,
         price_per_day: parseFloat(pricingOptions[0].price),

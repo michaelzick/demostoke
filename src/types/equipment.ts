@@ -10,7 +10,7 @@ export interface UserEquipment {
   review_count: number;
   location_lat: number;
   location_lng: number;
-  location_name: string;
+  location_zip: string;
   size: string;
   weight: string;
   material: string;
