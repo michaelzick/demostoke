@@ -110,10 +110,10 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
       name,
       category,
       description: `Great ${category} for ${suitable.toLowerCase()}. Well maintained and ready for your next adventure!`,
-      imageUrl,
-      pricePerDay: Math.floor(Math.random() * 30) + 20, // $20-$50
+      image_url: imageUrl,
+      price_per_day: Math.floor(Math.random() * 30) + 20, // $20-$50
       rating: Number((Math.random() * 2 + 3).toFixed(1)), // 3.0-5.0 as a number
-      reviewCount: Math.floor(Math.random() * 50) + 1,
+      review_count: Math.floor(Math.random() * 50) + 1,
       owner: ownerData,
       location: {
         lat: location.lat,
@@ -131,10 +131,10 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         available: Math.random() > 0.2, // 80% are available
         nextAvailableDate: Math.random() > 0.2 ? undefined : new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       },
-      pricingOptions: [
-        { id: '1', price: Math.floor(Math.random() * 30) + 20, duration: 'day' },
-        { id: '2', price: Math.floor(Math.random() * 150) + 100, duration: 'week' },
+      pricing_options: [
+        { id: '1', price: Math.floor(Math.random() * 30) + 20, duration: 'day' }
       ],
+      status: 'available',
     };
   });
 }

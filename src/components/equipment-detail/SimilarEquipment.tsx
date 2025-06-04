@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { StarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,7 +18,7 @@ const SimilarEquipment = ({ similarEquipment }: SimilarEquipmentProps) => {
             <div className="flex h-24">
               <div className="w-1/3">
                 <img
-                  src={item.imageUrl}
+                  src={item.image_url}
                   alt={item.name}
                   className="h-full w-full object-cover"
                 />
@@ -33,7 +32,7 @@ const SimilarEquipment = ({ similarEquipment }: SimilarEquipmentProps) => {
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-muted-foreground">${item.pricePerDay}/day</span>
+                  <span className="text-xs text-muted-foreground">${item.price_per_day}/day</span>
                   <Button variant="outline" size="sm" asChild className="text-xs h-auto">
                     <Link to={`/equipment/${item.id}`}>View</Link>
                   </Button>

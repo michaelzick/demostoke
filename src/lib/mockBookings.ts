@@ -90,8 +90,8 @@ export const bookingsForMyGear: Booking[] = [
   },
   {
     id: "booking-6",
-    equipmentId: mockUserEquipment[2].id,
-    equipment: mockUserEquipment[2],
+    equipmentId: mockUserEquipment[0].id,  // Use the first item instead of potentially missing third item
+    equipment: mockUserEquipment[0],
     startDate: "2025-06-10",
     endDate: "2025-06-12",
     status: "pending",

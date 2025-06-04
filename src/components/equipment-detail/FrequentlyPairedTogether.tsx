@@ -80,7 +80,7 @@ const FrequentlyPairedTogether = ({
                 <span className={`text-xs text-center font-medium ${!isSelected ? 'text-gray-400' : ''}`}>
                   {addOn.name}
                 </span>
-                <span className="text-xs text-muted-foreground">${addOn.pricePerDay}/day</span>
+                <span className="text-xs text-muted-foreground">${addOn.price_per_day}/day</span>
               </div>
             );
           })}
@@ -92,12 +92,12 @@ const FrequentlyPairedTogether = ({
           <div className="text-sm space-y-1 mt-2">
             <div className="flex justify-between">
               <span>{equipment.name}</span>
-              <span>${equipment.pricePerDay}/day</span>
+              <span>${equipment.price_per_day}/day</span>
             </div>
             {selectedAddOns.map((addOn) => (
               <div key={addOn.name} className="flex justify-between">
                 <span>{addOn.name}</span>
-                <span>${addOn.pricePerDay}/day</span>
+                <span>${addOn.price_per_day}/day</span>
               </div>
             ))}
             <div className="border-t pt-2 mt-2 font-medium flex justify-between">

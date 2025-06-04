@@ -68,12 +68,12 @@ const PriceDisplay = ({ equipment }: PriceDisplayProps) => {
             ))}
           </div>
         ) : (
-          <p className="text-2xl font-bold">${equipment.pricePerDay} <span className="text-sm font-normal">/ day</span></p>
+          <p className="text-2xl font-bold">${equipment.price_per_day} <span className="text-sm font-normal">/ day</span></p>
         )}
         <div className="flex items-center mt-1">
           <span className="text-sm">★ {equipment.rating}</span>
           <span className="mx-1">·</span>
-          <span className="text-sm">{equipment.reviewCount} reviews</span>
+          <span className="text-sm">{equipment.review_count} reviews</span>
         </div>
       </div>
       <span className="text-sm bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 py-1 px-2 rounded">

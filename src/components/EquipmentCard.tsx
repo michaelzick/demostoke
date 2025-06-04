@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +24,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
     <Card className="overflow-hidden transition-all hover:shadow-md">
       <div className="relative aspect-[4/3] w-full overflow-hidden">
         <img
-          src={equipment.imageUrl}
+          src={equipment.image_url}
           alt={equipment.name}
           className="h-full w-full object-cover transition-all hover:scale-105"
         />
@@ -66,7 +65,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{equipment.description}</p>
         <div className="flex items-center justify-between mb-2">
           <div>
-            <p className="text-sm font-medium">${equipment.pricePerDay}/day</p>
+            <p className="text-sm font-medium">${equipment.price_per_day}/day</p>
             <p className="text-xs text-muted-foreground">{equipment.location.zip}</p>
           </div>
           <div className="flex items-center gap-1 text-xs text-muted-foreground">

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Equipment } from "@/types";
 import { AddOn } from "@/lib/addOns";
@@ -27,12 +26,12 @@ const PriceSummary = ({ equipment, selectedAddOns, numDays, totalPrice }: PriceS
         <div className="text-sm space-y-1">
           <div className="flex justify-between">
             <span>{equipment.name}</span>
-            <span>${formatCurrency(equipment.pricePerDay)} x {numDays} days = ${formatCurrency(equipment.pricePerDay * numDays)}</span>
+            <span>${formatCurrency(equipment.price_per_day)} x {numDays} days = ${formatCurrency(equipment.price_per_day * numDays)}</span>
           </div>
           {selectedAddOns.map((addOn) => (
             <div key={addOn.name} className="flex justify-between">
               <span>{addOn.name}</span>
-              <span>${formatCurrency(addOn.pricePerDay)} x {numDays} days = ${formatCurrency(addOn.pricePerDay * numDays)}</span>
+              <span>${formatCurrency(addOn.price_per_day)} x {numDays} days = ${formatCurrency(addOn.price_per_day * numDays)}</span>
             </div>
           ))}
           <div className="flex justify-between">

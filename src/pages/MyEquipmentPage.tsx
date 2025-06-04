@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { Edit, Trash2, Copy, ExternalLink } from "lucide-react";
 import { Snowflake, Waves, Tire } from "@phosphor-icons/react";
@@ -50,10 +49,11 @@ const MyEquipmentPage = () => {
           description: "The equipment has been removed from your listings.",
         });
       },
-      onError: (error: any) => {
+      onError: (error: unknown) => {
+        console.error('Error deleting equipment:', error);
         toast({
           title: "Error",
-          description: error.message || "Failed to delete equipment",
+          description: error instanceof Error ? error.message : "Failed to delete equipment",
           variant: "destructive",
         });
       },
@@ -69,23 +69,26 @@ const MyEquipmentPage = () => {
   };
 
   const handleDuplicate = (item: UserEquipment) => {
+    // Parse size string safely
+    const sizeParts = item.specifications.size?.split('x').map(part => part?.trim()) || [];
+    
     // Store the item data in sessionStorage to use it in the add gear form
     sessionStorage.setItem('duplicatedGear', JSON.stringify({
       gearName: item.name,
       gearType: item.category.slice(0, -1), // Remove the 's' at the end (snowboards -> snowboard)
       description: item.description,
-      zipCode: item.location_zip,
+      zipCode: item.location?.zip || '',
       // Extract dimensions from size if possible
       measurementUnit: "inches", // Default to inches
       dimensions: {
-        length: item.size.split('x')[0]?.trim() || "",
-        width: item.size.split('x')[1]?.trim() || "",
-        thickness: item.size.split('x')[2]?.trim() || "",
+        length: sizeParts[0] || "",
+        width: sizeParts[1] || "",
+        thickness: sizeParts[2] || ""
       },
-      skillLevel: item.suitable_skill_level,
+      skillLevel: item.specifications.suitable,
       price: item.price_per_day.toString(),
       damageDeposit: "50", // Default value
-      imageUrl: item.image_url, // Include the image URL
+      imageUrl: item.image_url,
     }));
 
     navigate('/list-gear');
@@ -197,13 +200,13 @@ const MyEquipmentPage = () => {
                 <p className="text-muted-foreground line-clamp-2">{item.description}</p>
                 <div className="mt-4">
                   <div className="text-sm">
-                    <span className="font-medium">Location:</span> {item.location_zip}
+                    <span className="font-medium">Location:</span> {item.location?.zip || 'N/A'}
                   </div>
                   <div className="text-sm">
-                    <span className="font-medium">Added:</span> {formatDate(item.created_at)}
+                    <span className="font-medium">Added:</span> {item.created_at ? formatDate(item.created_at) : 'N/A'}
                   </div>
                   <div className="text-sm">
-                    <span className="font-medium">Skill Level:</span> {item.suitable_skill_level}
+                    <span className="font-medium">Skill Level:</span> {item.specifications?.suitable || 'N/A'}
                   </div>
                 </div>
               </CardContent>

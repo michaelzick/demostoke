@@ -8,13 +8,21 @@ export interface UserEquipment {
   price_per_day: number;
   rating: number;
   review_count: number;
-  location_lat: number;
-  location_lng: number;
-  location_zip: string;
-  size: string;
-  weight: string;
-  material: string;
-  suitable_skill_level: string;
+  location: {
+    lat: number;
+    lng: number;
+    zip: string;
+  };
+  specifications: {
+    size: string;
+    weight: string;
+    material: string;
+    suitable: string;
+  };
+  availability: {
+    available: boolean;
+    nextAvailableDate?: string;
+  };
   status: 'available' | 'booked' | 'unavailable';
   created_at: string;
   updated_at: string;

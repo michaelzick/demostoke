@@ -30,7 +30,7 @@ const EquipmentDetailPage = () => {
   const shouldFetchFromDb = id && isValidUUID(id);
   const { data: equipment, isLoading, error } = useEquipmentById(shouldFetchFromDb ? id : "");
 
-  // Helper to ensure pricingOptions is a tuple
+  // Helper to ensure pricing_options is a tuple
   const ensurePricingOptionsTuple = (options: unknown, fallbackPrice: number): [import("@/types").PricingOption] => {
     if (Array.isArray(options) && options.length > 0) {
       return options as [import("@/types").PricingOption];
@@ -46,10 +46,10 @@ const EquipmentDetailPage = () => {
         name: equipment.name,
         category: equipment.category,
         description: equipment.description || "",
-        imageUrl: equipment.image_url || "",
-        pricePerDay: Number(equipment.price_per_day),
+        price_per_day: Number(equipment.price_per_day),
+        image_url: equipment.image_url || "",
         rating: Number(equipment.rating || 0),
-        reviewCount: equipment.review_count || 0,
+        review_count: equipment.review_count || 0,
         owner: {
           id: equipment.id,
           name: "Equipment Owner",
@@ -58,21 +58,16 @@ const EquipmentDetailPage = () => {
           responseRate: 98,
         },
         location: {
-          lat: Number(equipment.location_lat || 0),
-          lng: Number(equipment.location_lng || 0),
-          zip: equipment.location_zip || "Location",
+          ...equipment.location
         },
         distance: 0,
         specifications: {
-          size: equipment.size || "N/A",
-          weight: equipment.weight || "N/A",
-          material: equipment.material || "N/A",
-          suitable: equipment.suitable_skill_level || "All Levels",
+          ...equipment.specifications
         },
         availability: {
           available: equipment.status === 'available',
         },
-        pricingOptions: ensurePricingOptionsTuple((equipment as { pricingOptions?: unknown[]; }).pricingOptions, Number(equipment.price_per_day)),
+        pricing_options: ensurePricingOptionsTuple((equipment as { pricing_options?: unknown[]; }).pricing_options, Number(equipment.price_per_day)),
       };
     }
     return null;
@@ -85,7 +80,7 @@ const EquipmentDetailPage = () => {
       if (mock) {
         return {
           ...mock,
-          pricingOptions: ensurePricingOptionsTuple(mock.pricingOptions, mock.pricePerDay),
+          pricingOptions: ensurePricingOptionsTuple(mock.pricing_options, mock.price_per_day),
         };
       }
     }

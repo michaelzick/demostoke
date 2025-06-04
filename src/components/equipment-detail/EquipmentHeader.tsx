@@ -17,7 +17,7 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
           <div className="flex items-center text-sm">
             <StarIcon className="h-4 w-4 text-yellow-500 fill-yellow-500 mr-1" />
             <span>{equipment.rating}</span>
-            <span className="text-muted-foreground ml-1">({equipment.reviewCount} reviews)</span>
+            <span className="text-muted-foreground ml-1">({equipment.review_count} reviews)</span>
           </div>
         </div>
         <div className="flex items-center text-sm text-muted-foreground">
@@ -28,7 +28,7 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
         </div>
       </div>
       <div className="text-right">
-        <div className="text-2xl font-bold text-primary">${equipment.pricingOptions[0].price}</div>
+        <div className="text-2xl font-bold text-primary">${equipment.price_per_day}</div>
         <div className="text-sm text-muted-foreground">per day</div>
       </div>
     </div>

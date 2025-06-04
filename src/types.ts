@@ -9,16 +9,16 @@ export interface Equipment {
   name: string;
   category: string;
   description: string;
-  imageUrl: string;
-  pricePerDay: number;
-  pricingOptions: [PricingOption];
+  image_url: string;
+  price_per_day: number;
+  pricing_options?: [PricingOption];
   rating: number;
-  reviewCount: number;
+  review_count: number;
   owner: GearOwner;
   location: {
     lat: number;
     lng: number;
-    name: string;
+    zip: string;
   };
   distance: number;
   specifications: {
@@ -31,6 +31,9 @@ export interface Equipment {
     available: boolean;
     nextAvailableDate?: string;
   };
+  status?: 'available' | 'booked' | 'unavailable';
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface GearOwner {

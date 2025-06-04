@@ -25,10 +25,21 @@ export const useUserEquipment = () => {
         throw error;
       }
 
-      // Cast the data to UserEquipment[] to ensure proper typing
+      // Cast and transform the data to UserEquipment[]
       return (data || []).map(item => ({
         ...item,
-        status: item.status as 'available' | 'booked' | 'unavailable'
+        status: item.status as 'available' | 'booked' | 'unavailable',
+        location: {
+          lat: item.location_lat || 0,
+          lng: item.location_lng || 0,
+          zip: item.location_zip || ''
+        },
+        specifications: {
+          size: item.size || '',
+          weight: item.weight || '',
+          material: item.material || '',
+          suitable: item.suitable_skill_level || ''
+        }
       })) as UserEquipment[];
     },
     enabled: !!user?.id,

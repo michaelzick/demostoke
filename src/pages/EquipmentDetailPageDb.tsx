@@ -71,7 +71,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
         {/* Image Gallery */}
         <div className="overflow-hidden rounded-lg">
           <img
-            src={equipment.imageUrl || "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80"}
+            src={equipment.image_url || "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80"}
             alt={equipment.name}
             className="w-full h-96 object-cover"
           />
@@ -101,7 +101,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
             <LocationTab equipment={equipment} />
           </TabsContent>
           <TabsContent value="reviews">
-            <ReviewsTab rating={equipment.rating} reviewCount={equipment.reviewCount} />
+            <ReviewsTab rating={equipment.rating} reviewCount={equipment.review_count} />
           </TabsContent>
           <TabsContent value="policy">
             <PolicyTab />

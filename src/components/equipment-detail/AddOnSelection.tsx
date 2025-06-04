@@ -29,7 +29,7 @@ const AddOnSelection = ({ equipment, addOns, selectedAddOns, onAddOnToggle }: Ad
           <div className="w-16 h-16 overflow-hidden rounded-md mb-2">
             <AspectRatio ratio={1}>
               <img
-                src={equipment.imageUrl}
+                src={equipment.image_url}
                 alt={equipment.name}
                 className="w-full h-full object-cover"
               />
@@ -63,7 +63,7 @@ const AddOnSelection = ({ equipment, addOns, selectedAddOns, onAddOnToggle }: Ad
               <span className={`text-xs text-center font-medium ${!isSelected ? 'text-gray-400' : ''}`}>
                 {addOn.name}
               </span>
-              <span className="text-xs text-muted-foreground">${formatCurrency(addOn.pricePerDay)}/day</span>
+              <span className="text-xs text-muted-foreground">${formatCurrency(addOn.price_per_day)}/day</span>
             </div>
           );
         })}

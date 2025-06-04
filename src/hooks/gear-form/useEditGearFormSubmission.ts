@@ -99,11 +99,11 @@ export const useEditGearFormSubmission = ({
         try {
           imageUrl = await uploadGearImage(images[0], user.id);
           console.log('Image uploaded successfully:', imageUrl);
-        } catch (uploadError: any) {
+        } catch (uploadError: unknown) {
           console.error('Image upload failed:', uploadError);
           toast({
             title: "Image Upload Failed",
-            description: uploadError.message || "Failed to upload image. Keeping existing image.",
+            description: uploadError instanceof Error ? uploadError.message : "Failed to upload image. Keeping existing image.",
             variant: "destructive",
           });
           // Keep existing image if upload fails
@@ -181,11 +181,11 @@ export const useEditGearFormSubmission = ({
       // Navigate back to My Gear page
       navigate("/my-gear");
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating equipment:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to update equipment. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to update equipment. Please try again.",
         variant: "destructive",
       });
     } finally {

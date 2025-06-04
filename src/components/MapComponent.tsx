@@ -166,7 +166,7 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
               <div>
                 <h3 class="text-sm font-medium">${item.name}</h3>
                 <p class="text-xs text-gray-500">${item.category}</p>
-                <p class="text-xs mt-1">$${item.pricePerDay}/day</p>
+                <p class="text-xs mt-1">$${item.price_per_day}/day</p>
                 <button
                   class="mt-2 px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
                   onclick="window.location.href='/equipment/${item.id}'"

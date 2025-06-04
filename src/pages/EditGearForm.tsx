@@ -42,7 +42,7 @@ const EditGearForm = () => {
         variant: "destructive",
       });
       navigate("/my-gear");
-    }, []);
+    }, [toast, navigate]);
 
     return null;
   }
