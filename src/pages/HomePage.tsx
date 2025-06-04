@@ -55,9 +55,10 @@ const HomePage = () => {
   useEffect(() => {
     const dontShow = localStorage.getItem("hideEmailModal");
     const sent = localStorage.getItem("emailModalSent");
-    if (!dontShow && !sent) {
-      timerRef.current = setTimeout(() => setShowModal(true), 3000);
-    }
+    // Not showing the modal for now. Uncomment to show it.
+    // if (!dontShow && !sent) {
+    //   timerRef.current = setTimeout(() => setShowModal(true), 3000);
+    // }
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
