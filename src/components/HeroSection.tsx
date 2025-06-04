@@ -12,11 +12,11 @@ const HeroSection = () => {
   const navigate = useNavigate();
 
   const backgrounds = [
-    { type: 'video', url: 'https://www.dropbox.com/scl/fi/6nz8yzousah3z2ath8g2p/surfers_compressed.mp4?rlkey=oauykp2n7vcv3sz8kjxeql746&dl&raw=1' },
-    { type: 'video', url: 'https://www.dropbox.com/scl/fi/zahmykwzc5wa8xqxabgxp/snowboarder_compressed.mp4?rlkey=7mo4nuyfft3d7vkub91ty17tf&dl&raw=1' },
-    { type: 'video', url: 'https://www.dropbox.com/scl/fi/2t2o7cmfzs8h031ofpsoi/skier_compressed.mp4?rlkey=pt6f95g3pxpg8mzvobh3rvr09&dl&raw=1' },
-    { type: 'video', url: "https://www.dropbox.com/scl/fi/e11d3675oj4ikoj4uszy1/skater_compressed.mp4?rlkey=l86qiwxrexs2e95uyhee3dfof&dl&raw=1" },
-    { type: 'video', url: 'https://www.dropbox.com/scl/fi/wzfibbrrusahu8l6sfzxs/sup_compressed.mp4?rlkey=zo04qdicsgcqp54yznxdgjj3m&dl&raw=1' },
+    { type: 'video', url: '/video/surfers_compressed.mp4' },
+    { type: 'video', url: '/video/snowboarder_compressed.mp4' },
+    { type: 'video', url: '/video/skier_compressed.mp4' },
+    { type: 'video', url: '/video/skater_compressed.mp4' },
+    { type: 'video', url: '/video/sup_compressed.mp4' },
   ];
 
   useEffect(() => {
