@@ -23,13 +23,6 @@ export const losAngelesLocations = [
   "Pasadena", "Glendale", "Burbank"
 ];
 
-export const losAngelesZipCodes = [
-  "90028", "90012", "90401", "90291",
-  "90210", "90024", "90026", "90026",
-  "90020", "90232", "90049", "90077",
-  "91103", "91201", "91501"
-];
-
 // Los Angeles center coordinates
 export const losAngelesLat = 34.0522;
 export const losAngelesLng = -118.2437;

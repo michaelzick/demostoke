@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { DuplicatedGear, PricingOption } from "./types";
@@ -13,9 +14,6 @@ interface UseDuplicatedGearDataProps {
   setSkillLevel: (value: string) => void;
   setPricingOptions: (value: PricingOption[]) => void;
   setDamageDeposit: (value: string) => void;
-  setLocationName?: (value: string) => void;
-  setLat?: (lat: number) => void;
-  setLng?: (lng: number) => void;
 }
 
 export const useDuplicatedGearData = ({
@@ -29,9 +27,6 @@ export const useDuplicatedGearData = ({
   setSkillLevel,
   setPricingOptions,
   setDamageDeposit,
-  setLocationName,
-  setLat,
-  setLng,
 }: UseDuplicatedGearDataProps) => {
   const { toast } = useToast();
 
@@ -64,16 +59,11 @@ export const useDuplicatedGearData = ({
         ]);
         setDamageDeposit(duplicatedGear.damageDeposit);
 
-        // Set location fields if available
-        if (setLocationName && duplicatedGear.locationName) setLocationName(duplicatedGear.locationName);
-        if (setLat && typeof duplicatedGear.lat === 'number') setLat(duplicatedGear.lat);
-        if (setLng && typeof duplicatedGear.lng === 'number') setLng(duplicatedGear.lng);
-
         // Clear the sessionStorage after using it
         sessionStorage.removeItem('duplicatedGear');
 
         let toastDescription = "The form has been pre-filled with the duplicated gear's information. You can now edit and submit it as a new listing.";
-
+        
         // If there's an image URL, add it to the toast message
         if (duplicatedGear.imageUrl) {
           toastDescription += " The original image will be used unless you upload a new one.";
@@ -87,7 +77,7 @@ export const useDuplicatedGearData = ({
         console.error("Error parsing duplicated gear data:", error);
       }
     }
-  }, [toast, setGearName, setGearType, setDescription, setZipCode, setMeasurementUnit, setDimensions, setRole, setSkillLevel, setPricingOptions, setDamageDeposit, setLocationName, setLat, setLng]);
+  }, [toast, setGearName, setGearType, setDescription, setZipCode, setMeasurementUnit, setDimensions, setRole, setSkillLevel, setPricingOptions, setDamageDeposit]);
 
   // Return the duplicated gear data so it can be used by the form
   const getDuplicatedGearData = () => {

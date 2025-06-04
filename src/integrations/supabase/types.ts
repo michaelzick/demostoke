@@ -18,7 +18,7 @@ export type Database = {
           image_url: string | null
           location_lat: number | null
           location_lng: number | null
-          location_zip: string | null
+          location_name: string | null
           material: string | null
           name: string
           price_per_day: number
@@ -39,7 +39,7 @@ export type Database = {
           image_url?: string | null
           location_lat?: number | null
           location_lng?: number | null
-          location_zip?: string | null
+          location_name?: string | null
           material?: string | null
           name: string
           price_per_day: number
@@ -60,7 +60,7 @@ export type Database = {
           image_url?: string | null
           location_lat?: number | null
           location_lng?: number | null
-          location_zip?: string | null
+          location_name?: string | null
           material?: string | null
           name?: string
           price_per_day?: number

@@ -1,5 +1,5 @@
 import { Equipment, GearOwner } from "@/types";
-import { generateRandomLocation, losAngelesLocations, losAngelesZipCodes, losAngelesLat, losAngelesLng } from "./locations";
+import { generateRandomLocation, losAngelesLocations, losAngelesLat, losAngelesLng } from "./locations";
 import { shopOwners } from "./shopOwners";
 import { ownerPersonas } from "./ownerPersonas";
 
@@ -95,7 +95,6 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
     // Generate random location near LA
     const location = generateRandomLocation(losAngelesLat, losAngelesLng, 8);
     const locationName = losAngelesLocations[i % losAngelesLocations.length];
-    const locationZip = losAngelesZipCodes[i % losAngelesZipCodes.length];
 
     // Use owner from combined list
     const ownerData = ownerIdToOwner[ownerId] || {
@@ -120,7 +119,6 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         lat: location.lat,
         lng: location.lng,
         name: locationName,
-        zip: locationZip,
       },
       distance: +(Math.random() * 8).toFixed(1), // 0-8 miles
       specifications: {

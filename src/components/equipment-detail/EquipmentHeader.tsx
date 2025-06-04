@@ -8,7 +8,6 @@ interface EquipmentHeaderProps {
 }
 
 const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
-  console.log("EquipmentHeader", equipment);
   return (
     <div className="flex justify-between items-start mb-4">
       <div>
@@ -23,7 +22,7 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
         </div>
         <div className="flex items-center text-sm text-muted-foreground">
           <MapPin className="h-4 w-4 mr-1" />
-          <span>{equipment.location.zip}</span>
+          <span>{equipment.location.name}</span>
           <span className="mx-2">•</span>
           <span>{equipment.distance} miles away</span>
         </div>

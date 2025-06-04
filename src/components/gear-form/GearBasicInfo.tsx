@@ -1,3 +1,4 @@
+
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import LocationSelector from "./LocationSelector";
 
 interface GearBasicInfoProps {
   gearName: string;
@@ -19,10 +19,6 @@ interface GearBasicInfoProps {
   setDescription: (value: string) => void;
   zipCode: string;
   setZipCode: (value: string) => void;
-  lat: number | null;
-  setLat: (lat: number) => void;
-  lng: number | null;
-  setLng: (lng: number) => void;
 }
 
 const GearBasicInfo = ({
@@ -33,11 +29,7 @@ const GearBasicInfo = ({
   description,
   setDescription,
   zipCode,
-  setZipCode,
-  lat,
-  setLat,
-  lng,
-  setLng
+  setZipCode
 }: GearBasicInfoProps) => {
   return (
     <>
@@ -73,7 +65,7 @@ const GearBasicInfo = ({
           </SelectContent>
         </Select>
       </div>
-
+      
       {/* Description */}
       <div>
         <Label htmlFor="description" className="block text-lg font-medium mb-2">
@@ -88,15 +80,19 @@ const GearBasicInfo = ({
         />
       </div>
 
-      {/* Location Selector with Lat/Lng */}
-      <LocationSelector
-        zipCode={zipCode}
-        setZipCode={setZipCode}
-        lat={lat}
-        setLat={setLat}
-        lng={lng}
-        setLng={setLng}
-      />
+      {/* Zip Code/Location */}
+      <div>
+        <Label htmlFor="zipCode" className="block text-lg font-medium mb-2">
+          Location <span className="text-red-500">*</span>
+        </Label>
+        <Input
+          id="zipCode"
+          type="text"
+          value={zipCode}
+          onChange={(e) => setZipCode(e.target.value)}
+          required
+        />
+      </div>
     </>
   );
 };

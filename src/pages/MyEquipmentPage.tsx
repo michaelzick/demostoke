@@ -74,7 +74,7 @@ const MyEquipmentPage = () => {
       gearName: item.name,
       gearType: item.category.slice(0, -1), // Remove the 's' at the end (snowboards -> snowboard)
       description: item.description,
-      zipCode: item.location_zip,
+      zipCode: item.location_name,
       // Extract dimensions from size if possible
       measurementUnit: "inches", // Default to inches
       dimensions: {
@@ -197,7 +197,7 @@ const MyEquipmentPage = () => {
                 <p className="text-muted-foreground line-clamp-2">{item.description}</p>
                 <div className="mt-4">
                   <div className="text-sm">
-                    <span className="font-medium">Location:</span> {item.location_zip}
+                    <span className="font-medium">Location:</span> {item.location_name}
                   </div>
                   <div className="text-sm">
                     <span className="font-medium">Added:</span> {formatDate(item.created_at)}

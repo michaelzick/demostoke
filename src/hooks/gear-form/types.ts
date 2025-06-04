@@ -1,3 +1,4 @@
+
 export interface PricingOption {
   id: string;
   price: string;
@@ -18,9 +19,6 @@ export interface DuplicatedGear {
   price: string;
   damageDeposit: string;
   imageUrl?: string; // Add optional image URL
-  locationName?: string;
-  lat?: number;
-  lng?: number;
 }
 
 export interface FormState {
@@ -44,10 +42,4 @@ export interface FormState {
   setPricingOptions: (value: PricingOption[]) => void;
   damageDeposit: string;
   setDamageDeposit: (value: string) => void;
-  locationName: string;
-  setLocationName: (value: string) => void;
-  lat: number | null;
-  setLat: (lat: number) => void;
-  lng: number | null;
-  setLng: (lng: number) => void;
 }

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -43,9 +44,6 @@ export const useAddGearForm = () => {
     setSkillLevel: formState.setSkillLevel,
     setPricingOptions: formState.setPricingOptions,
     setDamageDeposit: formState.setDamageDeposit,
-    setLocationName: formState.setLocationName,
-    setLat: formState.setLat,
-    setLng: formState.setLng,
   });
 
   // Get duplicated image URL if available
@@ -70,8 +68,6 @@ export const useAddGearForm = () => {
     damageDeposit: formState.damageDeposit,
     role: formState.role,
     duplicatedImageUrl,
-    lat: formState.lat,
-    lng: formState.lng,
   });
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
