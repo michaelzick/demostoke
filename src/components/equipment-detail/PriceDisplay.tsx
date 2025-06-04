@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Equipment } from "@/types";
 import { usePricingOptions } from "@/hooks/usePricingOptions";
 
@@ -12,7 +12,7 @@ const PriceDisplay = ({ equipment, equipmentHeader }: PriceDisplayProps) => {
   const { data: dbPricingOptions = [], isLoading } = usePricingOptions(equipment.id);
 
   // Memoize the pricing options decision and transformation
-  const pricingOptions = React.useMemo(() => {
+  const pricingOptions = useMemo(() => {
     // First check if we have DB pricing options
     if (dbPricingOptions.length > 0) {
       return dbPricingOptions;
@@ -31,12 +31,12 @@ const PriceDisplay = ({ equipment, equipmentHeader }: PriceDisplayProps) => {
   }, [dbPricingOptions, equipment]);
 
   // Group and order pricing options
-  const getOrderedPricingOptions = (options: Array<{ id: string; price: number; duration: string }>) => {
+  const getOrderedPricingOptions = (options: Array<{ id: string; price: number; duration: string; }>) => {
     // Group options by duration
     const grouped = options.reduce((acc, option) => ({
       ...acc,
       [option.duration]: option
-    }), {} as Record<string, { id: string; price: number; duration: string }>);
+    }), {} as Record<string, { id: string; price: number; duration: string; }>);
 
     // Return array in desired order, filtering out undefined values
     return [
