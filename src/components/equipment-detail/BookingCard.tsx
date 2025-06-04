@@ -21,12 +21,12 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
   const [numDays, setNumDays] = useState(1);
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
-  
+
   // Add-ons state
   const addOns = getAddOnsForCategory(equipment.category);
   const [selectedAddOns, setSelectedAddOns] = useState<AddOn[]>([...addOns]);
   const totalPrice = calculateTotalPrice(equipment.price_per_day, selectedAddOns);
-  
+
   const handleStartDateChange = (date: Date | undefined) => {
     setStartDate(date);
     setStartDateOpen(false);

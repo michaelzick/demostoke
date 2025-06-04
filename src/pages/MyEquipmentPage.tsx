@@ -71,7 +71,7 @@ const MyEquipmentPage = () => {
   const handleDuplicate = (item: UserEquipment) => {
     // Parse size string safely
     const sizeParts = item.specifications.size?.split('x').map(part => part?.trim()) || [];
-    
+
     // Store the item data in sessionStorage to use it in the add gear form
     sessionStorage.setItem('duplicatedGear', JSON.stringify({
       gearName: item.name,

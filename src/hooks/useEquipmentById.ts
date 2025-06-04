@@ -6,7 +6,7 @@ import { useAuth } from "@/helpers";
 
 export const useEquipmentById = (id: string) => {
   const { user } = useAuth();
-  
+
   return useQuery({
     queryKey: ['equipment', id],
     queryFn: async (): Promise<UserEquipment | null> => {
