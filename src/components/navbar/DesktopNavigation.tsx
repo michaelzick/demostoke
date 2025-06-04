@@ -1,6 +1,5 @@
 
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useAuth } from "@/helpers";
 import SquiggleUnderline from "./SquiggleUnderline";
@@ -49,7 +48,7 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
         Home
         <SquiggleUnderline />
       </Link>
-      
+
       <NavigationMenu value={isExploreOpen ? "explore" : ""} onValueChange={(value) => setIsExploreOpen(value === "explore")}>
         <NavigationMenuList>
           <NavigationMenuItem value="explore">
@@ -75,7 +74,7 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
         </NavigationMenuList>
       </NavigationMenu>
 
-      <button 
+      <button
         onClick={handleListGearClick}
         className="relative group text-base font-medium hover:text-primary transition-colors py-2"
       >
@@ -90,7 +89,7 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
         Blog
         <SquiggleUnderline />
       </Link>
-      <button 
+      <button
         className="relative group flex items-center text-base font-medium hover:text-primary transition-colors py-2"
         onClick={onOpenSearch}
       >
