@@ -26,6 +26,22 @@ const PriceDisplay = ({ equipment, equipmentHeader }: PriceDisplayProps) => {
   const showDbPricing = dbPricingOptions.length > 0;
   const pricingOptions = showDbPricing ? dbPricingOptions : mockPricingOptions;
 
+  // Group and order pricing options
+  const getOrderedPricingOptions = (options: Array<{ id: string; price: number; duration: string }>) => {
+    // Group options by duration
+    const grouped = options.reduce((acc, option) => ({
+      ...acc,
+      [option.duration]: option
+    }), {} as Record<string, { id: string; price: number; duration: string }>);
+
+    // Return array in desired order, filtering out undefined values
+    return [
+      grouped['day'],
+      grouped['week'],
+      grouped['hour']
+    ].filter(Boolean);
+  };
+
   const getAvailabilityStatusText = () => {
     if (equipment.availability.available) {
       return "Available";
@@ -62,8 +78,8 @@ const PriceDisplay = ({ equipment, equipmentHeader }: PriceDisplayProps) => {
       <div>
         {pricingOptions.length > 0 ? (
           <div className="space-y-1">
-            {pricingOptions.map((option, index) => (
-              <p key={option.id} className={index === 0 ? "text-2xl font-bold" : "text-lg"}>
+            {getOrderedPricingOptions(pricingOptions).map((option, index) => (
+              <p key={option.id} className={index === 0 ? "text-2xl font-bold text-primary" : "text-lg"}>
                 ${option.price} <span className="text-sm font-normal">/ {formatDuration(option.duration)}</span>
               </p>
             ))}
