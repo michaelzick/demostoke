@@ -6,6 +6,7 @@ import { useAuth } from "@/helpers";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadGearImage } from "@/utils/imageUpload";
 import { useGearFormValidation } from "@/hooks/useGearFormValidation";
+import { getCoordinatesFromZipCode } from "@/utils/geocoding";
 import { UserEquipment } from "@/types/equipment";
 import { PricingOption } from "./types";
 
@@ -110,6 +111,19 @@ export const useEditGearFormSubmission = ({
         }
       }
 
+      // Get coordinates from zip code (only if zip code changed)
+      let coordinates = null;
+      const currentZip = equipment.location?.zip || equipment.location_zip || '';
+      if (zipCode !== currentZip) {
+        try {
+          coordinates = await getCoordinatesFromZipCode(zipCode);
+          console.log('Updated coordinates for zip code', zipCode, ':', coordinates);
+        } catch (geocodingError) {
+          console.error('Geocoding failed:', geocodingError);
+          // Continue without updating coordinates if geocoding fails
+        }
+      }
+
       // Prepare the data for database update
       const sizeString = dimensions.thickness
         ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness} ${measurementUnit}`
@@ -120,6 +134,10 @@ export const useEditGearFormSubmission = ({
         category: mapGearTypeToCategory(gearType),
         description: description,
         location_zip: zipCode,
+        ...(coordinates && {
+          location_lat: coordinates.lat,
+          location_lng: coordinates.lng,
+        }),
         size: sizeString,
         suitable_skill_level: skillLevel,
         price_per_day: parseFloat(pricingOptions[0].price),

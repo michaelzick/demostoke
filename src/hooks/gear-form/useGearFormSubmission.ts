@@ -6,6 +6,7 @@ import { useAuth } from "@/helpers";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadGearImage } from "@/utils/imageUpload";
 import { useGearFormValidation } from "@/hooks/useGearFormValidation";
+import { getCoordinatesFromZipCode } from "@/utils/geocoding";
 import { PricingOption } from "./types";
 
 interface UseGearFormSubmissionProps {
@@ -111,6 +112,16 @@ export const useGearFormSubmission = ({
         }
       }
 
+      // Get coordinates from zip code
+      let coordinates = null;
+      try {
+        coordinates = await getCoordinatesFromZipCode(zipCode);
+        console.log('Coordinates for zip code', zipCode, ':', coordinates);
+      } catch (geocodingError) {
+        console.error('Geocoding failed:', geocodingError);
+        // Continue without coordinates if geocoding fails
+      }
+
       // Prepare the data for database insertion
       const sizeString = dimensions.thickness
         ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness} ${measurementUnit}`
@@ -122,6 +133,8 @@ export const useGearFormSubmission = ({
         category: mapGearTypeToCategory(gearType),
         description: description,
         location_zip: zipCode,
+        location_lat: coordinates?.lat || null,
+        location_lng: coordinates?.lng || null,
         size: sizeString,
         suitable_skill_level: skillLevel,
         price_per_day: parseFloat(pricingOptions[0].price),
@@ -129,8 +142,6 @@ export const useGearFormSubmission = ({
         image_url: imageUrl,
         rating: 0,
         review_count: 0,
-        location_lat: null,
-        location_lng: null,
         weight: null,
         material: null
       };
