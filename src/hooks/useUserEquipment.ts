@@ -30,8 +30,8 @@ export const useUserEquipment = () => {
         ...item,
         status: item.status as 'available' | 'booked' | 'unavailable',
         location: {
-          lat: item.location_lat || 0,
-          lng: item.location_lng || 0,
+          lat: typeof item.location_lat === 'number' ? item.location_lat : 34.0522,  // Default to LA coordinates
+          lng: typeof item.location_lng === 'number' ? item.location_lng : -118.2437,
           zip: item.location_zip || ''
         },
         specifications: {

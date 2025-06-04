@@ -30,10 +30,25 @@ export const useEquipmentById = (id: string) => {
         return null;
       }
 
-      // Cast the data to UserEquipment to ensure proper typing
+      // Transform the flat DB structure into nested UserEquipment structure
+      const isAvailable = data.status === 'available';
       return {
         ...data,
-        status: data.status as 'available' | 'booked' | 'unavailable'
+        status: data.status as 'available' | 'booked' | 'unavailable',
+        location: {
+          lat: typeof data.location_lat === 'number' ? data.location_lat : 34.0522, // Default to LA
+          lng: typeof data.location_lng === 'number' ? data.location_lng : -118.2437,
+          zip: data.location_zip || ''
+        },
+        specifications: {
+          size: data.size || '',
+          weight: data.weight || '',
+          material: data.material || '',
+          suitable: data.suitable_skill_level || ''
+        },
+        availability: {
+          available: isAvailable
+        }
       } as UserEquipment;
     },
     enabled: !!user?.id && !!id,

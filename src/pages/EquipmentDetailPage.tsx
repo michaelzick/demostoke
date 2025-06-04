@@ -57,12 +57,17 @@ const EquipmentDetailPage = () => {
           rating: 4.9,
           responseRate: 98,
         },
-        location: {
-          ...equipment.location
+        location: equipment.location || {
+          lat: 34.0522, // Default to LA coordinates
+          lng: -118.2437,
+          zip: ''
         },
         distance: 0,
-        specifications: {
-          ...equipment.specifications
+        specifications: equipment.specifications || {
+          size: '',
+          weight: '',
+          material: '',
+          suitable: ''
         },
         availability: {
           available: equipment.status === 'available',
