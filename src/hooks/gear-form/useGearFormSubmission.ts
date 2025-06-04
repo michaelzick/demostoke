@@ -6,7 +6,7 @@ import { useAuth } from "@/helpers";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadGearImage } from "@/utils/imageUpload";
 import { useGearFormValidation } from "@/hooks/useGearFormValidation";
-import { getCoordinatesFromZipCode } from "@/utils/geocoding";
+import { geocodeZipCode } from "@/utils/geocoding";
 import { PricingOption } from "./types";
 
 interface UseGearFormSubmissionProps {
@@ -115,7 +115,7 @@ export const useGearFormSubmission = ({
       // Get coordinates from zip code
       let coordinates = null;
       try {
-        coordinates = await getCoordinatesFromZipCode(zipCode);
+        coordinates = await geocodeZipCode(zipCode);
         console.log('Coordinates for zip code', zipCode, ':', coordinates);
       } catch (geocodingError) {
         console.error('Geocoding failed:', geocodingError);

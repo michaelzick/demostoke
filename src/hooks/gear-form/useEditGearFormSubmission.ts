@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -5,7 +6,7 @@ import { useAuth } from "@/helpers";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadGearImage } from "@/utils/imageUpload";
 import { useGearFormValidation } from "@/hooks/useGearFormValidation";
-import { getCoordinatesFromZipCode } from "@/utils/geocoding";
+import { geocodeZipCode } from "@/utils/geocoding";
 import { UserEquipment } from "@/types/equipment";
 import { PricingOption } from "./types";
 
@@ -115,7 +116,7 @@ export const useEditGearFormSubmission = ({
       const currentZip = equipment.location?.zip || '';
       if (zipCode !== currentZip) {
         try {
-          coordinates = await getCoordinatesFromZipCode(zipCode);
+          coordinates = await geocodeZipCode(zipCode);
           console.log('Updated coordinates for zip code', zipCode, ':', coordinates);
         } catch (geocodingError) {
           console.error('Geocoding failed:', geocodingError);
