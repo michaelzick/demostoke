@@ -22,6 +22,18 @@ const EditGearForm = () => {
     toast,
   } = useEditGearForm();
 
+  // Handle error navigation
+  useEffect(() => {
+    if (error || (!isLoading && !equipment)) {
+      toast({
+        title: "Gear Not Found",
+        description: "The gear you're trying to edit could not be found.",
+        variant: "destructive",
+      });
+      navigate("/my-gear");
+    }
+  }, [error, equipment, isLoading, toast, navigate]);
+
   // Handle loading state
   if (isLoading) {
     return (
@@ -33,17 +45,8 @@ const EditGearForm = () => {
     );
   }
 
-  // Handle error or equipment not found
-  if (error || !equipment) {
-    useEffect(() => {
-      toast({
-        title: "Gear Not Found",
-        description: "The gear you're trying to edit could not be found.",
-        variant: "destructive",
-      });
-      navigate("/my-gear");
-    }, [toast, navigate]);
-
+  // Don't render form if there's no equipment data
+  if (!equipment) {
     return null;
   }
 
