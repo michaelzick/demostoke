@@ -14,9 +14,18 @@ export const useEquipmentById = (id: string) => {
         return null;
       }
 
+      // Fetch equipment with owner profile information
       const { data, error } = await supabase
         .from('equipment')
-        .select('*')
+        .select(`
+          *,
+          profiles!equipment_user_id_fkey (
+            id,
+            name,
+            avatar_url,
+            role
+          )
+        `)
         .eq('id', id)
         .eq('user_id', user.id)
         .single();
@@ -48,6 +57,14 @@ export const useEquipmentById = (id: string) => {
         },
         availability: {
           available: isAvailable
+        },
+        owner: {
+          id: data.profiles?.id || data.user_id,
+          name: data.profiles?.name || 'Equipment Owner',
+          imageUrl: data.profiles?.avatar_url || `https://api.dicebear.com/6.x/avataaars/svg?seed=${data.user_id}`,
+          rating: 4.9, // Default rating for now
+          responseRate: 98, // Default response rate for now
+          memberSince: new Date().getFullYear() - Math.floor(Math.random() * 3 + 1)
         }
       } as UserEquipment;
     },

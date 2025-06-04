@@ -1,4 +1,6 @@
 
+import { GearOwner } from "@/types";
+
 export interface UserEquipment {
   id: string;
   name: string;
@@ -26,4 +28,5 @@ export interface UserEquipment {
   status: 'available' | 'booked' | 'unavailable';
   created_at: string;
   updated_at: string;
+  owner?: GearOwner; // Add owner information
 }

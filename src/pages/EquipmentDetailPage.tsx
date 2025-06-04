@@ -50,13 +50,7 @@ const EquipmentDetailPage = () => {
         image_url: equipment.image_url || "",
         rating: Number(equipment.rating || 0),
         review_count: equipment.review_count || 0,
-        owner: {
-          id: equipment.id,
-          name: "Equipment Owner",
-          imageUrl: `https://api.dicebear.com/6.x/avataaars/svg?seed=${equipment.id}`,
-          rating: 4.9,
-          responseRate: 98,
-        },
+        owner: equipment.owner, // Use the actual owner data from the database
         location: equipment.location || {
           lat: 34.0522, // Default to LA coordinates
           lng: -118.2437,
