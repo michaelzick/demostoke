@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { Edit, Trash2, Copy, ExternalLink } from "lucide-react";
 import { Snowflake, Waves, Tire } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,11 @@ const MyEquipmentPage = () => {
   const { isAuthenticated } = useAuth();
   const { data: userEquipment = [], isLoading, error } = useUserEquipment();
   const deleteEquipmentMutation = useDeleteEquipment();
+
+  // Scroll to top on page load
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Function to get the appropriate icon based on equipment category
   const getEquipmentIcon = (category: string) => {
