@@ -39,6 +39,9 @@ export const useUserEquipment = () => {
           weight: item.weight || '',
           material: item.material || '',
           suitable: item.suitable_skill_level || ''
+        },
+        availability: {
+          available: item.status === 'available'
         }
       })) as UserEquipment[];
     },

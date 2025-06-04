@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { searchEquipmentWithNLP } from "@/services/searchService";
@@ -59,9 +60,9 @@ const SearchResultsPage = () => {
   const sortedResults = [...filteredResults].sort((a, b) => {
     switch (sortBy) {
       case "price_asc":
-        return a.pricePerDay - b.pricePerDay;
+        return a.price_per_day - b.price_per_day;
       case "price_desc":
-        return b.pricePerDay - a.pricePerDay;
+        return b.price_per_day - a.price_per_day;
       case "distance":
         return a.distance - b.distance;
       case "rating":

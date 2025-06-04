@@ -33,16 +33,16 @@ export const useEquipmentDataLoader = ({
       console.log('Equipment loaded:', equipment);
       const mappedGearType = mapCategoryToGearType(equipment.category);
       console.log('Mapped gear type:', mappedGearType);
-      console.log('Original skill level:', equipment.suitable_skill_level);
+      console.log('Original skill level:', equipment.specifications?.suitable);
 
       setGearName(equipment.name);
       setGearType(mappedGearType);
       setDescription(equipment.description || "");
-      setZipCode(equipment.location_zip || "");
-      setDimensions(parseSize(equipment.size || ""));
+      setZipCode(equipment.location?.zip || "");
+      setDimensions(parseSize(equipment.specifications?.size || ""));
 
       // Map skill level after setting gear type
-      const mappedSkillLevel = mapSkillLevel(equipment.suitable_skill_level || "", mappedGearType);
+      const mappedSkillLevel = mapSkillLevel(equipment.specifications?.suitable || "", mappedGearType);
       console.log('Mapped skill level:', mappedSkillLevel);
       setSkillLevel(mappedSkillLevel);
     }

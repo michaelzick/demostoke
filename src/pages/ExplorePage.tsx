@@ -39,10 +39,10 @@ const ExplorePage = () => {
         results.sort((a, b) => a.distance - b.distance);
         break;
       case "price_asc":
-        results.sort((a, b) => a.pricePerDay - b.pricePerDay);
+        results.sort((a, b) => a.price_per_day - b.price_per_day);
         break;
       case "price_desc":
-        results.sort((a, b) => b.pricePerDay - a.pricePerDay);
+        results.sort((a, b) => b.price_per_day - a.price_per_day);
         break;
       default:
         break;

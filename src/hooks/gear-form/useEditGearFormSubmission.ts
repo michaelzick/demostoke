@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -113,7 +112,7 @@ export const useEditGearFormSubmission = ({
 
       // Get coordinates from zip code (only if zip code changed)
       let coordinates = null;
-      const currentZip = equipment.location?.zip || equipment.location_zip || '';
+      const currentZip = equipment.location?.zip || '';
       if (zipCode !== currentZip) {
         try {
           coordinates = await getCoordinatesFromZipCode(zipCode);

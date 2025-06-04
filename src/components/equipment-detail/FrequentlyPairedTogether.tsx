@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { AddOn, calculateTotalPrice, getAddOnsForCategory } from "@/lib/addOns";
 import { Equipment } from "@/types";
@@ -21,7 +22,7 @@ const FrequentlyPairedTogether = ({
 }: FrequentlyBoughtTogetherProps) => {
   const addOns = getAddOnsForCategory(equipment.category);
   const [selectedAddOns, setSelectedAddOns] = useState<AddOn[]>([...addOns]);
-  const totalPrice = calculateTotalPrice(equipment.pricePerDay, selectedAddOns);
+  const totalPrice = calculateTotalPrice(equipment.price_per_day, selectedAddOns);
 
   const handleAddOnToggle = (addOn: AddOn, checked: boolean) => {
     if (checked) {
@@ -46,7 +47,7 @@ const FrequentlyPairedTogether = ({
             <div className="w-16 h-16 overflow-hidden rounded-md mb-2">
               <AspectRatio ratio={1}>
                 <img
-                  src={equipment.imageUrl}
+                  src={equipment.image_url}
                   alt={equipment.name}
                   className="w-full h-full object-cover"
                 />
