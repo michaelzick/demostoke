@@ -9,10 +9,13 @@ interface PricingOption {
 }
 
 export const usePricingOptions = (equipmentId: string) => {
+  // Check if this is a real UUID (for DB equipment) or a mock ID
+  const isRealId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(equipmentId);
+
   return useQuery({
     queryKey: ['pricing-options', equipmentId],
     queryFn: async (): Promise<PricingOption[]> => {
-      if (!equipmentId) {
+      if (!equipmentId || !isRealId) {
         return [];
       }
 
@@ -29,6 +32,6 @@ export const usePricingOptions = (equipmentId: string) => {
 
       return data || [];
     },
-    enabled: !!equipmentId,
+    enabled: isRealId && !!equipmentId, // Only run query for real DB equipment IDs
   });
 };

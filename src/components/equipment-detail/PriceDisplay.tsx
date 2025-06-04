@@ -8,23 +8,27 @@ interface PriceDisplayProps {
 }
 
 const PriceDisplay = ({ equipment, equipmentHeader }: PriceDisplayProps) => {
+  // Get pricing options from the database
   const { data: dbPricingOptions = [], isLoading } = usePricingOptions(equipment.id);
 
-  // Helper to get mock pricing options from equipment
-  function getMockPricingOptions(equipment: unknown) {
+  // Memoize the pricing options decision and transformation
+  const pricingOptions = React.useMemo(() => {
+    // First check if we have DB pricing options
+    if (dbPricingOptions.length > 0) {
+      return dbPricingOptions;
+    }
+
+    // If no DB data, try to get mock pricing options
     if (equipment && typeof equipment === 'object' && 'pricingOptions' in equipment) {
       const eq = equipment as { pricingOptions?: { id: string; price: number; duration: string; }[]; };
       if (Array.isArray(eq.pricingOptions)) {
         return eq.pricingOptions;
       }
     }
-    return [];
-  }
-  const mockPricingOptions = getMockPricingOptions(equipment);
 
-  // Only show DB pricing if there is DB data for this equipment
-  const showDbPricing = dbPricingOptions.length > 0;
-  const pricingOptions = showDbPricing ? dbPricingOptions : mockPricingOptions;
+    // Return empty array if no pricing options found
+    return [];
+  }, [dbPricingOptions, equipment]);
 
   // Group and order pricing options
   const getOrderedPricingOptions = (options: Array<{ id: string; price: number; duration: string }>) => {
