@@ -1,38 +1,44 @@
 
-import NodeGeocoder from 'node-geocoder';
+import { supabase } from "@/integrations/supabase/client";
 
-// Create geocoder instance
-const geocoder = NodeGeocoder({
-  provider: 'openstreetmap',
-  // OpenStreetMap doesn't require an API key
-  httpAdapter: 'https',
-  formatter: null
-});
-
-export interface Coordinates {
+export interface GeocodeResult {
   lat: number;
   lng: number;
 }
 
-export const getCoordinatesFromZipCode = async (zipCode: string): Promise<Coordinates | null> => {
+export const geocodeZipCode = async (zipCode: string): Promise<GeocodeResult | null> => {
   try {
-    if (!zipCode || zipCode.trim() === '') {
+    console.log('Geocoding zip code:', zipCode);
+    
+    // Get Mapbox token from Supabase function
+    const { data: tokenData, error: tokenError } = await supabase.functions.invoke('get-mapbox-token');
+    
+    if (tokenError || !tokenData?.token) {
+      console.error('Failed to get Mapbox token:', tokenError);
       return null;
     }
 
-    // For US zip codes, add "USA" to improve accuracy
-    const searchQuery = zipCode.length === 5 ? `${zipCode}, USA` : zipCode;
+    const mapboxToken = tokenData.token;
     
-    const results = await geocoder.geocode(searchQuery);
-    
-    if (results && results.length > 0) {
-      const result = results[0];
-      return {
-        lat: result.latitude || 0,
-        lng: result.longitude || 0
-      };
+    // Use Mapbox Geocoding API
+    const response = await fetch(
+      `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(zipCode)}.json?access_token=${mapboxToken}&country=US&types=postcode`
+    );
+
+    if (!response.ok) {
+      console.error('Mapbox geocoding request failed:', response.status);
+      return null;
     }
+
+    const data = await response.json();
     
+    if (data.features && data.features.length > 0) {
+      const [lng, lat] = data.features[0].center;
+      console.log('Geocoding successful:', { lat, lng });
+      return { lat, lng };
+    }
+
+    console.warn('No geocoding results found for zip code:', zipCode);
     return null;
   } catch (error) {
     console.error('Geocoding error:', error);
