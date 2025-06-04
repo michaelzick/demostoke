@@ -64,7 +64,7 @@ export const useEquipmentById = (id: string) => {
           imageUrl: data.profiles?.avatar_url || `https://api.dicebear.com/6.x/avataaars/svg?seed=${data.user_id}`,
           rating: 4.9, // Default rating for now
           responseRate: 98, // Default response rate for now
-          memberSince: new Date().getFullYear() - Math.floor(Math.random() * 3 + 1)
+          memberSince: String(new Date().getFullYear() - Math.floor(Math.random() * 3 + 1))
         }
       } as UserEquipment;
     },
