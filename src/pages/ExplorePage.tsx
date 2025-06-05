@@ -28,12 +28,12 @@ const ExplorePage = () => {
   // Apply filters and sorting
   useEffect(() => {
     let results = showMockData ? [...mockEquipment] : [];
-      
+
     // Apply category filter
     if (activeCategory) {
       results = results.filter(item => item.category === activeCategory);
     }
-      
+
     // Apply sorting
     switch (sortBy) {
       case "distance":
@@ -48,7 +48,7 @@ const ExplorePage = () => {
       default:
         break;
     }
-      
+
     setFilteredEquipment(results);
   }, [activeCategory, sortBy, showMockData]);
 
@@ -77,11 +77,11 @@ const ExplorePage = () => {
         setViewMode={setViewMode}
         onReset={handleReset}
       />
-      
+
       {viewMode === "map" ? (
         <div className="h-[calc(100vh-12rem)]">
-          <MapComponent 
-            activeCategory={activeCategory} 
+          <MapComponent
+            activeCategory={activeCategory}
             initialEquipment={showMockData ? filteredEquipment : undefined}
           />
         </div>
