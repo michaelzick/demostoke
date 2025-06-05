@@ -1,4 +1,3 @@
-
 export interface PricingOption {
   id: string;
   price: string;
@@ -38,8 +37,14 @@ export interface FormState {
   setSkillLevel: (value: string) => void;
   images: File[];
   setImages: (value: File[]) => void;
+  imageUrl: string;
+  setImageUrl: (value: string) => void;
+  useImageUrl: boolean;
+  setUseImageUrl: (value: boolean) => void;
   pricingOptions: PricingOption[];
   setPricingOptions: (value: PricingOption[]) => void;
   damageDeposit: string;
   setDamageDeposit: (value: string) => void;
+  role: string;
+  setRole: (value: string) => void;
 }

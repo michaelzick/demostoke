@@ -50,6 +50,10 @@ const AddGearForm = () => {
         <GearMedia
           handleImageUpload={handlers.handleImageUpload}
           duplicatedImageUrl={duplicatedImageUrl}
+          imageUrl={formState.imageUrl}
+          setImageUrl={formState.setImageUrl}
+          useImageUrl={formState.useImageUrl}
+          setUseImageUrl={formState.setUseImageUrl}
         />
 
         <GearPricing

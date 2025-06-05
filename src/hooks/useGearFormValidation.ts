@@ -1,4 +1,3 @@
-
 import { useToast } from "@/hooks/use-toast";
 
 interface PricingOption {
@@ -18,6 +17,8 @@ interface FormData {
   role: string;
   damageDeposit: string;
   pricingOptions: PricingOption[];
+  imageUrl?: string;
+  useImageUrl?: boolean;
 }
 
 export const useGearFormValidation = () => {
@@ -35,6 +36,8 @@ export const useGearFormValidation = () => {
       role,
       damageDeposit,
       pricingOptions,
+      imageUrl,
+      useImageUrl,
     } = formData;
 
     // Validate required fields
@@ -56,6 +59,29 @@ export const useGearFormValidation = () => {
         variant: "destructive",
       });
       return false;
+    }
+
+    // Validate image URL if using it
+    if (useImageUrl) {
+      if (!imageUrl?.trim()) {
+        toast({
+          title: "Missing Image URL",
+          description: "Please provide an image URL or uncheck 'Use image URL'.",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      try {
+        new URL(imageUrl);
+      } catch (e) {
+        toast({
+          title: "Invalid Image URL",
+          description: "Please enter a valid URL for the image.",
+          variant: "destructive",
+        });
+        return false;
+      }
     }
 
     return true;
