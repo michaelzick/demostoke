@@ -1,10 +1,10 @@
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { MapPin } from "lucide-react";
 import { Snowflake, Mountains, Waves, Fish, Tire } from "@phosphor-icons/react";
 import { useAuth } from "@/helpers";
+import { getVideoUrl } from "@/utils/videoUpload";
 
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -12,11 +12,11 @@ const HeroSection = () => {
   const navigate = useNavigate();
 
   const backgrounds = [
-    { type: 'video', url: '/video/surfers_compressed.mp4' },
-    { type: 'video', url: '/video/snowboarder_compressed.mp4' },
-    { type: 'video', url: '/video/skier_compressed.mp4' },
-    { type: 'video', url: '/video/skater_compressed.mp4' },
-    { type: 'video', url: '/video/sup_compressed.mp4' },
+    { type: 'video', url: getVideoUrl('surfers_compressed.mp4') },
+    { type: 'video', url: getVideoUrl('snowboarder_compressed.mp4') },
+    { type: 'video', url: getVideoUrl('skier_compressed.mp4') },
+    { type: 'video', url: getVideoUrl('skater_compressed.mp4') },
+    { type: 'video', url: getVideoUrl('sup_compressed.mp4') },
   ];
 
   useEffect(() => {
