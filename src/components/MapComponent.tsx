@@ -251,12 +251,24 @@ const MapComponent = ({ activeCategory }: MapComponentProps) => {
   }, [token, toast]);
 
   useEffect(() => {
-    // Ensure equipment is an array and has items
-    if (!mapLoaded || !map.current || !Array.isArray(equipment) || equipment.length === 0) return;
+    if (!mapLoaded || !map.current) return;
 
-    // Clear existing markers
+    // Always clear existing markers first
     markers.current.forEach(marker => marker.remove());
     markers.current = [];
+
+    // If no equipment or empty array, reset map and show message
+    if (!Array.isArray(equipment) || equipment.length === 0) {
+      map.current.setCenter([-118.2437, 34.0522]);
+      map.current.setZoom(11);
+      if (activeCategory) {
+        toast({
+          title: "No Equipment Found",
+          description: `No available ${activeCategory} found in this area.`,
+        });
+      }
+      return;
+    }
 
     // Add new markers
     equipment.forEach((item: MapEquipment) => {
@@ -319,11 +331,20 @@ const MapComponent = ({ activeCategory }: MapComponentProps) => {
         console.error('Error fitting bounds:', err);
       }
     } else {
-      // No markers, reset to default view of LA
+      // Clear the map and reset to default view of LA when no equipment is found
+      markers.current.forEach(marker => marker.remove());
+      markers.current = [];
       map.current.setCenter([-118.2437, 34.0522]);
       map.current.setZoom(11);
+      // Show a toast to inform the user
+      if (activeCategory) {
+        toast({
+          title: "No Equipment Found",
+          description: `No available ${activeCategory} found in this area.`,
+        });
+      }
     }
-  }, [equipment, mapLoaded]);
+  }, [equipment, mapLoaded, activeCategory, toast]);
 
   const getCategoryColor = (category: string): string => {
     switch (category.toLowerCase()) {
