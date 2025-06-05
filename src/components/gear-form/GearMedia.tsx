@@ -14,9 +14,9 @@ interface GearMediaProps {
   setUseImageUrl: (value: boolean) => void;
 }
 
-const GearMedia = ({ 
-  handleImageUpload, 
-  currentImageUrl, 
+const GearMedia = ({
+  handleImageUpload,
+  currentImageUrl,
   duplicatedImageUrl,
   imageUrl,
   setImageUrl,
@@ -64,9 +64,9 @@ const GearMedia = ({
           <p className="text-sm text-muted-foreground mb-2">
             {useImageUrl ? "Image URL preview:" : currentImageUrl ? "Current image:" : "Image from duplicated gear:"}
           </p>
-          <img 
-            src={displayImageUrl} 
-            alt="Current gear" 
+          <img
+            src={displayImageUrl}
+            alt="Current gear"
             className="w-32 h-32 object-cover rounded-md border"
           />
         </div>
@@ -82,9 +82,9 @@ const GearMedia = ({
           disabled={useImageUrl}
         />
         <p className="text-sm text-muted-foreground">
-          {useImageUrl ? 
+          {useImageUrl ?
             "File upload is disabled while using image URL" :
-            displayImageUrl ? 
+            displayImageUrl ?
               "Upload a new image to replace the current one, or leave empty to keep the existing image." :
               "Upload a high-quality image of your gear. Supported formats: JPEG, PNG, WebP, GIF (max 5MB)"
           }

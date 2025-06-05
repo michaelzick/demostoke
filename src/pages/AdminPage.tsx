@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/helpers";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { uploadVideoToSupabase } from "@/utils/videoUpload";
 import { Navigate } from "react-router-dom";
-import { Upload, Video } from "lucide-react";
+import { Upload, Video, Database } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface FileInputEvent extends React.ChangeEvent<HTMLInputElement> {
   target: HTMLInputElement & {
@@ -16,11 +16,14 @@ interface FileInputEvent extends React.ChangeEvent<HTMLInputElement> {
   };
 }
 
-const AdminUploadPage = () => {
+const AdminPage = () => {
   const { user, isAuthenticated } = useAuth();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [showMockData, setShowMockData] = useState(() => {
+    return localStorage.getItem("showMockData") === "true";
+  });
 
   // Check if user is admin (only your email)
   const isAdmin = isAuthenticated && user?.email === "michaelzick@gmail.com";
@@ -83,13 +86,48 @@ const AdminUploadPage = () => {
     }
   };
 
+  const handleMockDataChange = (checked: boolean) => {
+    setShowMockData(checked);
+    localStorage.setItem("showMockData", checked.toString());
+    toast({
+      title: "Mock Data Setting Updated",
+      description: checked ? "Mock data is now enabled" : "Mock data is now disabled",
+    });
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
+    <div className="container mx-auto px-4 py-8 max-w-2xl space-y-6">
+      {/* Mock Data Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Database className="h-6 w-6" />
+            Data Settings
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="show-mock-data"
+              checked={showMockData}
+              onCheckedChange={handleMockDataChange}
+            />
+            <Label htmlFor="show-mock-data" className="text-sm font-medium">
+              Show Mock Data?
+            </Label>
+          </div>
+          <p className="text-sm text-muted-foreground mt-2">
+            Enable this option to show mock data throughout the application for testing purposes.
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Video Upload Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Video className="h-6 w-6" />
-            Admin Video Upload
+            Video Upload
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -154,4 +192,4 @@ const AdminUploadPage = () => {
   );
 };
 
-export default AdminUploadPage;
+export default AdminPage;

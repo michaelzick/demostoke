@@ -41,7 +41,7 @@ export const useGearFormValidation = () => {
     } = formData;
 
     // Validate required fields
-    if (!gearName || !gearType || !description || !zipCode || !measurementUnit || 
+    if (!gearName || !gearType || !description || !zipCode || !measurementUnit ||
         !dimensions.length || !dimensions.width || !skillLevel || !role || !damageDeposit) {
       toast({
         title: "Missing Required Fields",
