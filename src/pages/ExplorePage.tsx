@@ -33,7 +33,7 @@ const ExplorePage = () => {
 
     // Apply search filter first
     if (searchQuery) {
-      results = results.filter(item => 
+      results = results.filter(item =>
         item.name.toLowerCase().includes(searchQuery) ||
         item.description?.toLowerCase().includes(searchQuery) ||
         item.category.toLowerCase().includes(searchQuery)
