@@ -10,12 +10,20 @@ const HeroSection = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
+  // const backgrounds = [
+  //   { type: 'video', url: getVideoUrl('surfers_compressed.mp4') },
+  //   { type: 'video', url: getVideoUrl('snowboarder_compressed.mp4') },
+  //   { type: 'video', url: getVideoUrl('skier_compressed.mp4') },
+  //   { type: 'video', url: getVideoUrl('skater_compressed.mp4') },
+  //   { type: 'video', url: getVideoUrl('sup_compressed.mp4') },
+  // ];
+
   const backgrounds = [
-    { type: 'video', url: getVideoUrl('surfers_compressed.mp4') },
-    { type: 'video', url: getVideoUrl('snowboarder_compressed.mp4') },
-    { type: 'video', url: getVideoUrl('skier_compressed.mp4') },
-    { type: 'video', url: getVideoUrl('skater_compressed.mp4') },
-    { type: 'video', url: getVideoUrl('sup_compressed.mp4') },
+    { type: '', url: 'https://images.unsplash.com/photo-1617939533073-6c94c709370c?q=80&w=3544&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+    { type: '', url: 'https://images.unsplash.com/photo-1509791413599-93ba127a66b7?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3' },
+    { type: '', url: 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+    { type: '', url: 'https://images.unsplash.com/photo-1646082270297-ba5024c19ffb?q=80&w=3538&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+    { type: '', url: 'https://images.unsplash.com/photo-1534531304203-b830551771b9?q=80&w=3512&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
   ];
 
   useEffect(() => {

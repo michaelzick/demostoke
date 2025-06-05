@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
   return {
     server: {
       host: "::",
-      port: isLocalhost ? 4000 : 8080, // Use port 4000 for localhost, 8080 otherwise
+      port: isLocalhost ? 4050 : 8080, // Use port 4050 for localhost, 8080 otherwise
     },
     plugins: [
       react(),
