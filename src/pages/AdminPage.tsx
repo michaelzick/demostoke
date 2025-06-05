@@ -9,6 +9,7 @@ import { uploadVideoToSupabase } from "@/utils/videoUpload";
 import { Navigate } from "react-router-dom";
 import { Upload, Video, Database } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useMockData } from "@/hooks/useMockData";
 
 interface FileInputEvent extends React.ChangeEvent<HTMLInputElement> {
   target: HTMLInputElement & {
@@ -21,9 +22,7 @@ const AdminPage = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  const [showMockData, setShowMockData] = useState(() => {
-    return localStorage.getItem("showMockData") === "true";
-  });
+  const { showMockData, toggleMockData } = useMockData();
 
   // Check if user is admin (only your email)
   const isAdmin = isAuthenticated && user?.email === "michaelzick@gmail.com";
@@ -86,13 +85,8 @@ const AdminPage = () => {
     }
   };
 
-  const handleMockDataChange = (checked: boolean) => {
-    setShowMockData(checked);
-    localStorage.setItem("showMockData", checked.toString());
-    toast({
-      title: "Mock Data Setting Updated",
-      description: checked ? "Mock data is now enabled" : "Mock data is now disabled",
-    });
+  const handleMockDataChange = () => {
+    toggleMockData();
   };
 
   return (
