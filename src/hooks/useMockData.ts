@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/helpers';
 import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const useMockData = () => {
   const { toast } = useToast();
@@ -35,6 +36,8 @@ export const useMockData = () => {
 
     loadPreference();
   }, [user]);
+
+  const queryClient = useQueryClient();
 
   // Update both localStorage and Supabase when preference changes
   const toggleMockData = async () => {
@@ -80,12 +83,10 @@ export const useMockData = () => {
           title: "Preference Saved",
           description: newValue ? "Mock data is now enabled" : "Mock data is now disabled"
         });
-      }
 
-      // Reload the page to refresh data after a short delay
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+        // Invalidate all queries to refresh data
+        await queryClient.invalidateQueries();
+      }
     } catch (error) {
       console.error('Failed to toggle mock data:', error);
       // Revert local state
