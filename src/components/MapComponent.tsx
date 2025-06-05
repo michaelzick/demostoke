@@ -10,6 +10,8 @@ import { Input } from './ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
+import { useMockData } from '@/hooks/useMockData';
+
 interface DbEquipment {
   id: string;
   name: string;
@@ -45,6 +47,7 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false }
   const markers = useRef<mapboxgl.Marker[]>([]);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { showMockData } = useMockData();
 
   const [token, setToken] = useState<string | null>(() => {
     return localStorage.getItem('mapbox_token');
@@ -53,12 +56,17 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false }
   const [tokenInput, setTokenInput] = useState(token || '');
   const [isLoadingToken, setIsLoadingToken] = useState(false);
 
-  // Add React Query hook for equipment data
+  // Query for real equipment data
   const { data: queryEquipment = [], isLoading, error } = useQuery<MapEquipment[], Error>({
-    queryKey: ['map-equipment', activeCategory],
-    enabled: !initialEquipment, // Only run query if we don't have initial equipment
+    queryKey: ['map-equipment', activeCategory, showMockData],
+    enabled: !initialEquipment,  // Only disable if initialEquipment is provided
     queryFn: async () => {
       try {
+        // Only fetch if not showing mock data
+        if (showMockData) {
+          return [];
+        }
+
         console.log('Fetching equipment with category:', activeCategory);
 
         // Build query with type safety
@@ -73,19 +81,13 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false }
         }
 
         // Only show available equipment
-        console.log('Applying status filter');
         query.eq('status', 'available');
 
         const { data: equipmentData, error: queryError } = await query;
 
         if (queryError) {
-          console.error('Supabase query error details:', {
-            message: queryError.message,
-            details: queryError.details,
-            hint: queryError.hint,
-            code: queryError.code
-          });
-          throw new Error(`Database error: ${queryError.message}`);
+          console.error('Supabase query error:', queryError);
+          throw queryError;
         }
 
         if (!equipmentData) {
@@ -93,9 +95,7 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false }
           return [];
         }
 
-        console.log('Equipment data fetched:', equipmentData.length, 'items');
-
-        // Validate location data
+        // Validate and transform location data
         const validEquipment = equipmentData.filter(item => {
           const hasLocation = item.location_lat != null && item.location_lng != null;
           if (!hasLocation) {
@@ -104,7 +104,6 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false }
           return hasLocation;
         });
 
-        // Transform to MapEquipment type
         return validEquipment.map((item: DbEquipment) => ({
           id: item.id,
           name: item.name,
@@ -119,26 +118,23 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false }
         console.error('Equipment fetch error:', error);
         throw error;
       }
-    },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-    retry: 2
+    }
   });
 
   // Show loading state and handle empty results
   useEffect(() => {
-    if (isLoading) {
+    if (isLoading && !showMockData) {
       toast({
         title: "Loading Equipment",
         description: "Fetching available gear in this area...",
       });
-    } else if (!isLoading && !initialEquipment && Array.isArray(queryEquipment) && queryEquipment.length === 0 && activeCategory && !isSingleView) {
+    } else if (!isLoading && !showMockData && !initialEquipment && Array.isArray(queryEquipment) && queryEquipment.length === 0 && activeCategory && !isSingleView) {
       toast({
         title: "No Equipment Found",
         description: `No available ${activeCategory} found in this area.`,
       });
     }
-  }, [isLoading, toast, queryEquipment, activeCategory, initialEquipment, isSingleView]);
+  }, [isLoading, toast, queryEquipment, activeCategory, initialEquipment, isSingleView, showMockData]);
 
   // Show error state
   useEffect(() => {

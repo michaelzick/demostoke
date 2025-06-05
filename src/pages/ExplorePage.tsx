@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { mockEquipment } from "@/lib/mockData";
@@ -7,15 +6,17 @@ import EquipmentCard from "@/components/EquipmentCard";
 import FilterBar from "@/components/FilterBar";
 import { Equipment } from "@/types";
 import { useToast } from "@/hooks/use-toast";
+import { useMockData } from "@/hooks/useMockData";
 
 const ExplorePage = () => {
   const location = useLocation();
   const { toast } = useToast();
+  const { showMockData } = useMockData();
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("distance");
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
-  const [filteredEquipment, setFilteredEquipment] = useState<Equipment[]>(mockEquipment);
+  const [filteredEquipment, setFilteredEquipment] = useState<Equipment[]>([]);
 
   // Update active category when URL changes
   useEffect(() => {
@@ -26,13 +27,13 @@ const ExplorePage = () => {
 
   // Apply filters and sorting
   useEffect(() => {
-    let results = [...mockEquipment];
-    
+    let results = showMockData ? [...mockEquipment] : [];
+      
     // Apply category filter
     if (activeCategory) {
       results = results.filter(item => item.category === activeCategory);
     }
-    
+      
     // Apply sorting
     switch (sortBy) {
       case "distance":
@@ -47,9 +48,9 @@ const ExplorePage = () => {
       default:
         break;
     }
-    
+      
     setFilteredEquipment(results);
-  }, [activeCategory, sortBy]);
+  }, [activeCategory, sortBy, showMockData]);
 
   // Handle reset
   const handleReset = () => {
@@ -79,7 +80,10 @@ const ExplorePage = () => {
       
       {viewMode === "map" ? (
         <div className="h-[calc(100vh-12rem)]">
-          <MapComponent equipment={filteredEquipment} activeCategory={activeCategory} />
+          <MapComponent 
+            activeCategory={activeCategory} 
+            initialEquipment={showMockData ? filteredEquipment : undefined}
+          />
         </div>
       ) : (
         <div className="container px-4 md:px-6 py-8">
