@@ -24,7 +24,7 @@ const AddGearForm = () => {
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
       <form onSubmit={handlers.handleSubmit} className="space-y-8">
-        <FormHeader title="Add New Gear" />
+        <FormHeader title="Add New Gear" route='/list-gear' buttonText='Back to List Gear Page' />
 
         <GearBasicInfo
           gearName={formState.gearName}

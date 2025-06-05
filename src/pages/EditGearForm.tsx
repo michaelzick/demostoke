@@ -52,9 +52,9 @@ const EditGearForm = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <FormHeader title={equipment.name} />
-
       <form onSubmit={handlers.handleSubmit} className="max-w-2xl mx-auto space-y-6">
+        <FormHeader title={equipment.name} route='/my-gear' buttonText='Back to My Gear Page' />
+
         <GearBasicInfo
           gearName={formState.gearName}
           setGearName={formState.setGearName}
