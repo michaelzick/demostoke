@@ -1,18 +1,43 @@
 
 import { Badge } from "@/components/ui/badge";
-import { StarIcon, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { StarIcon, MapPin, Edit } from "lucide-react";
 import { Equipment } from "@/types";
 import PriceDisplay from "./PriceDisplay";
+import { useAuth } from "@/helpers";
+import { useNavigate } from "react-router-dom";
 
 interface EquipmentHeaderProps {
   equipment: Equipment;
 }
 
 const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  // Check if current user is the owner of this gear
+  const isOwner = user?.id === equipment.owner.id;
+
+  const handleUpdate = () => {
+    navigate(`/edit-gear/${equipment.id}`);
+  };
+
   return (
     <div className="flex justify-between items-start mb-4">
-      <div>
-        <h1 className="text-3xl font-bold mb-2">{equipment.name}</h1>
+      <div className="flex-1">
+        <div className="flex items-center gap-4 mb-2">
+          <h1 className="text-3xl font-bold">{equipment.name}</h1>
+          {isOwner && (
+            <Button
+              variant="default"
+              onClick={handleUpdate}
+              className="flex items-center gap-2"
+            >
+              <Edit className="h-4 w-4" />
+              Update
+            </Button>
+          )}
+        </div>
         <div className="flex items-center gap-2 mb-2">
           <Badge>{equipment.category}</Badge>
           <div className="flex items-center text-sm">
@@ -28,8 +53,6 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
           <span>{equipment.distance} miles away</span>
         </div>
       </div>
-      {/* <div className="text-2xl font-bold text-primary">${equipment.price_per_day}</div>
-        <div className="text-sm text-muted-foreground">per day</div> */}
       <PriceDisplay equipment={equipment} equipmentHeader />
     </div>
   );
