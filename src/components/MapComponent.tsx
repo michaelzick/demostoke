@@ -38,9 +38,27 @@ interface MapComponentProps {
   activeCategory: string | null;
   initialEquipment?: MapEquipment[];
   isSingleView?: boolean;
+  searchQuery?: string;
 }
 
-const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false }: MapComponentProps) => {
+const getCategoryColor = (category: string): string => {
+  switch (category.toLowerCase()) {
+    case 'snowboards':
+      return 'bg-fuchsia-600';
+    case 'skis':
+      return 'bg-lime-600';
+    case 'surfboards':
+      return 'bg-blue-600';
+    case 'sups':
+      return 'bg-violet-600';
+    case 'skateboards':
+      return 'bg-red-600';
+    default:
+      return 'bg-black';
+  }
+};
+
+const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, searchQuery }: MapComponentProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -48,6 +66,8 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false }
   const navigate = useNavigate();
   const { toast } = useToast();
   const { showMockData } = useMockData();
+
+  console.log('MapComponent render:', { initialEquipment, activeCategory, showMockData });
 
   const [token, setToken] = useState<string | null>(() => {
     return localStorage.getItem('mapbox_token');
@@ -58,26 +78,28 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false }
 
   // Query for real equipment data
   const { data: queryEquipment = [], isLoading, error } = useQuery<MapEquipment[], Error>({
-    queryKey: ['map-equipment', activeCategory, showMockData],
-    enabled: !initialEquipment,  // Only disable if initialEquipment is provided
+    queryKey: ['map-equipment', activeCategory, showMockData, searchQuery],
+    enabled: !initialEquipment && !showMockData,  // Only query if neither initialEquipment nor mock data
     queryFn: async () => {
       try {
-        // Only fetch if not showing mock data
-        if (showMockData) {
-          return [];
-        }
+        console.log('Querying real equipment data');
 
         console.log('Fetching equipment with category:', activeCategory);
 
         // Build query with type safety
         const query = supabase
           .from('equipment')
-          .select('id, name, category, price_per_day, location_lat, location_lng, status');
+          .select('id, name, category, price_per_day, location_lat, location_lng, status, description');
 
         // Add category filter if specified
         if (activeCategory) {
           console.log('Applying category filter:', activeCategory);
           query.eq('category', activeCategory);
+        }
+
+        // Add search filter if specified
+        if (searchQuery) {
+          query.or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,category.ilike.%${searchQuery}%`);
         }
 
         // Only show available equipment
@@ -254,29 +276,16 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false }
     }
   }, [token, toast]);
 
+  // Update markers when data or map changes
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
 
-    // Always clear existing markers first
+    // Clear existing markers
     markers.current.forEach(marker => marker.remove());
     markers.current = [];
 
-    // Use initial equipment if provided, otherwise use query results
+    // Use initialEquipment if provided, otherwise use queryEquipment
     const displayEquipment = initialEquipment || queryEquipment;
-
-    // Reset map if there's no valid equipment array
-    if (!Array.isArray(displayEquipment)) {
-      map.current.setCenter([-118.2437, 34.0522]);
-      map.current.setZoom(11);
-      return;
-    }
-
-    // Reset map if array is empty
-    if (displayEquipment.length === 0) {
-      map.current.setCenter([-118.2437, 34.0522]);
-      map.current.setZoom(11);
-      return;
-    }
 
     // Add new markers
     displayEquipment.forEach((item: MapEquipment) => {
@@ -285,30 +294,27 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false }
         return;
       }
 
-      const el = document.createElement('div');
-      el.className = 'flex items-center justify-center';
-
-      const markerIcon = document.createElement('div');
-      markerIcon.className = `p-1 rounded-full ${getCategoryColor(item.category)}`;
-
-      const icon = document.createElement('div');
-      icon.className = 'text-white';
-      icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`;
-
-      markerIcon.appendChild(icon);
-      el.appendChild(markerIcon);
-
       try {
-        const marker = new mapboxgl.Marker(el)
-          .setLngLat([item.location.lng, item.location.lat]);
+        const el = document.createElement('div');
+        el.className = 'flex items-center justify-center';
 
-        // Only add popup for multi-item view
-        if (!isSingleView) {
-          marker.setPopup(
+        const markerIcon = document.createElement('div');
+        markerIcon.className = `p-1 rounded-full ${getCategoryColor(item.category)}`;
+
+        const icon = document.createElement('div');
+        icon.className = 'text-white';
+        icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path fill-rule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>';
+
+        markerIcon.appendChild(icon);
+        el.appendChild(markerIcon);
+
+        const marker = new mapboxgl.Marker(el)
+          .setLngLat([item.location.lng, item.location.lat])
+          .setPopup(
             new mapboxgl.Popup({ offset: 25 })
               .setHTML(`
-                <div>
-                  <h3 class="text-sm font-medium">${item.name}</h3>
+                <div class="p-2">
+                  <h4 class="font-semibold">${item.name}</h4>
                   <p class="text-xs text-gray-500">${item.category}</p>
                   <p class="text-xs mt-1">$${item.price_per_day}/day</p>
                   <button
@@ -320,7 +326,6 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false }
                 </div>
               `)
           );
-        }
 
         marker.addTo(map.current!);
         markers.current.push(marker);

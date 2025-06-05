@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { mockEquipment } from "@/lib/mockData";
 import MapComponent from "@/components/MapComponent";
 import EquipmentCard from "@/components/EquipmentCard";
@@ -10,6 +10,7 @@ import { useMockData } from "@/hooks/useMockData";
 
 const ExplorePage = () => {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { showMockData } = useMockData();
 
@@ -25,9 +26,19 @@ const ExplorePage = () => {
     setActiveCategory(categoryFromUrl);
   }, [location.search]);
 
-  // Apply filters and sorting
+  // Apply filters, sorting, and search
   useEffect(() => {
     let results = showMockData ? [...mockEquipment] : [];
+    const searchQuery = searchParams.get("q")?.toLowerCase();
+
+    // Apply search filter first
+    if (searchQuery) {
+      results = results.filter(item => 
+        item.name.toLowerCase().includes(searchQuery) ||
+        item.description?.toLowerCase().includes(searchQuery) ||
+        item.category.toLowerCase().includes(searchQuery)
+      );
+    }
 
     // Apply category filter
     if (activeCategory) {
@@ -50,7 +61,7 @@ const ExplorePage = () => {
     }
 
     setFilteredEquipment(results);
-  }, [activeCategory, sortBy, showMockData]);
+  }, [activeCategory, sortBy, showMockData, searchParams]);
 
   // Handle reset
   const handleReset = () => {
@@ -83,6 +94,7 @@ const ExplorePage = () => {
           <MapComponent
             activeCategory={activeCategory}
             initialEquipment={showMockData ? filteredEquipment : undefined}
+            searchQuery={searchParams.get("q")?.toLowerCase()}
           />
         </div>
       ) : (
