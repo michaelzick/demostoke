@@ -11,7 +11,10 @@ import {
 import { useAuth } from "@/helpers";
 
 const UserMenu = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
+
+  // Check if user is admin
+  const isAdmin = isAuthenticated && user?.email === "michaelzick@gmail.com";
 
   if (isAuthenticated) {
     return (
@@ -32,6 +35,14 @@ const UserMenu = () => {
           <DropdownMenuItem asChild className="cursor-pointer">
             <Link to="/bookings">Bookings</Link>
           </DropdownMenuItem>
+          {isAdmin && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild className="cursor-pointer">
+                <Link to="/admin/upload">Admin Upload</Link>
+              </DropdownMenuItem>
+            </>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={logout} className="cursor-pointer">Logout</DropdownMenuItem>
         </DropdownMenuContent>
