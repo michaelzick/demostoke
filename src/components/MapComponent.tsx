@@ -8,15 +8,35 @@ import { MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from './ui/input';
 import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
+import { Loader2 } from 'lucide-react';
+interface DbEquipment {
+  id: string;
+  name: string;
+  category: string;
+  price_per_day: number;
+  location_lat: number;
+  location_lng: number;
+  status: string;
+  is_available: boolean;
+}
 
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
+interface MapEquipment {
+  id: string;
+  name: string;
+  category: string;
+  price_per_day: number;
+  location: {
+    lat: number;
+    lng: number;
+  };
+}
 
 interface MapComponentProps {
-  equipment: Equipment[];
   activeCategory: string | null;
 }
 
-const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
+const MapComponent = ({ activeCategory }: MapComponentProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -24,12 +44,104 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const [token, setToken] = useState<string>(() => {
-    return localStorage.getItem('mapbox_token') || MAPBOX_TOKEN;
+  const [token, setToken] = useState<string | null>(() => {
+    return localStorage.getItem('mapbox_token');
   });
-  const [showTokenInput, setShowTokenInput] = useState(!token);
-  const [tokenInput, setTokenInput] = useState(token);
+  const [showTokenInput, setShowTokenInput] = useState(false);
+  const [tokenInput, setTokenInput] = useState(token || '');
   const [isLoadingToken, setIsLoadingToken] = useState(false);
+
+  // Add React Query hook for equipment data
+  const { data: equipment = [], isLoading, error } = useQuery<MapEquipment[], Error>({
+    queryKey: ['map-equipment', activeCategory],
+    queryFn: async () => {
+      try {
+        console.log('Fetching equipment with category:', activeCategory);
+
+        // Build query with type safety
+        const query = supabase
+          .from('equipment')
+          .select('id, name, category, price_per_day, location_lat, location_lng, status');
+
+        // Add category filter if specified
+        if (activeCategory) {
+          console.log('Applying category filter:', activeCategory);
+          query.eq('category', activeCategory);
+        }
+
+        // Only show available equipment
+        console.log('Applying status filter');
+        query.eq('status', 'available');
+
+        const { data: equipmentData, error: queryError } = await query;
+
+        if (queryError) {
+          console.error('Supabase query error details:', {
+            message: queryError.message,
+            details: queryError.details,
+            hint: queryError.hint,
+            code: queryError.code
+          });
+          throw new Error(`Database error: ${queryError.message}`);
+        }
+
+        if (!equipmentData) {
+          console.log('No equipment data returned');
+          return [];
+        }
+
+        console.log('Equipment data fetched:', equipmentData.length, 'items');
+
+        // Validate location data
+        const validEquipment = equipmentData.filter(item => {
+          const hasLocation = item.location_lat != null && item.location_lng != null;
+          if (!hasLocation) {
+            console.warn(`Equipment ${item.id} missing location data`);
+          }
+          return hasLocation;
+        });
+
+        // Transform to MapEquipment type
+        return validEquipment.map((item: DbEquipment) => ({
+          id: item.id,
+          name: item.name,
+          category: item.category,
+          price_per_day: item.price_per_day,
+          location: {
+            lat: Number(item.location_lat),
+            lng: Number(item.location_lng)
+          }
+        }));
+      } catch (error) {
+        console.error('Equipment fetch error:', error);
+        throw error;
+      }
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    retry: 2
+  });
+
+  // Show loading state
+  useEffect(() => {
+    if (isLoading) {
+      toast({
+        title: "Loading Equipment",
+        description: "Fetching available gear in this area...",
+      });
+    }
+  }, [isLoading, toast]);
+
+  // Show error state
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Error Loading Equipment",
+        description: "There was an error loading the equipment. Please try again.",
+        variant: "destructive"
+      });
+    }
+  }, [error, toast]);
 
   // Fetch Mapbox token from Supabase
   useEffect(() => {
@@ -74,7 +186,11 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
   }, [token]);
 
   useEffect(() => {
-    if (!mapContainer.current || !token) return;
+    if (!mapContainer.current) return;
+    if (!token) {
+      setIsLoadingToken(true);
+      return;
+    }
 
     if (map.current) {
       map.current.remove();
@@ -135,16 +251,20 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
   }, [token, toast]);
 
   useEffect(() => {
-    if (!mapLoaded || !map.current) return;
+    // Ensure equipment is an array and has items
+    if (!mapLoaded || !map.current || !Array.isArray(equipment) || equipment.length === 0) return;
 
+    // Clear existing markers
     markers.current.forEach(marker => marker.remove());
     markers.current = [];
 
-    const filteredEquipment = activeCategory
-      ? equipment.filter(item => item.category === activeCategory)
-      : equipment;
+    // Add new markers
+    equipment.forEach((item: MapEquipment) => {
+      if (!item.location?.lat || !item.location?.lng) {
+        console.warn(`Equipment ${item.id} has invalid location data`);
+        return;
+      }
 
-    filteredEquipment.forEach(item => {
       const el = document.createElement('div');
       el.className = 'flex items-center justify-center';
 
@@ -158,37 +278,52 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
       markerIcon.appendChild(icon);
       el.appendChild(markerIcon);
 
-      const marker = new mapboxgl.Marker(el)
-        .setLngLat([item.location.lng, item.location.lat])
-        .setPopup(
-          new mapboxgl.Popup({ offset: 25 })
-            .setHTML(`
-              <div>
-                <h3 class="text-sm font-medium">${item.name}</h3>
-                <p class="text-xs text-gray-500">${item.category}</p>
-                <p class="text-xs mt-1">$${item.price_per_day}/day</p>
-                <button
-                  class="mt-2 px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
-                  onclick="window.location.href='/equipment/${item.id}'"
-                >
-                  View Details
-                </button>
-              </div>
-            `)
-        )
-        .addTo(map.current!);
+      try {
+        const marker = new mapboxgl.Marker(el)
+          .setLngLat([item.location.lng, item.location.lat])
+          .setPopup(
+            new mapboxgl.Popup({ offset: 25 })
+              .setHTML(`
+                <div>
+                  <h3 class="text-sm font-medium">${item.name}</h3>
+                  <p class="text-xs text-gray-500">${item.category}</p>
+                  <p class="text-xs mt-1">$${item.price_per_day}/day</p>
+                  <button
+                    class="mt-2 px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+                    onclick="window.location.href='/equipment/${item.id}'"
+                  >
+                    View Details
+                  </button>
+                </div>
+              `)
+          )
+          .addTo(map.current!);
 
-      markers.current.push(marker);
+        markers.current.push(marker);
+      } catch (err) {
+        console.error(`Error creating marker for equipment ${item.id}:`, err);
+      }
     });
 
+    // Fit bounds if we have markers
     if (markers.current.length > 0) {
-      const bounds = new mapboxgl.LngLatBounds();
-      filteredEquipment.forEach(item => {
-        bounds.extend([item.location.lng, item.location.lat]);
-      });
-      map.current.fitBounds(bounds, { padding: 50, maxZoom: 12 });
+      try {
+        const bounds = new mapboxgl.LngLatBounds();
+        equipment.forEach((item: MapEquipment) => {
+          if (item.location?.lat && item.location?.lng) {
+            bounds.extend([item.location.lng, item.location.lat]);
+          }
+        });
+        map.current.fitBounds(bounds, { padding: 50, maxZoom: 12 });
+      } catch (err) {
+        console.error('Error fitting bounds:', err);
+      }
+    } else {
+      // No markers, reset to default view of LA
+      map.current.setCenter([-118.2437, 34.0522]);
+      map.current.setZoom(11);
     }
-  }, [equipment, activeCategory, mapLoaded]);
+  }, [equipment, mapLoaded]);
 
   const getCategoryColor = (category: string): string => {
     switch (category.toLowerCase()) {
@@ -228,7 +363,14 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
 
   return (
     <div className="relative w-full h-full rounded-lg overflow-hidden">
-      {showTokenInput ? (
+      {isLoadingToken && !showTokenInput ? (
+        <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-20">
+          <div className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>Loading map configuration...</span>
+          </div>
+        </div>
+      ) : showTokenInput ? (
         <div className="absolute inset-0 bg-background flex items-center justify-center p-4 z-10">
           <form onSubmit={handleTokenSubmit} className="w-full max-w-md space-y-4 p-6 bg-card rounded-lg shadow-lg">
             <h3 className="text-lg font-medium">Enter Mapbox Token</h3>
@@ -256,6 +398,14 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
         </div>
       ) : (
         <>
+          {isLoading && (
+            <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-20">
+              <div className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Loading gear...</span>
+              </div>
+            </div>
+          )}
           <div className="absolute top-4 left-4 z-10 bg-background/90 p-2 rounded-md backdrop-blur-sm">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
