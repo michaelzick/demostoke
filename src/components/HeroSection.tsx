@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { MapPin } from "lucide-react";
 import { Snowflake, Mountains, Waves, Fish, Tire } from "@phosphor-icons/react";
 import { useAuth } from "@/helpers";
 import { getVideoUrl } from "@/utils/videoUpload";

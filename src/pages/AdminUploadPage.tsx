@@ -10,6 +10,12 @@ import { uploadVideoToSupabase } from "@/utils/videoUpload";
 import { Navigate } from "react-router-dom";
 import { Upload, Video } from "lucide-react";
 
+interface FileInputEvent extends React.ChangeEvent<HTMLInputElement> {
+  target: HTMLInputElement & {
+    files: FileList;
+  };
+}
+
 const AdminUploadPage = () => {
   const { user, isAuthenticated } = useAuth();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -28,8 +34,8 @@ const AdminUploadPage = () => {
     return <Navigate to="/" replace />;
   }
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleFileSelect = (event: FileInputEvent) => {
+    const file = event.target.files[0];
     if (file) {
       setSelectedFile(file);
       // Set default filename from the file name
@@ -51,7 +57,7 @@ const AdminUploadPage = () => {
 
     try {
       const publicUrl = await uploadVideoToSupabase(selectedFile, fileName);
-      
+
       toast({
         title: "Upload Successful",
         description: `Video uploaded successfully: ${fileName}`,
@@ -64,11 +70,12 @@ const AdminUploadPage = () => {
       const fileInput = document.getElementById('video-file') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
 
-    } catch (error: any) {
+    } catch (error) {
       console.error('Upload error:', error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to upload video";
       toast({
         title: "Upload Failed",
-        description: error.message || "Failed to upload video",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -113,7 +120,7 @@ const AdminUploadPage = () => {
             />
           </div>
 
-          <Button 
+          <Button
             onClick={handleUpload}
             disabled={!selectedFile || !fileName || isUploading}
             className="w-full"

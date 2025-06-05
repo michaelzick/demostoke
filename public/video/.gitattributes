@@ -1,6 +1,0 @@
-public/video/* filter=lfs diff=lfs merge=lfs -text
-surfers_compressed.mp4 filter=lfs diff=lfs merge=lfs -text
-skater_compressed.mp4 filter=lfs diff=lfs merge=lfs -text
-skier_compressed.mp4 filter=lfs diff=lfs merge=lfs -text
-snowboarder_compressed.mp4 filter=lfs diff=lfs merge=lfs -text
-sup_compressed.mp4 filter=lfs diff=lfs merge=lfs -text
