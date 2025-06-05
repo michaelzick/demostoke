@@ -34,9 +34,11 @@ interface MapEquipment {
 
 interface MapComponentProps {
   activeCategory: string | null;
+  initialEquipment?: MapEquipment[];
+  isSingleView?: boolean;
 }
 
-const MapComponent = ({ activeCategory }: MapComponentProps) => {
+const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false }: MapComponentProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -52,8 +54,9 @@ const MapComponent = ({ activeCategory }: MapComponentProps) => {
   const [isLoadingToken, setIsLoadingToken] = useState(false);
 
   // Add React Query hook for equipment data
-  const { data: equipment = [], isLoading, error } = useQuery<MapEquipment[], Error>({
+  const { data: queryEquipment = [], isLoading, error } = useQuery<MapEquipment[], Error>({
     queryKey: ['map-equipment', activeCategory],
+    enabled: !initialEquipment, // Only run query if we don't have initial equipment
     queryFn: async () => {
       try {
         console.log('Fetching equipment with category:', activeCategory);
@@ -122,15 +125,20 @@ const MapComponent = ({ activeCategory }: MapComponentProps) => {
     retry: 2
   });
 
-  // Show loading state
+  // Show loading state and handle empty results
   useEffect(() => {
     if (isLoading) {
       toast({
         title: "Loading Equipment",
         description: "Fetching available gear in this area...",
       });
+    } else if (!isLoading && !initialEquipment && Array.isArray(queryEquipment) && queryEquipment.length === 0 && activeCategory && !isSingleView) {
+      toast({
+        title: "No Equipment Found",
+        description: `No available ${activeCategory} found in this area.`,
+      });
     }
-  }, [isLoading, toast]);
+  }, [isLoading, toast, queryEquipment, activeCategory, initialEquipment, isSingleView]);
 
   // Show error state
   useEffect(() => {
@@ -257,21 +265,25 @@ const MapComponent = ({ activeCategory }: MapComponentProps) => {
     markers.current.forEach(marker => marker.remove());
     markers.current = [];
 
-    // If no equipment or empty array, reset map and show message
-    if (!Array.isArray(equipment) || equipment.length === 0) {
+    // Use initial equipment if provided, otherwise use query results
+    const displayEquipment = initialEquipment || queryEquipment;
+
+    // Reset map if there's no valid equipment array
+    if (!Array.isArray(displayEquipment)) {
       map.current.setCenter([-118.2437, 34.0522]);
       map.current.setZoom(11);
-      if (activeCategory) {
-        toast({
-          title: "No Equipment Found",
-          description: `No available ${activeCategory} found in this area.`,
-        });
-      }
+      return;
+    }
+
+    // Reset map if array is empty
+    if (displayEquipment.length === 0) {
+      map.current.setCenter([-118.2437, 34.0522]);
+      map.current.setZoom(11);
       return;
     }
 
     // Add new markers
-    equipment.forEach((item: MapEquipment) => {
+    displayEquipment.forEach((item: MapEquipment) => {
       if (!item.location?.lat || !item.location?.lng) {
         console.warn(`Equipment ${item.id} has invalid location data`);
         return;
@@ -292,8 +304,11 @@ const MapComponent = ({ activeCategory }: MapComponentProps) => {
 
       try {
         const marker = new mapboxgl.Marker(el)
-          .setLngLat([item.location.lng, item.location.lat])
-          .setPopup(
+          .setLngLat([item.location.lng, item.location.lat]);
+
+        // Only add popup for multi-item view
+        if (!isSingleView) {
+          marker.setPopup(
             new mapboxgl.Popup({ offset: 25 })
               .setHTML(`
                 <div>
@@ -308,9 +323,10 @@ const MapComponent = ({ activeCategory }: MapComponentProps) => {
                   </button>
                 </div>
               `)
-          )
-          .addTo(map.current!);
+          );
+        }
 
+        marker.addTo(map.current!);
         markers.current.push(marker);
       } catch (err) {
         console.error(`Error creating marker for equipment ${item.id}:`, err);
@@ -321,30 +337,20 @@ const MapComponent = ({ activeCategory }: MapComponentProps) => {
     if (markers.current.length > 0) {
       try {
         const bounds = new mapboxgl.LngLatBounds();
-        equipment.forEach((item: MapEquipment) => {
+        displayEquipment.forEach((item: MapEquipment) => {
           if (item.location?.lat && item.location?.lng) {
             bounds.extend([item.location.lng, item.location.lat]);
           }
         });
-        map.current.fitBounds(bounds, { padding: 50, maxZoom: 12 });
+        map.current.fitBounds(bounds, { padding: 50, maxZoom: isSingleView ? 15 : 12 });
       } catch (err) {
         console.error('Error fitting bounds:', err);
       }
     } else {
-      // Clear the map and reset to default view of LA when no equipment is found
-      markers.current.forEach(marker => marker.remove());
-      markers.current = [];
       map.current.setCenter([-118.2437, 34.0522]);
       map.current.setZoom(11);
-      // Show a toast to inform the user
-      if (activeCategory) {
-        toast({
-          title: "No Equipment Found",
-          description: `No available ${activeCategory} found in this area.`,
-        });
-      }
     }
-  }, [equipment, mapLoaded, activeCategory, toast]);
+  }, [mapLoaded, activeCategory, initialEquipment, queryEquipment, toast, isSingleView]);
 
   const getCategoryColor = (category: string): string => {
     switch (category.toLowerCase()) {
