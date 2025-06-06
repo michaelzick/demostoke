@@ -67,7 +67,7 @@ const AboutPage = () => {
           Michael is an avid outdoor enthusiast with a background in product management and software development. He has a deep love for snowboarding, surfing, and skateboarding, which inspired him to create DemoStoke.
         </p>
         <p>
-          With years of experience in the tech industry, Michael recognized the need for a platform that connects riders with local gear owners, store managers, and surfboard shapers, and significantly reduce the friction in the demo market.
+          With years of experience in the tech industry, Michael recognized the need for a platform that connects riders with local gear owners, store managers, and surfboard shapers, and significantly reduces the friction in the demo market.
           His vision is to create a community-driven platform that empowers riders and promotes sustainable practices in the outdoor gear industry.
         </p>
       </section>

@@ -1,6 +1,5 @@
 
 import { useRef, useEffect, useState } from 'react';
-import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useToast } from '@/hooks/use-toast';
 import { initializeMap, fitMapBounds } from '@/utils/mapUtils';
@@ -48,9 +47,9 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
       if (!hasShownNoGearToast) {
         toast({
           title: "No gear found",
-          description: searchQuery 
+          description: searchQuery
             ? `No equipment found matching "${searchQuery}". Try adjusting your search or filters.`
-            : activeCategory 
+            : activeCategory
             ? `No equipment found in the ${activeCategory} category. Try a different category or clear filters.`
             : "No equipment found in this area. Try expanding your search area or adjusting filters.",
           variant: "default",
@@ -67,7 +66,7 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
     const loadToken = async () => {
       console.log('Starting token loading process...');
       setIsLoadingToken(true);
-      
+
       // First, check localStorage
       const localToken = localStorage.getItem('mapbox_token');
       if (localToken) {
@@ -81,7 +80,7 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
       console.log('No local token found, fetching from Supabase...');
       try {
         const { data, error } = await supabase.functions.invoke('get-mapbox-token');
-        
+
         if (error) {
           console.error('Error fetching token from Supabase:', error);
           setShowTokenInput(true);
