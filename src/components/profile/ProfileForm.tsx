@@ -14,7 +14,7 @@ interface ProfileFormProps {
   onAboutChange: (value: string) => void;
 }
 
-export const ProfileForm = ({
+const ProfileForm = ({
   name,
   email,
   role,
@@ -32,10 +32,9 @@ export const ProfileForm = ({
             id="name"
             value={name}
             onChange={(e) => onNameChange(e.target.value)}
-            placeholder="Your full name"
+            placeholder="Enter your name"
           />
         </div>
-
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -45,12 +44,9 @@ export const ProfileForm = ({
             disabled
             className="bg-muted"
           />
-          <p className="text-sm text-muted-foreground">
-            Email cannot be changed here
-          </p>
         </div>
       </div>
-
+      
       <div className="space-y-2">
         <Label htmlFor="role">Account Type</Label>
         <Select value={role} onValueChange={onRoleChange}>
@@ -59,7 +55,7 @@ export const ProfileForm = ({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="private-party">Private Party</SelectItem>
-            <SelectItem value="shop-owner">Shop Owner</SelectItem>
+            <SelectItem value="shop_owner">Shop Owner</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -70,13 +66,12 @@ export const ProfileForm = ({
           id="about"
           value={about}
           onChange={(e) => onAboutChange(e.target.value)}
-          placeholder="Tell others about yourself, your experience with gear, or anything you'd like to share..."
+          placeholder="Tell us about yourself..."
           className="min-h-[100px]"
         />
-        <p className="text-sm text-muted-foreground">
-          This information will be visible on your public profile
-        </p>
       </div>
     </div>
   );
 };
+
+export default ProfileForm;

@@ -20,15 +20,8 @@ const OwnerCard = ({ owner }: OwnerCardProps) => {
   let profileLinkPath: string;
   
   if (isOwnGear && user) {
-    // If it's the user's own gear, route based on their role
-    if (user.role === 'shop-owner') {
-      profileLinkPath = `/shop/${owner.shopId || user.id}`;
-    } else if (user.role === 'private-party') {
-      profileLinkPath = `/party/${owner.partyId || user.id}`;
-    } else {
-      // Default fallback to owner profile
-      profileLinkPath = `/owner/${owner.id}`;
-    }
+    // If it's the user's own gear, always route to the user profile page
+    profileLinkPath = `/profile`;
   } else {
     // If it's someone else's gear, use the existing logic
     profileLinkPath = owner.shopId 
