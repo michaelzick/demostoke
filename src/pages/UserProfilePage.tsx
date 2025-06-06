@@ -21,6 +21,7 @@ const UserProfilePage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
+  const [about, setAbout] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -49,6 +50,7 @@ const UserProfilePage = () => {
       setName(user.name || "");
       setEmail(user.email || "");
       setRole(user.role || "private-party");
+      setAbout(user.about || "");
       // Use user's avatar or generate a dicebear avatar as fallback
       setProfileImage(user.imageUrl || generateDicebearAvatar(user.id));
       setProfileLoaded(true);
@@ -68,6 +70,7 @@ const UserProfilePage = () => {
         .update({
           name: name,
           role: role,
+          about: about,
         })
         .eq('id', user.id);
 
@@ -121,8 +124,10 @@ const UserProfilePage = () => {
               name={name}
               email={email}
               role={role}
+              about={about}
               onNameChange={setName}
               onRoleChange={setRole}
+              onAboutChange={setAbout}
             />
           </CardContent>
           <CardFooter>
