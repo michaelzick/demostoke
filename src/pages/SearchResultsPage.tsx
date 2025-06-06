@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { searchEquipmentWithNLP } from "@/services/searchService";
+import { searchEquipmentWithNLP, getEquipmentData } from "@/services/searchService";
 import { Equipment } from "@/types";
 import EquipmentCard from "@/components/EquipmentCard";
 import MapComponent from "@/components/MapComponent";
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { mockEquipment } from "@/lib/mockData";
+import { useMockData } from "@/hooks/useMockData";
 
 const SearchResultsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -22,18 +22,26 @@ const SearchResultsPage = () => {
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [searchInput, setSearchInput] = useState(query);
   const { toast } = useToast();
+  const { showMockData } = useMockData();
 
-  // Perform search when query changes
+  // Perform search when query or mock data preference changes
   useEffect(() => {
-    if (!query) {
-      setResults(mockEquipment);
-      return;
-    }
-
     const fetchResults = async () => {
+      if (!query) {
+        // If no query, get all equipment based on mock data preference
+        try {
+          const equipmentResults = await getEquipmentData(showMockData);
+          setResults(equipmentResults);
+        } catch (error) {
+          console.error("Failed to load equipment:", error);
+          setResults([]);
+        }
+        return;
+      }
+
       setIsLoading(true);
       try {
-        const equipmentResults = await searchEquipmentWithNLP(query);
+        const equipmentResults = await searchEquipmentWithNLP(query, showMockData);
         setResults(equipmentResults);
       } catch (error) {
         console.error("Search failed:", error);
@@ -49,7 +57,7 @@ const SearchResultsPage = () => {
     };
 
     fetchResults();
-  }, [query, toast]);
+  }, [query, showMockData, toast]);
 
   // Filter results by category if selected
   const filteredResults = activeCategory
@@ -84,7 +92,6 @@ const SearchResultsPage = () => {
     setSearchParams({});
     setActiveCategory(null);
     setSortBy("relevance");
-    setResults(mockEquipment);
     toast({
       title: "Filters Reset",
       description: "All filters and search query have been cleared.",
@@ -147,8 +154,20 @@ const SearchResultsPage = () => {
               {!isLoading && (
                 <p className="text-sm">
                   Found {filteredResults.length} {filteredResults.length === 1 ? "item" : "items"}
+                  {showMockData ? " (mock data)" : " (real data)"}
                 </p>
               )}
+            </div>
+          )}
+
+          {!query && !isLoading && (
+            <div className="mb-4">
+              <p className="text-sm text-muted-foreground">
+                Showing all equipment ({showMockData ? "mock data" : "real data"})
+              </p>
+              <p className="text-sm">
+                Found {filteredResults.length} {filteredResults.length === 1 ? "item" : "items"}
+              </p>
             </div>
           )}
         </div>

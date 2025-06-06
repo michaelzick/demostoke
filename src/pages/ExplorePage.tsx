@@ -1,22 +1,41 @@
+
 import { useState, useEffect } from "react";
 import { useLocation, useSearchParams, useMatch } from "react-router-dom";
-import { mockEquipment } from "@/lib/mockData";
+import { getEquipmentData } from "@/services/searchService";
 import MapComponent from "@/components/MapComponent";
 import EquipmentCard from "@/components/EquipmentCard";
 import FilterBar from "@/components/FilterBar";
 import { Equipment } from "@/types";
 import { useToast } from "@/hooks/use-toast";
+import { useMockData } from "@/hooks/useMockData";
 
 const ExplorePage = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const isSearchRoute = !!useMatch("/search");
+  const { showMockData } = useMockData();
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("distance");
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
   const [filteredEquipment, setFilteredEquipment] = useState<Equipment[]>([]);
+  const [allEquipment, setAllEquipment] = useState<Equipment[]>([]);
+
+  // Load equipment data when mock data preference changes
+  useEffect(() => {
+    const loadEquipment = async () => {
+      try {
+        const equipment = await getEquipmentData(showMockData);
+        setAllEquipment(equipment);
+      } catch (error) {
+        console.error("Failed to load equipment:", error);
+        setAllEquipment([]);
+      }
+    };
+
+    loadEquipment();
+  }, [showMockData]);
 
   // Update active category when URL changes
   useEffect(() => {
@@ -27,7 +46,7 @@ const ExplorePage = () => {
 
   // Apply filters, sorting, and search
   useEffect(() => {
-    let results = [...mockEquipment];
+    let results = [...allEquipment];
     const searchQuery = searchParams.get("q")?.toLowerCase();
 
     // Apply search filter first
@@ -60,7 +79,7 @@ const ExplorePage = () => {
     }
 
     setFilteredEquipment(results);
-  }, [activeCategory, sortBy, searchParams, viewMode]);
+  }, [activeCategory, sortBy, searchParams, viewMode, allEquipment]);
 
   // Handle reset
   const handleReset = () => {
