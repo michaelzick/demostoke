@@ -6,13 +6,11 @@ import EquipmentCard from "@/components/EquipmentCard";
 import FilterBar from "@/components/FilterBar";
 import { Equipment } from "@/types";
 import { useToast } from "@/hooks/use-toast";
-import { useMockData } from "@/hooks/useMockData";
 
 const ExplorePage = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
-  const { showMockData } = useMockData();
   const isSearchRoute = !!useMatch("/search");
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -29,7 +27,7 @@ const ExplorePage = () => {
 
   // Apply filters, sorting, and search
   useEffect(() => {
-    let results = showMockData ? [...mockEquipment] : [];
+    let results = [...mockEquipment];
     const searchQuery = searchParams.get("q")?.toLowerCase();
 
     // Apply search filter first
@@ -62,7 +60,7 @@ const ExplorePage = () => {
     }
 
     setFilteredEquipment(results);
-  }, [activeCategory, sortBy, showMockData, searchParams, viewMode]);
+  }, [activeCategory, sortBy, searchParams, viewMode]);
 
   // Handle reset
   const handleReset = () => {
@@ -95,7 +93,7 @@ const ExplorePage = () => {
           <MapComponent
             activeCategory={activeCategory}
             initialEquipment={
-              showMockData && filteredEquipment.length > 0
+              filteredEquipment.length > 0
                 ? filteredEquipment
                     .filter(item => item.location && typeof item.location.lat === 'number' && typeof item.location.lng === 'number')
                     .map(item => ({

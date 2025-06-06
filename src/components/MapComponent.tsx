@@ -1,28 +1,11 @@
 import { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Equipment } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from './ui/button';
 import { MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from './ui/input';
-import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
-import { Loader2 } from 'lucide-react';
-import { useMockData } from '@/hooks/useMockData';
-
-interface DbEquipment {
-  id: string;
-  name: string;
-  category: string;
-  price_per_day: number;
-  location_lat: number | null;
-  location_lng: number | null;
-  status: string;
-  description?: string;
-  is_available?: boolean;
-}
 
 interface MapEquipment {
   id: string;
@@ -66,9 +49,6 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
   const markers = useRef<mapboxgl.Marker[]>([]);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { showMockData } = useMockData();
-
-  console.log('MapComponent render:', { initialEquipment, activeCategory, showMockData });
 
   const [token, setToken] = useState<string | null>(() => {
     return localStorage.getItem('mapbox_token');
@@ -76,141 +56,6 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
   const [showTokenInput, setShowTokenInput] = useState(false);
   const [tokenInput, setTokenInput] = useState(token || '');
   const [isLoadingToken, setIsLoadingToken] = useState(false);
-
-  // Query for real equipment data
-  const { data: queryEquipment = [], isLoading, error } = useQuery<MapEquipment[], Error>({
-    queryKey: ['map-equipment', activeCategory, showMockData, searchQuery],
-    enabled: !initialEquipment && !showMockData,  // Only query if neither initialEquipment nor mock data
-    queryFn: async (): Promise<MapEquipment[]> => {
-      try {
-        console.log('Querying real equipment data');
-
-        console.log('Fetching equipment with category:', activeCategory);
-
-        // Build query with type safety
-        const query = supabase
-          .from('equipment')
-          .select('id, name, category, price_per_day, location_lat, location_lng, status, description');
-
-        // Add category filter if specified
-        if (activeCategory) {
-          console.log('Applying category filter:', activeCategory);
-          query.eq('category', activeCategory);
-        }
-
-        // Add search filter if specified
-        if (searchQuery) {
-          query.or(`name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,category.ilike.%${searchQuery}%`);
-        }
-
-        // Only show available equipment
-        query.eq('status', 'available');
-
-        const { data: equipmentData, error: queryError } = await query;
-
-        if (queryError) {
-          console.error('Supabase query error:', queryError);
-          throw queryError;
-        }
-
-        if (!equipmentData) {
-          console.log('No equipment data returned');
-          return [];
-        }
-
-        // Validate and transform location data
-        const validEquipment = equipmentData.filter(item => {
-          const hasLocation = item.location_lat != null && item.location_lng != null;
-          if (!hasLocation) {
-            console.warn(`Equipment ${item.id} missing location data`);
-          }
-          return hasLocation;
-        });
-
-        return validEquipment.map((item: DbEquipment) => ({
-          id: item.id,
-          name: item.name,
-          category: item.category,
-          price_per_day: item.price_per_day,
-          location: {
-            lat: Number(item.location_lat),
-            lng: Number(item.location_lng)
-          }
-        }));
-      } catch (error) {
-        console.error('Equipment fetch error:', error);
-        throw error;
-      }
-    }
-  });
-
-  // Show loading state and handle empty results
-  useEffect(() => {
-    if (isLoading && !showMockData) {
-      toast({
-        title: "Loading Equipment",
-        description: "Fetching available gear in this area...",
-      });
-    } else if (!isLoading && !showMockData && !initialEquipment && Array.isArray(queryEquipment) && queryEquipment.length === 0 && activeCategory && !isSingleView) {
-      toast({
-        title: "No Equipment Found",
-        description: `No available ${activeCategory} found in this area.`,
-      });
-    }
-  }, [isLoading, toast, queryEquipment, activeCategory, initialEquipment, isSingleView, showMockData]);
-
-  // Show error state
-  useEffect(() => {
-    if (error) {
-      toast({
-        title: "Error Loading Equipment",
-        description: "There was an error loading the equipment. Please try again.",
-        variant: "destructive"
-      });
-    }
-  }, [error, toast]);
-
-  // Fetch Mapbox token from Supabase
-  useEffect(() => {
-    async function fetchMapboxToken() {
-      try {
-        setIsLoadingToken(true);
-        const { data, error } = await supabase.functions.invoke('get-mapbox-token');
-
-        if (error) {
-          console.error('Error fetching Mapbox token:', error);
-          // Fall back to token input if we can't get the token from Supabase
-          if (!token) {
-            setShowTokenInput(true);
-          }
-          return;
-        }
-
-        if (data?.token) {
-          // Store in localStorage as a fallback
-          localStorage.setItem('mapbox_token', data.token);
-          setToken(data.token);
-          setShowTokenInput(false);
-        } else {
-          // If no token was returned but we have one in localStorage, keep using it
-          if (!token) {
-            setShowTokenInput(true);
-          }
-        }
-      } catch (error) {
-        console.error('Error in fetching Mapbox token:', error);
-        if (!token) {
-          setShowTokenInput(true);
-        }
-      } finally {
-        setIsLoadingToken(false);
-      }
-    }
-
-    if (!token) {
-      fetchMapboxToken();
-    }
-  }, [token]);
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -285,8 +130,8 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
     markers.current.forEach(marker => marker.remove());
     markers.current = [];
 
-    // Use initialEquipment if provided, otherwise use queryEquipment
-    const displayEquipment = initialEquipment || queryEquipment;
+    // Use only initialEquipment (mock data)
+    const displayEquipment = initialEquipment || [];
 
     // Add new markers
     displayEquipment.forEach((item: MapEquipment) => {
@@ -352,24 +197,7 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
       map.current.setCenter([-118.2437, 34.0522]);
       map.current.setZoom(11);
     }
-  }, [mapLoaded, activeCategory, initialEquipment, queryEquipment, toast, isSingleView]);
-
-  const getCategoryColor = (category: string): string => {
-    switch (category.toLowerCase()) {
-      case 'snowboards':
-        return 'bg-fuchsia-600';
-      case 'skis':
-        return 'bg-lime-600';
-      case 'surfboards':
-        return 'bg-blue-600';
-      case 'sups':
-        return 'bg-violet-600';
-      case 'skateboards':
-        return 'bg-red-600';
-      default:
-        return 'bg-black';
-    }
-  };
+  }, [mapLoaded, activeCategory, initialEquipment, isSingleView, toast]);
 
   const handleTokenSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -394,9 +222,8 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
     <div className="relative w-full h-full rounded-lg overflow-hidden">
       {isLoadingToken && !showTokenInput ? (
         <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-20">
-          <div className="flex items-center gap-2">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            <span>Loading map configuration...</span>
+          <div className="flex items-center justify-center h-full w-full">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-400" />
           </div>
         </div>
       ) : showTokenInput ? (
@@ -427,14 +254,6 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
         </div>
       ) : (
         <>
-          {isLoading && (
-            <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-20">
-              <div className="flex items-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>Loading gear...</span>
-              </div>
-            </div>
-          )}
           <div className="absolute top-4 left-4 z-10 bg-background/90 p-2 rounded-md backdrop-blur-sm">
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
