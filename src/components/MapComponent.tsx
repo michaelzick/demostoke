@@ -314,8 +314,8 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
           .setPopup(
             new mapboxgl.Popup({ offset: 25 })
               .setHTML(`
-                <div class="p-2">
-                  <h4 class="font-semibold">${item.name}</h4>
+                <div>
+                  <h3 class="text-sm font-medium">${item.name}</h3>
                   <p class="text-xs text-gray-500">${item.category}</p>
                   <p class="text-xs mt-1">$${item.price_per_day}/day</p>
                   <button
