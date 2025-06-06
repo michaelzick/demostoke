@@ -65,7 +65,7 @@ function App() {
                     <Route path="/" element={<MainLayout />}>
                       <Route index element={<HomePage />} />
                       <Route path="about" element={<AboutPage />} />
-                      <Route path="contact" element={<ContactUsPage />} />
+                      <Route path="contact-us" element={<ContactUsPage />} />
                       <Route path="explore" element={<ExplorePage />} />
                       <Route path="search" element={<SearchResultsPage />} />
                       <Route path="equipment/:id" element={<EquipmentDetailPage />} />
