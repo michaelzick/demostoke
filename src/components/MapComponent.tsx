@@ -1,4 +1,3 @@
-
 import { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -40,7 +39,7 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
 
   // Use the custom hook for managing markers
   const displayEquipment = initialEquipment || [];
-  useMapMarkers({ map: map.current, mapLoaded, equipment: displayEquipment });
+  useMapMarkers({ map: map.current, mapLoaded, equipment: displayEquipment, isSingleView });
 
   useEffect(() => {
     if (!mapContainer.current) return;

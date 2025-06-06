@@ -18,9 +18,10 @@ interface UseMapMarkersProps {
   map: mapboxgl.Map | null;
   mapLoaded: boolean;
   equipment: MapEquipment[];
+  isSingleView?: boolean;
 }
 
-export const useMapMarkers = ({ map, mapLoaded, equipment }: UseMapMarkersProps) => {
+export const useMapMarkers = ({ map, mapLoaded, equipment, isSingleView = false }: UseMapMarkersProps) => {
   const markers = useRef<mapboxgl.Marker[]>([]);
 
   useEffect(() => {
@@ -41,11 +42,15 @@ export const useMapMarkers = ({ map, mapLoaded, equipment }: UseMapMarkersProps)
         const el = createMarkerElement(item.category);
 
         const marker = new mapboxgl.Marker(el)
-          .setLngLat([item.location.lng, item.location.lat])
-          .setPopup(
+          .setLngLat([item.location.lng, item.location.lat]);
+
+        // Only add popup if not in single view mode
+        if (!isSingleView) {
+          marker.setPopup(
             new mapboxgl.Popup({ offset: 25 })
               .setHTML(createPopupContent(item))
           );
+        }
 
         marker.addTo(map);
         markers.current.push(marker);
@@ -59,7 +64,7 @@ export const useMapMarkers = ({ map, mapLoaded, equipment }: UseMapMarkersProps)
       markers.current.forEach(marker => marker.remove());
       markers.current = [];
     };
-  }, [mapLoaded, equipment, map]);
+  }, [mapLoaded, equipment, map, isSingleView]);
 
   return markers.current;
 };
