@@ -15,8 +15,6 @@ const ContactUsPage = lazy(() => import("./pages/ContactUsPage"));
 const ExplorePage = lazy(() => import("./pages/ExplorePage"));
 const SearchResultsPage = lazy(() => import("./pages/SearchResultsPage"));
 const EquipmentDetailPage = lazy(() => import("./pages/EquipmentDetailPage"));
-const EquipmentDetailPageMock = lazy(() => import("./pages/EquipmentDetailPageMock"));
-const EquipmentDetailPageDb = lazy(() => import("./pages/EquipmentDetailPageDb"));
 const ListYourGearPage = lazy(() => import("./pages/ListYourGearPage"));
 const AddGearForm = lazy(() => import("./pages/AddGearForm"));
 const EditGearForm = lazy(() => import("./pages/EditGearForm"));
@@ -71,8 +69,6 @@ function App() {
                       <Route path="explore" element={<ExplorePage />} />
                       <Route path="search" element={<SearchResultsPage />} />
                       <Route path="equipment/:id" element={<EquipmentDetailPage />} />
-                      <Route path="equipment-mock/:id" element={<EquipmentDetailPageMock />} />
-                      <Route path="equipment-db/:id" element={<EquipmentDetailPageDb />} />
                       <Route path="list-your-gear" element={<ListYourGearPage />} />
                       <Route path="add-gear" element={<AddGearForm />} />
                       <Route path="edit-gear/:id" element={<EditGearForm />} />
