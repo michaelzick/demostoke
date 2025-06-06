@@ -69,6 +69,7 @@ function App() {
                       <Route path="explore" element={<ExplorePage />} />
                       <Route path="search" element={<SearchResultsPage />} />
                       <Route path="equipment/:id" element={<EquipmentDetailPage />} />
+                      <Route path="list-gear" element={<ListYourGearPage />} />
                       <Route path="list-your-gear" element={<ListYourGearPage />} />
                       <Route path="add-gear" element={<AddGearForm />} />
                       <Route path="edit-gear/:id" element={<EditGearForm />} />
