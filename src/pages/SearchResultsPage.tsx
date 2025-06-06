@@ -83,6 +83,7 @@ const SearchResultsPage = () => {
     setSearchInput("");
     setSearchParams({});
     setActiveCategory(null);
+    setSortBy("relevance");
     setResults(mockEquipment);
     toast({
       title: "Filters Reset",
@@ -101,6 +102,20 @@ const SearchResultsPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Convert Equipment[] to MapEquipment[] for the map component
+  const mapEquipment = sortedResults
+    .filter(item => item.location && typeof item.location.lat === 'number' && typeof item.location.lng === 'number')
+    .map(item => ({
+      id: item.id,
+      name: item.name,
+      category: item.category,
+      price_per_day: item.price_per_day,
+      location: {
+        lat: item.location.lat,
+        lng: item.location.lng,
+      },
+    }));
 
   return (
     <div className="min-h-screen">
@@ -155,7 +170,11 @@ const SearchResultsPage = () => {
         </div>
       ) : viewMode === "map" ? (
         <div className="h-[calc(100vh-14rem)]">
-          <MapComponent equipment={sortedResults} activeCategory={activeCategory} />
+          <MapComponent 
+            initialEquipment={mapEquipment}
+            activeCategory={activeCategory}
+            searchQuery={query?.toLowerCase()}
+          />
         </div>
       ) : (
         <div className="container px-4 md:px-6 py-8">
