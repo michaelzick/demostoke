@@ -43,7 +43,7 @@ const FilterBar = ({
               variant={activeCategory === null ? "default" : "outline"}
               size="sm"
               onClick={() => setActiveCategory(null)}
-              className="whitespace-nowrap"
+              className="whitespace-nowrap category-filter-button"
             >
               All Equipment
             </Button>
@@ -51,7 +51,7 @@ const FilterBar = ({
               variant={activeCategory === "snowboards" ? "default" : "outline"}
               size="sm"
               onClick={() => setActiveCategory("snowboards")}
-              className="whitespace-nowrap gap-1"
+              className="whitespace-nowrap category-filter-button"
             >
               Snowboards
             </Button>
@@ -59,7 +59,7 @@ const FilterBar = ({
               variant={activeCategory === "skis" ? "default" : "outline"}
               size="sm"
               onClick={() => setActiveCategory("skis")}
-              className="whitespace-nowrap gap-1"
+              className="whitespace-nowrap gap-1 category-filter-button"
             >
               Skis
             </Button>
@@ -67,7 +67,7 @@ const FilterBar = ({
               variant={activeCategory === "surfboards" ? "default" : "outline"}
               size="sm"
               onClick={() => setActiveCategory("surfboards")}
-              className="whitespace-nowrap gap-1"
+              className="whitespace-nowrap gap-1 category-filter-button"
             >
               Surfboards
             </Button>
@@ -75,7 +75,7 @@ const FilterBar = ({
               variant={activeCategory === "sups" ? "default" : "outline"}
               size="sm"
               onClick={() => setActiveCategory("sups")}
-              className="whitespace-nowrap gap-1"
+              className="whitespace-nowrap gap-1 category-filter-button"
             >
               SUPs
             </Button>
@@ -83,7 +83,7 @@ const FilterBar = ({
               variant={activeCategory === "skateboards" ? "default" : "outline"}
               size="sm"
               onClick={() => setActiveCategory("skateboards")}
-              className="whitespace-nowrap gap-1"
+              className="whitespace-nowrap gap-1 category-filter-button"
             >
               Skateboards
             </Button>
@@ -91,7 +91,7 @@ const FilterBar = ({
               variant="outline"
               size="sm"
               onClick={onReset}
-              className="whitespace-nowrap flex items-center gap-1"
+              className="whitespace-nowrap flex items-center gap-1 category-filter-button"
             >
               <RefreshCw size={14} />
               Reset
