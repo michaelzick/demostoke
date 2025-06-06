@@ -1,0 +1,93 @@
+
+import mapboxgl from 'mapbox-gl';
+
+export const getCategoryColor = (category: string): string => {
+  switch (category.toLowerCase()) {
+    case 'snowboards':
+      return 'bg-fuchsia-600';
+    case 'skis':
+      return 'bg-lime-600';
+    case 'surfboards':
+      return 'bg-blue-600';
+    case 'sups':
+      return 'bg-violet-600';
+    case 'skateboards':
+      return 'bg-red-600';
+    default:
+      return 'bg-black';
+  }
+};
+
+export const createMarkerElement = (category: string): HTMLDivElement => {
+  const el = document.createElement('div');
+  el.className = 'flex items-center justify-center';
+
+  const markerIcon = document.createElement('div');
+  markerIcon.className = `p-1 rounded-full ${getCategoryColor(category)}`;
+
+  const icon = document.createElement('div');
+  icon.className = 'text-white';
+  icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path fill-rule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>';
+
+  markerIcon.appendChild(icon);
+  el.appendChild(markerIcon);
+
+  return el;
+};
+
+export const createPopupContent = (item: { id: string; name: string; category: string; price_per_day: number }): string => {
+  return `
+    <div>
+      <h3 class="text-sm font-medium">${item.name}</h3>
+      <p class="text-xs text-gray-500">${item.category}</p>
+      <p class="text-xs mt-1">$${item.price_per_day}/day</p>
+      <button
+        class="mt-2 px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+        onclick="window.location.href='/equipment/${item.id}'"
+      >
+        View Details
+      </button>
+    </div>
+  `;
+};
+
+export const initializeMap = (container: HTMLDivElement, token: string): mapboxgl.Map => {
+  mapboxgl.accessToken = token;
+
+  const map = new mapboxgl.Map({
+    container,
+    style: 'mapbox://styles/mapbox/streets-v12',
+    center: [-118.2437, 34.0522], // Los Angeles coordinates
+    zoom: 11
+  });
+
+  map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+  map.addControl(new mapboxgl.GeolocateControl({
+    positionOptions: {
+      enableHighAccuracy: true
+    },
+    trackUserLocation: true
+  }));
+
+  return map;
+};
+
+export const fitMapBounds = (map: mapboxgl.Map, equipment: Array<{ location: { lat: number; lng: number } }>, isSingleView: boolean = false): void => {
+  if (equipment.length === 0) {
+    map.setCenter([-118.2437, 34.0522]);
+    map.setZoom(11);
+    return;
+  }
+
+  try {
+    const bounds = new mapboxgl.LngLatBounds();
+    equipment.forEach((item) => {
+      if (item.location?.lat && item.location?.lng) {
+        bounds.extend([item.location.lng, item.location.lat]);
+      }
+    });
+    map.fitBounds(bounds, { padding: 50, maxZoom: isSingleView ? 15 : 12 });
+  } catch (err) {
+    console.error('Error fitting bounds:', err);
+  }
+};
