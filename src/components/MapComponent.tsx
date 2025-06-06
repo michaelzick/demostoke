@@ -1,3 +1,4 @@
+
 import { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -36,10 +37,31 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
   });
   const [showTokenInput, setShowTokenInput] = useState(false);
   const [isLoadingToken, setIsLoadingToken] = useState(false);
+  const [hasShownNoGearToast, setHasShownNoGearToast] = useState(false);
 
   // Use the custom hook for managing markers
   const displayEquipment = initialEquipment || [];
   useMapMarkers({ map: map.current, mapLoaded, equipment: displayEquipment, isSingleView });
+
+  // Show toast when no gear is found (only once per search/filter change)
+  useEffect(() => {
+    if (mapLoaded && displayEquipment.length === 0 && !isSingleView) {
+      if (!hasShownNoGearToast) {
+        toast({
+          title: "No gear found",
+          description: searchQuery 
+            ? `No equipment found matching "${searchQuery}". Try adjusting your search or filters.`
+            : activeCategory 
+            ? `No equipment found in the ${activeCategory} category. Try a different category or clear filters.`
+            : "No equipment found in this area. Try expanding your search area or adjusting filters.",
+          variant: "default",
+        });
+        setHasShownNoGearToast(true);
+      }
+    } else {
+      setHasShownNoGearToast(false);
+    }
+  }, [mapLoaded, displayEquipment.length, isSingleView, searchQuery, activeCategory, toast, hasShownNoGearToast]);
 
   useEffect(() => {
     if (!mapContainer.current) return;
