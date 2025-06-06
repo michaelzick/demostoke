@@ -35,8 +35,8 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
   const [token, setToken] = useState<string | null>(() => {
     return localStorage.getItem('mapbox_token');
   });
-  const [showTokenInput, setShowTokenInput] = useState(false);
-  const [isLoadingToken, setIsLoadingToken] = useState(false);
+  const [showTokenInput, setShowTokenInput] = useState(!token);
+  const [isLoadingMap, setIsLoadingMap] = useState(false);
   const [hasShownNoGearToast, setHasShownNoGearToast] = useState(false);
 
   // Use the custom hook for managing markers
@@ -65,25 +65,31 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
 
   useEffect(() => {
     if (!mapContainer.current) return;
+    
+    // If no token, show token input
     if (!token) {
-      setIsLoadingToken(true);
+      setShowTokenInput(true);
       return;
     }
 
-    if (map.current) {
-      map.current.remove();
-      map.current = null;
-    }
+    // If we already have a map, don't recreate it
+    if (map.current) return;
+
+    setIsLoadingMap(true);
 
     try {
       map.current = initializeMap(mapContainer.current, token);
 
       map.current.on('load', () => {
+        console.log('Map loaded successfully');
         setMapLoaded(true);
+        setIsLoadingMap(false);
       });
 
       map.current.on('error', (e: { error: { message: string, code?: number; }; }) => {
         console.error('Map error:', e);
+        setIsLoadingMap(false);
+        
         if (e.error && (e.error.code === 401 || e.error.code === 403)) {
           toast({
             title: "Invalid Mapbox Token",
@@ -92,7 +98,13 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
           });
           setShowTokenInput(true);
           localStorage.removeItem('mapbox_token');
-          setToken('');
+          setToken(null);
+        } else {
+          toast({
+            title: "Map Error",
+            description: "There was an error loading the map. Please try refreshing or check your token.",
+            variant: "destructive"
+          });
         }
       });
 
@@ -100,10 +112,12 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
         if (map.current) {
           map.current.remove();
           map.current = null;
+          setMapLoaded(false);
         }
       };
     } catch (error) {
       console.error('Error initializing map:', error);
+      setIsLoadingMap(false);
       setShowTokenInput(true);
       toast({
         title: "Map Error",
@@ -132,14 +146,14 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
 
   return (
     <div className="relative w-full h-full rounded-lg overflow-hidden">
-      {isLoadingToken && !showTokenInput ? (
+      {showTokenInput ? (
+        <MapboxTokenForm onTokenSubmit={handleTokenSubmit} isLoading={isLoadingMap} />
+      ) : isLoadingMap ? (
         <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-20">
           <div className="flex items-center justify-center h-full w-full">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-400" />
           </div>
         </div>
-      ) : showTokenInput ? (
-        <MapboxTokenForm onTokenSubmit={handleTokenSubmit} isLoading={isLoadingToken} />
       ) : (
         <>
           <MapLegend />
