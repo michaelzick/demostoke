@@ -76,6 +76,7 @@ function App() {
                       <Route path="gear-owner/:id" element={<GearOwnerProfilePage />} />
                       <Route path="bookings" element={<BookingsPage />} />
                       <Route path="my-equipment" element={<MyEquipmentPage />} />
+                      <Route path="my-gear" element={<MyEquipmentPage />} />
                       <Route path="blog" element={<BlogPage />} />
                       <Route path="blog/:slug" element={<BlogPostPage />} />
                       <Route path="admin" element={<AdminPage />} />
