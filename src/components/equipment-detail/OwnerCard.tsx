@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { StarIcon, MessageSquare } from "lucide-react";
-
+import { useAuth } from "@/helpers";
 import { GearOwner } from "@/types";
 
 interface OwnerCardProps {
@@ -11,12 +11,32 @@ interface OwnerCardProps {
 }
 
 const OwnerCard = ({ owner }: OwnerCardProps) => {
-  // Determine the correct profile link based on owner type
-  const profileLinkPath = owner.shopId 
-    ? `/shop/${owner.shopId}` 
-    : owner.partyId 
-    ? `/party/${owner.partyId}`
-    : `/owner/${owner.id}`;
+  const { user } = useAuth();
+  
+  // Check if current user is viewing their own gear
+  const isOwnGear = user?.id === owner.id;
+  
+  // Determine the correct profile link based on owner type or user's role
+  let profileLinkPath: string;
+  
+  if (isOwnGear && user) {
+    // If it's the user's own gear, route based on their role
+    if (user.role === 'shop-owner') {
+      profileLinkPath = `/shop/${owner.shopId || user.id}`;
+    } else if (user.role === 'private-party') {
+      profileLinkPath = `/party/${owner.partyId || user.id}`;
+    } else {
+      // Default fallback to owner profile
+      profileLinkPath = `/owner/${owner.id}`;
+    }
+  } else {
+    // If it's someone else's gear, use the existing logic
+    profileLinkPath = owner.shopId 
+      ? `/shop/${owner.shopId}` 
+      : owner.partyId 
+      ? `/party/${owner.partyId}`
+      : `/owner/${owner.id}`;
+  }
 
   return (
     <div className="p-6">
