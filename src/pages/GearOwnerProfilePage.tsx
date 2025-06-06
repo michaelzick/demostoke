@@ -8,7 +8,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { StarIcon, MapPinIcon, CalendarIcon, UsersIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { GearOwner } from "@/types";
 
 const GearOwnerProfilePage = () => {
   useEffect(() => {
@@ -20,28 +19,12 @@ const GearOwnerProfilePage = () => {
   // First try to find the owner in the personas list
   const ownerFromPersonas = ownerPersonas.find((person) => person.id === ownerId);
 
-  // If not found in personas, get it from equipment and convert to GearOwner
+  // If not found in personas, get it from equipment
   const ownerEquipment = mockEquipment.filter((item) => item.owner.id === ownerId);
   const ownerFromEquipment = ownerEquipment[0]?.owner;
-  
-  // Convert Owner to GearOwner format if needed
-  const convertedOwner: GearOwner | undefined = ownerFromEquipment ? {
-    id: ownerFromEquipment.id,
-    name: ownerFromEquipment.name,
-    imageUrl: ownerFromEquipment.imageUrl,
-    rating: ownerFromEquipment.rating,
-    responseRate: ownerFromEquipment.responseRate,
-    shopId: ownerFromEquipment.shopId,
-    partyId: ownerFromEquipment.partyId,
-    // Add default values for missing GearOwner properties
-    bio: undefined,
-    location: undefined,
-    memberSince: undefined,
-    personality: undefined
-  } : undefined;
 
-  // Use persona if available, otherwise use converted data from equipment
-  const owner = ownerFromPersonas || convertedOwner;
+  // Use persona if available, otherwise use data from equipment
+  const owner = ownerFromPersonas || ownerFromEquipment;
 
   if (!owner) {
     return <div className="container px-4 py-8">Owner not found.</div>;

@@ -58,8 +58,7 @@ export class AuthService {
         name: session.user.user_metadata?.name || 'User',
         email: session.user.email || '',
         imageUrl: null,
-        role: 'private-party',
-        about: ''
+        role: 'private-party'
       };
     }
 
@@ -71,8 +70,7 @@ export class AuthService {
       name: data.name || session.user.user_metadata?.name || 'User',
       email: session.user.email || '',
       imageUrl: data.avatar_url,
-      role: data.role || 'private-party',
-      about: data.about || ''
+      role: data.role || 'private-party'
     };
   }
 }

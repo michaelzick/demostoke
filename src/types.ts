@@ -1,148 +1,8 @@
-
-export interface Database {
-  public: {
-    Tables: {
-      equipment: {
-        Row: {
-          category: string;
-          created_at: string;
-          description: string;
-          id: string;
-          image_url: string;
-          location_lat: number;
-          location_lng: number;
-          location_zip: string;
-          material: string;
-          name: string;
-          price_per_day: number;
-          rating: number;
-          size: string;
-          status: string;
-          user_id: string;
-          weight: string;
-        };
-        Insert: {
-          category: string;
-          created_at?: string;
-          description?: string;
-          id?: string;
-          image_url?: string;
-          location_lat?: number;
-          location_lng?: number;
-          location_zip?: string;
-          material?: string;
-          name: string;
-          price_per_day: number;
-          rating?: number;
-          size?: string;
-          status?: string;
-          user_id?: string;
-          weight?: string;
-        };
-        Update: {
-          category?: string;
-          created_at?: string;
-          description?: string;
-          id?: string;
-          image_url?: string;
-          location_lat?: number;
-          location_lng?: number;
-          location_zip?: string;
-          material?: string;
-          name?: string;
-          price_per_day?: number;
-          rating?: number;
-          size?: string;
-          status?: string;
-          user_id?: string;
-          weight?: string;
-        };
-      };
-      user_preferences: {
-        Row: {
-          id: string;
-          user_id: string;
-          show_mock_data: boolean;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          show_mock_data?: boolean;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          show_mock_data?: boolean;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      profiles: {
-        Row: {
-          id: string;
-          created_at: string;
-          updated_at: string;
-          username: string;
-          avatar_url: string;
-          website: string;
-          about: string;
-        };
-        Insert: {
-          id: string;
-          created_at?: string;
-          updated_at?: string;
-          username: string;
-          avatar_url?: string;
-          website?: string;
-          about?: string;
-        };
-        Update: {
-          id?: string;
-          created_at?: string;
-          updated_at?: string;
-          username?: string;
-          avatar_url?: string;
-          website?: string;
-          about?: string;
-        };
-      };
-      pricing_options: {
-        Row: {
-          id: string;
-          equipment_id: string;
-          duration: number;
-          price: number;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          equipment_id: string;
-          duration: number;
-          price: number;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          equipment_id?: string;
-          duration?: string;
-          price?: number;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-    };
-    Views: {};
-    Functions: {};
-    Enums: {};
-    CompositeTypes: {};
-  };
-}
+export type PricingOption = {
+  price: number;
+  duration: string; // e.g., "day", "week", "month"
+  id: string; // Unique identifier for the pricing option
+};
 
 export interface Equipment {
   id: string;
@@ -151,15 +11,27 @@ export interface Equipment {
   description: string;
   image_url: string;
   price_per_day: number;
+  pricing_options?: [PricingOption];
   rating: number;
   review_count: number;
-  owner: Owner;
-  location: Location;
+  owner: GearOwner;
+  location: {
+    lat: number;
+    lng: number;
+    zip: string;
+  };
   distance: number;
-  specifications: Specifications;
-  availability: Availability;
-  pricing_options: PricingOption[];
-  status: string;
+  specifications: {
+    size: string;
+    weight: string;
+    material: string;
+    suitable: string;
+  };
+  availability: {
+    available: boolean;
+    nextAvailableDate?: string;
+  };
+  status?: 'available' | 'booked' | 'unavailable';
   created_at?: string;
   updated_at?: string;
 }
@@ -178,45 +50,10 @@ export interface GearOwner {
   partyId?: string;
 }
 
-export interface Owner {
-  id: string;
-  name: string;
-  imageUrl: string;
-  rating: number;
-  responseRate: number;
-  shopId?: string;
-  partyId?: string;
-}
-
-export interface Location {
-  lat: number;
-  lng: number;
-  zip: string;
-}
-
-export interface Specifications {
-  size: string;
-  weight: string;
-  material: string;
-  suitable: string;
-}
-
-export interface Availability {
-  available: boolean;
-  nextAvailableDate?: string;
-}
-
-export interface PricingOption {
-  id: string;
-  price: number;
-  duration: string;
-}
-
 export interface User {
   id: string;
-  name: string;
-  email: string;
-  imageUrl: string | null;
-  role: string;
-  about?: string;
+  name?: string;
+  email?: string;
+  imageUrl?: string;
+  role?: string;
 }

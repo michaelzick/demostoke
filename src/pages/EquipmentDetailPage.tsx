@@ -67,7 +67,6 @@ const EquipmentDetailPage = () => {
           available: equipment.status === 'available',
         },
         pricing_options: ensurePricingOptionsTuple((equipment as { pricing_options?: unknown[]; }).pricing_options, Number(equipment.price_per_day)),
-        status: equipment.status || 'available',
       };
     }
     return null;

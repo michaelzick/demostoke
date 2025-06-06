@@ -28,5 +28,5 @@ export interface UserEquipment {
   status: 'available' | 'booked' | 'unavailable';
   created_at: string;
   updated_at: string;
-  owner?: GearOwner;
+  owner?: GearOwner; // Add owner information
 }

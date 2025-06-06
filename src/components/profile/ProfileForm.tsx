@@ -1,77 +1,70 @@
 
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ProfileFormProps {
   name: string;
   email: string;
   role: string;
-  about: string;
   onNameChange: (value: string) => void;
   onRoleChange: (value: string) => void;
-  onAboutChange: (value: string) => void;
 }
 
-const ProfileForm = ({
+export const ProfileForm = ({
   name,
   email,
   role,
-  about,
   onNameChange,
   onRoleChange,
-  onAboutChange,
 }: ProfileFormProps) => {
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="name">Name</Label>
-          <Input
-            id="name"
-            value={name}
-            onChange={(e) => onNameChange(e.target.value)}
-            placeholder="Enter your name"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            disabled
-            className="bg-muted"
-          />
-        </div>
-      </div>
-      
       <div className="space-y-2">
-        <Label htmlFor="role">Account Type</Label>
-        <Select value={role} onValueChange={onRoleChange}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select your account type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="private-party">Private Party</SelectItem>
-            <SelectItem value="shop_owner">Shop Owner</SelectItem>
-          </SelectContent>
-        </Select>
+        <Label htmlFor="name">Name</Label>
+        <Input
+          id="name"
+          value={name}
+          onChange={(e) => onNameChange(e.target.value)}
+        />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="about">About</Label>
-        <Textarea
-          id="about"
-          value={about}
-          onChange={(e) => onAboutChange(e.target.value)}
-          placeholder="Tell us about yourself..."
-          className="min-h-[100px]"
+        <Label htmlFor="email">Email</Label>
+        <Input
+          id="email"
+          value={email}
+          disabled
+          className="bg-muted"
         />
+        <p className="text-xs text-muted-foreground">
+          Email cannot be changed. Contact support for assistance.
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="role">Your Role</Label>
+        <Select value={role} onValueChange={onRoleChange}>
+          <SelectTrigger id="role">
+            <SelectValue placeholder="Select Your Role" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="private-party">Private Party</SelectItem>
+            <SelectItem value="builder">Builder (Surfboard Shaper, Etc.)</SelectItem>
+            <SelectItem value="retail-store">Retail Store</SelectItem>
+            <SelectItem value="retail-website">Retail Website</SelectItem>
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">
+          This role will be used for all gear you list on the platform.
+        </p>
       </div>
     </div>
   );
 };
-
-export default ProfileForm;

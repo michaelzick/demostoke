@@ -75,7 +75,6 @@ const convertUserEquipmentToEquipment = (userEquip: typeof mockUserEquipment[0],
   distance: 0, // Default distance for owned equipment
   specifications: userEquip.specifications,
   availability: userEquip.availability,
-  pricing_options: [{ id: 'default', price: userEquip.price_per_day, duration: 'day' }], // Add required pricing_options
   status: userEquip.status,
   created_at: userEquip.created_at,
   updated_at: userEquip.updated_at
