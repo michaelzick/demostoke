@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams, useMatch } from "react-router-dom";
 import { mockEquipment } from "@/lib/mockData";
 import MapComponent from "@/components/MapComponent";
 import EquipmentCard from "@/components/EquipmentCard";
@@ -13,6 +13,7 @@ const ExplorePage = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { showMockData } = useMockData();
+  const isSearchRoute = !!useMatch("/search");
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("distance");
@@ -61,7 +62,7 @@ const ExplorePage = () => {
     }
 
     setFilteredEquipment(results);
-  }, [activeCategory, sortBy, showMockData, searchParams]);
+  }, [activeCategory, sortBy, showMockData, searchParams, viewMode]);
 
   // Handle reset
   const handleReset = () => {
@@ -93,7 +94,22 @@ const ExplorePage = () => {
         <div className="h-[calc(100vh-12rem)]">
           <MapComponent
             activeCategory={activeCategory}
-            initialEquipment={showMockData ? filteredEquipment : undefined}
+            initialEquipment={
+              showMockData && filteredEquipment.length > 0
+                ? filteredEquipment
+                    .filter(item => item.location && typeof item.location.lat === 'number' && typeof item.location.lng === 'number')
+                    .map(item => ({
+                      id: item.id,
+                      name: item.name,
+                      category: item.category,
+                      price_per_day: item.price_per_day,
+                      location: {
+                        lat: item.location.lat,
+                        lng: item.location.lng,
+                      },
+                    }))
+                : undefined
+            }
             searchQuery={searchParams.get("q")?.toLowerCase()}
           />
         </div>
