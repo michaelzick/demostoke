@@ -137,7 +137,7 @@ const ListYourGearPage = () => {
                 </div>
               </div>
               <Button
-                onClick={() => handleGetStarted("/list-gear/add-gear-form")}
+                onClick={() => handleGetStarted("/list-your-gear/add-gear-form")}
                 className="w-full"
                 size="lg"
               >
@@ -183,7 +183,7 @@ const ListYourGearPage = () => {
                 </div>
               </div>
               <Button
-                onClick={() => handleGetStarted("/list-gear/lightspeed-pos")}
+                onClick={() => handleGetStarted("/list-your-gear/lightspeed-pos")}
                 className="w-full"
                 size="lg"
               >

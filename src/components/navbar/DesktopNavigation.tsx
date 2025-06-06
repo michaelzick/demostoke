@@ -32,7 +32,7 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
   const handleListGearClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (isAuthenticated) {
-      navigate("/list-gear");
+      navigate("/list-your-gear");
     } else {
       navigate("/auth/signin");
     }

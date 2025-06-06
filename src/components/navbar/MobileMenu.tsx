@@ -17,7 +17,7 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
 
   const handleListGearClick = () => {
     if (isAuthenticated) {
-      navigate("/list-gear");
+      navigate("/list-your-gear");
     } else {
       navigate("/auth/signin");
     }
@@ -48,9 +48,9 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
         >
           Home
         </Link>
-        
+
         <MobileExploreMenu onClose={onClose} />
-        
+
         <button
           onClick={handleListGearClick}
           className="text-lg font-medium text-left"

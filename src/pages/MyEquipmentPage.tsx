@@ -97,7 +97,7 @@ const MyEquipmentPage = () => {
       imageUrl: item.image_url,
     }));
 
-    navigate('/list-gear');
+    navigate('/list-your-gear/add-gear-form');
 
     toast({
       title: "Duplicating Gear",
@@ -107,7 +107,7 @@ const MyEquipmentPage = () => {
 
   const handleListGearClick = () => {
     if (isAuthenticated) {
-      navigate("/list-gear");
+      navigate("/list-your-gear/add-gear-form");
     } else {
       navigate("/auth/signin");
     }

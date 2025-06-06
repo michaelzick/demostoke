@@ -81,7 +81,7 @@ const LightspeedPOSPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <FormHeader title="Lightspeed POS Integration" route='/list-gear' buttonText='Back to List Gear Page' />
+      <FormHeader title="Lightspeed POS Integration" route='/list-your-gear' buttonText='Back to List Gear Page' />
 
       <div className="mb-8">
         <p className="text-lg text-muted-foreground">

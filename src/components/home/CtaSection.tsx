@@ -9,7 +9,7 @@ const CtaSection = () => {
 
   const handleListGearClick = () => {
     if (isAuthenticated) {
-      navigate("/list-gear");
+      navigate("/list-your-gear");
     } else {
       navigate("/auth/signin");
     }
