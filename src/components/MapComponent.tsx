@@ -17,10 +17,11 @@ interface DbEquipment {
   name: string;
   category: string;
   price_per_day: number;
-  location_lat: number;
-  location_lng: number;
+  location_lat: number | null;
+  location_lng: number | null;
   status: string;
-  is_available: boolean;
+  description?: string;
+  is_available?: boolean;
 }
 
 interface MapEquipment {
@@ -80,7 +81,7 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
   const { data: queryEquipment = [], isLoading, error } = useQuery<MapEquipment[], Error>({
     queryKey: ['map-equipment', activeCategory, showMockData, searchQuery],
     enabled: !initialEquipment && !showMockData,  // Only query if neither initialEquipment nor mock data
-    queryFn: async () => {
+    queryFn: async (): Promise<MapEquipment[]> => {
       try {
         console.log('Querying real equipment data');
 
