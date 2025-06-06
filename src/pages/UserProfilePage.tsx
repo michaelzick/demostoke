@@ -9,7 +9,7 @@ import { useAuth } from "@/helpers";
 import { supabase } from "@/integrations/supabase/client";
 import { generateDicebearAvatar } from "@/utils/profileImageUpload";
 import { ProfileImageSection } from "@/components/profile/ProfileImageSection";
-import { ProfileForm } from "@/components/profile/ProfileForm";
+import ProfileForm from "@/components/profile/ProfileForm";
 import { ProfileLoadingSkeleton } from "@/components/profile/ProfileLoadingSkeleton";
 import { useProfileImageHandlers } from "@/hooks/useProfileImageHandlers";
 
