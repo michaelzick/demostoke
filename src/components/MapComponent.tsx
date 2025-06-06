@@ -7,6 +7,7 @@ import { initializeMap, fitMapBounds } from '@/utils/mapUtils';
 import { useMapMarkers } from '@/hooks/useMapMarkers';
 import MapboxTokenForm from './map/MapboxTokenForm';
 import MapLegend from './map/MapLegend';
+import { supabase } from '@/integrations/supabase/client';
 
 interface MapEquipment {
   id: string;
@@ -32,11 +33,9 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
   const [mapLoaded, setMapLoaded] = useState(false);
   const { toast } = useToast();
 
-  const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem('mapbox_token');
-  });
+  const [token, setToken] = useState<string | null>(null);
   const [showTokenInput, setShowTokenInput] = useState(false);
-  const [isLoadingToken, setIsLoadingToken] = useState(false);
+  const [isLoadingToken, setIsLoadingToken] = useState(true);
   const [hasShownNoGearToast, setHasShownNoGearToast] = useState(false);
 
   // Use the custom hook for managing markers
@@ -63,12 +62,57 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
     }
   }, [mapLoaded, displayEquipment.length, isSingleView, searchQuery, activeCategory, toast, hasShownNoGearToast]);
 
+  // Load token on component mount
   useEffect(() => {
-    if (!mapContainer.current) return;
-    if (!token) {
+    const loadToken = async () => {
+      console.log('Starting token loading process...');
       setIsLoadingToken(true);
-      return;
-    }
+      
+      // First, check localStorage
+      const localToken = localStorage.getItem('mapbox_token');
+      if (localToken) {
+        console.log('Token found in localStorage');
+        setToken(localToken);
+        setIsLoadingToken(false);
+        return;
+      }
+
+      // If no local token, try to fetch from Supabase
+      console.log('No local token found, fetching from Supabase...');
+      try {
+        const { data, error } = await supabase.functions.invoke('get-mapbox-token');
+        
+        if (error) {
+          console.error('Error fetching token from Supabase:', error);
+          setShowTokenInput(true);
+          setIsLoadingToken(false);
+          return;
+        }
+
+        if (data?.token) {
+          console.log('Token fetched successfully from Supabase');
+          setToken(data.token);
+          setIsLoadingToken(false);
+          return;
+        }
+      } catch (err) {
+        console.error('Failed to fetch token from Supabase:', err);
+      }
+
+      // If all else fails, show token input
+      console.log('No token available, showing input form');
+      setShowTokenInput(true);
+      setIsLoadingToken(false);
+    };
+
+    loadToken();
+  }, []);
+
+  // Initialize map when token is available
+  useEffect(() => {
+    if (!mapContainer.current || !token || isLoadingToken) return;
+
+    console.log('Initializing map with token...');
 
     if (map.current) {
       map.current.remove();
@@ -79,6 +123,7 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
       map.current = initializeMap(mapContainer.current, token);
 
       map.current.on('load', () => {
+        console.log('Map loaded successfully');
         setMapLoaded(true);
       });
 
@@ -92,7 +137,7 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
           });
           setShowTokenInput(true);
           localStorage.removeItem('mapbox_token');
-          setToken('');
+          setToken(null);
         }
       });
 
@@ -111,7 +156,7 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
         variant: "destructive"
       });
     }
-  }, [token, toast]);
+  }, [token, toast, isLoadingToken]);
 
   // Fit bounds when equipment changes
   useEffect(() => {
@@ -121,6 +166,7 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
   }, [mapLoaded, displayEquipment, isSingleView]);
 
   const handleTokenSubmit = (tokenInput: string) => {
+    console.log('Token submitted by user');
     localStorage.setItem('mapbox_token', tokenInput);
     setToken(tokenInput);
     setShowTokenInput(false);
@@ -132,14 +178,14 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
 
   return (
     <div className="relative w-full h-full rounded-lg overflow-hidden">
-      {isLoadingToken && !showTokenInput ? (
+      {isLoadingToken ? (
         <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-20">
           <div className="flex items-center justify-center h-full w-full">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-400" />
           </div>
         </div>
       ) : showTokenInput ? (
-        <MapboxTokenForm onTokenSubmit={handleTokenSubmit} isLoading={isLoadingToken} />
+        <MapboxTokenForm onTokenSubmit={handleTokenSubmit} isLoading={false} />
       ) : (
         <>
           <MapLegend />
