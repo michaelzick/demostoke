@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -9,7 +8,7 @@ import { useGearFormValidation } from "@/hooks/useGearFormValidation";
 import { geocodeZipCode } from "@/utils/geocoding";
 import { PricingOption } from "./types";
 
-interface UseGearFormSubmissionProps {
+interface FormData {
   gearName: string;
   gearType: string;
   description: string;
@@ -17,10 +16,15 @@ interface UseGearFormSubmissionProps {
   measurementUnit: string;
   dimensions: { length: string; width: string; thickness?: string };
   skillLevel: string;
-  images: File[];
-  pricingOptions: PricingOption[];
-  damageDeposit: string;
   role: string;
+  damageDeposit: string;
+  pricingOptions: PricingOption[];
+  imageUrl: string;
+  useImageUrl: boolean;
+}
+
+interface UseGearFormSubmissionProps extends FormData {
+  images: File[];
   duplicatedImageUrl?: string;
 }
 
@@ -37,6 +41,8 @@ export const useGearFormSubmission = ({
   damageDeposit,
   role,
   duplicatedImageUrl,
+  imageUrl,
+  useImageUrl,
 }: UseGearFormSubmissionProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -79,6 +85,8 @@ export const useGearFormSubmission = ({
       role,
       damageDeposit,
       pricingOptions,
+      imageUrl,
+      useImageUrl,
     };
 
     if (!validateForm(formData)) {
@@ -88,10 +96,13 @@ export const useGearFormSubmission = ({
     setIsSubmitting(true);
 
     try {
-      let imageUrl = duplicatedImageUrl || '/img/demostoke-logo-ds-transparent-cropped.webp'; // Use DS logo as default placeholder
+      let finalImageUrl = duplicatedImageUrl || '/img/demostoke-logo-ds-transparent-cropped.webp'; // Use DS logo as default placeholder
 
-      // Upload new image if one was selected
-      if (images.length > 0) {
+      // If using image URL, use that instead of uploading
+      if (useImageUrl && imageUrl) {
+        finalImageUrl = imageUrl;
+        console.log('Using provided image URL:', finalImageUrl);
+      } else if (images.length > 0) {
         console.log('Uploading image:', images[0].name);
         toast({
           title: "Uploading Image",
@@ -99,13 +110,13 @@ export const useGearFormSubmission = ({
         });
 
         try {
-          imageUrl = await uploadGearImage(images[0], user.id);
-          console.log('Image uploaded successfully:', imageUrl);
-        } catch (uploadError: any) {
-          console.error('Image upload failed:', uploadError);
+          finalImageUrl = await uploadGearImage(images[0], user.id);
+          console.log('Image uploaded successfully:', finalImageUrl);
+        } catch (error: unknown) {
+          console.error('Image upload failed:', error);
           toast({
             title: "Image Upload Failed",
-            description: uploadError.message || "Failed to upload image. Using DS logo instead.",
+            description: error instanceof Error ? error.message : "Failed to upload image. Using DS logo instead.",
             variant: "destructive",
           });
           // Continue with DS logo if upload fails
@@ -117,8 +128,8 @@ export const useGearFormSubmission = ({
       try {
         coordinates = await geocodeZipCode(zipCode);
         console.log('Coordinates for zip code', zipCode, ':', coordinates);
-      } catch (geocodingError) {
-        console.error('Geocoding failed:', geocodingError);
+      } catch (error) {
+        console.error('Geocoding failed:', error);
         // Continue without coordinates if geocoding fails
       }
 
@@ -139,7 +150,7 @@ export const useGearFormSubmission = ({
         suitable_skill_level: skillLevel,
         price_per_day: parseFloat(pricingOptions[0].price),
         status: 'available' as const,
-        image_url: imageUrl,
+        image_url: finalImageUrl,
         rating: 0,
         review_count: 0,
         weight: null,
@@ -188,11 +199,11 @@ export const useGearFormSubmission = ({
       // Navigate back to My Gear page
       navigate("/my-gear");
 
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error creating equipment:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to add equipment. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to add equipment. Please try again.",
         variant: "destructive",
       });
     } finally {

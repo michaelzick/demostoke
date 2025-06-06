@@ -1,22 +1,48 @@
 import { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Equipment } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from './ui/button';
 import { MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from './ui/input';
-import { supabase } from '@/integrations/supabase/client';
 
-const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN || '';
-
-interface MapComponentProps {
-  equipment: Equipment[];
-  activeCategory: string | null;
+interface MapEquipment {
+  id: string;
+  name: string;
+  category: string;
+  price_per_day: number;
+  location: {
+    lat: number;
+    lng: number;
+  };
 }
 
-const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
+interface MapComponentProps {
+  activeCategory: string | null;
+  initialEquipment?: MapEquipment[];
+  isSingleView?: boolean;
+  searchQuery?: string;
+}
+
+const getCategoryColor = (category: string): string => {
+  switch (category.toLowerCase()) {
+    case 'snowboards':
+      return 'bg-fuchsia-600';
+    case 'skis':
+      return 'bg-lime-600';
+    case 'surfboards':
+      return 'bg-blue-600';
+    case 'sups':
+      return 'bg-violet-600';
+    case 'skateboards':
+      return 'bg-red-600';
+    default:
+      return 'bg-black';
+  }
+};
+
+const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, searchQuery }: MapComponentProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -24,57 +50,19 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const [token, setToken] = useState<string>(() => {
-    return localStorage.getItem('mapbox_token') || MAPBOX_TOKEN;
+  const [token, setToken] = useState<string | null>(() => {
+    return localStorage.getItem('mapbox_token');
   });
-  const [showTokenInput, setShowTokenInput] = useState(!token);
-  const [tokenInput, setTokenInput] = useState(token);
+  const [showTokenInput, setShowTokenInput] = useState(false);
+  const [tokenInput, setTokenInput] = useState(token || '');
   const [isLoadingToken, setIsLoadingToken] = useState(false);
 
-  // Fetch Mapbox token from Supabase
   useEffect(() => {
-    async function fetchMapboxToken() {
-      try {
-        setIsLoadingToken(true);
-        const { data, error } = await supabase.functions.invoke('get-mapbox-token');
-
-        if (error) {
-          console.error('Error fetching Mapbox token:', error);
-          // Fall back to token input if we can't get the token from Supabase
-          if (!token) {
-            setShowTokenInput(true);
-          }
-          return;
-        }
-
-        if (data?.token) {
-          // Store in localStorage as a fallback
-          localStorage.setItem('mapbox_token', data.token);
-          setToken(data.token);
-          setShowTokenInput(false);
-        } else {
-          // If no token was returned but we have one in localStorage, keep using it
-          if (!token) {
-            setShowTokenInput(true);
-          }
-        }
-      } catch (error) {
-        console.error('Error in fetching Mapbox token:', error);
-        if (!token) {
-          setShowTokenInput(true);
-        }
-      } finally {
-        setIsLoadingToken(false);
-      }
-    }
-
+    if (!mapContainer.current) return;
     if (!token) {
-      fetchMapboxToken();
+      setIsLoadingToken(true);
+      return;
     }
-  }, [token]);
-
-  useEffect(() => {
-    if (!mapContainer.current || !token) return;
 
     if (map.current) {
       map.current.remove();
@@ -134,78 +122,82 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
     }
   }, [token, toast]);
 
+  // Update markers when data or map changes
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
 
+    // Clear existing markers
     markers.current.forEach(marker => marker.remove());
     markers.current = [];
 
-    const filteredEquipment = activeCategory
-      ? equipment.filter(item => item.category === activeCategory)
-      : equipment;
+    // Use only initialEquipment (mock data)
+    const displayEquipment = initialEquipment || [];
 
-    filteredEquipment.forEach(item => {
-      const el = document.createElement('div');
-      el.className = 'flex items-center justify-center';
+    // Add new markers
+    displayEquipment.forEach((item: MapEquipment) => {
+      if (!item.location?.lat || !item.location?.lng) {
+        console.warn(`Equipment ${item.id} has invalid location data`);
+        return;
+      }
 
-      const markerIcon = document.createElement('div');
-      markerIcon.className = `p-1 rounded-full ${getCategoryColor(item.category)}`;
+      try {
+        const el = document.createElement('div');
+        el.className = 'flex items-center justify-center';
 
-      const icon = document.createElement('div');
-      icon.className = 'text-white';
-      icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>`;
+        const markerIcon = document.createElement('div');
+        markerIcon.className = `p-1 rounded-full ${getCategoryColor(item.category)}`;
 
-      markerIcon.appendChild(icon);
-      el.appendChild(markerIcon);
+        const icon = document.createElement('div');
+        icon.className = 'text-white';
+        icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path fill-rule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>';
 
-      const marker = new mapboxgl.Marker(el)
-        .setLngLat([item.location.lng, item.location.lat])
-        .setPopup(
-          new mapboxgl.Popup({ offset: 25 })
-            .setHTML(`
-              <div>
-                <h3 class="text-sm font-medium">${item.name}</h3>
-                <p class="text-xs text-gray-500">${item.category}</p>
-                <p class="text-xs mt-1">$${item.price_per_day}/day</p>
-                <button
-                  class="mt-2 px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
-                  onclick="window.location.href='/equipment/${item.id}'"
-                >
-                  View Details
-                </button>
-              </div>
-            `)
-        )
-        .addTo(map.current!);
+        markerIcon.appendChild(icon);
+        el.appendChild(markerIcon);
 
-      markers.current.push(marker);
+        const marker = new mapboxgl.Marker(el)
+          .setLngLat([item.location.lng, item.location.lat])
+          .setPopup(
+            new mapboxgl.Popup({ offset: 25 })
+              .setHTML(`
+                <div>
+                  <h3 class="text-sm font-medium">${item.name}</h3>
+                  <p class="text-xs text-gray-500">${item.category}</p>
+                  <p class="text-xs mt-1">$${item.price_per_day}/day</p>
+                  <button
+                    class="mt-2 px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+                    onclick="window.location.href='/equipment/${item.id}'"
+                  >
+                    View Details
+                  </button>
+                </div>
+              `)
+          );
+
+        marker.addTo(map.current!);
+        markers.current.push(marker);
+      } catch (err) {
+        console.error(`Error creating marker for equipment ${item.id}:`, err);
+      }
     });
 
+    // Fit bounds if we have markers
     if (markers.current.length > 0) {
-      const bounds = new mapboxgl.LngLatBounds();
-      filteredEquipment.forEach(item => {
-        bounds.extend([item.location.lng, item.location.lat]);
-      });
-      map.current.fitBounds(bounds, { padding: 50, maxZoom: 12 });
+      try {
+        const bounds = new mapboxgl.LngLatBounds();
+        displayEquipment.forEach((item: MapEquipment) => {
+          if (item.location?.lat && item.location?.lng) {
+            bounds.extend([item.location.lng, item.location.lat]);
+          }
+        });
+        map.current.fitBounds(bounds, { padding: 50, maxZoom: isSingleView ? 15 : 12 });
+      } catch (err) {
+        console.error('Error fitting bounds:', err);
+      }
+    } else {
+      map.current.setCenter([-118.2437, 34.0522]);
+      map.current.setZoom(11);
     }
-  }, [equipment, activeCategory, mapLoaded]);
-
-  const getCategoryColor = (category: string): string => {
-    switch (category.toLowerCase()) {
-      case 'snowboards':
-        return 'bg-fuchsia-600';
-      case 'skis':
-        return 'bg-lime-600';
-      case 'surfboards':
-        return 'bg-blue-600';
-      case 'sups':
-        return 'bg-violet-600';
-      case 'skateboards':
-        return 'bg-red-600';
-      default:
-        return 'bg-black';
-    }
-  };
+  }, [mapLoaded, activeCategory, initialEquipment, isSingleView, toast]);
 
   const handleTokenSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -228,7 +220,13 @@ const MapComponent = ({ equipment, activeCategory }: MapComponentProps) => {
 
   return (
     <div className="relative w-full h-full rounded-lg overflow-hidden">
-      {showTokenInput ? (
+      {isLoadingToken && !showTokenInput ? (
+        <div className="absolute inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-20">
+          <div className="flex items-center justify-center h-full w-full">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-400" />
+          </div>
+        </div>
+      ) : showTokenInput ? (
         <div className="absolute inset-0 bg-background flex items-center justify-center p-4 z-10">
           <form onSubmit={handleTokenSubmit} className="w-full max-w-md space-y-4 p-6 bg-card rounded-lg shadow-lg">
             <h3 className="text-lg font-medium">Enter Mapbox Token</h3>

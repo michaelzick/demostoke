@@ -79,6 +79,10 @@ const EditGearForm = () => {
         <GearMedia
           handleImageUpload={handlers.handleImageUpload}
           currentImageUrl={equipment.image_url}
+          imageUrl={formState.imageUrl}
+          setImageUrl={formState.setImageUrl}
+          useImageUrl={formState.useImageUrl}
+          setUseImageUrl={formState.setUseImageUrl}
         />
 
         <GearPricing

@@ -29,7 +29,7 @@ import PrivatePartyPage from "@/pages/PrivatePartyPage";
 import ContactUsPage from "@/pages/ContactUsPage";
 import LightspeedPOSPage from "@/pages/LightspeedPOSPage";
 import ListYourGearPage from "@/pages/ListYourGearPage";
-import AdminUploadPage from "@/pages/AdminUploadPage";
+import AdminPage from "@/pages/AdminPage";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const queryClient = new QueryClient();
@@ -63,7 +63,7 @@ const App = () => (
                 <Route path="analytics" element={<AnalyticsPage />} />
                 <Route path="bookings" element={<BookingsPage />} />
                 <Route path="contact-us" element={<ContactUsPage />} />
-                <Route path="admin/upload" element={<AdminUploadPage />} />
+                <Route path="admin" element={<AdminPage />} />
               </Route>
               <Route path="/auth" element={<AuthLayout />}>
                 <Route path="signin" element={<SignInPage />} />

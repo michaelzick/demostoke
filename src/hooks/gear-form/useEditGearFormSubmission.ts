@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -10,8 +9,7 @@ import { geocodeZipCode } from "@/utils/geocoding";
 import { UserEquipment } from "@/types/equipment";
 import { PricingOption } from "./types";
 
-interface UseEditGearFormSubmissionProps {
-  equipment: UserEquipment | null | undefined;
+interface FormData {
   gearName: string;
   gearType: string;
   description: string;
@@ -19,9 +17,15 @@ interface UseEditGearFormSubmissionProps {
   measurementUnit: string;
   dimensions: { length: string; width: string; thickness?: string };
   skillLevel: string;
-  images: File[];
   pricingOptions: PricingOption[];
   damageDeposit: string;
+  imageUrl: string;
+  useImageUrl: boolean;
+}
+
+interface UseEditGearFormSubmissionProps extends FormData {
+  equipment: UserEquipment | null | undefined;
+  images: File[];
 }
 
 export const useEditGearFormSubmission = ({
@@ -36,6 +40,8 @@ export const useEditGearFormSubmission = ({
   images,
   pricingOptions,
   damageDeposit,
+  imageUrl,
+  useImageUrl,
 }: UseEditGearFormSubmissionProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -66,7 +72,7 @@ export const useEditGearFormSubmission = ({
       return;
     }
 
-    // Use the validation hook to validate the form (role is now stored in user profile)
+    // Use the validation hook to validate the form
     const formData = {
       gearName,
       gearType,
@@ -75,9 +81,11 @@ export const useEditGearFormSubmission = ({
       measurementUnit,
       dimensions,
       skillLevel,
-      role: user.role || "private-party", // Get role from user profile
-      damageDeposit,
       pricingOptions,
+      damageDeposit,
+      imageUrl,
+      useImageUrl,
+      role: user.role || "private-party", // Get role from user profile
     };
 
     if (!validateForm(formData)) {
@@ -87,10 +95,13 @@ export const useEditGearFormSubmission = ({
     setIsSubmitting(true);
 
     try {
-      let imageUrl = equipment.image_url; // Keep existing image by default
+      let finalImageUrl = equipment.image_url; // Keep existing image by default
 
-      // Upload new image if one was selected
-      if (images.length > 0) {
+      // If using image URL, use that instead of uploading
+      if (useImageUrl && imageUrl) {
+        finalImageUrl = imageUrl;
+        console.log('Using provided image URL:', finalImageUrl);
+      } else if (images.length > 0) {
         console.log('Uploading new image:', images[0].name);
         toast({
           title: "Uploading Image",
@@ -98,13 +109,13 @@ export const useEditGearFormSubmission = ({
         });
 
         try {
-          imageUrl = await uploadGearImage(images[0], user.id);
-          console.log('Image uploaded successfully:', imageUrl);
-        } catch (uploadError: unknown) {
-          console.error('Image upload failed:', uploadError);
+          finalImageUrl = await uploadGearImage(images[0], user.id);
+          console.log('Image uploaded successfully:', finalImageUrl);
+        } catch (error: unknown) {
+          console.error('Image upload failed:', error);
           toast({
             title: "Image Upload Failed",
-            description: uploadError instanceof Error ? uploadError.message : "Failed to upload image. Keeping existing image.",
+            description: error instanceof Error ? error.message : "Failed to upload image. Keeping existing image.",
             variant: "destructive",
           });
           // Keep existing image if upload fails
@@ -118,8 +129,8 @@ export const useEditGearFormSubmission = ({
         try {
           coordinates = await geocodeZipCode(zipCode);
           console.log('Updated coordinates for zip code', zipCode, ':', coordinates);
-        } catch (geocodingError) {
-          console.error('Geocoding failed:', geocodingError);
+        } catch (error) {
+          console.error('Geocoding failed:', error);
           // Continue without updating coordinates if geocoding fails
         }
       }
@@ -141,7 +152,7 @@ export const useEditGearFormSubmission = ({
         size: sizeString,
         suitable_skill_level: skillLevel,
         price_per_day: parseFloat(pricingOptions[0].price),
-        image_url: imageUrl,
+        image_url: finalImageUrl,
       };
 
       console.log('Updating equipment data:', equipmentData);
@@ -199,7 +210,7 @@ export const useEditGearFormSubmission = ({
       // Navigate back to My Gear page
       navigate("/my-gear");
 
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Error updating equipment:', error);
       toast({
         title: "Error",

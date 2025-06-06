@@ -39,7 +39,7 @@ const UserMenu = () => {
             <>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild className="cursor-pointer">
-                <Link to="/admin/upload">Admin Upload</Link>
+                <Link to="/admin">Admin</Link>
               </DropdownMenuItem>
             </>
           )}

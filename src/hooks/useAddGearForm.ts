@@ -68,6 +68,8 @@ export const useAddGearForm = () => {
     damageDeposit: formState.damageDeposit,
     role: formState.role,
     duplicatedImageUrl,
+    imageUrl: formState.imageUrl,
+    useImageUrl: formState.useImageUrl,
   });
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams, useMatch } from "react-router-dom";
 import { mockEquipment } from "@/lib/mockData";
 import MapComponent from "@/components/MapComponent";
 import EquipmentCard from "@/components/EquipmentCard";
@@ -10,12 +9,14 @@ import { useToast } from "@/hooks/use-toast";
 
 const ExplorePage = () => {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const isSearchRoute = !!useMatch("/search");
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("distance");
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
-  const [filteredEquipment, setFilteredEquipment] = useState<Equipment[]>(mockEquipment);
+  const [filteredEquipment, setFilteredEquipment] = useState<Equipment[]>([]);
 
   // Update active category when URL changes
   useEffect(() => {
@@ -24,15 +25,25 @@ const ExplorePage = () => {
     setActiveCategory(categoryFromUrl);
   }, [location.search]);
 
-  // Apply filters and sorting
+  // Apply filters, sorting, and search
   useEffect(() => {
     let results = [...mockEquipment];
-    
+    const searchQuery = searchParams.get("q")?.toLowerCase();
+
+    // Apply search filter first
+    if (searchQuery) {
+      results = results.filter(item =>
+        item.name.toLowerCase().includes(searchQuery) ||
+        item.description?.toLowerCase().includes(searchQuery) ||
+        item.category.toLowerCase().includes(searchQuery)
+      );
+    }
+
     // Apply category filter
     if (activeCategory) {
       results = results.filter(item => item.category === activeCategory);
     }
-    
+
     // Apply sorting
     switch (sortBy) {
       case "distance":
@@ -47,9 +58,9 @@ const ExplorePage = () => {
       default:
         break;
     }
-    
+
     setFilteredEquipment(results);
-  }, [activeCategory, sortBy]);
+  }, [activeCategory, sortBy, searchParams, viewMode]);
 
   // Handle reset
   const handleReset = () => {
@@ -76,10 +87,29 @@ const ExplorePage = () => {
         setViewMode={setViewMode}
         onReset={handleReset}
       />
-      
+
       {viewMode === "map" ? (
         <div className="h-[calc(100vh-12rem)]">
-          <MapComponent equipment={filteredEquipment} activeCategory={activeCategory} />
+          <MapComponent
+            activeCategory={activeCategory}
+            initialEquipment={
+              filteredEquipment.length > 0
+                ? filteredEquipment
+                    .filter(item => item.location && typeof item.location.lat === 'number' && typeof item.location.lng === 'number')
+                    .map(item => ({
+                      id: item.id,
+                      name: item.name,
+                      category: item.category,
+                      price_per_day: item.price_per_day,
+                      location: {
+                        lat: item.location.lat,
+                        lng: item.location.lng,
+                      },
+                    }))
+                : undefined
+            }
+            searchQuery={searchParams.get("q")?.toLowerCase()}
+          />
         </div>
       ) : (
         <div className="container px-4 md:px-6 py-8">
