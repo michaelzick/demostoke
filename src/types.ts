@@ -1,3 +1,4 @@
+
 export interface Database {
   public: {
     Tables: {
@@ -159,6 +160,22 @@ export interface Equipment {
   availability: Availability;
   pricing_options: PricingOption[];
   status: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface GearOwner {
+  id: string;
+  name: string;
+  imageUrl: string;
+  rating: number;
+  responseRate: number;
+  bio?: string;
+  location?: string;
+  memberSince?: string;
+  personality?: string;
+  shopId?: string;
+  partyId?: string;
 }
 
 export interface Owner {
@@ -167,6 +184,8 @@ export interface Owner {
   imageUrl: string;
   rating: number;
   responseRate: number;
+  shopId?: string;
+  partyId?: string;
 }
 
 export interface Location {
@@ -184,6 +203,7 @@ export interface Specifications {
 
 export interface Availability {
   available: boolean;
+  nextAvailableDate?: string;
 }
 
 export interface PricingOption {
