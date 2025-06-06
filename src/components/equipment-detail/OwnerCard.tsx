@@ -15,8 +15,8 @@ const OwnerCard = ({ owner }: OwnerCardProps) => {
   const profileLinkPath = owner.shopId 
     ? `/shop/${owner.shopId}` 
     : owner.partyId 
-    ? `/party/${owner.partyId}`
-    : `/owner/${owner.id}`;
+    ? `/private-party/${owner.partyId}`
+    : `/gear-owner/${owner.id}`;
 
   return (
     <div className="p-6">

@@ -14,13 +14,13 @@ const GearOwnerProfilePage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const { ownerId } = useParams();
+  const { id } = useParams();
 
   // First try to find the owner in the personas list
-  const ownerFromPersonas = ownerPersonas.find((person) => person.id === ownerId);
+  const ownerFromPersonas = ownerPersonas.find((person) => person.id === id);
 
   // If not found in personas, get it from equipment
-  const ownerEquipment = mockEquipment.filter((item) => item.owner.id === ownerId);
+  const ownerEquipment = mockEquipment.filter((item) => item.owner.id === id);
   const ownerFromEquipment = ownerEquipment[0]?.owner;
 
   // Use persona if available, otherwise use data from equipment

@@ -81,8 +81,8 @@ function App() {
                       <Route path="admin" element={<AdminPage />} />
                       <Route path="analytics" element={<AnalyticsPage />} />
                       <Route path="lightspeed-pos" element={<LightspeedPOSPage />} />
-                      <Route path="private-party" element={<PrivatePartyPage />} />
-                      <Route path="shop/:id" element={<ShopPage />} />
+                      <Route path="private-party/:partyId" element={<PrivatePartyPage />} />
+                      <Route path="shop/:shopId" element={<ShopPage />} />
                     </Route>
 
                     {/* Auth layout routes */}
