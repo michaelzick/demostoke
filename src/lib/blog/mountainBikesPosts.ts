@@ -220,8 +220,8 @@ A well-maintained mountain bike is a reliable companion for countless adventures
     readTime: 10,
     category: 'mountain-bikes',
     tags: ['maintenance', 'repair', 'tools', 'care'],
-    heroImage: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=1200&q=80',
-    thumbnail: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=800&q=80'
+    heroImage: 'https://images.unsplash.com/photo-1534150034764-046bf225d3fa?auto=format&fit=crop&w=1200&q=80',
+    thumbnail: 'https://images.unsplash.com/photo-1534150034764-046bf225d3fa?auto=format&fit=crop&w=800&q=80'
   },
   {
     id: 'best-mountain-bike-trails-la',
