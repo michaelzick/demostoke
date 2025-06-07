@@ -24,7 +24,7 @@ const SearchDialog = ({ isOpen, onClose }: SearchDialogProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   // Reset query when dialog is opened
   useEffect(() => {
     if (isOpen) {
@@ -34,9 +34,9 @@ const SearchDialog = ({ isOpen, onClose }: SearchDialogProps) => {
 
   const handleSearch = async () => {
     if (!query.trim()) return;
-    
+
     setIsLoading(true);
-    
+
     try {
       // Perform the search
       navigate(`/search?q=${encodeURIComponent(query)}`);
@@ -64,8 +64,8 @@ const SearchDialog = ({ isOpen, onClose }: SearchDialogProps) => {
     <CommandDialog open={isOpen} onOpenChange={onClose}>
       <div className="flex items-center border-b px-3 w-full">
         <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-        <CommandInput 
-          placeholder="Search for gear using natural language..." 
+        <CommandInput
+          placeholder="Search for gear using natural language..."
           value={query}
           onValueChange={setQuery}
           onKeyDown={handleKeyDown}
@@ -82,13 +82,13 @@ const SearchDialog = ({ isOpen, onClose }: SearchDialogProps) => {
           <CommandItem onSelect={() => setQuery("All-mountain snowboard near Downtown LA")}>
             All-mountain snowboard near Downtown LA
           </CommandItem>
-          <CommandItem onSelect={() => setQuery("Skateboard for cruising in Venice Beach")}>
-            Skateboard for cruising in Venice Beach
+          <CommandItem onSelect={() => setQuery("Mountain bike for trails in Malibu")}>
+            Mountain bike for trails in Malibu
           </CommandItem>
         </CommandGroup>
         <div className="p-2">
-          <Button 
-            className="w-full" 
+          <Button
+            className="w-full"
             onClick={handleSearch}
             disabled={!query.trim() || isLoading}
           >

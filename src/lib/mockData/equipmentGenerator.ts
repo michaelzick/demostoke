@@ -84,7 +84,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         name = `${['Trail', 'Cross Country', 'Enduro', 'Downhill'][i % 4]} Mountain Bike`;
         material = bikeMaterials[i % bikeMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Expert'][i % 4]} Riders`;
-        imageUrl = `https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?auto=format&fit=crop&w=800&q=80`;
+        imageUrl = `https://images.unsplash.com/photo-1673121414328-52eff37bc6d0?auto=format&fit=crop&w=800&q=80`;
         break;
       default:
         name = "Equipment";
@@ -123,7 +123,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
       },
       distance: +(Math.random() * 8).toFixed(1), // 0-8 miles
       specifications: {
-        size: category === "mountain-bikes" 
+        size: category === "mountain-bikes"
           ? `${['Small', 'Medium', 'Large', 'XL', 'XXL'][i % 5]}`
           : `${Math.floor(Math.random() * 20) + 152}cm`,
         weight: `${Math.floor(Math.random() * 5) + 3}kg`,
