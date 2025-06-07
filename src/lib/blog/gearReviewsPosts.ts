@@ -6,176 +6,202 @@ export const gearReviewsPosts: BlogPost[] = [
     title: "Best Mountain Bike Gear of 2024: Complete Buying Guide",
     excerpt: "Our comprehensive review of the top mountain bike gear for 2024, including bikes, components, and accessories.",
     content: `
-      # Best Mountain Bike Gear of 2024: Complete Buying Guide
 
-      2024 has brought exciting innovations in mountain bike technology. Here's our comprehensive guide to the best gear available this year.
+**Best Mountain Bike Gear of 2024: Complete Buying Guide**
 
-      ## Best Mountain Bikes by Category
+2024 has brought exciting innovations in mountain bike technology. Here's our comprehensive guide to the best gear available this year.
 
-      ### Best Trail Bike: Trek Fuel EX 8
+**Best Mountain Bikes by Category**
 
-      **Price:** $3,499
-      **Travel:** 130mm front / 130mm rear
-      **Standout Features:**
-      - Refined suspension design
-      - Excellent climbing performance
-      - Versatile geometry
+**1. Best Trail Bike: Trek Fuel EX 8**
 
-      The Fuel EX continues to set the standard for trail bikes with its balanced performance and reliable components.
+- Price: $3,499
+- Travel: 130mm front / 130mm rear
+- Highlights: Refined suspension design, excellent climbing performance
 
-      ### Best Cross Country: Specialized Epic Evo
+The Fuel EX continues to set the standard for trail bikes with its balanced performance and reliable components. Versatile geometry makes it perfect for all-mountain adventures.
 
-      **Price:** $3,200
-      **Travel:** 120mm front / 100mm rear
-      **Standout Features:**
-      - Lightweight carbon frame
-      - Efficient pedaling platform
-      - Race-proven geometry
+**2. Best Cross Country: Specialized Epic Evo**
 
-      ### Best Enduro: Santa Cruz Bronson
+- Price: $3,200
+- Travel: 120mm front / 100mm rear
+- Highlights: Lightweight carbon frame, efficient pedaling platform
 
-      **Price:** $4,699
-      **Travel:** 150mm front / 150mm rear
-      **Standout Features:**
-      - Aggressive geometry
-      - Excellent descending capability
-      - High-quality components
+This race-proven geometry delivers exceptional performance on XC trails. The efficient pedaling platform helps you maintain speed on climbs while still providing comfort on descents.
 
-      ### Best Budget Option: Polygon Siskiu T8
+**3. Best Enduro: Santa Cruz Bronson**
 
-      **Price:** $1,699
-      **Travel:** 140mm front / 130mm rear
-      **Standout Features:**
-      - Outstanding value
-      - Solid component spec
-      - Reliable performance
+- Price: $4,699
+- Travel: 150mm front / 150mm rear
+- Highlights: Aggressive geometry, excellent descending capability
 
-      ## Components Worth Upgrading
+Built for serious downhill performance, the Bronson features high-quality components and aggressive geometry that inspires confidence on the most challenging terrain.
 
-      ### Suspension Forks
+**4. Best Budget Option: Polygon Siskiu T8**
 
-      #### RockShox Pike Ultimate
-      - **Travel:** 140-180mm
-      - **Pros:** Excellent small bump sensitivity, reliable performance
-      - **Price:** $849
+- Price: $1,699
+- Travel: 140mm front / 130mm rear
+- Highlights: Outstanding value, solid component spec
 
-      #### Fox 36 Factory
-      - **Travel:** 140-180mm
-      - **Pros:** Precise damping control, lightweight
-      - **Price:** $899
+Proving that great mountain bikes don't have to break the bank, the Siskiu T8 delivers reliable performance with components that punch above their price point.
 
-      ### Rear Shocks
+**Components Worth Upgrading**
 
-      #### RockShox Super Deluxe Ultimate
-      - **Pros:** Highly adjustable, great pedaling platform
-      - **Price:** $549
+**Suspension Forks**
 
-      #### Fox DPX2 Factory
-      - **Pros:** Consistent performance, easy setup
-      - **Price:** $579
+**RockShox Pike Ultimate**
 
-      ### Drivetrains
+- Travel: 140-180mm
+- Price: $849
+- Highlights: Excellent small bump sensitivity, reliable performance
 
-      #### SRAM GX Eagle AXS
-      - **Pros:** Wireless shifting, 12-speed range
-      - **Cons:** Higher price than mechanical
-      - **Price:** $1,200
+**Fox 36 Factory**
 
-      #### Shimano XT 12-Speed
-      - **Pros:** Reliable, smooth shifting, good value
-      - **Price:** $450
+- Travel: 140-180mm
+- Price: $899
+- Highlights: Precise damping control, lightweight construction
 
-      ### Wheels
+**Rear Shocks**
 
-      #### Industry Nine Hydra Enduro S
-      - **Pros:** Instant engagement, lifetime warranty
-      - **Price:** $1,400
+**RockShox Super Deluxe Ultimate**
 
-      #### DT Swiss M1700 Spline Two
-      - **Pros:** Great value, tubeless ready
-      - **Price:** $600
+- Price: $549
+- Highlights: Highly adjustable, great pedaling platform
 
-      ## Essential Accessories
+**Fox DPX2 Factory**
 
-      ### Helmets
+- Price: $579
+- Highlights: Consistent performance, easy setup
 
-      #### POC Tectal Race SPIN
-      - **Features:** MIPS protection, excellent ventilation
-      - **Price:** $200
+**Drivetrains**
 
-      #### Giro Montaro MIPS
-      - **Features:** Extended coverage, comfortable fit
-      - **Price:** $150
+**SRAM GX Eagle AXS**
 
-      ### Protective Gear
+- Price: $1,200
+- Highlights: Wireless shifting, 12-speed range
+- Note: Higher price than mechanical options
 
-      #### Knee Pads: Fox Racing Launch Pro
-      - **Pros:** Comfortable, stays in place
-      - **Price:** $80
+**Shimano XT 12-Speed**
 
-      #### Gloves: Troy Lee Designs Air
-      - **Pros:** Excellent grip, breathable
-      - **Price:** $35
+- Price: $450
+- Highlights: Reliable performance, smooth shifting, excellent value
 
-      ### Tools and Maintenance
+**Wheels**
 
-      #### Multi-Tool: Crankbrothers M19
-      - **Features:** 19 functions, compact design
-      - **Price:** $45
+Industry Nine Hydra Enduro S
 
-      #### Tire Pressure Gauge: Topeak SmartGauge D2
-      - **Features:** Digital display, bleeding valve
-      - **Price:** $30
+- Price: $1,400
+- Highlights: Instant engagement, lifetime warranty
 
-      ## Clothing Recommendations
+DT Swiss M1700 Spline Two
 
-      ### Shorts: Patagonia Dirt Craft Bike Shorts
-      - **Features:** Durable fabric, comfortable fit
-      - **Price:** $89
+- Price: $600
+- Highlights: Great value, tubeless ready
 
-      ### Jersey: Fox Racing Ranger DR
-      - **Features:** Moisture-wicking, relaxed fit
-      - **Price:** $65
+**Essential Accessories**
 
-      ### Shoes: Five Ten Freerider Pro
-      - **Features:** Sticky rubber sole, durable construction
-      - **Price:** $130
+**Helmets**
 
-      ## Technology and Electronics
+**POC Tectal Race SPIN**
 
-      ### GPS Computer: Garmin Edge 530
-      - **Features:** Navigation, performance metrics
-      - **Price:** $299
+- Price: $200
+- Highlights: MIPS protection, excellent ventilation
 
-      ### Action Camera: GoPro Hero 12 Black
-      - **Features:** 5.3K video, excellent stabilization
-      - **Price:** $399
+**Giro Montaro MIPS**
 
-      ## Budget vs. Premium: Where to Spend
+- Price: $150
+- Highlights: Extended coverage, comfortable fit
 
-      ### Prioritize These Upgrades:
-      1. **Helmet** - Safety is non-negotiable
-      2. **Tires** - Huge impact on performance
-      3. **Dropper Post** - Game-changing for descents
-      4. **Brakes** - Essential for safety and confidence
+**Protective Gear**
 
-      ### Save Money Here:
-      - Clothing (start basic, upgrade later)
-      - Electronics (not essential for beginners)
-      - Lightweight components (marginal gains)
+**Fox Racing Launch Pro Knee Pads**
 
-      ## Conclusion
+- Price: $80
+- Highlights: Comfortable fit, stays in place during rides
 
-      The mountain bike industry continues to evolve with better performance and value at every price point. Focus on safety gear first, then invest in components that will make the biggest difference to your riding experience.
+**Troy Lee Designs Air Gloves**
 
-      Remember, the best gear is the gear you'll actually use. Consider your riding style, local terrain, and budget when making decisions. Happy trails!`,
+- Price: $35
+- Highlights: Excellent grip, breathable material
+
+**Tools and Maintenance**
+
+Crankbrothers M19 Multi-Tool
+
+- Price: $45
+- Highlights: 19 functions, compact design
+
+Topeak SmartGauge D2
+
+- Price: $30
+- Highlights: Digital display, bleeding valve
+
+**Clothing Recommendations**
+
+Patagonia Dirt Craft Bike Shorts
+
+- Price: $89
+- Highlights: Durable fabric, comfortable fit
+
+Fox Racing Ranger DR Jersey
+
+- Price: $65
+- Highlights: Moisture-wicking, relaxed fit
+
+Five Ten Freerider Pro Shoes
+
+- Price: $130
+- Highlights: Sticky rubber sole, durable construction
+
+**Technology and Electronics**
+
+Garmin Edge 530 GPS Computer
+
+- Price: $299
+- Highlights: Navigation capabilities, performance metrics
+
+GoPro Hero 12 Black Action Camera
+
+- Price: $399
+- Highlights: 5.3K video recording, excellent stabilization
+
+**Budget vs. Premium: Where to Spend Your Money**
+
+Prioritize These Upgrades:
+
+1. Helmet - Safety is non-negotiable
+2. Tires - Huge impact on traction and performance
+3. Dropper Post - Game-changing for technical descents
+4. Brakes - Essential for safety and confidence
+
+Save Money on These Items:
+
+- Clothing (start with basics, upgrade as needed)
+- Electronics (not essential for beginners)
+- Lightweight components (marginal performance gains)
+
+**Getting the Most from Your Gear**
+
+The mountain bike industry continues to evolve with better performance and value at every price point. Focus on safety gear first, then invest in components that will make the biggest difference to your riding experience.
+
+Consider your riding style, local terrain, and budget when making upgrade decisions. The best gear is the gear you'll actually use consistently.
+
+**Making Smart Purchasing Decisions**
+
+- Research thoroughly before buying
+- Consider used options for expensive components
+- Invest in quality basics that will last
+- Upgrade gradually as your skills improve
+- Don't overlook the importance of proper fit
+
+Remember, expensive gear won't automatically make you a better rider, but the right equipment can enhance your enjoyment and safety on the trails. Happy riding!`,
     category: "gear reviews",
     author: "Tom Wilson",
     publishedAt: "2024-01-20",
     readTime: 15,
     tags: ["gear", "reviews", "2024", "buying guide", "mountain-bikes"],
-    heroImage: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80",
-    thumbnail: "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80"
+    heroImage: "https://images.unsplash.com/photo-1506316940527-4d1c138978a0?auto=format&fit=crop&w=1200&q=80",
+    thumbnail: "https://images.unsplash.com/photo-1506316940527-4d1c138978a0?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: "never-summer-proto-type-two-review",
