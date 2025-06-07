@@ -13,9 +13,9 @@ export const gearReviewsPosts: BlogPost[] = [
       ## Best Mountain Bikes by Category
 
       ### Best Trail Bike: Trek Fuel EX 8
-      
-      **Price:** $3,499  
-      **Travel:** 130mm front / 130mm rear  
+
+      **Price:** $3,499
+      **Travel:** 130mm front / 130mm rear
       **Standout Features:**
       - Refined suspension design
       - Excellent climbing performance
@@ -25,8 +25,8 @@ export const gearReviewsPosts: BlogPost[] = [
 
       ### Best Cross Country: Specialized Epic Evo
 
-      **Price:** $3,200  
-      **Travel:** 120mm front / 100mm rear  
+      **Price:** $3,200
+      **Travel:** 120mm front / 100mm rear
       **Standout Features:**
       - Lightweight carbon frame
       - Efficient pedaling platform
@@ -34,8 +34,8 @@ export const gearReviewsPosts: BlogPost[] = [
 
       ### Best Enduro: Santa Cruz Bronson
 
-      **Price:** $4,699  
-      **Travel:** 150mm front / 150mm rear  
+      **Price:** $4,699
+      **Travel:** 150mm front / 150mm rear
       **Standout Features:**
       - Aggressive geometry
       - Excellent descending capability
@@ -43,8 +43,8 @@ export const gearReviewsPosts: BlogPost[] = [
 
       ### Best Budget Option: Polygon Siskiu T8
 
-      **Price:** $1,699  
-      **Travel:** 140mm front / 130mm rear  
+      **Price:** $1,699
+      **Travel:** 140mm front / 130mm rear
       **Standout Features:**
       - Outstanding value
       - Solid component spec
@@ -60,7 +60,7 @@ export const gearReviewsPosts: BlogPost[] = [
       - **Price:** $849
 
       #### Fox 36 Factory
-      - **Travel:** 140-180mm  
+      - **Travel:** 140-180mm
       - **Pros:** Precise damping control, lightweight
       - **Price:** $899
 

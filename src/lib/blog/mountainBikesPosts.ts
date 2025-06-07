@@ -211,80 +211,80 @@ export const mountainBikesPosts: BlogPost[] = [
 
       ## 1. El Moro Canyon Trail (Crystal Cove State Park)
 
-      **Distance:** 8.2 miles  
-      **Difficulty:** Intermediate  
+      **Distance:** 8.2 miles
+      **Difficulty:** Intermediate
       **Highlights:** Coastal views, smooth singletrack
 
       This beautiful trail offers stunning ocean views and well-maintained singletrack through coastal sage scrub. The trail features rolling hills with moderate climbs and fun descents.
 
       ## 2. Noble Canyon Trail (Mount Laguna)
 
-      **Distance:** 10 miles  
-      **Difficulty:** Advanced  
+      **Distance:** 10 miles
+      **Difficulty:** Advanced
       **Highlights:** Technical singletrack, forest riding
 
       Located east of San Diego, this trail offers cooler temperatures and pine forest riding. Technical rock gardens and root sections challenge even experienced riders.
 
       ## 3. Cheeseboro Canyon (Santa Monica Mountains)
 
-      **Distance:** 6-12 miles (various loops)  
-      **Difficulty:** Beginner to Intermediate  
+      **Distance:** 6-12 miles (various loops)
+      **Difficulty:** Beginner to Intermediate
       **Highlights:** Wide fire roads, gentle climbs
 
       Perfect for beginners and families, Cheeseboro offers well-maintained fire roads with gentle grades and beautiful valley views.
 
       ## 4. Mount Wilson via Gabrielino Trail
 
-      **Distance:** 14 miles  
-      **Difficulty:** Advanced  
+      **Distance:** 14 miles
+      **Difficulty:** Advanced
       **Highlights:** Historic railway, challenging climb
 
       This epic climb follows the old Mount Wilson Railway and offers spectacular views of LA. The descent is technical and rewarding.
 
       ## 5. Sullivan Canyon
 
-      **Distance:** 4.8 miles  
-      **Difficulty:** Beginner  
+      **Distance:** 4.8 miles
+      **Difficulty:** Beginner
       **Highlights:** Shaded canyon, easy access
 
       A peaceful escape in the Santa Monica Mountains, Sullivan Canyon offers shaded riding through a beautiful riparian environment.
 
       ## 6. Millard Canyon
 
-      **Distance:** 5.6 miles  
-      **Difficulty:** Intermediate  
+      **Distance:** 5.6 miles
+      **Difficulty:** Intermediate
       **Highlights:** Waterfall views, varied terrain
 
       This Angeles National Forest trail features creek crossings, technical sections, and views of Millard Falls.
 
       ## 7. Whiting Ranch Wilderness Park
 
-      **Distance:** Various loops 2-8 miles  
-      **Difficulty:** Beginner to Advanced  
+      **Distance:** Various loops 2-8 miles
+      **Difficulty:** Beginner to Advanced
       **Highlights:** Red rock formations, diverse trails
 
       Multiple trail options ranging from easy fire roads to technical singletrack through unique red rock canyons.
 
       ## 8. Aliso and Wood Canyons
 
-      **Distance:** 4-10 miles (various combinations)  
-      **Difficulty:** Beginner to Intermediate  
+      **Distance:** 4-10 miles (various combinations)
+      **Difficulty:** Beginner to Intermediate
       **Highlights:** Coastal proximity, well-marked trails
 
       A network of trails near Laguna Beach offering everything from mellow family rides to challenging climbs.
 
       ## 9. Ken Burton Trail (Griffith Park)
 
-      **Distance:** 3.2 miles  
-      **Difficulty:** Intermediate  
+      **Distance:** 3.2 miles
+      **Difficulty:** Intermediate
       **Highlights:** City proximity, technical sections
 
       Right in Los Angeles, this trail offers surprising technical challenges and great views of the city and Hollywood sign.
 
       ## 10. Mount Lukens
 
-      **Distance:** 8.4 miles  
-      **Difficulty:** Advanced  
+      **Distance:** 8.4 miles
+      **Difficulty:** Advanced
       **Highlights:** Highest peak in LA, panoramic views
 
       The climb to LA's highest peak is challenging but rewards riders with 360-degree views of the entire LA basin.
