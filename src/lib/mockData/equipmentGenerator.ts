@@ -1,3 +1,4 @@
+
 import { Equipment, GearOwner } from "@/types";
 import { generateRandomLocation, losAngelesLocations, losAngelesLat, losAngelesLng } from "./locations";
 import { shopOwners } from "./shopOwners";
@@ -16,15 +17,15 @@ const ownerIdToOwner = Object.fromEntries(
 
 // Mock equipment data generator
 export function generateMockEquipment(count: number = 20): Equipment[] {
-  const categories = ["snowboards", "skis", "surfboards", "sups", "skateboards"];
+  const categories = ["snowboards", "skis", "surfboards", "sups", "mountain-bikes"];
   const snowboardMaterials = ["Wood Core", "Carbon", "Fiberglass", "Cap Construction"];
   const skiMaterials = ["Wood Core", "Carbon", "Fiberglass", "Cap Construction"];
   const surfboardMaterials = ["Polyurethane", "Epoxy", "Soft-top", "Carbon Fiber"];
   const paddleMaterials = ["Epoxy", "Inflatable", "Carbon Fiber", "Plastic"];
-  const skateboardMaterials = ["Wood", "Plastic", "Aluminum", "Carbon Fiber"];
+  const bikeMaterials = ["Aluminum", "Carbon Fiber", "Steel", "Titanium"];
 
-  // Individual owners for skateboards (cycling through personas)
-  const skateboardOwnerIds = ["owner-1", "owner-2", "owner-3", "owner-4", "owner-5", "owner-6", "owner-7", "owner-8", "owner-9", "owner-10"];
+  // Individual owners for mountain bikes (cycling through personas)
+  const bikeOwnerIds = ["owner-1", "owner-2", "owner-3", "owner-4", "owner-5", "owner-6", "owner-7", "owner-8", "owner-9", "owner-10"];
 
   return Array.from({ length: count }).map((_, i) => {
     const id = staticIds[i]; // Use static ID
@@ -43,9 +44,9 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
       case "skis":
         ownerId = "shop-the-pow-house";
         break;
-      case "skateboards":
-        // Use individual owners for skateboards, cycling through them
-        ownerId = skateboardOwnerIds[i % skateboardOwnerIds.length];
+      case "mountain-bikes":
+        // Use individual owners for mountain bikes, cycling through them
+        ownerId = bikeOwnerIds[i % bikeOwnerIds.length];
         break;
       default:
         ownerId = `owner-${(i % 10) + 1}`;
@@ -79,11 +80,11 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         suitable = `${['Flat Water', 'Surf', 'Racing', 'Yoga'][i % 4]}`;
         imageUrl = `https://images.unsplash.com/photo-1597175971918-76e969f42f74?auto=format&fit=crop&w=800&q=80`;
         break;
-      case "skateboards":
-        name = `${['Street', 'Cruiser', 'Longboard', 'Pool'][i % 4]} Skateboard`;
-        material = skateboardMaterials[i % skateboardMaterials.length];
-        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][i % 4]} Skaters`;
-        imageUrl = `https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80`;
+      case "mountain-bikes":
+        name = `${['Trail', 'Cross Country', 'Enduro', 'Downhill'][i % 4]} Mountain Bike`;
+        material = bikeMaterials[i % bikeMaterials.length];
+        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Expert'][i % 4]} Riders`;
+        imageUrl = `https://images.unsplash.com/photo-1482938289607-e9573fc25ebb?auto=format&fit=crop&w=800&q=80`;
         break;
       default:
         name = "Equipment";
@@ -109,7 +110,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
       id,
       name,
       category,
-      description: `Great ${category} for ${suitable.toLowerCase()}. Well maintained and ready for your next adventure!`,
+      description: `Great ${category.replace('-', ' ')} for ${suitable.toLowerCase()}. Well maintained and ready for your next adventure!`,
       image_url: imageUrl,
       price_per_day: Math.floor(Math.random() * 30) + 20, // $20-$50
       rating: Number((Math.random() * 2 + 3).toFixed(1)), // 3.0-5.0 as a number
@@ -122,7 +123,9 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
       },
       distance: +(Math.random() * 8).toFixed(1), // 0-8 miles
       specifications: {
-        size: `${Math.floor(Math.random() * 20) + 152}cm`,
+        size: category === "mountain-bikes" 
+          ? `${['Small', 'Medium', 'Large', 'XL', 'XXL'][i % 5]}`
+          : `${Math.floor(Math.random() * 20) + 152}cm`,
         weight: `${Math.floor(Math.random() * 5) + 3}kg`,
         material,
         suitable,

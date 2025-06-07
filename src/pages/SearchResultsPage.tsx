@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { searchEquipmentWithNLP, getEquipmentData } from "@/services/searchService";
@@ -216,8 +215,8 @@ const SearchResultsPage = () => {
                 <Button variant="outline" onClick={() => handleSuggestionClick("all-mountain snowboard")}>
                   All-Mountain Snowboards
                 </Button>
-                <Button variant="outline" onClick={() => handleSuggestionClick("skateboard in Venice")}>
-                  Skateboards in Venice
+                <Button variant="outline" onClick={() => handleSuggestionClick("mountain bike trail")}>
+                  Mountain Bikes for Trails
                 </Button>
               </div>
             </div>

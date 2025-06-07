@@ -1,5 +1,5 @@
 
-import { MapPin } from 'lucide-react';
+import { Bike } from 'lucide-react';
 
 const MapLegend = () => {
   const legendItems = [
@@ -7,7 +7,7 @@ const MapLegend = () => {
     { category: 'Skis', color: 'bg-lime-600' },
     { category: 'Surfboards', color: 'bg-blue-600' },
     { category: 'SUPs', color: 'bg-violet-600' },
-    { category: 'Skateboards', color: 'bg-red-600' },
+    { category: 'Mountain Bikes', color: 'bg-red-600' },
   ];
 
   return (
@@ -15,7 +15,11 @@ const MapLegend = () => {
       <div className="flex flex-col gap-2">
         {legendItems.map((item) => (
           <div key={item.category} className="flex items-center gap-2">
-            <MapPin className={`h-4 w-4 ${item.color}`} />
+            {item.category === 'Mountain Bikes' ? (
+              <Bike className={`h-4 w-4 ${item.color}`} />
+            ) : (
+              <div className={`h-4 w-4 rounded ${item.color}`} />
+            )}
             <span className="text-xs font-medium">{item.category}</span>
           </div>
         ))}

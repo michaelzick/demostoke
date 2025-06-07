@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Snowflake, Waves, Tire } from "@phosphor-icons/react";
+import { Snowflake, Waves, Bike } from "lucide-react";
 
 const CategoriesSection = () => {
   return (
@@ -49,16 +49,16 @@ const CategoriesSection = () => {
           <Card className="overflow-hidden group cursor-pointer">
             <div className="relative h-80">
               <img
-                src="https://images.unsplash.com/photo-1520045892732-304bc3ac5d8e?auto=format&fit=crop&w=800&q=80"
-                alt="Skateboards"
+                src="https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=800&q=80"
+                alt="Mountain Bikes"
                 className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                 <div className="text-center text-white">
-                  <Tire className="h-10 w-10 mb-2 mx-auto" weight="fill" />
-                  <h3 className="text-2xl font-bold mb-2">Skate</h3>
+                  <Bike className="h-10 w-10 mb-2 mx-auto" />
+                  <h3 className="text-2xl font-bold mb-2">Bike</h3>
                   <Button size="sm">
-                    <Link to="/explore?category=skateboards">Explore</Link>
+                    <Link to="/explore?category=mountain-bikes">Explore</Link>
                   </Button>
                 </div>
               </div>

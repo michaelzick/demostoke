@@ -1,4 +1,3 @@
-
 import { Equipment } from "@/types";
 import { mockEquipment } from "@/lib/mockData";
 import { supabase } from "@/integrations/supabase/client";
@@ -87,7 +86,7 @@ export const searchEquipmentWithNLP = async (query: string, useMockData: boolean
     skis: 0,
     surfboards: 0,
     sups: 0,
-    skateboards: 0,
+    "mountain-bikes": 0,
   };
 
   // Check for category keywords
@@ -103,8 +102,8 @@ export const searchEquipmentWithNLP = async (query: string, useMockData: boolean
   if (lowerQuery.includes("paddle") || lowerQuery.includes("sup") || lowerQuery.includes("stand up paddle")) {
     categoryMatches.sups += 3;
   }
-  if (lowerQuery.includes("skate") || lowerQuery.includes("skateboard")) {
-    categoryMatches.skateboards += 3;
+  if (lowerQuery.includes("bike") || lowerQuery.includes("mountain bike") || lowerQuery.includes("mtb") || lowerQuery.includes("cycling")) {
+    categoryMatches["mountain-bikes"] += 3;
   }
 
   // Look for location keywords

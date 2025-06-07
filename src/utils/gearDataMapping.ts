@@ -5,7 +5,7 @@ export const mapCategoryToGearType = (category: string): string => {
     "skis": "skis",
     "surfboards": "surfboard",
     "sups": "sup",
-    "skateboards": "skateboard"
+    "mountain-bikes": "mountain-bike"
   };
   return categoryMap[category] || category;
 };
@@ -40,11 +40,12 @@ export const mapSkillLevel = (skillLevel: string, gearType: string): string => {
       "Yoga": "Yoga",
       "All Levels": "Flat Water" // Default fallback
     },
-    skateboard: {
+    "mountain-bike": {
       "Beginner": "Beginner",
       "Intermediate": "Intermediate",
       "Advanced": "Advanced",
-      "All Levels": "All Levels"
+      "Expert": "Expert",
+      "All Levels": "Beginner" // Default fallback
     }
   };
 
@@ -59,6 +60,15 @@ export const mapSkillLevel = (skillLevel: string, gearType: string): string => {
 };
 
 export const parseSize = (sizeString: string): { length: string; width: string; thickness?: string } => {
+  // For mountain bikes, the size is just a single value (Small, Medium, etc.)
+  if (['Small', 'Medium', 'Large', 'XL', 'XXL'].includes(sizeString)) {
+    return {
+      length: sizeString,
+      width: "",
+      thickness: ""
+    };
+  }
+
   const parts = sizeString.split(' x ').map(part => part.trim());
   
   if (parts.length >= 3) {

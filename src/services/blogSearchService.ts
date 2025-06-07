@@ -47,10 +47,12 @@ export const searchBlogPostsWithNLP = async (query: string, posts: BlogPost[]): 
     const keywords = {
       'beginner': ['beginner', 'start', 'first', 'guide', 'basics'],
       'advanced': ['advanced', 'expert', 'pro', 'master', 'technique'],
-      'gear': ['gear', 'equipment', 'setup', 'board', 'selection', 'review'],
+      'gear': ['gear', 'equipment', 'setup', 'board', 'bike', 'selection', 'review'],
       'technique': ['technique', 'tips', 'how to', 'method', 'skill'],
-      'safety': ['safety', 'protection', 'avalanche', 'precaution'],
-      'reviews': ['review', 'test', 'rating', 'performance', 'verdict']
+      'safety': ['safety', 'protection', 'helmet', 'precaution'],
+      'reviews': ['review', 'test', 'rating', 'performance', 'verdict'],
+      'trails': ['trail', 'path', 'route', 'location', 'mountain'],
+      'maintenance': ['maintenance', 'repair', 'clean', 'service', 'fix']
     };
 
     // Add keyword matching scores

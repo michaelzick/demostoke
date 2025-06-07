@@ -21,7 +21,7 @@ const gearCategories = [
   { name: "Skis", category: "skis" },
   { name: "Surfboards", category: "surfboards" },
   { name: "SUPs", category: "sups" },
-  { name: "Skateboards", category: "skateboards" },
+  { name: "Mountain Bikes", category: "mountain-bikes" },
 ];
 
 const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
