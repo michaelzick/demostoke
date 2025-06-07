@@ -86,6 +86,7 @@ export const mountainBikesPosts: BlogPost[] = [
     readTime: 8,
     category: 'mountain-bikes',
     tags: ['beginner', 'guide', 'technique', 'safety'],
+    heroImage: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1200&q=80',
     thumbnail: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -197,6 +198,7 @@ export const mountainBikesPosts: BlogPost[] = [
     readTime: 10,
     category: 'mountain-bikes',
     tags: ['maintenance', 'repair', 'tools', 'care'],
+    heroImage: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=1200&q=80',
     thumbnail: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -320,6 +322,7 @@ export const mountainBikesPosts: BlogPost[] = [
     readTime: 12,
     category: 'mountain-bikes',
     tags: ['trails', 'los angeles', 'guide', 'locations'],
+    heroImage: 'https://images.unsplash.com/photo-1615729947596-a598e5de0ab3?auto=format&fit=crop&w=1200&q=80',
     thumbnail: 'https://images.unsplash.com/photo-1615729947596-a598e5de0ab3?auto=format&fit=crop&w=800&q=80'
   },
   {
@@ -496,6 +499,7 @@ export const mountainBikesPosts: BlogPost[] = [
     readTime: 15,
     category: 'gear reviews',
     tags: ['gear', 'reviews', '2024', 'buying guide', 'mountain-bikes'],
+    heroImage: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80',
     thumbnail: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=800&q=80'
   }
 ];

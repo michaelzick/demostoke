@@ -19,7 +19,7 @@ const CategoriesSection = () => {
               />
               <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                 <div className="text-center text-white">
-                  <Snowflake className="h-10 w-10 mb-2 mx-auto" weight="fill" />
+                  <Snowflake className="h-10 w-10 mb-2 mx-auto" />
                   <h3 className="text-2xl font-bold mb-2">Snow</h3>
                   <Button size="sm">
                     <Link to="/explore?category=snowboards">Explore</Link>
@@ -37,7 +37,7 @@ const CategoriesSection = () => {
               />
               <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                 <div className="text-center text-white">
-                  <Waves className="h-10 w-10 mb-2 mx-auto" weight="fill" />
+                  <Waves className="h-10 w-10 mb-2 mx-auto" />
                   <h3 className="text-2xl font-bold mb-2">Surf</h3>
                   <Button size="sm">
                     <Link to="/explore?category=surfboards">Explore</Link>
