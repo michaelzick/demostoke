@@ -80,12 +80,12 @@ const FilterBar = ({
               SUPs
             </Button>
             <Button
-              variant={activeCategory === "skateboards" ? "default" : "outline"}
+              variant={activeCategory === "mountain-bikes" ? "default" : "outline"}
               size="sm"
-              onClick={() => setActiveCategory("skateboards")}
+              onClick={() => setActiveCategory("mountain-bikes")}
               className="whitespace-nowrap gap-1 category-filter-button"
             >
-              Skateboards
+              Mountain Bikes
             </Button>
             <Button
               variant="outline"
