@@ -6,79 +6,88 @@ export const mountainBikesPosts: BlogPost[] = [
     title: 'The Complete Beginner\'s Guide to Mountain Biking',
     excerpt: 'Everything you need to know to start your mountain biking journey, from choosing your first bike to hitting the trails with confidence.',
     content: `
-      # The Complete Beginner's Guide to Mountain Biking
 
-      Mountain biking is an exhilarating sport that combines adventure, fitness, and connection with nature. Whether you're looking to explore local trails or tackle challenging terrain, this guide will help you get started on the right foot.
+**The Complete Beginner's Guide to Mountain Biking**
 
-      ## Choosing Your First Mountain Bike
+Mountain biking is an exhilarating sport that combines adventure, fitness, and connection with nature. Whether you're looking to explore local trails or tackle challenging terrain, this guide will help you get started on the right foot.
 
-      The type of mountain bike you choose depends on where and how you plan to ride:
+**Choosing Your First Mountain Bike**
 
-      ### Cross Country (XC) Bikes
-      - Lightweight and efficient
-      - Best for: Climbing, long-distance rides, racing
-      - Frame travel: 80-120mm
+The type of mountain bike you choose depends on where and how you plan to ride:
 
-      ### Trail Bikes
-      - Versatile all-around bikes
-      - Best for: Most trail riding, varied terrain
-      - Frame travel: 120-140mm
+**Cross Country (XC) Bikes**
 
-      ### Enduro Bikes
-      - Built for aggressive downhill riding
-      - Best for: Steep descents, technical trails
-      - Frame travel: 140-170mm
+- Lightweight and efficient
+- Best for: Climbing, long-distance rides, racing
+- Frame travel: 80-120mm
 
-      ### Downhill Bikes
-      - Heavy-duty bikes for lift-served riding
-      - Best for: Bike parks, extreme downhill
-      - Frame travel: 180-220mm
+**Trail Bikes**
 
-      ## Essential Gear for Mountain Biking
+- Versatile all-around bikes
+- Best for: Most trail riding, varied terrain
+- Frame travel: 120-140mm
 
-      Safety should always be your top priority:
+**Enduro Bikes**
 
-      - **Helmet**: A properly fitted helmet is non-negotiable
-      - **Gloves**: Improve grip and protect your hands
-      - **Eye protection**: Sunglasses or goggles
-      - **Appropriate clothing**: Moisture-wicking and durable
-      - **Shoes**: Flat pedal shoes or clipless if using clipless pedals
+- Built for aggressive downhill riding
+- Best for: Steep descents, technical trails
+- Frame travel: 140-170mm
 
-      ## Basic Riding Techniques
+**Downhill Bikes**
 
-      ### Body Position
-      - Keep your weight centered over the bike
-      - Bend your elbows and knees to absorb impact
-      - Look ahead, not down at the front wheel
+- Heavy-duty bikes for lift-served riding
+- Best for: Bike parks, extreme downhill
+- Frame travel: 180-220mm
 
-      ### Braking
-      - Use both brakes, but favor the rear brake
-      - Brake before corners, not during
-      - Modulate pressure to avoid skidding
+**Essential Gear for Mountain Biking**
 
-      ### Climbing
-      - Shift to easier gears before steep sections
-      - Keep your weight forward to maintain traction
-      - Maintain a steady cadence
+Safety should always be your top priority:
 
-      ### Descending
-      - Shift your weight back and lower your center of gravity
-      - Let the bike move beneath you
-      - Use your arms and legs as suspension
+- Helmet: A properly fitted helmet is non-negotiable
+- Gloves: Improve grip and protect your hands
+- Eye protection: Sunglasses or goggles
+- Appropriate clothing: Moisture-wicking and durable
+- Shoes: Flat pedal shoes or clipless if using clipless pedals
 
-      ## Trail Etiquette
+**Basic Riding Techniques**
 
-      - Yield to hikers and horseback riders
-      - Announce yourself when passing: "On your left!"
-      - Stay on designated trails
-      - Pack out what you pack in
-      - Don't ride muddy trails
+Body Position
 
-      ## Building Your Skills
+- Keep your weight centered over the bike
+- Bend your elbows and knees to absorb impact
+- Look ahead, not down at the front wheel
 
-      Start with easier trails and gradually progress. Consider taking a skills clinic or riding with more experienced friends. Practice in a safe environment before tackling challenging terrain.
+Braking
 
-      Remember, mountain biking is about having fun and enjoying the outdoors. Take your time, be safe, and enjoy the ride!
+- Use both brakes, but favor the rear brake
+- Brake before corners, not during
+- Modulate pressure to avoid skidding
+
+Climbing
+
+- Shift to easier gears before steep sections
+- Keep your weight forward to maintain traction
+- Maintain a steady cadence
+
+Descending
+
+- Shift your weight back and lower your center of gravity
+- Let the bike move beneath you
+- Use your arms and legs as suspension
+
+**Trail Etiquette**
+
+- Yield to hikers and horseback riders
+- Announce yourself when passing: "On your left!"
+- Stay on designated trails
+- Pack out what you pack in
+- Don't ride muddy trails
+
+**Building Your Skills**
+
+Start with easier trails and gradually progress. Consider taking a skills clinic or riding with more experienced friends. Practice in a safe environment before tackling challenging terrain.
+
+Remember, mountain biking is about having fun and enjoying the outdoors. Take your time, be safe, and enjoy the ride!
     `,
     author: 'Sarah Johnson',
     publishedAt: '2024-01-15',
