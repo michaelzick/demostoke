@@ -7,13 +7,14 @@ import { blogPosts } from "@/lib/blog";
 import { useEffect, useState } from "react";
 
 const BlogPostPage = () => {
-  const { postId } = useParams<{ postId: string }>();
-  const post = blogPosts.find(p => p.id === postId);
+  const { slug } = useParams<{ slug: string }>();
+  const post = blogPosts.find(p => p.id === slug);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  console.log("Post ID:", slug);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [postId]);
+  }, [slug]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -92,15 +93,15 @@ const BlogPostPage = () => {
                   {formatDate(post.publishedAt)}
                 </div>
               </div>
-              
+
               <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
                 {post.title}
               </h1>
-              
+
               <p className="text-xl text-muted-foreground mb-6 leading-relaxed">
                 {post.excerpt}
               </p>
-              
+
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center">
@@ -112,7 +113,7 @@ const BlogPostPage = () => {
                     {post.readTime} min read
                   </div>
                 </div>
-                
+
                 <Button variant="outline" size="sm">
                   <Share2 className="h-4 w-4 mr-2" />
                   Share
@@ -200,8 +201,8 @@ const BlogPostPage = () => {
       <Button
         onClick={scrollToTop}
         className={`fixed bottom-6 left-6 z-50 rounded-full w-12 h-12 p-0 shadow-lg hover:shadow-xl transition-all duration-300 ${
-          showBackToTop 
-            ? 'opacity-100 translate-y-0' 
+          showBackToTop
+            ? 'opacity-100 translate-y-0'
             : 'opacity-0 translate-y-4 pointer-events-none'
         }`}
         size="icon"
