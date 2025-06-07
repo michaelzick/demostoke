@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { Snowflake, Mountains, Waves, Fish, Tire } from "@phosphor-icons/react";
+import { Snowflake, Mountains, Waves, Fish } from "@phosphor-icons/react";
+import { Bike } from 'lucide-react';
 import { useAuth } from "@/helpers";
 import { getVideoUrl } from "@/utils/videoUpload";
 
@@ -120,11 +121,11 @@ const HeroSection = () => {
               <span className="text-sm font-medium">SUPs</span>
             </Link>
             <Link
-              to="/explore?category=skateboards"
+              to="/explore?category=mountain-bikes"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >
-              <Tire className="h-6 w-6" weight="fill" />
-              <span className="text-sm font-medium">Skateboards</span>
+              <Bike className="h-6 w-6" />
+              <span className="text-sm font-medium">Mountain Bikes</span>
             </Link>
           </div>
         </div>

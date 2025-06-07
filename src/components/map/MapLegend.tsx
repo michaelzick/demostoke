@@ -1,6 +1,4 @@
 
-import { Bike } from 'lucide-react';
-
 const MapLegend = () => {
   const legendItems = [
     { category: 'Snowboards', color: 'bg-fuchsia-600' },
@@ -15,11 +13,7 @@ const MapLegend = () => {
       <div className="flex flex-col gap-2">
         {legendItems.map((item) => (
           <div key={item.category} className="flex items-center gap-2">
-            {item.category === 'Mountain Bikes' ? (
-              <Bike className={`h-4 w-4 ${item.color}`} />
-            ) : (
-              <div className={`h-4 w-4 rounded ${item.color}`} />
-            )}
+            <div className={`h-4 w-4 rounded ${item.color}`} />
             <span className="text-xs font-medium">{item.category}</span>
           </div>
         ))}
