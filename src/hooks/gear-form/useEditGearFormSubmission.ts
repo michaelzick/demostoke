@@ -136,9 +136,12 @@ export const useEditGearFormSubmission = ({
       }
 
       // Prepare the data for database update
-      const sizeString = dimensions.thickness
-        ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness} ${measurementUnit}`
-        : `${dimensions.length} x ${dimensions.width} ${measurementUnit}`;
+      const isMountainBike = gearType === "mountain-bike";
+      const sizeString = isMountainBike
+        ? dimensions.length // For mountain bikes, just use the size (S/M/L/XL/XXL)
+        : dimensions.thickness
+          ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness} ${measurementUnit}`
+          : `${dimensions.length} x ${dimensions.width} ${measurementUnit}`;
 
       const equipmentData = {
         name: gearName,

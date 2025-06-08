@@ -12,9 +12,8 @@ interface FormData {
   description: string;
   zipCode: string;
   measurementUnit: string;
-  dimensions: { length: string; width: string };
+  dimensions: { length: string; width: string; thickness?: string };
   skillLevel: string;
-  role: string;
   damageDeposit: string;
   pricingOptions: PricingOption[];
   imageUrl?: string;
@@ -41,11 +40,43 @@ export const useGearFormValidation = () => {
     } = formData;
 
     // Validate required fields
-    if (!gearName || !gearType || !description || !zipCode || !measurementUnit ||
-        !dimensions.length || !dimensions.width || !skillLevel || !role || !damageDeposit) {
+    const isMountainBike = gearType === "mountain-bike";
+    
+    // Base validation for all gear types
+    if (!gearName || !gearType || !description || !zipCode || !skillLevel || !damageDeposit) {
       toast({
         title: "Missing Required Fields",
         description: "Please fill in all required fields before submitting.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Additional validation for non-mountain bikes
+    if (!isMountainBike && (!measurementUnit || !dimensions.length || !dimensions.width)) {
+      toast({
+        title: "Missing Dimensions",
+        description: "Please provide all dimension measurements for your gear.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Validate mountain bike size
+    if (isMountainBike && !dimensions.length) {
+      toast({
+        title: "Missing Size",
+        description: "Please select a size for your mountain bike.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Validate that mountain bike size is valid
+    if (isMountainBike && !['Small', 'Medium', 'Large', 'XL', 'XXL'].includes(dimensions.length)) {
+      toast({
+        title: "Invalid Size",
+        description: "Please select a valid size for your mountain bike.",
         variant: "destructive",
       });
       return false;

@@ -82,7 +82,6 @@ export const useGearFormSubmission = ({
       measurementUnit,
       dimensions,
       skillLevel,
-      role,
       damageDeposit,
       pricingOptions,
       imageUrl,
@@ -134,9 +133,12 @@ export const useGearFormSubmission = ({
       }
 
       // Prepare the data for database insertion
-      const sizeString = dimensions.thickness
-        ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness} ${measurementUnit}`
-        : `${dimensions.length} x ${dimensions.width} ${measurementUnit}`;
+      const isMountainBike = gearType === "mountain-bike";
+      const sizeString = isMountainBike
+        ? dimensions.length // For mountain bikes, just use the size (S/M/L/XL/XXL)
+        : dimensions.thickness
+          ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness} ${measurementUnit}`
+          : `${dimensions.length} x ${dimensions.width} ${measurementUnit}`;
 
       const equipmentData = {
         user_id: user.id,

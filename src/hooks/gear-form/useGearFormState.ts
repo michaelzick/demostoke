@@ -17,7 +17,6 @@ export const useGearFormState = () => {
     { id: "1", price: "", duration: "day" }
   ]);
   const [damageDeposit, setDamageDeposit] = useState("");
-  const [role, setRole] = useState("");
 
   return {
     gearName,
@@ -44,7 +43,5 @@ export const useGearFormState = () => {
     setPricingOptions,
     damageDeposit,
     setDamageDeposit,
-    role,
-    setRole,
   };
 };

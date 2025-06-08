@@ -84,7 +84,7 @@ const GearSpecifications = ({
           </Label>
           <Select 
             value={dimensions.length} 
-            onValueChange={(value) => setDimensions({ ...dimensions, length: value })} 
+            onValueChange={(value) => setDimensions({ length: value, width: "", thickness: "" })} 
             required
           >
             <SelectTrigger id="bikeSize">
