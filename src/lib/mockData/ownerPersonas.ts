@@ -64,13 +64,13 @@ export const ownerPersonas: GearOwner[] = [
     imageUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80",
     rating: 4.8,
     responseRate: 97,
-    bio: "Dustin here. I'm a small creator of custom gear. I've been crafting for over a decade, focusing on performance and \
-      shapes that excel in California conditions. My demo program lets you experience how the gear feels before committing. \
-      Each listing includes detailed dimensions and design features. Please leave a review after your session. Your feedback helps me \
-      refine my techniques and helps others discover my work!",
+    bio: "Hey! I'm Dustin, an avid mountain biker with a passion for the trails. I've been riding for over a decade and \
+      have built up quite a collection of high-end bikes. From XC racing to downhill, I've got bikes for every style of riding. \
+      I maintain all my bikes to the highest standard and can help you choose the perfect ride for your skill level and the local trails. \
+      Feel free to ask me about the best spots to ride in LA - I know all the secret trails!",
     location: "Los Angeles, CA",
     memberSince: "2021",
-    personality: "Local Creator"
+    personality: "Gear Lender"
   },
   {
     id: "owner-6",
