@@ -28,10 +28,14 @@ const MyEquipmentPage = () => {
   const { data: userEquipment = [], isLoading, error } = useUserEquipment();
   const deleteEquipmentMutation = useDeleteEquipment();
 
-  // Scroll to top on page load
+  // Handle authentication and scroll to top
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+
+    if (!isAuthenticated) {
+      navigate("/auth/signin");
+    }
+  }, [isAuthenticated, navigate]);
 
   // Function to get the appropriate icon based on equipment category
   const getEquipmentIcon = (category: string) => {
@@ -129,7 +133,7 @@ const MyEquipmentPage = () => {
 
   const handleListGearClick = () => {
     if (isAuthenticated) {
-      navigate("/list-your-gear/add-gear-form");
+      navigate("/list-your-gear");
     } else {
       navigate("/auth/signin");
     }
