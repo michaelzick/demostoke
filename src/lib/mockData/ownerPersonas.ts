@@ -128,11 +128,12 @@ export const ownerPersonas: GearOwner[] = [
     imageUrl: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=300&q=80",
     rating: 4.8,
     responseRate: 95,
-    bio: "Hey, I'm Casey! When I'm not chasing waves, hitting the slopes, or riding pavement, I'm sharing my passion for outdoor sports through \
-      my gear. I provide detailed guidance for beginners and can recommend the perfect equipment based on your skill level and goals. Let's get \
-      you set up for an amazing experience!",
+    bio: "Hey, I'm Casey! I got into mountain biking during the pandemic and fell in love with exploring LA's trail networks. \
+      I've got a few quality bikes that I love sharing with others when I'm not riding. Whether you're looking for a mellow cruise on fire roads \
+      or want to try some beginner-friendly singletrack, I can help set you up with the right bike. I know all the best beginner-friendly trails \
+      in the area and always happy to share route recommendations!",
     location: "Los Angeles, CA",
     memberSince: "2021",
-    personality: "Helpful Guide"
+    personality: "Gear Lender"
   }
 ];
