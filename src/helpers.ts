@@ -9,3 +9,21 @@ export function useAuth() {
   }
   return context;
 }
+
+// Function to get display name for category
+export const getCategoryDisplayName = (category: string) => {
+  switch (category) {
+    case "snowboards":
+      return "Snowboards";
+    case "skis":
+      return "Skis";
+    case "surfboards":
+      return "Surfboards";
+    case "sups":
+      return "SUPs";
+    case "mountain-bikes":
+      return "Mountain Bikes";
+    default:
+      return category.split('-').join(' ');
+  }
+};

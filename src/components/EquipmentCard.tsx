@@ -4,6 +4,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StarIcon, StoreIcon, UsersIcon } from "lucide-react";
+import { getCategoryDisplayName } from "@/helpers";
 import { Equipment } from "@/types";
 
 interface EquipmentCardProps {
@@ -18,26 +19,8 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
   const ownerLinkPath = isShop
     ? `/shop/${equipment.owner.shopId}`
     : isPrivateParty
-    ? `/party/${equipment.owner.partyId}`
-    : `/owner/${equipment.owner.id}`;
-
-  // Function to get display name for category
-  const getCategoryDisplayName = (category: string) => {
-    switch (category) {
-      case "snowboards":
-        return "Snowboards";
-      case "skis":
-        return "Skis";
-      case "surfboards":
-        return "Surfboards";
-      case "sups":
-        return "SUPs";
-      case "mountain-bikes":
-        return "Mountain Bikes";
-      default:
-        return category.split('-').join(' ');
-    }
-  };
+      ? `/party/${equipment.owner.partyId}`
+      : `/owner/${equipment.owner.id}`;
 
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">

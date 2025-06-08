@@ -11,7 +11,7 @@ import ReviewsTab from "@/components/equipment-detail/ReviewsTab";
 import PolicyTab from "@/components/equipment-detail/PolicyTab";
 import OwnerCard from "@/components/equipment-detail/OwnerCard";
 import SimilarEquipment from "@/components/equipment-detail/SimilarEquipment";
-import { Skeleton } from "@/components/ui/skeleton";
+import { getCategoryDisplayName } from "@/helpers";
 import { Equipment } from "@/types";
 import React from "react";
 
@@ -40,7 +40,7 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
     <Breadcrumbs
       items={[
         { label: "Home", path: "/" },
-        { label: "My Gear", path: "/my-gear" },
+        { label: getCategoryDisplayName(equipment.category), path: `/explore?category=${equipment.category}` },
         { label: equipment.name, path: `/equipment/${equipment.id}` },
       ]}
     />

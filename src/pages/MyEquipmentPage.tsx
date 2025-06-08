@@ -194,7 +194,7 @@ const MyEquipmentPage = () => {
       {userEquipment.length === 0 ? (
         <div className="text-center py-20">
           <h2 className="text-xl font-medium mb-2">You haven't listed any gear yet</h2>
-          <p className="text-muted-foreground mb-6">Start sharing your gear with others and earn money</p>
+          <p className="text-muted-foreground mb-6">Start sharing your gear with others and earn money.</p>
           <Button onClick={handleListGearClick}>List Your First Item</Button>
         </div>
       ) : (
