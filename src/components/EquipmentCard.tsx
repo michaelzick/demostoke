@@ -32,7 +32,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
           className="absolute top-2 right-2"
           variant="secondary"
         >
-          {equipment.category}
+          {equipment.category.split('-').join(' ')}
         </Badge>
         {/* Shop or Private Party indicator */}
         {isShop && (
