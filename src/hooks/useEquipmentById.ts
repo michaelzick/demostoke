@@ -10,11 +10,11 @@ export const useEquipmentById = (id: string) => {
   return useQuery({
     queryKey: ['equipment', id],
     queryFn: async (): Promise<UserEquipment | null> => {
-      if (!user?.id || !id) {
+      if (!id) {
         return null;
       }
 
-      // Fetch equipment with owner profile information
+      // Fetch equipment with owner profile information - no user restriction for viewing
       const { data, error } = await supabase
         .from('equipment')
         .select(`
@@ -27,7 +27,6 @@ export const useEquipmentById = (id: string) => {
           )
         `)
         .eq('id', id)
-        .eq('user_id', user.id)
         .single();
 
       if (error) {
@@ -68,6 +67,6 @@ export const useEquipmentById = (id: string) => {
         }
       } as UserEquipment;
     },
-    enabled: !!user?.id && !!id,
+    enabled: !!id,
   });
 };
