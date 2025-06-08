@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,24 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
     ? `/party/${equipment.owner.partyId}`
     : `/owner/${equipment.owner.id}`;
 
+  // Function to get display name for category
+  const getCategoryDisplayName = (category: string) => {
+    switch (category) {
+      case "snowboards":
+        return "Snowboards";
+      case "skis":
+        return "Skis";
+      case "surfboards":
+        return "Surfboards";
+      case "sups":
+        return "SUPs";
+      case "mountain-bikes":
+        return "Mountain Bikes";
+      default:
+        return category.split('-').join(' ');
+    }
+  };
+
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
       <div className="relative aspect-[4/3] w-full overflow-hidden">
@@ -32,7 +51,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
           className="absolute top-2 right-2"
           variant="secondary"
         >
-          {equipment.category.split('-').join(' ')}
+          {getCategoryDisplayName(equipment.category)}
         </Badge>
         {/* Shop or Private Party indicator */}
         {isShop && (

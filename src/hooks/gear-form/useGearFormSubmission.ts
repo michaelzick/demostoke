@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -56,7 +57,7 @@ export const useGearFormSubmission = ({
       "skis": "skis",
       "surfboard": "surfboards",
       "sup": "sups",
-      "skateboard": "skateboards"
+      "mountain-bike": "mountain-bikes"
     };
     return typeMap[gearType] || gearType;
   };

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Edit, Trash2, Copy, ExternalLink } from "lucide-react";
-import { Snowflake, Waves, Tire } from "@phosphor-icons/react";
+import { Snowflake, Waves, Bicycle } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -38,12 +38,34 @@ const MyEquipmentPage = () => {
     switch (category) {
       case "snowboards":
         return <Snowflake className="h-5 w-5" weight="fill" />;
+      case "skis":
+        return <Snowflake className="h-5 w-5" weight="fill" />;
       case "surfboards":
         return <Waves className="h-5 w-5" weight="fill" />;
-      case "skateboards":
-        return <Tire className="h-5 w-5" weight="fill" />;
+      case "sups":
+        return <Waves className="h-5 w-5" weight="fill" />;
+      case "mountain-bikes":
+        return <Bicycle className="h-5 w-5" weight="fill" />;
       default:
         return null;
+    }
+  };
+
+  // Function to get display name for category
+  const getCategoryDisplayName = (category: string) => {
+    switch (category) {
+      case "snowboards":
+        return "Snowboard";
+      case "skis":
+        return "Skis";
+      case "surfboards":
+        return "Surfboard";
+      case "sups":
+        return "SUP";
+      case "mountain-bikes":
+        return "Mountain Bike";
+      default:
+        return category;
     }
   };
 
@@ -185,7 +207,7 @@ const MyEquipmentPage = () => {
                   <div className="flex items-center gap-1.5">
                     {getEquipmentIcon(item.category)}
                     <span className="capitalize text-sm font-medium">
-                      {item.category.slice(0, -1)}
+                      {getCategoryDisplayName(item.category)}
                     </span>
                   </div>
                 </div>
