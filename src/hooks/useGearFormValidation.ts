@@ -1,3 +1,4 @@
+
 import { useToast } from "@/hooks/use-toast";
 
 interface PricingOption {
@@ -18,6 +19,7 @@ interface FormData {
   pricingOptions: PricingOption[];
   imageUrl?: string;
   useImageUrl?: boolean;
+  role: string;
 }
 
 export const useGearFormValidation = () => {
