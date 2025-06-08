@@ -40,10 +40,13 @@ export const prepareEquipmentData = ({
       ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness} ${measurementUnit}`
       : `${dimensions.length} x ${dimensions.width} ${measurementUnit}`;
 
+  const category = mapGearTypeToCategory(gearType);
+  console.log('Preparing equipment data - gearType:', gearType, 'mapped category:', category);
+
   return {
     user_id: userId,
     name: gearName,
-    category: mapGearTypeToCategory(gearType),
+    category: category,
     description: description,
     location_zip: zipCode,
     location_lat: coordinates?.lat || null,

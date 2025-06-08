@@ -1,9 +1,11 @@
+
 import { Equipment } from "@/types";
 import { mockEquipment } from "@/lib/mockData";
 import { supabase } from "@/integrations/supabase/client";
 
 // Convert Supabase equipment to Equipment type
 const convertSupabaseToEquipment = (item: any): Equipment => {
+  console.log('Converting equipment item:', item.name, 'category:', item.category);
   return {
     id: item.id,
     name: item.name,
@@ -58,6 +60,11 @@ const getEquipmentData = async (useMockData: boolean): Promise<Equipment[]> => {
       console.error('Error fetching equipment:', error);
       return [];
     }
+
+    console.log('Fetched equipment from database:', data?.length, 'items');
+    data?.forEach(item => {
+      console.log(`Equipment: ${item.name}, Category: ${item.category}, Location: ${item.location_lat}, ${item.location_lng}`);
+    });
 
     return (data || []).map(convertSupabaseToEquipment);
   } catch (error) {

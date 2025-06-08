@@ -12,6 +12,7 @@ export const getCategoryColor = (category: string): string => {
     case 'sups':
       return 'bg-violet-600';
     case 'mountain-bikes':
+    case 'mountain-bike':  // Handle both variations
       return 'bg-red-600';
     default:
       return 'bg-black';
