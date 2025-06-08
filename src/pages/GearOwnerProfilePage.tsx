@@ -146,16 +146,16 @@ const GearOwnerProfilePage = () => {
 // Helper function to get personality badge color
 function getPersonalityColor(personality?: string): string {
   switch (personality) {
+    case "Super Gear Lender":
+      return "bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 font-semibold";
     case "Weekend Warrior":
       return "bg-blue-100 text-blue-800";
-    case "Die-Hard":
-      return "bg-purple-100 text-purple-800";
     case "Nomadic Renter":
       return "bg-green-100 text-green-800";
     case "Local Shop Owner":
       return "bg-amber-100 text-amber-800";
-    case "Local Shaper":
-      return "bg-indigo-100 text-indigo-800";
+    case "Gear Lender":
+      return "bg-purple-100 text-purple-800";
     case "Quiver Lender":
       return "bg-rose-100 text-rose-800";
     default:

@@ -23,12 +23,13 @@ export const ownerPersonas: GearOwner[] = [
     imageUrl: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?auto=format&fit=crop&w=300&q=80",
     rating: 4.9,
     responseRate: 95,
-    bio: "What's up! I'm Chris. I work remotely as a project manager, which means I get to shred 3-4 times a week during the season. \
-      I've collected a bunch of gear over the years and love exploring different setups for various conditions. I'm active in several \
-      forums and always hunting for that perfect ride. My gear is meticulously maintained—I treat my gear better than my car!",
+    bio: "What's up! I'm Chris. I work remotely as a project manager, which means I get to hit the trails 3-4 times a week. \
+      I've built up a killer collection of mountain bikes over the years, from trail bikes to enduro rigs. I'm active in several \
+      MTB forums and always dialing in the perfect setup for our local terrain. My bikes are meticulously maintained and \
+      professionally serviced - I treat them better than my car!",
     location: "Los Angeles, CA",
-    memberSince: "2021",
-    personality: "Die-Hard"
+    memberSince: "2020",
+    personality: "Super Gear Lender"
   },
   {
     id: "owner-3",
@@ -104,11 +105,12 @@ export const ownerPersonas: GearOwner[] = [
     imageUrl: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&w=300&q=80",
     rating: 4.9,
     responseRate: 96,
-    bio: "What's up, I'm Taylor! As a former pro athlete, I've collected some serious gear over the years. Now I'm all about helping others \
-      experience top-quality equipment without the hefty price tag. My gear is professionally maintained and always ready for your next adventure.",
+    bio: "What's up, I'm Taylor! As a former pro mountain biker, I've got an incredible collection of high-end bikes. From World Cup race rigs \
+      to enduro beasts, I love sharing my knowledge and helping others experience pro-level gear. Every bike is maintained to race standards \
+      and tuned for the local trails. Let me help you find the perfect ride for your skill level and riding style!",
     location: "Los Angeles, CA",
-    memberSince: "2021",
-    personality: "Pro Enthusiast"
+    memberSince: "2020",
+    personality: "Super Gear Lender"
   },
   {
     id: "owner-9",

@@ -24,8 +24,8 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
   const paddleMaterials = ["Epoxy", "Inflatable", "Carbon Fiber", "Plastic"];
   const bikeMaterials = ["Aluminum", "Carbon Fiber", "Steel", "Titanium"];
 
-  // Individual owners for mountain bikes (cycling through personas)
-  const bikeOwnerIds = ["owner-1", "owner-2", "owner-3", "owner-4", "owner-5", "owner-6", "owner-7", "owner-8", "owner-9", "owner-10"];
+  // Mountain bike experts and enthusiasts
+  const bikeOwnerIds = ["owner-2", "owner-5", "owner-8", "owner-10"]; // Chris T, Dustin R, Taylor S, Casey K
 
   return Array.from({ length: count }).map((_, i) => {
     const id = staticIds[i]; // Use static ID
