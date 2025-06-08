@@ -19,8 +19,8 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
   const ownerLinkPath = isShop
     ? `/shop/${equipment.owner.shopId}`
     : isPrivateParty
-      ? `/party/${equipment.owner.partyId}`
-      : `/owner/${equipment.owner.id}`;
+      ? `/private-party/${equipment.owner.partyId}`
+      : `/gear-owner/${equipment.owner.id}`;
 
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
