@@ -3,10 +3,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
-import { supabase } from "@/integrations/supabase/client";
-import { uploadGearImage } from "@/utils/imageUpload";
 import { useGearFormValidation } from "@/hooks/useGearFormValidation";
 import { geocodeZipCode } from "@/utils/geocoding";
+import { handleGearImageUpload } from "@/utils/gearImageHandling";
+import { prepareEquipmentData } from "@/utils/equipmentDataPreparation";
+import { createEquipmentInDatabase, createPricingOptionsInDatabase } from "@/utils/gearDatabaseOperations";
 import { PricingOption } from "./types";
 
 interface FormData {
@@ -51,17 +52,6 @@ export const useGearFormSubmission = ({
   const { validateForm } = useGearFormValidation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const mapGearTypeToCategory = (gearType: string): string => {
-    const typeMap: { [key: string]: string } = {
-      "snowboard": "snowboards",
-      "skis": "skis",
-      "surfboard": "surfboards",
-      "sup": "sups",
-      "mountain-bike": "mountain-bikes"
-    };
-    return typeMap[gearType] || gearType;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -87,6 +77,7 @@ export const useGearFormSubmission = ({
       pricingOptions,
       imageUrl,
       useImageUrl,
+      role,
     };
 
     if (!validateForm(formData)) {
@@ -96,32 +87,20 @@ export const useGearFormSubmission = ({
     setIsSubmitting(true);
 
     try {
-      let finalImageUrl = duplicatedImageUrl || '/img/demostoke-logo-ds-transparent-cropped.webp'; // Use DS logo as default placeholder
-
-      // If using image URL, use that instead of uploading
-      if (useImageUrl && imageUrl) {
-        finalImageUrl = imageUrl;
-        console.log('Using provided image URL:', finalImageUrl);
-      } else if (images.length > 0) {
-        console.log('Uploading image:', images[0].name);
-        toast({
-          title: "Uploading Image",
-          description: "Please wait while we upload your gear image...",
-        });
-
-        try {
-          finalImageUrl = await uploadGearImage(images[0], user.id);
-          console.log('Image uploaded successfully:', finalImageUrl);
-        } catch (error: unknown) {
-          console.error('Image upload failed:', error);
+      // Handle image upload
+      const finalImageUrl = await handleGearImageUpload({
+        useImageUrl,
+        imageUrl,
+        images,
+        userId: user.id,
+        duplicatedImageUrl,
+        onProgress: (message) => {
           toast({
-            title: "Image Upload Failed",
-            description: error instanceof Error ? error.message : "Failed to upload image. Using DS logo instead.",
-            variant: "destructive",
+            title: "Uploading Image",
+            description: message,
           });
-          // Continue with DS logo if upload fails
-        }
-      }
+        },
+      });
 
       // Get coordinates from zip code
       let coordinates = null;
@@ -133,66 +112,26 @@ export const useGearFormSubmission = ({
         // Continue without coordinates if geocoding fails
       }
 
-      // Prepare the data for database insertion
-      const isMountainBike = gearType === "mountain-bike";
-      const sizeString = isMountainBike
-        ? dimensions.length // For mountain bikes, just use the size (S/M/L/XL/XXL)
-        : dimensions.thickness
-          ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness} ${measurementUnit}`
-          : `${dimensions.length} x ${dimensions.width} ${measurementUnit}`;
+      // Prepare equipment data
+      const equipmentData = prepareEquipmentData({
+        userId: user.id,
+        gearName,
+        gearType,
+        description,
+        zipCode,
+        coordinates,
+        dimensions,
+        measurementUnit,
+        skillLevel,
+        firstPricingOptionPrice: pricingOptions[0].price,
+        finalImageUrl,
+      });
 
-      const equipmentData = {
-        user_id: user.id,
-        name: gearName,
-        category: mapGearTypeToCategory(gearType),
-        description: description,
-        location_zip: zipCode,
-        location_lat: coordinates?.lat || null,
-        location_lng: coordinates?.lng || null,
-        size: sizeString,
-        suitable_skill_level: skillLevel,
-        price_per_day: parseFloat(pricingOptions[0].price),
-        status: 'available' as const,
-        image_url: finalImageUrl,
-        rating: 0,
-        review_count: 0,
-        weight: null,
-        material: null
-      };
+      // Create equipment in database
+      const equipmentResult = await createEquipmentInDatabase(equipmentData);
 
-      console.log('Submitting equipment data:', equipmentData);
-
-      // Insert the equipment into the database
-      const { data: equipmentResult, error: equipmentError } = await supabase
-        .from('equipment')
-        .insert([equipmentData])
-        .select()
-        .single();
-
-      if (equipmentError) {
-        console.error('Database error:', equipmentError);
-        throw equipmentError;
-      }
-
-      console.log('Equipment created successfully:', equipmentResult);
-
-      // Now insert all pricing options
-      const pricingData = pricingOptions.map(option => ({
-        equipment_id: equipmentResult.id,
-        price: parseFloat(option.price),
-        duration: option.duration
-      }));
-
-      const { error: pricingError } = await supabase
-        .from('pricing_options')
-        .insert(pricingData);
-
-      if (pricingError) {
-        console.error('Pricing options error:', pricingError);
-        throw pricingError;
-      }
-
-      console.log('Pricing options created successfully');
+      // Create pricing options in database
+      await createPricingOptionsInDatabase(equipmentResult.id, pricingOptions);
 
       toast({
         title: "Equipment Added",
