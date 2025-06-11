@@ -1,3 +1,4 @@
+
 import { UserEquipment } from "@/types/equipment";
 
 // Mock data for the current user's equipment
@@ -27,7 +28,8 @@ export const mockUserEquipment: UserEquipment[] = [
     },
     status: 'available',
     created_at: '2024-12-01',
-    updated_at: '2024-12-01'
+    updated_at: '2024-12-01',
+    visible_on_map: true
   },
   {
     id: "user-equip-2",
@@ -54,6 +56,7 @@ export const mockUserEquipment: UserEquipment[] = [
     },
     status: 'available',
     created_at: '2024-12-02',
-    updated_at: '2024-12-02'
+    updated_at: '2024-12-02',
+    visible_on_map: true
   }
 ];

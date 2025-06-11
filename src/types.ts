@@ -1,3 +1,4 @@
+
 export type PricingOption = {
   price: number;
   duration: string; // e.g., "day", "week", "month"
@@ -34,6 +35,7 @@ export interface Equipment {
   status?: 'available' | 'booked' | 'unavailable';
   created_at?: string;
   updated_at?: string;
+  visible_on_map?: boolean;
 }
 
 export interface GearOwner {

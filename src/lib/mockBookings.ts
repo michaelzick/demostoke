@@ -77,7 +77,8 @@ const convertUserEquipmentToEquipment = (userEquip: typeof mockUserEquipment[0],
   availability: userEquip.availability,
   status: userEquip.status,
   created_at: userEquip.created_at,
-  updated_at: userEquip.updated_at
+  updated_at: userEquip.updated_at,
+  visible_on_map: userEquip.visible_on_map
 });
 
 // Sample bookings others have made for my equipment
