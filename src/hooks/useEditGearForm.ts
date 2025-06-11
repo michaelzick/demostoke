@@ -16,7 +16,14 @@ export const useEditGearForm = () => {
 
   // Load equipment data when available
   useEquipmentDataLoader({
-    equipment,
+    equipment: equipment ? {
+      ...equipment,
+      status: equipment.status || 'available',
+      created_at: equipment.created_at || new Date().toISOString(),
+      updated_at: equipment.updated_at || new Date().toISOString(),
+      visible_on_map: equipment.visible_on_map !== undefined ? equipment.visible_on_map : true,
+      review_count: equipment.review_count || 0
+    } : undefined,
     setGearName: formState.setGearName,
     setGearType: formState.setGearType,
     setDescription: formState.setDescription,
@@ -28,7 +35,14 @@ export const useEditGearForm = () => {
 
   // Handle form submission
   const { handleSubmit, handleCancel, isSubmitting } = useEditGearFormSubmission({
-    equipment,
+    equipment: equipment ? {
+      ...equipment,
+      status: equipment.status || 'available',
+      created_at: equipment.created_at || new Date().toISOString(),
+      updated_at: equipment.updated_at || new Date().toISOString(),
+      visible_on_map: equipment.visible_on_map !== undefined ? equipment.visible_on_map : true,
+      review_count: equipment.review_count || 0
+    } : undefined,
     gearName: formState.gearName,
     gearType: formState.gearType,
     description: formState.description,
