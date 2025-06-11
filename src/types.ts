@@ -59,3 +59,11 @@ export interface User {
   imageUrl?: string;
   role?: string;
 }
+
+export interface UserRole {
+  id: string;
+  user_id: string;
+  role: 'admin' | 'user';
+  assigned_by?: string;
+  assigned_at: string;
+}

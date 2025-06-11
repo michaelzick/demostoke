@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useAuth } from "@/helpers";
 import { Button } from "@/components/ui/button";
@@ -7,9 +8,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { uploadVideoToSupabase } from "@/utils/videoUpload";
 import { Navigate } from "react-router-dom";
-import { Upload, Video, Database } from "lucide-react";
+import { Upload, Video, Database, Shield } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useMockData } from "@/hooks/useMockData";
+import { useIsAdmin } from "@/hooks/useUserRole";
+import { supabase } from "@/integrations/supabase/client";
 
 interface FileInputEvent extends React.ChangeEvent<HTMLInputElement> {
   target: HTMLInputElement & {
@@ -19,19 +22,29 @@ interface FileInputEvent extends React.ChangeEvent<HTMLInputElement> {
 
 const AdminPage = () => {
   const { user, isAuthenticated } = useAuth();
+  const { isAdmin, isLoading: roleLoading } = useIsAdmin();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const { showMockData, toggleMockData } = useMockData();
+  const [newAdminEmail, setNewAdminEmail] = useState("");
+  const [isGrantingAdmin, setIsGrantingAdmin] = useState(false);
 
-  // Check if user is admin (only your email)
-  const isAdmin = isAuthenticated && user?.email === "michaelzick@gmail.com";
-
-  // Redirect if not admin
+  // Redirect if not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/auth/signin" replace />;
   }
 
+  // Show loading while checking role
+  if (roleLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-400" />
+      </div>
+    );
+  }
+
+  // Redirect if not admin
   if (!isAdmin) {
     return <Navigate to="/" replace />;
   }
@@ -40,7 +53,6 @@ const AdminPage = () => {
     const file = event.target.files[0];
     if (file) {
       setSelectedFile(file);
-      // Set default filename from the file name
       setFileName(file.name);
     }
   };
@@ -65,10 +77,8 @@ const AdminPage = () => {
         description: `Video uploaded successfully: ${fileName}`,
       });
 
-      // Reset form
       setSelectedFile(null);
       setFileName("");
-      // Reset file input
       const fileInput = document.getElementById('video-file') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
 
@@ -89,9 +99,121 @@ const AdminPage = () => {
     toggleMockData();
   };
 
+  const grantAdminRole = async () => {
+    if (!newAdminEmail.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter an email address",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsGrantingAdmin(true);
+
+    try {
+      // First, find the user by email in the profiles table
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .ilike('name', `%${newAdminEmail}%`)
+        .single();
+
+      if (profileError || !profile) {
+        toast({
+          title: "User Not Found",
+          description: "No user found with that email address",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Check if user already has admin role
+      const { data: existingRole } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', profile.id)
+        .eq('role', 'admin')
+        .single();
+
+      if (existingRole) {
+        toast({
+          title: "Already Admin",
+          description: "This user already has admin privileges",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Grant admin role
+      const { error: insertError } = await supabase
+        .from('user_roles')
+        .insert({
+          user_id: profile.id,
+          role: 'admin',
+          assigned_by: user?.id
+        });
+
+      if (insertError) {
+        throw insertError;
+      }
+
+      toast({
+        title: "Admin Role Granted",
+        description: `Successfully granted admin privileges to ${newAdminEmail}`,
+      });
+
+      setNewAdminEmail("");
+
+    } catch (error) {
+      console.error('Error granting admin role:', error);
+      toast({
+        title: "Error",
+        description: "Failed to grant admin role",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGrantingAdmin(false);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl space-y-6">
-      {/* Mock Data Settings */}
+      {/* User Management Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Shield className="h-6 w-6" />
+            User Management
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="admin-email">Grant Admin Role to User</Label>
+            <div className="flex gap-2">
+              <Input
+                id="admin-email"
+                type="email"
+                placeholder="user@example.com"
+                value={newAdminEmail}
+                onChange={(e) => setNewAdminEmail(e.target.value)}
+                disabled={isGrantingAdmin}
+              />
+              <Button
+                onClick={grantAdminRole}
+                disabled={isGrantingAdmin || !newAdminEmail.trim()}
+              >
+                {isGrantingAdmin ? "Granting..." : "Grant Admin"}
+              </Button>
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Enter the email address of a user to grant them admin privileges. They must already have an account.
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* Data Settings */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">

@@ -9,12 +9,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/helpers";
+import { useIsAdmin } from "@/hooks/useUserRole";
 
 const UserMenu = () => {
   const { isAuthenticated, logout, user } = useAuth();
-
-  // Check if user is admin
-  const isAdmin = isAuthenticated && user?.email === "michaelzick@gmail.com";
+  const { isAdmin, isLoading } = useIsAdmin();
 
   if (isAuthenticated) {
     return (
@@ -35,7 +34,7 @@ const UserMenu = () => {
           <DropdownMenuItem asChild className="cursor-pointer">
             <Link to="/bookings">Bookings</Link>
           </DropdownMenuItem>
-          {isAdmin && (
+          {!isLoading && isAdmin && (
             <>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild className="cursor-pointer">

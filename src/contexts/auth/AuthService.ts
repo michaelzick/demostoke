@@ -58,11 +58,18 @@ export class AuthService {
         name: session.user.user_metadata?.name || 'User',
         email: session.user.email || '',
         imageUrl: null,
-        role: 'private-party'
+        role: 'user' // Default role
       };
     }
 
     console.log("Profile data fetched:", data);
+
+    // Fetch user role
+    const { data: roleData } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', session.user.id)
+      .single();
 
     // Return user data
     return {
@@ -70,7 +77,7 @@ export class AuthService {
       name: data.name || session.user.user_metadata?.name || 'User',
       email: session.user.email || '',
       imageUrl: data.avatar_url,
-      role: data.role || 'private-party'
+      role: roleData?.role || 'user'
     };
   }
 }
