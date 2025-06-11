@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -132,7 +133,7 @@ const AdminPage = () => {
         throw new Error("Unable to fetch users");
       }
 
-      const targetUser = userData.users.find(user => user.email === userEmail.trim());
+      const targetUser = userData.users.find((user: any) => user.email === userEmail.trim());
       
       if (!targetUser) {
         toast({
