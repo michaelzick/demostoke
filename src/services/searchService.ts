@@ -1,4 +1,3 @@
-
 import { Equipment } from "@/types";
 import { mockEquipment } from "@/lib/mockData";
 import { supabase } from "@/integrations/supabase/client";
@@ -47,6 +46,7 @@ const convertSupabaseToEquipment = (item: any): Equipment => {
 // Get global app setting for mock data
 const getShowMockDataSetting = async (): Promise<boolean> => {
   try {
+    console.log('🔍 Checking global app setting for show_mock_data...');
     const { data, error } = await supabase
       .from('app_settings')
       .select('setting_value')
@@ -54,13 +54,17 @@ const getShowMockDataSetting = async (): Promise<boolean> => {
       .single();
 
     if (error) {
-      console.error('Error fetching app setting:', error);
+      console.error('❌ Error fetching app setting:', error);
+      console.log('🔄 Defaulting to mock data due to error');
       return true; // Default to mock data if error
     }
 
-    return data?.setting_value === true;
+    const useMockData = data?.setting_value === true;
+    console.log('✅ Global app setting show_mock_data:', useMockData);
+    return useMockData;
   } catch (error) {
-    console.error('Error fetching app setting:', error);
+    console.error('❌ Exception fetching app setting:', error);
+    console.log('🔄 Defaulting to mock data due to exception');
     return true; // Default to mock data if error
   }
 };
@@ -70,9 +74,11 @@ const getEquipmentData = async (): Promise<Equipment[]> => {
   const useMockData = await getShowMockDataSetting();
   
   if (useMockData) {
+    console.log('📦 Using MOCK equipment data');
     return mockEquipment;
   }
 
+  console.log('🗄️ Using REAL equipment data from database');
   try {
     const { data, error } = await supabase
       .from('equipment')
@@ -81,30 +87,33 @@ const getEquipmentData = async (): Promise<Equipment[]> => {
       .eq('visible_on_map', true); // Only fetch visible equipment
 
     if (error) {
-      console.error('Error fetching equipment:', error);
+      console.error('❌ Error fetching equipment from database:', error);
+      console.log('🔄 Falling back to empty array (no mock data fallback)');
       return [];
     }
 
-    console.log('Fetched equipment from database:', data?.length, 'items');
+    console.log('✅ Fetched equipment from database:', data?.length, 'items');
     data?.forEach(item => {
       console.log(`Equipment: ${item.name}, Category: ${item.category}, Location: ${item.location_lat}, ${item.location_lng}`);
     });
 
     return (data || []).map(convertSupabaseToEquipment);
   } catch (error) {
-    console.error('Error fetching equipment:', error);
+    console.error('❌ Exception fetching equipment from database:', error);
+    console.log('🔄 Falling back to empty array (no mock data fallback)');
     return [];
   }
 };
 
 // Simulated AI-based search function
 export const searchEquipmentWithNLP = async (query: string): Promise<Equipment[]> => {
-  console.log(`Processing natural language query: "${query}"`);
+  console.log(`🔍 Processing natural language query: "${query}"`);
 
   // Get the appropriate dataset based on global setting
   const equipmentData = await getEquipmentData();
 
   if (equipmentData.length === 0) {
+    console.log('⚠️ No equipment data available for search');
     return [];
   }
 
