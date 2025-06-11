@@ -42,8 +42,8 @@ const AdminPage = () => {
 
       <div className="space-y-6">
         <DataDisplaySettings />
-        <VideoUploadSection />
         <UserManagementSection />
+        <VideoUploadSection />
       </div>
     </div>
   );
