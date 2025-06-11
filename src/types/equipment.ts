@@ -1,6 +1,4 @@
 
-import { GearOwner } from "@/types";
-
 export interface UserEquipment {
   id: string;
   name: string;
@@ -9,7 +7,9 @@ export interface UserEquipment {
   image_url: string;
   price_per_day: number;
   rating: number;
-  review_count: number;
+  status: 'available' | 'booked' | 'unavailable';
+  created_at: string;
+  visible_on_map: boolean;
   location: {
     lat: number;
     lng: number;
@@ -23,10 +23,5 @@ export interface UserEquipment {
   };
   availability: {
     available: boolean;
-    nextAvailableDate?: string;
   };
-  status: 'available' | 'booked' | 'unavailable';
-  created_at: string;
-  updated_at: string;
-  owner?: GearOwner; // Add owner information
 }

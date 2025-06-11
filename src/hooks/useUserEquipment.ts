@@ -29,6 +29,7 @@ export const useUserEquipment = () => {
       return (data || []).map(item => ({
         ...item,
         status: item.status as 'available' | 'booked' | 'unavailable',
+        visible_on_map: item.visible_on_map ?? true, // Default to true for existing equipment
         location: {
           lat: typeof item.location_lat === 'number' ? item.location_lat : 34.0522,  // Default to LA coordinates
           lng: typeof item.location_lng === 'number' ? item.location_lng : -118.2437,
@@ -58,6 +59,26 @@ export const useDeleteEquipment = () => {
       const { error } = await supabase
         .from('equipment')
         .delete()
+        .eq('id', equipmentId)
+        .eq('user_id', user?.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-equipment'] });
+    },
+  });
+};
+
+export const useUpdateEquipmentVisibility = () => {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async ({ equipmentId, visible }: { equipmentId: string; visible: boolean }) => {
+      const { error } = await supabase
+        .from('equipment')
+        .update({ visible_on_map: visible })
         .eq('id', equipmentId)
         .eq('user_id', user?.id);
 

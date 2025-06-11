@@ -29,6 +29,7 @@ export type Database = {
           suitable_skill_level: string | null
           updated_at: string
           user_id: string
+          visible_on_map: boolean
           weight: string | null
         }
         Insert: {
@@ -50,6 +51,7 @@ export type Database = {
           suitable_skill_level?: string | null
           updated_at?: string
           user_id: string
+          visible_on_map?: boolean
           weight?: string | null
         }
         Update: {
@@ -71,6 +73,7 @@ export type Database = {
           suitable_skill_level?: string | null
           updated_at?: string
           user_id?: string
+          visible_on_map?: boolean
           weight?: string | null
         }
         Relationships: [

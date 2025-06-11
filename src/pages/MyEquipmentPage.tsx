@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { Edit, Trash2, Copy, ExternalLink } from "lucide-react";
+import { Edit, Trash2, Copy, ExternalLink, Eye, EyeOff } from "lucide-react";
 import { Snowflake, Waves, Bicycle } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
-import { useUserEquipment, useDeleteEquipment } from "@/hooks/useUserEquipment";
+import { useUserEquipment, useDeleteEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
 import { UserEquipment } from "@/types/equipment";
 
 const MyEquipmentPage = () => {
@@ -27,6 +28,7 @@ const MyEquipmentPage = () => {
   const { isAuthenticated } = useAuth();
   const { data: userEquipment = [], isLoading, error } = useUserEquipment();
   const deleteEquipmentMutation = useDeleteEquipment();
+  const updateVisibilityMutation = useUpdateEquipmentVisibility();
 
   // Handle authentication and scroll to top
   useEffect(() => {
@@ -90,6 +92,30 @@ const MyEquipmentPage = () => {
         });
       },
     });
+  };
+
+  const handleVisibilityToggle = (id: string, currentVisibility: boolean) => {
+    updateVisibilityMutation.mutate(
+      { equipmentId: id, visible: !currentVisibility },
+      {
+        onSuccess: () => {
+          toast({
+            title: currentVisibility ? "Gear Hidden" : "Gear Shown",
+            description: currentVisibility 
+              ? "Your gear is now hidden from public view." 
+              : "Your gear is now visible to others.",
+          });
+        },
+        onError: (error: unknown) => {
+          console.error('Error updating visibility:', error);
+          toast({
+            title: "Error",
+            description: error instanceof Error ? error.message : "Failed to update visibility",
+            variant: "destructive",
+          });
+        },
+      }
+    );
   };
 
   const handleUpdate = (id: string) => {
@@ -218,6 +244,14 @@ const MyEquipmentPage = () => {
                 <div className="absolute top-2 left-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
                   <ExternalLink className="h-4 w-4" />
                 </div>
+                {/* Visibility indicator */}
+                <div className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
+                  {item.visible_on_map ? (
+                    <Eye className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <EyeOff className="h-4 w-4 text-gray-500" />
+                  )}
+                </div>
               </div>
               <CardHeader className="cursor-pointer" onClick={() => handleViewDetails(item.id)}>
                 <CardTitle className="line-clamp-1">{item.name}</CardTitle>
@@ -239,6 +273,24 @@ const MyEquipmentPage = () => {
                   </div>
                   <div className="text-sm">
                     <span className="font-medium">Skill Level:</span> {item.specifications?.suitable || 'N/A'}
+                  </div>
+                </div>
+                
+                {/* Visibility toggle */}
+                <div className="mt-4 pt-4 border-t">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id={`visibility-${item.id}`}
+                      checked={item.visible_on_map}
+                      onCheckedChange={() => handleVisibilityToggle(item.id, item.visible_on_map)}
+                      disabled={updateVisibilityMutation.isPending}
+                    />
+                    <label 
+                      htmlFor={`visibility-${item.id}`}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      Show on map and in search results
+                    </label>
                   </div>
                 </div>
               </CardContent>

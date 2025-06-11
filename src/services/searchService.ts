@@ -54,7 +54,8 @@ const getEquipmentData = async (useMockData: boolean): Promise<Equipment[]> => {
     const { data, error } = await supabase
       .from('equipment')
       .select('*')
-      .eq('status', 'available');
+      .eq('status', 'available')
+      .eq('visible_on_map', true); // Only fetch visible equipment
 
     if (error) {
       console.error('Error fetching equipment:', error);
