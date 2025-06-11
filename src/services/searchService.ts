@@ -44,8 +44,31 @@ const convertSupabaseToEquipment = (item: any): Equipment => {
   };
 };
 
-// Get equipment data based on mock data preference
-const getEquipmentData = async (useMockData: boolean): Promise<Equipment[]> => {
+// Get global app setting for mock data
+const getShowMockDataSetting = async (): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .from('app_settings')
+      .select('setting_value')
+      .eq('setting_key', 'show_mock_data')
+      .single();
+
+    if (error) {
+      console.error('Error fetching app setting:', error);
+      return true; // Default to mock data if error
+    }
+
+    return data?.setting_value === true;
+  } catch (error) {
+    console.error('Error fetching app setting:', error);
+    return true; // Default to mock data if error
+  }
+};
+
+// Get equipment data based on global app setting
+const getEquipmentData = async (): Promise<Equipment[]> => {
+  const useMockData = await getShowMockDataSetting();
+  
   if (useMockData) {
     return mockEquipment;
   }
@@ -75,11 +98,11 @@ const getEquipmentData = async (useMockData: boolean): Promise<Equipment[]> => {
 };
 
 // Simulated AI-based search function
-export const searchEquipmentWithNLP = async (query: string, useMockData: boolean = true): Promise<Equipment[]> => {
-  console.log(`Processing natural language query: "${query}" with ${useMockData ? 'mock' : 'real'} data`);
+export const searchEquipmentWithNLP = async (query: string): Promise<Equipment[]> => {
+  console.log(`Processing natural language query: "${query}"`);
 
-  // Get the appropriate dataset
-  const equipmentData = await getEquipmentData(useMockData);
+  // Get the appropriate dataset based on global setting
+  const equipmentData = await getEquipmentData();
 
   if (equipmentData.length === 0) {
     return [];

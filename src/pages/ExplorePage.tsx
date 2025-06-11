@@ -7,14 +7,12 @@ import EquipmentCard from "@/components/EquipmentCard";
 import FilterBar from "@/components/FilterBar";
 import { Equipment } from "@/types";
 import { useToast } from "@/hooks/use-toast";
-import { useMockData } from "@/hooks/useMockData";
 
 const ExplorePage = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const isSearchRoute = !!useMatch("/search");
-  const { showMockData } = useMockData();
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("distance");
@@ -22,11 +20,11 @@ const ExplorePage = () => {
   const [filteredEquipment, setFilteredEquipment] = useState<Equipment[]>([]);
   const [allEquipment, setAllEquipment] = useState<Equipment[]>([]);
 
-  // Load equipment data when mock data preference changes
+  // Load equipment data using global app settings
   useEffect(() => {
     const loadEquipment = async () => {
       try {
-        const equipment = await getEquipmentData(showMockData);
+        const equipment = await getEquipmentData();
         setAllEquipment(equipment);
       } catch (error) {
         console.error("Failed to load equipment:", error);
@@ -35,7 +33,7 @@ const ExplorePage = () => {
     };
 
     loadEquipment();
-  }, [showMockData]);
+  }, []);
 
   // Update active category when URL changes
   useEffect(() => {
