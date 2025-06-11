@@ -23,13 +23,13 @@ const SearchResultsPage = () => {
   const { toast } = useToast();
   const { showMockData } = useMockData();
 
-  // Perform search when query or mock data preference changes
+  // Perform search when query changes
   useEffect(() => {
     const fetchResults = async () => {
       if (!query) {
-        // If no query, get all equipment based on mock data preference
+        // If no query, get all equipment based on global app setting
         try {
-          const equipmentResults = await getEquipmentData(showMockData);
+          const equipmentResults = await getEquipmentData();
           setResults(equipmentResults);
         } catch (error) {
           console.error("Failed to load equipment:", error);
@@ -40,7 +40,7 @@ const SearchResultsPage = () => {
 
       setIsLoading(true);
       try {
-        const equipmentResults = await searchEquipmentWithNLP(query, showMockData);
+        const equipmentResults = await searchEquipmentWithNLP(query);
         setResults(equipmentResults);
       } catch (error) {
         console.error("Search failed:", error);
@@ -56,7 +56,7 @@ const SearchResultsPage = () => {
     };
 
     fetchResults();
-  }, [query, showMockData, toast]);
+  }, [query, toast]);
 
   // Filter results by category if selected
   const filteredResults = activeCategory
