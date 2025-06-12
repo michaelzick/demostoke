@@ -15,6 +15,42 @@ const ownerIdToOwner = Object.fromEntries(
   allOwners.map((owner) => [owner.id, owner])
 );
 
+// Image arrays for different categories
+const snowboardImages = [
+  "https://images.unsplash.com/photo-1518608774889-b04d2abe7702?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1551524164-6cf2ac26976e?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1551524164-9a1dcbc0c40b?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=80"
+];
+
+const skiImages = [
+  "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1578934878824-b17e0b100b8b?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1609039928928-7ed2b9dca6cb?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=800&q=80"
+];
+
+const surfboardImages = [
+  "https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1502003148287-cea895d068da?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1609142341056-28e20b47b592?auto=format&fit=crop&w=800&q=80"
+];
+
+const supImages = [
+  "https://images.unsplash.com/photo-1597175971918-76e969f42f74?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1609039928928-7ed2b9dca6cb?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=800&q=80"
+];
+
+const bikeImages = [
+  "https://images.unsplash.com/photo-1673121414328-52eff37bc6d0?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1585779034823-7e9ac8faec70?auto=format&fit=crop&w=800&q=80"
+];
+
 // Mock equipment data generator
 export function generateMockEquipment(count: number = 20): Equipment[] {
   const categories = ["snowboards", "skis", "surfboards", "sups", "mountain-bikes"];
@@ -53,44 +89,54 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
     }
 
     // Generate different details based on category
-    let name, material, suitable, imageUrl;
+    let name, material, suitable, images;
 
     switch (category) {
       case "snowboards":
         name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][i % 4]} Snowboard`;
         material = snowboardMaterials[i % snowboardMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][i % 4]}`;
-        imageUrl = `https://images.unsplash.com/photo-1518608774889-b04d2abe7702?auto=format&fit=crop&w=800&q=80`;
+        // Randomize 2-4 images from snowboard collection
+        const snowboardCount = Math.floor(Math.random() * 3) + 2; // 2-4 images
+        images = snowboardImages.slice(0, snowboardCount);
         break;
       case "skis":
         name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][i % 4]} Skis`;
         material = skiMaterials[i % skiMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][i % 4]}`;
-        imageUrl = `https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80`;
+        // Randomize 2-4 images from ski collection
+        const skiCount = Math.floor(Math.random() * 3) + 2; // 2-4 images
+        images = skiImages.slice(0, skiCount);
         break;
       case "surfboards":
         name = `${['Shortboard', 'Longboard', 'Fish', 'Funboard'][i % 4]} Surfboard`;
         material = surfboardMaterials[i % surfboardMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][i % 4]} Surfers`;
-        imageUrl = `https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80`;
+        // Randomize 2-4 images from surfboard collection
+        const surfboardCount = Math.floor(Math.random() * 3) + 2; // 2-4 images
+        images = surfboardImages.slice(0, surfboardCount);
         break;
       case "sups":
         name = `${['Touring', 'All-Around', 'Inflatable', 'Racing'][i % 4]} Paddle Board`;
         material = paddleMaterials[i % paddleMaterials.length];
         suitable = `${['Flat Water', 'Surf', 'Racing', 'Yoga'][i % 4]}`;
-        imageUrl = `https://images.unsplash.com/photo-1597175971918-76e969f42f74?auto=format&fit=crop&w=800&q=80`;
+        // Randomize 2-4 images from SUP collection
+        const supCount = Math.floor(Math.random() * 3) + 2; // 2-4 images
+        images = supImages.slice(0, supCount);
         break;
       case "mountain-bikes":
         name = `${['Trail', 'Cross Country', 'Enduro', 'Downhill'][i % 4]} Mountain Bike`;
         material = bikeMaterials[i % bikeMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Expert'][i % 4]} Riders`;
-        imageUrl = `https://images.unsplash.com/photo-1673121414328-52eff37bc6d0?auto=format&fit=crop&w=800&q=80`;
+        // Randomize 2-4 images from bike collection
+        const bikeCount = Math.floor(Math.random() * 3) + 2; // 2-4 images
+        images = bikeImages.slice(0, bikeCount);
         break;
       default:
         name = "Equipment";
         material = "Various";
         suitable = "All Levels";
-        imageUrl = "https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80";
+        images = ["https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80"];
     }
 
     // Generate random location near LA
@@ -112,8 +158,8 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
       name,
       category,
       description: `Great ${category.replace('-', ' ')} for ${suitable.toLowerCase()}. Well maintained and ready for your next adventure!`,
-      image_url: imageUrl,
-      images: [imageUrl], // Add images array with single image
+      image_url: images[0], // Primary image is the first one
+      images: images, // Array of all images
       price_per_day: Math.floor(Math.random() * 30) + 20, // $20-$50
       rating: Number((Math.random() * 2 + 3).toFixed(1)), // 3.0-5.0 as a number
       review_count: Math.floor(Math.random() * 50) + 1,

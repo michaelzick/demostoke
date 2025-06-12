@@ -12,7 +12,8 @@ export const mockUserEquipment: UserEquipment[] = [
     images: [
       "https://images.unsplash.com/photo-1518608774889-b04d2abe7702?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1551524164-6cf2ac26976e?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1551524164-9a1dcbc0c40b?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1551524164-9a1dcbc0c40b?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=80"
     ],
     price_per_day: 45,
     rating: 4.8,
@@ -44,7 +45,8 @@ export const mockUserEquipment: UserEquipment[] = [
     image_url: "https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80",
     images: [
       "https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80",
-      "https://images.unsplash.com/photo-1502003148287-cea895d068da?auto=format&fit=crop&w=800&q=80"
+      "https://images.unsplash.com/photo-1502003148287-cea895d068da?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80"
     ],
     price_per_day: 35,
     rating: 4.7,
