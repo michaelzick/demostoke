@@ -67,6 +67,7 @@ const convertUserEquipmentToEquipment = (userEquip: typeof mockUserEquipment[0],
   category: userEquip.category,
   description: userEquip.description,
   image_url: userEquip.image_url,
+  images: userEquip.images,
   price_per_day: userEquip.price_per_day,
   rating: userEquip.rating,
   review_count: userEquip.review_count,
@@ -75,6 +76,9 @@ const convertUserEquipmentToEquipment = (userEquip: typeof mockUserEquipment[0],
   distance: 0, // Default distance for owned equipment
   specifications: userEquip.specifications,
   availability: userEquip.availability,
+  pricing_options: [
+    { id: '1', price: userEquip.price_per_day, duration: 'day' }
+  ],
   status: userEquip.status,
   created_at: userEquip.created_at,
   updated_at: userEquip.updated_at,

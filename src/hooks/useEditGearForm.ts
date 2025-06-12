@@ -18,7 +18,7 @@ export const useEditGearForm = () => {
   useEquipmentDataLoader({
     equipment: equipment ? {
       ...equipment,
-      status: equipment.status || 'available',
+      status: (equipment.status as 'available' | 'booked' | 'unavailable') || 'available',
       created_at: equipment.created_at || new Date().toISOString(),
       updated_at: equipment.updated_at || new Date().toISOString(),
       visible_on_map: equipment.visible_on_map !== undefined ? equipment.visible_on_map : true,
@@ -37,7 +37,7 @@ export const useEditGearForm = () => {
   const { handleSubmit, handleCancel, isSubmitting } = useEditGearFormSubmission({
     equipment: equipment ? {
       ...equipment,
-      status: equipment.status || 'available',
+      status: (equipment.status as 'available' | 'booked' | 'unavailable') || 'available',
       created_at: equipment.created_at || new Date().toISOString(),
       updated_at: equipment.updated_at || new Date().toISOString(),
       visible_on_map: equipment.visible_on_map !== undefined ? equipment.visible_on_map : true,
