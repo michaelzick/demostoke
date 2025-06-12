@@ -38,7 +38,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
                   <img
                     src={imageUrl}
                     alt={`${equipment.name} - Image ${index + 1}`}
-                    className="h-full w-full object-cover transition-all hover:scale-105"
+                    className="h-full w-full object-cover"
                   />
                 </CarouselItem>
               ))}
@@ -50,7 +50,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
           <img
             src={images[0] || equipment.image_url}
             alt={equipment.name}
-            className="h-full w-full object-cover transition-all hover:scale-105"
+            className="h-full w-full object-cover"
           />
         )}
         
