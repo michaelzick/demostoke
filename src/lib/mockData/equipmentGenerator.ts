@@ -92,7 +92,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
     let name, material, suitable, images;
 
     switch (category) {
-      case "snowboards":
+      case "snowboards": {
         name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][i % 4]} Snowboard`;
         material = snowboardMaterials[i % snowboardMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][i % 4]}`;
@@ -100,7 +100,8 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         const snowboardCount = Math.floor(Math.random() * 3) + 2; // 2-4 images
         images = snowboardImages.slice(0, snowboardCount);
         break;
-      case "skis":
+      }
+      case "skis": {
         name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][i % 4]} Skis`;
         material = skiMaterials[i % skiMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][i % 4]}`;
@@ -108,7 +109,8 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         const skiCount = Math.floor(Math.random() * 3) + 2; // 2-4 images
         images = skiImages.slice(0, skiCount);
         break;
-      case "surfboards":
+      }
+      case "surfboards": {
         name = `${['Shortboard', 'Longboard', 'Fish', 'Funboard'][i % 4]} Surfboard`;
         material = surfboardMaterials[i % surfboardMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][i % 4]} Surfers`;
@@ -116,7 +118,8 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         const surfboardCount = Math.floor(Math.random() * 3) + 2; // 2-4 images
         images = surfboardImages.slice(0, surfboardCount);
         break;
-      case "sups":
+      }
+      case "sups": {
         name = `${['Touring', 'All-Around', 'Inflatable', 'Racing'][i % 4]} Paddle Board`;
         material = paddleMaterials[i % paddleMaterials.length];
         suitable = `${['Flat Water', 'Surf', 'Racing', 'Yoga'][i % 4]}`;
@@ -124,7 +127,8 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         const supCount = Math.floor(Math.random() * 3) + 2; // 2-4 images
         images = supImages.slice(0, supCount);
         break;
-      case "mountain-bikes":
+      }
+      case "mountain-bikes": {
         name = `${['Trail', 'Cross Country', 'Enduro', 'Downhill'][i % 4]} Mountain Bike`;
         material = bikeMaterials[i % bikeMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Expert'][i % 4]} Riders`;
@@ -132,6 +136,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         const bikeCount = Math.floor(Math.random() * 3) + 2; // 2-4 images
         images = bikeImages.slice(0, bikeCount);
         break;
+      }
       default:
         name = "Equipment";
         material = "Various";
