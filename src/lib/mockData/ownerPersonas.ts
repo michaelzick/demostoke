@@ -8,6 +8,7 @@ export const ownerPersonas: GearOwner[] = [
     name: "Rachel S.",
     imageUrl: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=300&q=80",
     rating: 4.8,
+    reviewCount: 24,
     responseRate: 98,
     bio: "Hey there! I'm Rachel, a marketing manager from San Diego who loves being active whenever I can escape the office. \
       As a weekend warrior (1-2x/month), I've built a small collection of quality gear that I'd love to share when I'm not using it. \
@@ -22,6 +23,7 @@ export const ownerPersonas: GearOwner[] = [
     name: "Chris T.",
     imageUrl: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?auto=format&fit=crop&w=300&q=80",
     rating: 4.9,
+    reviewCount: 47,
     responseRate: 95,
     bio: "What's up! I'm Chris. I work remotely as a project manager, which means I get to hit the trails 3-4 times a week. \
       I've built up a killer collection of mountain bikes over the years, from trail bikes to enduro rigs. I'm active in several \
@@ -36,6 +38,7 @@ export const ownerPersonas: GearOwner[] = [
     name: "Maya L.",
     imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=300&q=80",
     rating: 4.7,
+    reviewCount: 18,
     responseRate: 92,
     bio: "Hi, I'm Maya! I live the van life and work as a remote UX designer, chasing adventures wherever I can find them. \
       Being constantly on the move means I can't own tons of gear, but I do have some quality pieces that I can lend out when I'm \
@@ -50,6 +53,7 @@ export const ownerPersonas: GearOwner[] = [
     name: "Tony M.",
     imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
     rating: 4.9,
+    reviewCount: 89,
     responseRate: 99,
     bio: "I'm Tony, co-owner of Mountain Edge Board Shop. We specialize in high-performance gear for any outdoor adventure. \
       Our demo program lets you try before you buy, and if you decide to purchase after your demo, we'll apply the rental fee \
@@ -64,6 +68,7 @@ export const ownerPersonas: GearOwner[] = [
     name: "Dustin R.",
     imageUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80",
     rating: 4.8,
+    reviewCount: 33,
     responseRate: 97,
     bio: "Hey! I'm Dustin, an avid mountain biker with a passion for the trails. I've been riding for over a decade and \
       have built up quite a collection of high-end bikes. From XC racing to downhill, I've got bikes for every style of riding. \
@@ -78,6 +83,7 @@ export const ownerPersonas: GearOwner[] = [
     name: "Jessie K.",
     imageUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80",
     rating: 4.6,
+    reviewCount: 21,
     responseRate: 94,
     bio: "Aloha! I'm Jessie, a yoga instructor in Encinitas with a passion for anything outdoors. I've accumulated quite a collection \
       of gear for different conditions, and I'm happy to share them when I'm not using them. My quiver includes everything from \
@@ -92,6 +98,7 @@ export const ownerPersonas: GearOwner[] = [
     name: "Jamie M.",
     imageUrl: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?auto=format&fit=crop&w=300&q=80",
     rating: 4.5,
+    reviewCount: 12,
     responseRate: 90,
     bio: "Hey there! I'm Jamie, an outdoor enthusiast who loves to share my gear with the community. I carefully maintain all my equipment and \
       am always happy to provide tips on getting the most out of your rental. Feel free to message me with any questions!",
@@ -104,6 +111,7 @@ export const ownerPersonas: GearOwner[] = [
     name: "Taylor S.",
     imageUrl: "https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&w=300&q=80",
     rating: 4.9,
+    reviewCount: 56,
     responseRate: 96,
     bio: "What's up, I'm Taylor! As a former pro mountain biker, I've got an incredible collection of high-end bikes. From World Cup race rigs \
       to enduro beasts, I love sharing my knowledge and helping others experience pro-level gear. Every bike is maintained to race standards \
@@ -117,6 +125,7 @@ export const ownerPersonas: GearOwner[] = [
     name: "Jordan T.",
     imageUrl: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80",
     rating: 4.7,
+    reviewCount: 29,
     responseRate: 93,
     bio: "Jordan here - outdoor gear collector and adventure seeker. I believe everyone should have access to quality equipment, which is why I \
       started lending my gear. I'm constantly updating my collection with the latest and greatest, so you'll always find something exciting to try!",
@@ -129,6 +138,7 @@ export const ownerPersonas: GearOwner[] = [
     name: "Casey K.",
     imageUrl: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=300&q=80",
     rating: 4.8,
+    reviewCount: 31,
     responseRate: 95,
     bio: "Hey, I'm Casey! I got into mountain biking during the pandemic and fell in love with exploring LA's trail networks. \
       I've got a few quality bikes that I love sharing with others when I'm not riding. Whether you're looking for a mellow cruise on fire roads \

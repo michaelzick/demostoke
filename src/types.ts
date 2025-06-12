@@ -1,3 +1,4 @@
+
 export interface Equipment {
   id: string;
   name: string;
@@ -23,15 +24,21 @@ export interface Equipment {
   };
   availability: {
     available: boolean;
+    nextAvailableDate?: string; // Add optional nextAvailableDate
   };
   pricing_options: [PricingOption];
+  status?: string; // Add optional status
+  created_at?: string; // Add optional created_at
+  updated_at?: string; // Add optional updated_at
+  visible_on_map?: boolean; // Add optional visible_on_map
 }
+
 export interface Owner {
   id: string;
   name: string;
   imageUrl: string;
   rating: number;
-  reviewCount: number;
+  reviewCount: number; // Make sure reviewCount is included
   responseRate: number;
   location?: string;
   memberSince?: string;
@@ -46,3 +53,15 @@ export interface PricingOption {
   price: number;
   duration: string;
 }
+
+// Add User interface
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  imageUrl: string | null;
+  role: string;
+}
+
+// Add GearOwner interface (alias for Owner for backward compatibility)
+export interface GearOwner extends Owner {}

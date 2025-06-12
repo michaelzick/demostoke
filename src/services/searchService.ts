@@ -1,3 +1,4 @@
+
 import { Equipment } from "@/types";
 import { mockEquipment } from "@/lib/mockData";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,6 +20,7 @@ const convertSupabaseToEquipment = (item: any): Equipment => {
       name: 'Owner', // We'd need to join with profiles to get real name
       imageUrl: 'https://api.dicebear.com/6.x/avataaars/svg?seed=' + item.user_id,
       rating: 4.8,
+      reviewCount: 15, // Add reviewCount
       responseRate: 95,
     },
     location: {

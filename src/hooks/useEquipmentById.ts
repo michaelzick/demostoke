@@ -41,6 +41,7 @@ export const useEquipmentById = (id: string) => {
           name: 'Owner',
           imageUrl: 'https://api.dicebear.com/6.x/avataaars/svg?seed=' + data.user_id,
           rating: 4.8,
+          reviewCount: 15, // Add reviewCount
           responseRate: 95,
         },
         location: {
@@ -62,6 +63,9 @@ export const useEquipmentById = (id: string) => {
           { id: '1', price: Number(data.price_per_day), duration: 'day' }
         ],
         status: data.status || 'available',
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+        visible_on_map: data.visible_on_map !== undefined ? data.visible_on_map : true,
       };
     },
     enabled: !!id,

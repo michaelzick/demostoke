@@ -103,6 +103,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
       name: `Owner ${ownerId}`,
       imageUrl: `https://api.dicebear.com/6.x/avataaars/svg?seed=${i}`,
       rating: Number((Math.random() * 1 + 4).toFixed(1)),
+      reviewCount: Math.floor(Math.random() * 50) + 1, // Add reviewCount
       responseRate: Math.floor(Math.random() * 20) + 80,
     };
 
@@ -112,6 +113,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
       category,
       description: `Great ${category.replace('-', ' ')} for ${suitable.toLowerCase()}. Well maintained and ready for your next adventure!`,
       image_url: imageUrl,
+      images: [imageUrl], // Add images array with single image
       price_per_day: Math.floor(Math.random() * 30) + 20, // $20-$50
       rating: Number((Math.random() * 2 + 3).toFixed(1)), // 3.0-5.0 as a number
       review_count: Math.floor(Math.random() * 50) + 1,
@@ -138,6 +140,9 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         { id: '1', price: Math.floor(Math.random() * 30) + 20, duration: 'day' }
       ],
       status: 'available',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      visible_on_map: true,
     };
   });
 }
