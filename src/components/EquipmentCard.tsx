@@ -4,6 +4,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StarIcon, StoreIcon, UsersIcon } from "lucide-react";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { getCategoryDisplayName } from "@/helpers";
 import { Equipment } from "@/types";
 
@@ -22,24 +23,48 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
       ? `/private-party/${equipment.owner.partyId}`
       : `/gear-owner/${equipment.owner.id}`;
 
+  // Handle both single image_url and multiple images array
+  const images = equipment.images || (equipment.image_url ? [equipment.image_url] : []);
+  const hasMultipleImages = images.length > 1;
+
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
       <div className="relative aspect-[4/3] w-full overflow-hidden">
-        <img
-          src={equipment.image_url}
-          alt={equipment.name}
-          className="h-full w-full object-cover transition-all hover:scale-105"
-        />
+        {hasMultipleImages ? (
+          <Carousel className="w-full h-full">
+            <CarouselContent>
+              {images.map((imageUrl, index) => (
+                <CarouselItem key={index}>
+                  <img
+                    src={imageUrl}
+                    alt={`${equipment.name} - Image ${index + 1}`}
+                    className="h-full w-full object-cover transition-all hover:scale-105"
+                  />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-2" />
+            <CarouselNext className="right-2" />
+          </Carousel>
+        ) : (
+          <img
+            src={images[0] || equipment.image_url}
+            alt={equipment.name}
+            className="h-full w-full object-cover transition-all hover:scale-105"
+          />
+        )}
+        
         <Badge
-          className="absolute top-2 right-2"
+          className="absolute top-2 right-2 z-10"
           variant="secondary"
         >
           {getCategoryDisplayName(equipment.category)}
         </Badge>
+        
         {/* Shop or Private Party indicator */}
         {isShop && (
           <Badge
-            className="absolute top-2 left-2 bg-shop text-shop-foreground hover:bg-shop/90"
+            className="absolute top-2 left-2 bg-shop text-shop-foreground hover:bg-shop/90 z-10"
             variant="default"
           >
             <StoreIcon className="h-3 w-3 mr-1" />
@@ -48,7 +73,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         )}
         {isPrivateParty && (
           <Badge
-            className="absolute top-2 left-2 bg-green-600 hover:bg-green-700"
+            className="absolute top-2 left-2 bg-green-600 hover:bg-green-700 z-10"
             variant="default"
           >
             <UsersIcon className="h-3 w-3 mr-1" />
@@ -56,6 +81,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
           </Badge>
         )}
       </div>
+      
       <CardContent className="p-4">
         <div className="flex justify-between items-start gap-2 mb-2">
           <h3 className="font-medium text-lg truncate">{equipment.name}</h3>
@@ -86,6 +112,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
           </Link>
         </div>
       </CardContent>
+      
       <CardFooter className="p-4 pt-0 flex justify-between">
         <Button asChild size="sm">
           <Link to={`/equipment/${equipment.id}`}>View Details</Link>

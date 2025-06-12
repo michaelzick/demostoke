@@ -9,6 +9,11 @@ export const mockUserEquipment: UserEquipment[] = [
     category: "snowboards",
     description: "High-performance snowboard perfect for intermediate to advanced riders. Features a responsive flex pattern and camber profile for precision and control.",
     image_url: "https://images.unsplash.com/photo-1518608774889-b04d2abe7702?auto=format&fit=crop&w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1518608774889-b04d2abe7702?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1551524164-6cf2ac26976e?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1551524164-9a1dcbc0c40b?auto=format&fit=crop&w=800&q=80"
+    ],
     price_per_day: 45,
     rating: 4.8,
     review_count: 12,
@@ -37,6 +42,10 @@ export const mockUserEquipment: UserEquipment[] = [
     category: "surfboards",
     description: "Versatile step-up board that performs well in a wide range of conditions. Great for intermediate surfers looking to improve their skills.",
     image_url: "https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1502003148287-cea895d068da?auto=format&fit=crop&w=800&q=80"
+    ],
     price_per_day: 35,
     rating: 4.7,
     review_count: 8,

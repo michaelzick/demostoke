@@ -5,6 +5,7 @@ export interface UserEquipment {
   category: string;
   description: string;
   image_url: string;
+  images?: string[]; // Add support for multiple images
   price_per_day: number;
   rating: number;
   review_count: number;
