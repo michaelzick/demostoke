@@ -18,37 +18,37 @@ const ownerIdToOwner = Object.fromEntries(
 // Image arrays for different categories
 const snowboardImages = [
   "https://images.unsplash.com/photo-1518608774889-b04d2abe7702?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1551524164-6cf2ac26976e?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1551524164-9a1dcbc0c40b?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=80"
+  "https://images.unsplash.com/photo-1488580923008-6f98dfbd7a25?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1625154869776-100eba31abbb?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1522056615691-da7b8106c665?auto=format&fit=crop&w=800&q=80"
 ];
 
 const skiImages = [
   "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1578934878824-b17e0b100b8b?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1609039928928-7ed2b9dca6cb?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=800&q=80"
+  "https://images.unsplash.com/photo-1586356415056-bd7a5c2bbef7?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1507534192483-69914c0692d7?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1511984212987-27f5efecd5a7?auto=format&fit=crop&w=800&q=80"
 ];
 
 const surfboardImages = [
-  "https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1502003148287-cea895d068da?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1609142341056-28e20b47b592?auto=format&fit=crop&w=800&q=80"
+  "https://images.unsplash.com/photo-1516633630673-67bbad747022?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1530870110042-98b2cb110834?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1459745930869-b3d0d72c3cbb?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1455264745730-cb3b76250ae8?auto=format&fit=crop&w=800&q=80"
 ];
 
 const supImages = [
   "https://images.unsplash.com/photo-1597175971918-76e969f42f74?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1609039928928-7ed2b9dca6cb?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1590736969955-71cc94901144?auto=format&fit=crop&w=800&q=80"
+  "https://images.unsplash.com/photo-1655213721792-113a056d9267?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1569118793811-5ea7a250313b?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1598112747595-0ac8aa788d4d?auto=format&fit=crop&w=800&q=80"
 ];
 
 const bikeImages = [
   "https://images.unsplash.com/photo-1673121414328-52eff37bc6d0?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1585779034823-7e9ac8faec70?auto=format&fit=crop&w=800&q=80"
+  "https://images.unsplash.com/photo-1566480047210-b10eaa1f8095?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1633707167682-9068729bc84c?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1589100984317-79246528923c?auto=format&fit=crop&w=800&q=80"
 ];
 
 // Mock equipment data generator
