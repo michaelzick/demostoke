@@ -24,6 +24,6 @@ export const getCategoryDisplayName = (category: string) => {
     case "mountain-bikes":
       return "Mountain Bikes";
     default:
-      return category.split('-').join(' ');
+      return category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   }
 };
