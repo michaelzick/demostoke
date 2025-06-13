@@ -58,6 +58,14 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
             </NavigationMenuTrigger>
             <NavigationMenuContent>
               <div className="grid w-48 gap-1 p-2 bg-background border rounded-md shadow-lg">
+                <Link
+                  key={"all"}
+                  to={`/explore`}
+                  className="block px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors"
+                  onClick={handleCategoryClick}
+                >
+                  All Equipment
+                </Link>
                 {gearCategories.map((gear) => (
                   <Link
                     key={gear.category}
