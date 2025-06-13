@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -29,7 +28,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
 
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
-      <div className="relative aspect-[4/3] w-full overflow-hidden">
+      <div className="relative w-full overflow-hidden max-h-[290px]">
         {hasMultipleImages ? (
           <Carousel className="w-full h-full" opts={{ loop: true }}>
             <CarouselContent>
@@ -38,7 +37,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
                   <img
                     src={imageUrl}
                     alt={`${equipment.name} - Image ${index + 1}`}
-                    className="h-full w-full object-cover"
+                    className="h-[290px] w-full object-cover"
                   />
                 </CarouselItem>
               ))}
@@ -50,7 +49,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
           <img
             src={images[0] || equipment.image_url}
             alt={equipment.name}
-            className="h-full w-full object-cover"
+            className="h-[290px] w-full object-cover"
           />
         )}
 
