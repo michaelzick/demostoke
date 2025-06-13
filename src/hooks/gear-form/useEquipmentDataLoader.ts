@@ -73,9 +73,11 @@ export const useEquipmentDataLoader = ({
         }
       }
 
-      // Set damage deposit - use a default value since it's not in the current schema
+      // Set damage deposit from equipment data, with fallback to "100"
       if (setDamageDeposit) {
-        setDamageDeposit("100");
+        const damageDepositValue = equipment.damage_deposit ? equipment.damage_deposit.toString() : "100";
+        console.log('Setting damage deposit from equipment:', equipment.damage_deposit, 'as string:', damageDepositValue);
+        setDamageDeposit(damageDepositValue);
       }
 
       // Map and set skill level
