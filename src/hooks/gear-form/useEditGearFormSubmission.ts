@@ -23,8 +23,8 @@ interface UseEditGearFormSubmissionProps {
   images: File[];
   pricingOptions: PricingOption[];
   damageDeposit: string;
-  imageUrls: string[];
-  useImageUrls: boolean;
+  imageUrl: string;
+  useImageUrl: boolean;
 }
 
 export const useEditGearFormSubmission = ({
@@ -39,8 +39,8 @@ export const useEditGearFormSubmission = ({
   images,
   pricingOptions,
   damageDeposit,
-  imageUrls,
-  useImageUrls,
+  imageUrl,
+  useImageUrl,
 }: UseEditGearFormSubmissionProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -77,8 +77,8 @@ export const useEditGearFormSubmission = ({
       skillLevel,
       pricingOptions,
       damageDeposit,
-      imageUrl: useImageUrls ? imageUrls[0] || "" : "",
-      useImageUrl: useImageUrls,
+      imageUrl,
+      useImageUrl,
       role: user!.role || "private-party",
     };
 
@@ -90,10 +90,10 @@ export const useEditGearFormSubmission = ({
     setIsSubmitting(true);
 
     try {
-      // Handle image processing - use the first image URL or uploaded image
+      // Handle image processing
       const finalImageUrl = await handleImageProcessing({
-        useImageUrl: useImageUrls,
-        imageUrl: useImageUrls ? imageUrls[0] || "" : "",
+        useImageUrl,
+        imageUrl,
         images,
         currentImageUrl: equipment!.image_url,
         userId: user!.id

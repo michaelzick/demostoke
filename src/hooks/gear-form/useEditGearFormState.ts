@@ -15,8 +15,8 @@ export const useEditGearFormState = () => {
   });
   const [skillLevel, setSkillLevel] = useState("");
   const [images, setImages] = useState<File[]>([]);
-  const [imageUrls, setImageUrls] = useState<string[]>([""]);
-  const [useImageUrls, setUseImageUrls] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
+  const [useImageUrl, setUseImageUrl] = useState(false);
   const [pricingOptions, setPricingOptions] = useState<PricingOption[]>([
     { price: "", duration: "day" }
   ]);
@@ -45,10 +45,10 @@ export const useEditGearFormState = () => {
     setSkillLevel,
     images,
     setImages,
-    imageUrls,
-    setImageUrls,
-    useImageUrls,
-    setUseImageUrls,
+    imageUrl,
+    setImageUrl,
+    useImageUrl,
+    setUseImageUrl,
     pricingOptions,
     setPricingOptions,
     damageDeposit,

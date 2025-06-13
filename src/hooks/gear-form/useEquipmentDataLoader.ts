@@ -1,11 +1,12 @@
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { UserEquipment } from "@/types/equipment";
-import { PricingOption } from "./types";
 import { mapCategoryToGearType, mapSkillLevel, parseSize } from "@/utils/gearDataMapping";
+import { PricingOption } from "./types";
+import { usePricingOptions } from "@/hooks/usePricingOptions";
 
 interface UseEquipmentDataLoaderProps {
-  equipment: UserEquipment | undefined;
+  equipment: UserEquipment | null | undefined;
   setGearName: (value: string) => void;
   setGearType: (value: string) => void;
   setDescription: (value: string) => void;
@@ -13,10 +14,9 @@ interface UseEquipmentDataLoaderProps {
   setDimensions: (value: { length: string; width: string; thickness?: string }) => void;
   setSkillLevel: (value: string) => void;
   setPricingOptions: (value: PricingOption[]) => void;
-  setDamageDeposit: (value: string) => void;
+  setDamageDeposit?: (value: string) => void;
   setImageUrl?: (value: string) => void;
-  setImageUrls?: (value: string[]) => void;
-  setMeasurementUnit: (value: string) => void;
+  setMeasurementUnit?: (value: string) => void;
 }
 
 export const useEquipmentDataLoader = ({
@@ -30,82 +30,93 @@ export const useEquipmentDataLoader = ({
   setPricingOptions,
   setDamageDeposit,
   setImageUrl,
-  setImageUrls,
   setMeasurementUnit,
 }: UseEquipmentDataLoaderProps) => {
+  const { data: pricingOptionsData = [] } = usePricingOptions(equipment?.id || "");
+  const equipmentDataLoadedRef = useRef(false);
+  const pricingDataLoadedRef = useRef(false);
+
+  // Load equipment basic data
   useEffect(() => {
-    if (equipment) {
-      console.log('Loading equipment data:', equipment);
+    if (equipment && !equipmentDataLoadedRef.current) {
+      console.log('Loading equipment data for editing (one-time):', equipment);
+      const mappedGearType = mapCategoryToGearType(equipment.category);
       
-      // Set basic info
+      // Set all form fields - making sure they're editable
       setGearName(equipment.name || "");
-      setGearType(mapCategoryToGearType(equipment.category) || "");
+      setGearType(mappedGearType || "");
       setDescription(equipment.description || "");
       setZipCode(equipment.location?.zip || "");
-
-      // Map skill level to the format expected by the form
-      // Try suitable_skill_level first, then fall back to specifications.suitable
-      const skillLevelSource = equipment.suitable_skill_level || equipment.specifications?.suitable || "";
-      const mappedSkillLevel = mapSkillLevel(
-        skillLevelSource,
-        mapCategoryToGearType(equipment.category)
-      );
-      setSkillLevel(mappedSkillLevel);
-
-      // Parse size information
-      // Try size property first, then fall back to specifications.size
-      const sizeString = equipment.size || equipment.specifications?.size || "";
-      const parsedDimensions = parseSize(sizeString);
+      
+      // Parse and set dimensions
+      const parsedDimensions = parseSize(equipment.specifications?.size || "");
       setDimensions(parsedDimensions);
 
-      // Determine measurement unit (default to inches for most gear, except mountain bikes)
-      const gearType = mapCategoryToGearType(equipment.category);
-      const defaultUnit = gearType === "mountain-bike" ? "" : "inches";
-      setMeasurementUnit(defaultUnit);
-
-      // Set damage deposit
-      const damageDeposit = equipment.damage_deposit || 100;
-      setDamageDeposit(damageDeposit.toString());
-
-      // Set image data
+      // Set image URL if available and setter provided
       if (setImageUrl && equipment.image_url) {
         setImageUrl(equipment.image_url);
       }
-      if (setImageUrls) {
-        const images = equipment.images || (equipment.image_url ? [equipment.image_url] : [""]);
-        setImageUrls(images);
+
+      // Set measurement unit for non-mountain bikes
+      if (setMeasurementUnit) {
+        const isMountainBike = mappedGearType === "mountain-bike";
+        if (!isMountainBike) {
+          // Extract measurement unit from size string if available
+          const sizeString = equipment.specifications?.size || "";
+          if (sizeString.includes("inches") || sizeString.includes("in")) {
+            setMeasurementUnit("inches");
+          } else if (sizeString.includes("cm") || sizeString.includes("centimeters")) {
+            setMeasurementUnit("cm");
+          } else {
+            setMeasurementUnit("inches"); // default
+          }
+        }
       }
 
-      // Set pricing options
-      if (equipment.pricing_options && equipment.pricing_options.length > 0) {
-        const formattedPricingOptions = equipment.pricing_options.map(option => ({
-          id: option.id,
+      // Set damage deposit with improved handling
+      if (setDamageDeposit) {
+        console.log('Raw equipment object:', equipment);
+        console.log('Damage deposit value from equipment:', equipment.damage_deposit);
+        console.log('Type of damage deposit:', typeof equipment.damage_deposit);
+        
+        // Use a more straightforward approach
+        const damageDepositValue = equipment.damage_deposit !== undefined && equipment.damage_deposit !== null 
+          ? String(equipment.damage_deposit) 
+          : "100";
+        
+        console.log('Final damage deposit value to set:', damageDepositValue);
+        setDamageDeposit(damageDepositValue);
+      }
+
+      // Map and set skill level
+      const mappedSkillLevel = mapSkillLevel(equipment.specifications?.suitable || "", mappedGearType);
+      setSkillLevel(mappedSkillLevel || "");
+      
+      // Mark equipment data as loaded
+      equipmentDataLoadedRef.current = true;
+      console.log('Equipment basic data loaded successfully for editing - form is now editable');
+    }
+  }, [equipment]); // Depend on the entire equipment object to catch any changes
+
+  // Load pricing options data separately
+  useEffect(() => {
+    if (equipment && !pricingDataLoadedRef.current) {
+      if (pricingOptionsData.length > 0) {
+        console.log('Loading pricing options from database:', pricingOptionsData);
+        const formattedOptions = pricingOptionsData.map(option => ({
           price: option.price.toString(),
           duration: option.duration
         }));
-        setPricingOptions(formattedPricingOptions);
+        setPricingOptions(formattedOptions);
       } else {
-        // Fallback to price_per_day if no pricing options
-        setPricingOptions([{
-          price: equipment.price_per_day?.toString() || "",
-          duration: "day"
-        }]);
+        console.log('No pricing options found, using default from equipment price_per_day');
+        // Fallback to default pricing if no options exist
+        setPricingOptions([
+          { price: equipment.price_per_day.toString(), duration: "day" }
+        ]);
       }
-
-      console.log('Equipment data loaded successfully');
+      pricingDataLoadedRef.current = true;
+      console.log('Pricing options loaded successfully');
     }
-  }, [
-    equipment,
-    setGearName,
-    setGearType,
-    setDescription,
-    setZipCode,
-    setDimensions,
-    setSkillLevel,
-    setPricingOptions,
-    setDamageDeposit,
-    setImageUrl,
-    setImageUrls,
-    setMeasurementUnit,
-  ]);
+  }, [pricingOptionsData, equipment?.price_per_day, equipment?.id]);
 };

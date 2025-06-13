@@ -31,8 +31,7 @@ const MultipleGearMedia = ({
 }: MultipleGearMediaProps) => {
   const displayImages = useImageUrls ? imageUrls : currentImages || duplicatedImageUrls || [];
 
-  const addImageUrl = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const addImageUrl = () => {
     setImageUrls([...imageUrls, ""]);
   };
 
@@ -83,16 +82,14 @@ const MultipleGearMedia = ({
                   onChange={(e) => updateImageUrl(index, e.target.value)}
                   className="flex-1"
                 />
-                {imageUrls.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => removeImageUrl(index)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => removeImageUrl(index)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
             ))}
             <Button

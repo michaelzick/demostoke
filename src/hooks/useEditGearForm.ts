@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useEquipmentById } from "@/hooks/useEquipmentById";
 import { useEditGearFormState } from "@/hooks/gear-form/useEditGearFormState";
 import { useEquipmentDataLoader } from "@/hooks/gear-form/useEquipmentDataLoader";
-import { useMultipleEditGearFormSubmission } from "@/hooks/gear-form/useMultipleEditGearFormSubmission";
+import { useEditGearFormSubmission } from "@/hooks/gear-form/useEditGearFormSubmission";
 
 export const useEditGearForm = () => {
   const navigate = useNavigate();
@@ -32,12 +32,12 @@ export const useEditGearForm = () => {
     setSkillLevel: formState.setSkillLevel,
     setPricingOptions: formState.setPricingOptions,
     setDamageDeposit: formState.setDamageDeposit,
-    setImageUrls: formState.setImageUrls,
+    setImageUrl: formState.setImageUrl,
     setMeasurementUnit: formState.setMeasurementUnit,
   });
 
-  // Handle form submission using multiple image submission
-  const { handleSubmit, handleCancel, isSubmitting } = useMultipleEditGearFormSubmission({
+  // Handle form submission
+  const { handleSubmit, handleCancel, isSubmitting } = useEditGearFormSubmission({
     equipment: equipment ? {
       ...equipment,
       status: (equipment.status as 'available' | 'booked' | 'unavailable') || 'available',
@@ -56,8 +56,8 @@ export const useEditGearForm = () => {
     images: formState.images,
     pricingOptions: formState.pricingOptions,
     damageDeposit: formState.damageDeposit,
-    imageUrls: formState.imageUrls,
-    useImageUrls: formState.useImageUrls,
+    imageUrl: formState.imageUrl,
+    useImageUrl: formState.useImageUrl,
   });
 
   return {
