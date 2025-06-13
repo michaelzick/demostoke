@@ -13,6 +13,7 @@ export interface UserEquipment {
   created_at: string;
   updated_at: string;
   visible_on_map: boolean;
+  damage_deposit?: number; // Add damage_deposit property
   location: {
     lat: number;
     lng: number;
