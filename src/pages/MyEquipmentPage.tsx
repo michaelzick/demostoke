@@ -25,8 +25,8 @@ import { UserEquipment } from "@/types/equipment";
 const MyEquipmentPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-  const { data: userEquipment = [], isLoading, error } = useUserEquipment();
+  const { isAuthenticated, user } = useAuth();
+  const { data: userEquipment = [], isLoading, error } = useUserEquipment(user?.id);
   const deleteEquipmentMutation = useDeleteEquipment();
   const updateVisibilityMutation = useUpdateEquipmentVisibility();
 

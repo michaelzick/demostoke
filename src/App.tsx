@@ -13,9 +13,6 @@ const HomePage = lazy(() => import("./pages/HomePage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
 const ContactPage = lazy(() => import("./pages/ContactUsPage"));
-const PricingPage = lazy(() => import("./pages/PricingPage"));
-const TermsPage = lazy(() => import("./pages/TermsPage"));
-const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFound"));
 const ExplorePage = lazy(() => import("./pages/ExplorePage"));
 const EquipmentDetailPage = lazy(() => import("./pages/EquipmentDetailPage"));
@@ -24,8 +21,6 @@ const EditGearPage = lazy(() => import("./pages/EditGearForm"));
 const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 const SignInPage = lazy(() => import("./pages/SignInPage"));
 const SignUpPage = lazy(() => import("./pages/SignUpPage"));
-const ForgotPasswordPage = lazy(() => import("./pages/ForgotPasswordPage"));
-const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
 const RealUserProfilePage = lazy(() => import("./pages/RealUserProfilePage"));
 
 const queryClient = new QueryClient({
@@ -51,17 +46,12 @@ const App = () => {
                   <Route path="/auth" element={<AuthLayout />}>
                     <Route path="signin" element={<SignInPage />} />
                     <Route path="signup" element={<SignUpPage />} />
-                    <Route path="forgot-password" element={<ForgotPasswordPage />} />
-                    <Route path="reset-password" element={<ResetPasswordPage />} />
                   </Route>
                   <Route path="/" element={<MainLayout />}>
                     <Route index element={<HomePage />} />
                     <Route path="about" element={<AboutPage />} />
                     <Route path="blog" element={<BlogPage />} />
                     <Route path="contact" element={<ContactPage />} />
-                    <Route path="pricing" element={<PricingPage />} />
-                    <Route path="terms" element={<TermsPage />} />
-                    <Route path="privacy" element={<PrivacyPage />} />
                     <Route path="explore" element={<ExplorePage />} />
                     <Route path="equipment/:id" element={<EquipmentDetailPage />} />
                     <Route path="list-your-gear" element={<ListGearPage />} />
