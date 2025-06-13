@@ -8,13 +8,13 @@ export const useEditGearFormState = () => {
   const [description, setDescription] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [measurementUnit, setMeasurementUnit] = useState("inches");
-  const [dimensions, setDimensions] = useState({ length: "", width: "" });
+  const [dimensions, setDimensions] = useState({ length: "", width: "", thickness: "" });
   const [skillLevel, setSkillLevel] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [imageUrl, setImageUrl] = useState("");
   const [useImageUrl, setUseImageUrl] = useState(false);
   const [pricingOptions, setPricingOptions] = useState<PricingOption[]>([
-    { id: "1", price: "", duration: "day" }
+    { price: "", duration: "day" }
   ]);
   const [damageDeposit, setDamageDeposit] = useState("100");
 

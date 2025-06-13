@@ -9,7 +9,7 @@ interface UseDuplicatedGearDataProps {
   setDescription: (value: string) => void;
   setZipCode: (value: string) => void;
   setMeasurementUnit: (value: string) => void;
-  setDimensions: (value: { length: string; width: string; }) => void;
+  setDimensions: (value: { length: string; width: string; thickness?: string }) => void;
   setRole: (value: string) => void;
   setSkillLevel: (value: string) => void;
   setPricingOptions: (value: PricingOption[]) => void;
@@ -55,7 +55,7 @@ export const useDuplicatedGearData = ({
 
         // Set pricing options from duplicated data
         setPricingOptions([
-          { id: "1", price: duplicatedGear.price, duration: "day" }
+          { price: duplicatedGear.price, duration: "day" }
         ]);
         setDamageDeposit(duplicatedGear.damageDeposit);
 

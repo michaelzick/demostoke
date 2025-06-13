@@ -9,7 +9,8 @@ import { geocodeZipCode } from "@/utils/geocoding";
 import { UserEquipment } from "@/types/equipment";
 import { PricingOption } from "./types";
 
-interface FormData {
+interface UseEditGearFormSubmissionProps {
+  equipment: UserEquipment | null | undefined;
   gearName: string;
   gearType: string;
   description: string;
@@ -17,15 +18,11 @@ interface FormData {
   measurementUnit: string;
   dimensions: { length: string; width: string; thickness?: string };
   skillLevel: string;
+  images: File[];
   pricingOptions: PricingOption[];
   damageDeposit: string;
   imageUrl: string;
   useImageUrl: boolean;
-}
-
-interface UseEditGearFormSubmissionProps extends FormData {
-  equipment: UserEquipment | null | undefined;
-  images: File[];
 }
 
 export const useEditGearFormSubmission = ({

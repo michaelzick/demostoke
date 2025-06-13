@@ -50,8 +50,7 @@ export const useEquipmentDataLoader = ({
 
   useEffect(() => {
     if (pricingOptionsData.length > 0) {
-      const formattedOptions = pricingOptionsData.map((option, index) => ({
-        id: option.id || (index + 1).toString(),
+      const formattedOptions = pricingOptionsData.map(option => ({
         price: option.price.toString(),
         duration: option.duration
       }));
@@ -59,7 +58,7 @@ export const useEquipmentDataLoader = ({
     } else if (equipment) {
       // Fallback to default pricing if no options exist
       setPricingOptions([
-        { id: "1", price: equipment.price_per_day.toString(), duration: "day" }
+        { price: equipment.price_per_day.toString(), duration: "day" }
       ]);
     }
   }, [pricingOptionsData, equipment, setPricingOptions]);

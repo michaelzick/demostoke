@@ -10,7 +10,7 @@ import { prepareEquipmentData } from "@/utils/equipmentDataPreparation";
 import { createEquipmentInDatabase, createPricingOptionsInDatabase } from "@/utils/gearDatabaseOperations";
 import { PricingOption } from "./types";
 
-interface FormData {
+interface UseMultipleGearFormSubmissionProps {
   gearName: string;
   gearType: string;
   description: string;
@@ -23,9 +23,6 @@ interface FormData {
   pricingOptions: PricingOption[];
   imageUrls: string[];
   useImageUrls: boolean;
-}
-
-interface UseMultipleGearFormSubmissionProps extends FormData {
   images: File[];
   duplicatedImageUrls?: string[];
 }

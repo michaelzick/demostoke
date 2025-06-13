@@ -10,7 +10,7 @@ import { prepareEquipmentData } from "@/utils/equipmentDataPreparation";
 import { createEquipmentInDatabase, createPricingOptionsInDatabase } from "@/utils/gearDatabaseOperations";
 import { PricingOption } from "./types";
 
-interface FormData {
+interface UseGearFormSubmissionProps {
   gearName: string;
   gearType: string;
   description: string;
@@ -18,16 +18,13 @@ interface FormData {
   measurementUnit: string;
   dimensions: { length: string; width: string; thickness?: string };
   skillLevel: string;
-  role: string;
-  damageDeposit: string;
+  images: File[];
   pricingOptions: PricingOption[];
+  damageDeposit: string;
+  role: string;
+  duplicatedImageUrl?: string;
   imageUrl: string;
   useImageUrl: boolean;
-}
-
-interface UseGearFormSubmissionProps extends FormData {
-  images: File[];
-  duplicatedImageUrl?: string;
 }
 
 export const useGearFormSubmission = ({

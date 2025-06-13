@@ -9,7 +9,8 @@ import { geocodeZipCode } from "@/utils/geocoding";
 import { UserEquipment } from "@/types/equipment";
 import { PricingOption } from "./types";
 
-interface FormData {
+interface UseMultipleEditGearFormSubmissionProps {
+  equipment: UserEquipment | null | undefined;
   gearName: string;
   gearType: string;
   description: string;
@@ -21,10 +22,6 @@ interface FormData {
   damageDeposit: string;
   imageUrls: string[];
   useImageUrls: boolean;
-}
-
-interface UseMultipleEditGearFormSubmissionProps extends FormData {
-  equipment: UserEquipment | null | undefined;
   images: File[];
 }
 
