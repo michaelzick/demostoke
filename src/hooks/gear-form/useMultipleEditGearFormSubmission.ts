@@ -1,14 +1,14 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
-import { supabase } from "@/integrations/supabase/client";
-import { uploadMultipleGearImages, saveEquipmentImages, deleteEquipmentImages } from "@/utils/multipleImageHandling";
 import { useGearFormValidation } from "@/hooks/useGearFormValidation";
-import { geocodeZipCode } from "@/utils/geocoding";
 import { UserEquipment } from "@/types/equipment";
 import { PricingOption, FormData } from "./types";
+import { useEditGearFormValidation } from "./useEditGearFormValidation";
+import { useEditGearLocationHandling } from "./useEditGearLocationHandling";
+import { useEditGearDatabaseUpdate } from "./useEditGearDatabaseUpdate";
+import { uploadMultipleGearImages, saveEquipmentImages, updateEquipmentImages } from "@/utils/multipleImageHandling";
 
 interface UseMultipleEditGearFormSubmissionProps {
   equipment: UserEquipment | null | undefined;
@@ -19,11 +19,11 @@ interface UseMultipleEditGearFormSubmissionProps {
   measurementUnit: string;
   dimensions: { length: string; width: string; thickness?: string };
   skillLevel: string;
+  images: File[];
   pricingOptions: PricingOption[];
   damageDeposit: string;
   imageUrls: string[];
   useImageUrls: boolean;
-  images: File[];
 }
 
 export const useMultipleEditGearFormSubmission = ({
@@ -45,28 +45,19 @@ export const useMultipleEditGearFormSubmission = ({
   const { toast } = useToast();
   const { user } = useAuth();
   const { validateForm } = useGearFormValidation();
+  const { validateSubmission } = useEditGearFormValidation();
+  const { handleLocationUpdate } = useEditGearLocationHandling();
+  const { updateGearInDatabase } = useEditGearDatabaseUpdate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const mapGearTypeToCategory = (gearType: string): string => {
-    const typeMap: { [key: string]: string } = {
-      "snowboard": "snowboards",
-      "skis": "skis",
-      "surfboard": "surfboards",
-      "sup": "sups",
-      "skateboard": "skateboards"
-    };
-    return typeMap[gearType] || gearType;
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!user || !equipment) {
-      toast({
-        title: "Error",
-        description: "Authentication error or equipment not found.",
-        variant: "destructive",
-      });
+    console.log('=== FORM SUBMISSION START ===');
+    console.log('Damage deposit value at submission start:', damageDeposit);
+
+    // Initial validation
+    if (!validateSubmission({ user, equipment, pricingOptions, damageDeposit })) {
       return;
     }
 
@@ -87,10 +78,11 @@ export const useMultipleEditGearFormSubmission = ({
       damageDeposit,
       imageUrl: useImageUrls ? imageUrls[0] : "",
       useImageUrl: useImageUrls,
-      role: user.role || "private-party",
+      role: user!.role || "private-party",
     };
 
     if (!validateForm(formData)) {
+      console.error('Form validation failed');
       return;
     }
 
@@ -98,28 +90,21 @@ export const useMultipleEditGearFormSubmission = ({
 
     try {
       let finalImageUrls: string[] = [];
-      let primaryImageUrl = equipment.image_url; // Keep existing primary image by default
 
       // Handle multiple images
       if (useImageUrls && imageUrls.some(url => url.trim())) {
         finalImageUrls = imageUrls.filter(url => url.trim());
-        primaryImageUrl = finalImageUrls[0];
         console.log('Using provided image URLs:', finalImageUrls);
       } else if (images.length > 0) {
-        console.log('Uploading new images:', images.map(f => f.name));
-        toast({
-          title: "Uploading Images",
-          description: "Please wait while we upload your gear images...",
-        });
-
+        console.log('Uploading multiple images:', images.map(f => f.name));
+        
         try {
-          finalImageUrls = await uploadMultipleGearImages(images, user.id, (message) => {
+          finalImageUrls = await uploadMultipleGearImages(images, user!.id, (message) => {
             toast({
               title: "Uploading Images",
               description: message,
             });
           });
-          primaryImageUrl = finalImageUrls[0];
           console.log('Images uploaded successfully:', finalImageUrls);
         } catch (error: unknown) {
           console.error('Image upload failed:', error);
@@ -129,113 +114,63 @@ export const useMultipleEditGearFormSubmission = ({
             variant: "destructive",
           });
           // Keep existing images if upload fails
-          finalImageUrls = equipment.images || [equipment.image_url];
+          finalImageUrls = equipment?.images || (equipment?.image_url ? [equipment.image_url] : []);
         }
+      } else {
+        // Keep existing images
+        finalImageUrls = equipment?.images || (equipment?.image_url ? [equipment.image_url] : []);
       }
 
-      // Get coordinates from zip code (only if zip code changed)
-      let coordinates = null;
-      const currentZip = equipment.location?.zip || '';
-      if (zipCode !== currentZip) {
-        try {
-          coordinates = await geocodeZipCode(zipCode);
-          console.log('Updated coordinates for zip code', zipCode, ':', coordinates);
-        } catch (error) {
-          console.error('Geocoding failed:', error);
-        }
-      }
+      // Handle location updates
+      const currentZip = equipment!.location?.zip || '';
+      const coordinates = await handleLocationUpdate({ zipCode, currentZip });
 
-      // Prepare the data for database update
-      const isMountainBike = gearType === "mountain-bike";
-      const sizeString = isMountainBike
-        ? dimensions.length
-        : dimensions.thickness
-          ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness} ${measurementUnit}`
-          : `${dimensions.length} x ${dimensions.width} ${measurementUnit}`;
+      // Update database with proper damage deposit handling
+      await updateGearInDatabase({
+        equipment: equipment!,
+        userId: user!.id,
+        gearName,
+        gearType,
+        description,
+        zipCode,
+        coordinates,
+        dimensions,
+        measurementUnit,
+        skillLevel,
+        pricingOptions,
+        damageDeposit, // Pass the damage deposit value properly
+        finalImageUrl: finalImageUrls[0] || equipment!.image_url
+      });
 
-      const equipmentData = {
-        name: gearName,
-        category: mapGearTypeToCategory(gearType),
-        description: description,
-        location_zip: zipCode,
-        ...(coordinates && {
-          location_lat: coordinates.lat,
-          location_lng: coordinates.lng,
-        }),
-        size: sizeString,
-        suitable_skill_level: skillLevel,
-        price_per_day: parseFloat(pricingOptions[0].price),
-        image_url: primaryImageUrl,
-      };
-
-      console.log('Updating equipment data:', equipmentData);
-
-      // Update the equipment in the database
-      const { data, error } = await supabase
-        .from('equipment')
-        .update(equipmentData)
-        .eq('id', equipment.id)
-        .eq('user_id', user.id)
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Database error:', error);
-        throw error;
-      }
-
-      console.log('Equipment updated successfully:', data);
-
-      // Update images if new ones were provided
+      // Update images in the database
       if (finalImageUrls.length > 0) {
-        // Delete existing images
-        await deleteEquipmentImages(equipment.id);
-        // Save new images
-        await saveEquipmentImages(equipment.id, finalImageUrls);
+        await updateEquipmentImages(equipment!.id, finalImageUrls);
       }
 
-      // Delete existing pricing options and insert new ones
-      const { error: deleteError } = await supabase
-        .from('pricing_options')
-        .delete()
-        .eq('equipment_id', equipment.id);
-
-      if (deleteError) {
-        console.error('Error deleting old pricing options:', deleteError);
-        throw deleteError;
-      }
-
-      // Insert new pricing options
-      const pricingData = pricingOptions.map(option => ({
-        equipment_id: equipment.id,
-        price: parseFloat(option.price),
-        duration: option.duration
-      }));
-
-      const { error: pricingError } = await supabase
-        .from('pricing_options')
-        .insert(pricingData);
-
-      if (pricingError) {
-        console.error('Pricing options error:', pricingError);
-        throw pricingError;
-      }
-
-      console.log('Pricing options updated successfully');
+      console.log('=== FORM SUBMISSION SUCCESS ===');
 
       toast({
         title: "Equipment Updated",
         description: `${gearName} has been successfully updated.`,
       });
 
-      // Navigate back to My Gear page
       navigate("/my-gear");
 
     } catch (error) {
+      console.error('=== FORM SUBMISSION ERROR ===');
       console.error('Error updating equipment:', error);
+      
+      // Provide more detailed error information
+      let errorMessage = "Failed to update equipment. Please try again.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        console.error('Detailed error:', error);
+        console.error('Error stack:', error.stack);
+      }
+      
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update equipment. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

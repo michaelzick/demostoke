@@ -63,10 +63,10 @@ export const useEquipmentDataLoader = ({
         if (!isMountainBike) {
           // Extract measurement unit from size string if available
           const sizeString = equipment.specifications?.size || "";
-          if (sizeString.includes("inches") || sizeString.includes("in")) {
+          if (sizeString.includes("inches") || sizeString.includes("in") || sizeString.includes('"')) {
             setMeasurementUnit("inches");
           } else if (sizeString.includes("cm") || sizeString.includes("centimeters")) {
-            setMeasurementUnit("cm");
+            setMeasurementUnit("centimeters");
           } else {
             setMeasurementUnit("inches"); // default
           }
