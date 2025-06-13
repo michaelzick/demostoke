@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -126,7 +125,11 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
               <LocationTab equipment={equipment} />
             </TabsContent>
             <TabsContent value="reviews">
-              <ReviewsTab rating={equipment.rating} reviewCount={equipment.review_count} />
+              <ReviewsTab 
+                equipmentId={equipment.id} 
+                rating={equipment.rating} 
+                reviewCount={equipment.review_count} 
+              />
             </TabsContent>
             <TabsContent value="policy">
               <PolicyTab />

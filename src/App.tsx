@@ -1,41 +1,31 @@
-
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "@/contexts/auth";
-import { ThemeProvider } from "@/contexts/ThemeContext";
-import GoogleTagManager from "@/components/GoogleTagManager";
-
-// Lazy load components for better performance
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/auth/AuthContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import MainLayout from "./layouts/MainLayout";
+import AuthLayout from "./layouts/AuthLayout";
 const HomePage = lazy(() => import("./pages/HomePage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
-const ContactUsPage = lazy(() => import("./pages/ContactUsPage"));
+const BlogPage = lazy(() => import("./pages/BlogPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const PricingPage = lazy(() => import("./pages/PricingPage"));
+const TermsPage = lazy(() => import("./pages/TermsPage"));
+const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const ExplorePage = lazy(() => import("./pages/ExplorePage"));
-const SearchResultsPage = lazy(() => import("./pages/SearchResultsPage"));
 const EquipmentDetailPage = lazy(() => import("./pages/EquipmentDetailPage"));
-const ListYourGearPage = lazy(() => import("./pages/ListYourGearPage"));
-const AddGearForm = lazy(() => import("./pages/AddGearForm"));
-const EditGearForm = lazy(() => import("./pages/EditGearForm"));
+const ListGearPage = lazy(() => import("./pages/ListGearPage"));
+const EditGearPage = lazy(() => import("./pages/EditGearPage"));
+const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 const SignInPage = lazy(() => import("./pages/SignInPage"));
 const SignUpPage = lazy(() => import("./pages/SignUpPage"));
-const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
-const GearOwnerProfilePage = lazy(() => import("./pages/GearOwnerProfilePage"));
-const BookingsPage = lazy(() => import("./pages/BookingsPage"));
-const MyEquipmentPage = lazy(() => import("./pages/MyEquipmentPage"));
-const BlogPage = lazy(() => import("./pages/BlogPage"));
-const BlogPostPage = lazy(() => import("./pages/BlogPostPage"));
-const AdminPage = lazy(() => import("./pages/AdminPage"));
-const AnalyticsPage = lazy(() => import("./pages/AnalyticsPage"));
-const LightspeedPOSPage = lazy(() => import("./pages/LightspeedPOSPage"));
-const PrivatePartyPage = lazy(() => import("./pages/PrivatePartyPage"));
-const ShopPage = lazy(() => import("./pages/ShopPage"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-
-// Layouts
-const MainLayout = lazy(() => import("./layouts/MainLayout"));
-const AuthLayout = lazy(() => import("./layouts/AuthLayout"));
+const ForgotPasswordPage = lazy(() => import("./pages/ForgotPasswordPage"));
+const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
+const RealUserProfilePage = lazy(() => import("./pages/RealUserProfilePage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -46,69 +36,47 @@ const queryClient = new QueryClient({
   },
 });
 
-function App() {
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <ThemeProvider>
-          <AuthProvider>
-            <TooltipProvider>
-              <GoogleTagManager />
-              <div className="min-h-screen bg-background font-sans antialiased">
-                <Suspense fallback={
-                  <div className="min-h-screen flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-400" />
-                  </div>
-                }>
-                  <Routes>
-                    {/* Main layout routes */}
-                    <Route path="/" element={<MainLayout />}>
-                      <Route index element={<HomePage />} />
-                      <Route path="about" element={<AboutPage />} />
-                      <Route path="contact-us" element={<ContactUsPage />} />
-                      <Route path="explore" element={<ExplorePage />} />
-                      <Route path="search" element={<SearchResultsPage />} />
-                      <Route path="equipment/:id" element={<EquipmentDetailPage />} />
-                      <Route path="list-your-gear" element={<ListYourGearPage />} />
-                      <Route path="list-your-gear/add-gear-form" element={<AddGearForm />} />
-                      <Route path="list-your-gear/lightspeed-pos" element={<LightspeedPOSPage />} />
-                      <Route path="edit-gear/:id" element={<EditGearForm />} />
-                      <Route path="profile" element={<UserProfilePage />} />
-                      <Route path="gear-owner/:id" element={<GearOwnerProfilePage />} />
-                      <Route path="bookings" element={<BookingsPage />} />
-                      <Route path="my-equipment" element={<MyEquipmentPage />} />
-                      <Route path="my-gear" element={<MyEquipmentPage />} />
-                      <Route path="blog" element={<BlogPage />} />
-                      <Route path="blog/:slug" element={<BlogPostPage />} />
-                      <Route path="admin" element={<AdminPage />} />
-                      <Route path="analytics" element={<AnalyticsPage />} />
-                      <Route path="lightspeed-pos" element={<LightspeedPOSPage />} />
-                      <Route path="private-party/:partyId" element={<PrivatePartyPage />} />
-                      <Route path="shop/:shopId" element={<ShopPage />} />
-                    </Route>
-
-                    {/* Auth layout routes */}
-                    <Route path="/auth" element={<AuthLayout />}>
-                      <Route path="signin" element={<SignInPage />} />
-                      <Route path="signup" element={<SignUpPage />} />
-                    </Route>
-
-                    {/* Redirects for old auth routes */}
-                    <Route path="/signin" element={<Navigate to="/auth/signin" replace />} />
-                    <Route path="/signup" element={<Navigate to="/auth/signup" replace />} />
-
-                    {/* 404 catch-all */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </Suspense>
-              </div>
-              <Toaster />
-            </TooltipProvider>
-          </AuthProvider>
-        </ThemeProvider>
-      </BrowserRouter>
+      <ThemeProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Suspense fallback={<div>Loading...</div>}>
+                <Routes>
+                  <Route path="/auth" element={<AuthLayout />}>
+                    <Route path="signin" element={<SignInPage />} />
+                    <Route path="signup" element={<SignUpPage />} />
+                    <Route path="forgot-password" element={<ForgotPasswordPage />} />
+                    <Route path="reset-password" element={<ResetPasswordPage />} />
+                  </Route>
+                  <Route path="/" element={<MainLayout />}>
+                    <Route index element={<HomePage />} />
+                    <Route path="about" element={<AboutPage />} />
+                    <Route path="blog" element={<BlogPage />} />
+                    <Route path="contact" element={<ContactPage />} />
+                    <Route path="pricing" element={<PricingPage />} />
+                    <Route path="terms" element={<TermsPage />} />
+                    <Route path="privacy" element={<PrivacyPage />} />
+                    <Route path="explore" element={<ExplorePage />} />
+                    <Route path="equipment/:id" element={<EquipmentDetailPage />} />
+                    <Route path="list-your-gear" element={<ListGearPage />} />
+                    <Route path="edit-gear/:id" element={<EditGearPage />} />
+                    <Route path="profile" element={<UserProfilePage />} />
+                    <Route path="*" element={<NotFoundPage />} />
+                    <Route path="/user-profile/:id" element={<RealUserProfilePage />} />
+                  </Route>
+                </Routes>
+              </Suspense>
+            </BrowserRouter>
+          </TooltipProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
-}
+};
 
 export default App;

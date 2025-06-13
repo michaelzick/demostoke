@@ -157,6 +157,44 @@ export type Database = {
           },
         ]
       }
+      equipment_reviews: {
+        Row: {
+          created_at: string
+          equipment_id: string
+          id: string
+          rating: number
+          review_text: string | null
+          reviewer_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          equipment_id: string
+          id?: string
+          rating: number
+          review_text?: string | null
+          reviewer_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          equipment_id?: string
+          id?: string
+          rating?: number
+          review_text?: string | null
+          reviewer_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipment_reviews_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pricing_options: {
         Row: {
           created_at: string
@@ -195,6 +233,7 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           id: string
+          member_since: string | null
           name: string | null
           role: string
         }
@@ -203,6 +242,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           id: string
+          member_since?: string | null
           name?: string | null
           role?: string
         }
@@ -211,6 +251,7 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           id?: string
+          member_since?: string | null
           name?: string | null
           role?: string
         }
