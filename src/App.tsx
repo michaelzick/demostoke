@@ -19,6 +19,10 @@ const EquipmentDetailPage = lazy(() => import("./pages/EquipmentDetailPage"));
 const ListGearPage = lazy(() => import("./pages/ListYourGearPage"));
 const EditGearPage = lazy(() => import("./pages/EditGearForm"));
 const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
+const MyEquipmentPage = lazy(() => import("./pages/MyEquipmentPage"));
+const AnalyticsPage = lazy(() => import("./pages/AnalyticsPage"));
+const BookingsPage = lazy(() => import("./pages/BookingsPage"));
+const AdminPage = lazy(() => import("./pages/AdminPage"));
 const SignInPage = lazy(() => import("./pages/SignInPage"));
 const SignUpPage = lazy(() => import("./pages/SignUpPage"));
 const RealUserProfilePage = lazy(() => import("./pages/RealUserProfilePage"));
@@ -57,8 +61,12 @@ const App = () => {
                     <Route path="list-your-gear" element={<ListGearPage />} />
                     <Route path="edit-gear/:id" element={<EditGearPage />} />
                     <Route path="profile" element={<UserProfilePage />} />
+                    <Route path="my-gear" element={<MyEquipmentPage />} />
+                    <Route path="analytics" element={<AnalyticsPage />} />
+                    <Route path="bookings" element={<BookingsPage />} />
+                    <Route path="admin" element={<AdminPage />} />
+                    <Route path="user-profile/:id" element={<RealUserProfilePage />} />
                     <Route path="*" element={<NotFoundPage />} />
-                    <Route path="/user-profile/:id" element={<RealUserProfilePage />} />
                   </Route>
                 </Routes>
               </Suspense>
