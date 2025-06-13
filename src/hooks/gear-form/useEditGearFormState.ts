@@ -17,12 +17,20 @@ export const useEditGearFormState = () => {
   const [images, setImages] = useState<File[]>([]);
   const [imageUrl, setImageUrl] = useState("");
   const [useImageUrl, setUseImageUrl] = useState(false);
+  const [imageUrls, setImageUrls] = useState<string[]>([""]);
+  const [useImageUrls, setUseImageUrls] = useState(false);
   const [pricingOptions, setPricingOptions] = useState<PricingOption[]>([
     { price: "", duration: "day" }
   ]);
   const [damageDeposit, setDamageDeposit] = useState("100");
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setImages(Array.from(e.target.files));
+    }
+  };
+
+  const handleMultipleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setImages(Array.from(e.target.files));
     }
@@ -49,10 +57,15 @@ export const useEditGearFormState = () => {
     setImageUrl,
     useImageUrl,
     setUseImageUrl,
+    imageUrls,
+    setImageUrls,
+    useImageUrls,
+    setUseImageUrls,
     pricingOptions,
     setPricingOptions,
     damageDeposit,
     setDamageDeposit,
     handleImageUpload,
+    handleMultipleImageUpload,
   };
 };
