@@ -8,7 +8,7 @@ export const useGearFormState = () => {
   const [description, setDescription] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [measurementUnit, setMeasurementUnit] = useState("");
-  const [dimensions, setDimensions] = useState({ length: "", width: "", thickness: "" });
+  const [dimensions, setDimensions] = useState<{ length: string; width: string; thickness?: string }>({ length: "", width: "", thickness: "" });
   const [skillLevel, setSkillLevel] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [imageUrl, setImageUrl] = useState("");
