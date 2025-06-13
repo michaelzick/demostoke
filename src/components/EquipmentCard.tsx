@@ -31,7 +31,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
     <Card className="overflow-hidden transition-all hover:shadow-md">
       <div className="relative aspect-[4/3] w-full overflow-hidden">
         {hasMultipleImages ? (
-          <Carousel className="w-full h-full">
+          <Carousel className="w-full h-full" opts={{ loop: true }}>
             <CarouselContent>
               {images.map((imageUrl, index) => (
                 <CarouselItem key={index}>

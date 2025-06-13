@@ -25,7 +25,7 @@ const SimilarEquipment = ({ similarEquipment }: SimilarEquipmentProps) => {
               <div className="flex h-24">
                 <div className="w-1/3 relative">
                   {hasMultipleImages ? (
-                    <Carousel className="w-full h-full">
+                    <Carousel className="w-full h-full" opts={{ loop: true }}>
                       <CarouselContent>
                         {images.map((imageUrl, index) => (
                           <CarouselItem key={index}>
