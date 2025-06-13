@@ -3,16 +3,15 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useEquipmentById } from "@/hooks/useEquipmentById";
-import { useMultipleGearFormState } from "@/hooks/gear-form/useMultipleGearFormState";
-import { useMultipleEditGearFormSubmission } from "@/hooks/gear-form/useMultipleEditGearFormSubmission";
+import { useEditGearFormState } from "@/hooks/gear-form/useEditGearFormState";
+import { useEditGearFormSubmission } from "@/hooks/gear-form/useEditGearFormSubmission";
 import { useEquipmentDataLoader } from "@/hooks/gear-form/useEquipmentDataLoader";
-import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 
 // Import form section components
 import FormHeader from "@/components/gear-form/FormHeader";
 import GearBasicInfo from "@/components/gear-form/GearBasicInfo";
 import GearSpecifications from "@/components/gear-form/GearSpecifications";
-import MultipleGearMedia from "@/components/gear-form/MultipleGearMedia";
+import GearMedia from "@/components/gear-form/GearMedia";
 import GearPricing from "@/components/gear-form/GearPricing";
 import FormActions from "@/components/gear-form/FormActions";
 
@@ -21,8 +20,7 @@ const EditGearForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { data: equipment, isLoading, error } = useEquipmentById(id || "");
-  const formState = useMultipleGearFormState();
-  const [currentImages, setCurrentImages] = useState<string[]>([]);
+  const formState = useEditGearFormState();
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   // Load equipment data when available using the centralized data loader
@@ -43,6 +41,7 @@ const EditGearForm = () => {
     setSkillLevel: formState.setSkillLevel,
     setPricingOptions: formState.setPricingOptions,
     setDamageDeposit: formState.setDamageDeposit,
+    setImageUrl: formState.setImageUrl,
     setMeasurementUnit: formState.setMeasurementUnit,
   });
 
@@ -53,17 +52,6 @@ const EditGearForm = () => {
       console.log('Equipment data available, marking as loaded');
     }
   }, [equipment, isDataLoaded]);
-
-  // Load current images separately since this is specific to multiple image handling
-  useEffect(() => {
-    if (equipment) {
-      const loadImages = async () => {
-        const images = await fetchEquipmentImages(equipment.id);
-        setCurrentImages(images.length > 0 ? images : (equipment.image_url ? [equipment.image_url] : []));
-      };
-      loadImages();
-    }
-  }, [equipment]);
 
   // Log form state changes for debugging
   useEffect(() => {
@@ -80,7 +68,7 @@ const EditGearForm = () => {
     }
   }, [isDataLoaded, formState.gearName, formState.gearType, formState.description, formState.zipCode, formState.damageDeposit, formState.skillLevel, formState.measurementUnit]);
 
-  const { handleSubmit, handleCancel, isSubmitting } = useMultipleEditGearFormSubmission({
+  const { handleSubmit, handleCancel, isSubmitting } = useEditGearFormSubmission({
     equipment: equipment ? {
       ...equipment,
       status: (equipment.status as 'available' | 'booked' | 'unavailable') || 'available',
@@ -99,8 +87,8 @@ const EditGearForm = () => {
     images: formState.images,
     pricingOptions: formState.pricingOptions,
     damageDeposit: formState.damageDeposit,
-    imageUrls: formState.imageUrls,
-    useImageUrls: formState.useImageUrls,
+    imageUrl: formState.imageUrl,
+    useImageUrl: formState.useImageUrl,
   });
 
   // Handle error navigation
@@ -157,15 +145,13 @@ const EditGearForm = () => {
           gearType={formState.gearType}
         />
 
-        <MultipleGearMedia
-          handleMultipleImageUpload={formState.handleImageUpload}
-          currentImages={currentImages}
-          imageUrls={formState.imageUrls}
-          setImageUrls={formState.setImageUrls}
-          useImageUrls={formState.useImageUrls}
-          setUseImageUrls={formState.setUseImageUrls}
-          selectedFiles={formState.images}
-          setSelectedFiles={formState.setImages}
+        <GearMedia
+          handleImageUpload={formState.handleImageUpload}
+          currentImageUrl={equipment.image_url}
+          imageUrl={formState.imageUrl}
+          setImageUrl={formState.setImageUrl}
+          useImageUrl={formState.useImageUrl}
+          setUseImageUrl={formState.setUseImageUrl}
         />
 
         <GearPricing

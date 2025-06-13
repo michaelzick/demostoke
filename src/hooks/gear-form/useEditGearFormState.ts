@@ -8,7 +8,11 @@ export const useEditGearFormState = () => {
   const [description, setDescription] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [measurementUnit, setMeasurementUnit] = useState("inches");
-  const [dimensions, setDimensions] = useState<{ length: string; width: string; thickness?: string }>({ length: "", width: "", thickness: "" });
+  const [dimensions, setDimensions] = useState<{ length: string; width: string; thickness?: string }>({ 
+    length: "", 
+    width: "", 
+    thickness: "" 
+  });
   const [skillLevel, setSkillLevel] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [imageUrl, setImageUrl] = useState("");
