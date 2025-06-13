@@ -48,6 +48,19 @@ export const saveEquipmentImages = async (
   }
 };
 
+export const updateEquipmentImages = async (
+  equipmentId: string,
+  imageUrls: string[]
+): Promise<void> => {
+  if (imageUrls.length === 0) return;
+
+  // First, delete existing images for this equipment
+  await deleteEquipmentImages(equipmentId);
+
+  // Then, save the new images
+  await saveEquipmentImages(equipmentId, imageUrls);
+};
+
 export const fetchEquipmentImages = async (equipmentId: string): Promise<string[]> => {
   const { data, error } = await supabase
     .from('equipment_images')
