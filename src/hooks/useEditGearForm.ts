@@ -32,7 +32,7 @@ export const useEditGearForm = () => {
     setSkillLevel: formState.setSkillLevel,
     setPricingOptions: formState.setPricingOptions,
     setDamageDeposit: formState.setDamageDeposit,
-    setImageUrl: formState.setImageUrl,
+    setImageUrls: formState.setImageUrls,
     setMeasurementUnit: formState.setMeasurementUnit,
   });
 
@@ -56,8 +56,8 @@ export const useEditGearForm = () => {
     images: formState.images,
     pricingOptions: formState.pricingOptions,
     damageDeposit: formState.damageDeposit,
-    imageUrl: formState.imageUrl,
-    useImageUrl: formState.useImageUrl,
+    imageUrls: formState.imageUrls,
+    useImageUrls: formState.useImageUrls,
   });
 
   return {

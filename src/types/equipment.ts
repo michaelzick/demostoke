@@ -14,6 +14,13 @@ export interface UserEquipment {
   updated_at: string;
   visible_on_map: boolean;
   damage_deposit?: number; // Add damage_deposit property
+  suitable_skill_level?: string; // Add suitable_skill_level property
+  size?: string; // Add size property
+  pricing_options?: Array<{ // Add pricing_options property
+    id?: string;
+    price: number;
+    duration: string;
+  }>;
   location: {
     lat: number;
     lng: number;

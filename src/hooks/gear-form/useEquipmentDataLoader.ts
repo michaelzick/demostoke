@@ -44,14 +44,17 @@ export const useEquipmentDataLoader = ({
       setZipCode(equipment.location?.zip || "");
 
       // Map skill level to the format expected by the form
+      // Try suitable_skill_level first, then fall back to specifications.suitable
+      const skillLevelSource = equipment.suitable_skill_level || equipment.specifications?.suitable || "";
       const mappedSkillLevel = mapSkillLevel(
-        equipment.specifications?.suitable || equipment.suitable_skill_level || "",
+        skillLevelSource,
         mapCategoryToGearType(equipment.category)
       );
       setSkillLevel(mappedSkillLevel);
 
       // Parse size information
-      const sizeString = equipment.specifications?.size || equipment.size || "";
+      // Try size property first, then fall back to specifications.size
+      const sizeString = equipment.size || equipment.specifications?.size || "";
       const parsedDimensions = parseSize(sizeString);
       setDimensions(parsedDimensions);
 
