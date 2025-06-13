@@ -23,7 +23,7 @@ const EditGearForm = () => {
   const { data: equipment, isLoading, error } = useEquipmentById(id || "");
   const formState = useMultipleGearFormState();
   const [currentImages, setCurrentImages] = useState<string[]>([]);
-  const [dataLoaded, setDataLoaded] = useState(false);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   // Load equipment data when available using the centralized data loader
   useEquipmentDataLoader({
@@ -48,17 +48,11 @@ const EditGearForm = () => {
 
   // Mark data as loaded after equipment data is processed
   useEffect(() => {
-    if (equipment && !dataLoaded) {
-      setDataLoaded(true);
-      console.log('Form state after loading:', {
-        gearName: formState.gearName,
-        gearType: formState.gearType,
-        description: formState.description,
-        zipCode: formState.zipCode,
-        damageDeposit: formState.damageDeposit
-      });
+    if (equipment && !isDataLoaded) {
+      setIsDataLoaded(true);
+      console.log('Equipment data available, marking as loaded');
     }
-  }, [equipment, formState, dataLoaded]);
+  }, [equipment, isDataLoaded]);
 
   // Load current images separately since this is specific to multiple image handling
   useEffect(() => {
@@ -70,6 +64,21 @@ const EditGearForm = () => {
       loadImages();
     }
   }, [equipment]);
+
+  // Log form state changes for debugging
+  useEffect(() => {
+    if (isDataLoaded) {
+      console.log('Form state after data loaded:', {
+        gearName: formState.gearName,
+        gearType: formState.gearType,
+        description: formState.description,
+        zipCode: formState.zipCode,
+        damageDeposit: formState.damageDeposit,
+        skillLevel: formState.skillLevel,
+        measurementUnit: formState.measurementUnit
+      });
+    }
+  }, [isDataLoaded, formState.gearName, formState.gearType, formState.description, formState.zipCode, formState.damageDeposit, formState.skillLevel, formState.measurementUnit]);
 
   const { handleSubmit, handleCancel, isSubmitting } = useMultipleEditGearFormSubmission({
     equipment: equipment ? {
