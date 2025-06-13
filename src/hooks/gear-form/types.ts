@@ -1,6 +1,5 @@
 
 export interface PricingOption {
-  id: string;
   price: string;
   duration: string;
 }
@@ -14,6 +13,7 @@ export interface DuplicatedGear {
   dimensions: {
     length: string;
     width: string;
+    thickness?: string;
   };
   skillLevel: string;
   price: string;
@@ -32,8 +32,8 @@ export interface FormState {
   setZipCode: (value: string) => void;
   measurementUnit: string;
   setMeasurementUnit: (value: string) => void;
-  dimensions: { length: string; width: string };
-  setDimensions: (value: { length: string; width: string }) => void;
+  dimensions: { length: string; width: string; thickness?: string };
+  setDimensions: (value: { length: string; width: string; thickness?: string }) => void;
   skillLevel: string;
   setSkillLevel: (value: string) => void;
   images: File[];

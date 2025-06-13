@@ -12,7 +12,6 @@ import {
 import { Plus, Trash2 } from "lucide-react";
 
 interface PricingOption {
-  id: string;
   price: string;
   duration: string;
 }
@@ -32,20 +31,19 @@ const GearPricing = ({
 }: GearPricingProps) => {
   const addPricingOption = () => {
     const newOption: PricingOption = {
-      id: Date.now().toString(),
       price: "",
       duration: "day"
     };
     setPricingOptions([...pricingOptions, newOption]);
   };
 
-  const removePricingOption = (id: string) => {
-    setPricingOptions(pricingOptions.filter(option => option.id !== id));
+  const removePricingOption = (index: number) => {
+    setPricingOptions(pricingOptions.filter((_, i) => i !== index));
   };
 
-  const updatePricingOption = (id: string, field: keyof PricingOption, value: string) => {
-    setPricingOptions(pricingOptions.map(option =>
-      option.id === id ? { ...option, [field]: value } : option
+  const updatePricingOption = (index: number, field: keyof PricingOption, value: string) => {
+    setPricingOptions(pricingOptions.map((option, i) =>
+      i === index ? { ...option, [field]: value } : option
     ));
   };
 
@@ -76,30 +74,30 @@ const GearPricing = ({
         )}
 
         <div className="space-y-3">
-          {pricingOptions.map((option) => (
-            <div key={option.id} className="grid grid-cols-2 gap-4 p-4 border border-gray-200 rounded-lg">
+          {pricingOptions.map((option, index) => (
+            <div key={index} className="grid grid-cols-2 gap-4 p-4 border border-gray-200 rounded-lg">
               <div>
-                <Label htmlFor={`price-${option.id}`} className="block text-sm font-medium mb-1">
+                <Label htmlFor={`price-${index}`} className="block text-sm font-medium mb-1">
                   Price <span className="text-red-500">*</span>
                 </Label>
                 <Input
-                  id={`price-${option.id}`}
+                  id={`price-${index}`}
                   type="number"
                   value={option.price}
-                  onChange={(e) => updatePricingOption(option.id, 'price', e.target.value)}
+                  onChange={(e) => updatePricingOption(index, 'price', e.target.value)}
                   required
                 />
               </div>
               <div>
-                <Label htmlFor={`duration-${option.id}`} className="block text-sm font-medium mb-1">
+                <Label htmlFor={`duration-${index}`} className="block text-sm font-medium mb-1">
                   Duration <span className="text-red-500">*</span>
                 </Label>
                 <div className="flex gap-2">
                   <Select
                     value={option.duration}
-                    onValueChange={(value) => updatePricingOption(option.id, 'duration', value)}
+                    onValueChange={(value) => updatePricingOption(index, 'duration', value)}
                   >
-                    <SelectTrigger id={`duration-${option.id}`}>
+                    <SelectTrigger id={`duration-${index}`}>
                       <SelectValue placeholder="Select Duration" />
                     </SelectTrigger>
                     <SelectContent>
@@ -113,7 +111,7 @@ const GearPricing = ({
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => removePricingOption(option.id)}
+                      onClick={() => removePricingOption(index)}
                       className="flex items-center gap-1"
                     >
                       <Trash2 className="h-4 w-4" />
