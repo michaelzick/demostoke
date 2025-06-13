@@ -7,7 +7,6 @@ import { useMultipleGearFormState } from "@/hooks/gear-form/useMultipleGearFormS
 import { useMultipleEditGearFormSubmission } from "@/hooks/gear-form/useMultipleEditGearFormSubmission";
 import { useEquipmentDataLoader } from "@/hooks/gear-form/useEquipmentDataLoader";
 import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
-import { mapCategoryToGearType, mapSkillLevel, parseSize } from "@/utils/gearDataMapping";
 
 // Import form section components
 import FormHeader from "@/components/gear-form/FormHeader";
@@ -24,6 +23,7 @@ const EditGearForm = () => {
   const { data: equipment, isLoading, error } = useEquipmentById(id || "");
   const formState = useMultipleGearFormState();
   const [currentImages, setCurrentImages] = useState<string[]>([]);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   // Load equipment data when available using the centralized data loader
   useEquipmentDataLoader({
@@ -45,6 +45,20 @@ const EditGearForm = () => {
     setDamageDeposit: formState.setDamageDeposit,
     setMeasurementUnit: formState.setMeasurementUnit,
   });
+
+  // Mark data as loaded after equipment data is processed
+  useEffect(() => {
+    if (equipment && !dataLoaded) {
+      setDataLoaded(true);
+      console.log('Form state after loading:', {
+        gearName: formState.gearName,
+        gearType: formState.gearType,
+        description: formState.description,
+        zipCode: formState.zipCode,
+        damageDeposit: formState.damageDeposit
+      });
+    }
+  }, [equipment, formState, dataLoaded]);
 
   // Load current images separately since this is specific to multiple image handling
   useEffect(() => {
@@ -111,7 +125,7 @@ const EditGearForm = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-6">
-        <FormHeader title={equipment.name} route='/my-gear' buttonText='Back to My Gear Page' />
+        <FormHeader title={`Edit ${equipment.name}`} route='/my-gear' buttonText='Back to My Gear Page' />
 
         <GearBasicInfo
           gearName={formState.gearName}

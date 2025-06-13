@@ -36,18 +36,20 @@ export const useEquipmentDataLoader = ({
 
   useEffect(() => {
     if (equipment) {
-      console.log('Equipment loaded:', equipment);
+      console.log('Loading equipment data for editing:', equipment);
       const mappedGearType = mapCategoryToGearType(equipment.category);
-      console.log('Mapped gear type:', mappedGearType);
-      console.log('Original skill level:', equipment.specifications?.suitable);
-
-      setGearName(equipment.name);
-      setGearType(mappedGearType);
+      
+      // Set all form fields - making sure they're editable
+      setGearName(equipment.name || "");
+      setGearType(mappedGearType || "");
       setDescription(equipment.description || "");
       setZipCode(equipment.location?.zip || "");
-      setDimensions(parseSize(equipment.specifications?.size || ""));
+      
+      // Parse and set dimensions
+      const parsedDimensions = parseSize(equipment.specifications?.size || "");
+      setDimensions(parsedDimensions);
 
-      // Set image URL if available
+      // Set image URL if available and setter provided
       if (setImageUrl && equipment.image_url) {
         setImageUrl(equipment.image_url);
       }
@@ -68,17 +70,16 @@ export const useEquipmentDataLoader = ({
         }
       }
 
-      // Set damage deposit if available and setter provided
+      // Set damage deposit - use a default value since it's not in the current schema
       if (setDamageDeposit) {
-        // For now, set a default value since damage deposit isn't stored in the current schema
-        // This will be updated when we add damage deposit to the database
         setDamageDeposit("100");
       }
 
-      // Map skill level after setting gear type
+      // Map and set skill level
       const mappedSkillLevel = mapSkillLevel(equipment.specifications?.suitable || "", mappedGearType);
-      console.log('Mapped skill level:', mappedSkillLevel);
-      setSkillLevel(mappedSkillLevel);
+      setSkillLevel(mappedSkillLevel || "");
+      
+      console.log('Equipment data loaded successfully for editing');
     }
   }, [equipment, setGearName, setGearType, setDescription, setZipCode, setDimensions, setSkillLevel, setDamageDeposit, setImageUrl, setMeasurementUnit]);
 
