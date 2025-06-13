@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { UserEquipment } from "@/types/equipment";
 import { mapCategoryToGearType, mapSkillLevel, parseSize } from "@/utils/gearDataMapping";
 import { PricingOption } from "./types";
@@ -33,10 +33,11 @@ export const useEquipmentDataLoader = ({
   setMeasurementUnit,
 }: UseEquipmentDataLoaderProps) => {
   const { data: pricingOptionsData = [] } = usePricingOptions(equipment?.id || "");
+  const dataLoadedRef = useRef(false);
 
   useEffect(() => {
-    if (equipment) {
-      console.log('Loading equipment data for editing:', equipment);
+    if (equipment && !dataLoadedRef.current) {
+      console.log('Loading equipment data for editing (one-time):', equipment);
       const mappedGearType = mapCategoryToGearType(equipment.category);
       
       // Set all form fields - making sure they're editable
@@ -79,22 +80,24 @@ export const useEquipmentDataLoader = ({
       const mappedSkillLevel = mapSkillLevel(equipment.specifications?.suitable || "", mappedGearType);
       setSkillLevel(mappedSkillLevel || "");
       
-      console.log('Equipment data loaded successfully for editing');
+      // Mark as loaded to prevent re-loading
+      dataLoadedRef.current = true;
+      console.log('Equipment data loaded successfully for editing - form is now editable');
     }
-  }, [equipment, setGearName, setGearType, setDescription, setZipCode, setDimensions, setSkillLevel, setDamageDeposit, setImageUrl, setMeasurementUnit]);
+  }, [equipment?.id]); // Only depend on equipment.id to prevent re-loading
 
   useEffect(() => {
-    if (pricingOptionsData.length > 0) {
+    if (pricingOptionsData.length > 0 && !dataLoadedRef.current) {
       const formattedOptions = pricingOptionsData.map(option => ({
         price: option.price.toString(),
         duration: option.duration
       }));
       setPricingOptions(formattedOptions);
-    } else if (equipment) {
+    } else if (equipment && !dataLoadedRef.current) {
       // Fallback to default pricing if no options exist
       setPricingOptions([
         { price: equipment.price_per_day.toString(), duration: "day" }
       ]);
     }
-  }, [pricingOptionsData, equipment, setPricingOptions]);
+  }, [pricingOptionsData, equipment?.price_per_day, equipment?.id]); // Only depend on specific values
 };
