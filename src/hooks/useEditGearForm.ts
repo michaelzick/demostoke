@@ -31,6 +31,9 @@ export const useEditGearForm = () => {
     setDimensions: formState.setDimensions,
     setSkillLevel: formState.setSkillLevel,
     setPricingOptions: formState.setPricingOptions,
+    setDamageDeposit: formState.setDamageDeposit,
+    setImageUrl: formState.setImageUrl,
+    setMeasurementUnit: formState.setMeasurementUnit,
   });
 
   // Handle form submission

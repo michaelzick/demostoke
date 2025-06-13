@@ -5,7 +5,9 @@ import { useToast } from "@/hooks/use-toast";
 import { useEquipmentById } from "@/hooks/useEquipmentById";
 import { useMultipleGearFormState } from "@/hooks/gear-form/useMultipleGearFormState";
 import { useMultipleEditGearFormSubmission } from "@/hooks/gear-form/useMultipleEditGearFormSubmission";
+import { useEquipmentDataLoader } from "@/hooks/gear-form/useEquipmentDataLoader";
 import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
+import { mapCategoryToGearType, mapSkillLevel, parseSize } from "@/utils/gearDataMapping";
 
 // Import form section components
 import FormHeader from "@/components/gear-form/FormHeader";
@@ -23,23 +25,30 @@ const EditGearForm = () => {
   const formState = useMultipleGearFormState();
   const [currentImages, setCurrentImages] = useState<string[]>([]);
 
-  // Load equipment data when available
+  // Load equipment data when available using the centralized data loader
+  useEquipmentDataLoader({
+    equipment: equipment ? {
+      ...equipment,
+      status: (equipment.status as 'available' | 'booked' | 'unavailable') || 'available',
+      created_at: equipment.created_at || new Date().toISOString(),
+      updated_at: equipment.updated_at || new Date().toISOString(),
+      visible_on_map: equipment.visible_on_map !== undefined ? equipment.visible_on_map : true,
+      review_count: equipment.review_count || 0
+    } : undefined,
+    setGearName: formState.setGearName,
+    setGearType: formState.setGearType,
+    setDescription: formState.setDescription,
+    setZipCode: formState.setZipCode,
+    setDimensions: formState.setDimensions,
+    setSkillLevel: formState.setSkillLevel,
+    setPricingOptions: formState.setPricingOptions,
+    setDamageDeposit: formState.setDamageDeposit,
+    setMeasurementUnit: formState.setMeasurementUnit,
+  });
+
+  // Load current images separately since this is specific to multiple image handling
   useEffect(() => {
     if (equipment) {
-      formState.setGearName(equipment.name);
-      formState.setGearType(equipment.category);
-      formState.setDescription(equipment.description || "");
-      formState.setZipCode(equipment.location?.zip || "");
-      formState.setSkillLevel(equipment.specifications?.suitable || "");
-      
-      // Set pricing options
-      if (equipment.pricing_options && equipment.pricing_options.length > 0) {
-        formState.setPricingOptions([
-          { price: equipment.pricing_options[0].price.toString(), duration: equipment.pricing_options[0].duration }
-        ]);
-      }
-
-      // Load current images
       const loadImages = async () => {
         const images = await fetchEquipmentImages(equipment.id);
         setCurrentImages(images.length > 0 ? images : (equipment.image_url ? [equipment.image_url] : []));
