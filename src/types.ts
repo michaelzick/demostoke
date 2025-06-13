@@ -9,6 +9,7 @@ export interface Equipment {
   images?: string[]; // Add support for multiple images
   rating: number;
   review_count: number;
+  damage_deposit?: number; // Add damage_deposit property
   owner: Owner;
   location: {
     lat: number;
@@ -26,7 +27,7 @@ export interface Equipment {
     available: boolean;
     nextAvailableDate?: string; // Add optional nextAvailableDate
   };
-  pricing_options: [PricingOption];
+  pricing_options: PricingOption[]; // Change from [PricingOption] to PricingOption[]
   status?: string; // Add optional status
   created_at?: string; // Add optional created_at
   updated_at?: string; // Add optional updated_at
