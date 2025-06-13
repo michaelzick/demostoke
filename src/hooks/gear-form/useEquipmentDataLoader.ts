@@ -73,21 +73,18 @@ export const useEquipmentDataLoader = ({
         }
       }
 
-      // Set damage deposit from equipment data with proper handling
+      // Set damage deposit with improved handling
       if (setDamageDeposit) {
-        console.log('Equipment object for damage deposit:', equipment);
-        console.log('Equipment damage_deposit value:', equipment.damage_deposit);
-        console.log('Equipment damage_deposit type:', typeof equipment.damage_deposit);
+        console.log('Raw equipment object:', equipment);
+        console.log('Damage deposit value from equipment:', equipment.damage_deposit);
+        console.log('Type of damage deposit:', typeof equipment.damage_deposit);
         
-        let damageDepositValue = "100"; // default fallback
+        // Use a more straightforward approach
+        const damageDepositValue = equipment.damage_deposit !== undefined && equipment.damage_deposit !== null 
+          ? String(equipment.damage_deposit) 
+          : "100";
         
-        if (equipment.damage_deposit !== undefined && equipment.damage_deposit !== null) {
-          damageDepositValue = equipment.damage_deposit.toString();
-        } else {
-          console.log('No damage_deposit found in equipment, using default value');
-        }
-        
-        console.log('Setting damage deposit value:', damageDepositValue);
+        console.log('Final damage deposit value to set:', damageDepositValue);
         setDamageDeposit(damageDepositValue);
       }
 
@@ -99,7 +96,7 @@ export const useEquipmentDataLoader = ({
       equipmentDataLoadedRef.current = true;
       console.log('Equipment basic data loaded successfully for editing - form is now editable');
     }
-  }, [equipment?.id, equipment?.damage_deposit]); // Add damage_deposit to dependencies
+  }, [equipment]); // Depend on the entire equipment object to catch any changes
 
   // Load pricing options data separately
   useEffect(() => {

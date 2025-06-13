@@ -27,12 +27,16 @@ export const useEquipmentById = (id: string) => {
         return null;
       }
 
+      // Log the raw data to see what we're getting from the database
+      console.log('Raw equipment data from database:', data);
+      console.log('Damage deposit from database:', data.damage_deposit);
+
       // Fetch additional images from equipment_images table
       const additionalImages = await fetchEquipmentImages(data.id);
       const allImages = additionalImages.length > 0 ? additionalImages : (data.image_url ? [data.image_url] : []);
 
-      // Convert to Equipment type
-      return {
+      // Convert to Equipment type with proper damage_deposit mapping
+      const equipment = {
         id: data.id,
         name: data.name,
         category: data.category,
@@ -42,6 +46,7 @@ export const useEquipmentById = (id: string) => {
         price_per_day: Number(data.price_per_day),
         rating: Number(data.rating || 0),
         review_count: data.review_count || 0,
+        damage_deposit: data.damage_deposit ? Number(data.damage_deposit) : undefined, // Add damage_deposit mapping
         owner: {
           id: data.user_id,
           name: 'Owner',
@@ -73,6 +78,11 @@ export const useEquipmentById = (id: string) => {
         updated_at: data.updated_at,
         visible_on_map: data.visible_on_map !== undefined ? data.visible_on_map : true,
       };
+
+      console.log('Mapped equipment object:', equipment);
+      console.log('Mapped damage_deposit:', equipment.damage_deposit);
+
+      return equipment;
     },
     enabled: !!id,
   });
