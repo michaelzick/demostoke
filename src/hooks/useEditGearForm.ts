@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useEquipmentById } from "@/hooks/useEquipmentById";
 import { useEditGearFormState } from "@/hooks/gear-form/useEditGearFormState";
 import { useEquipmentDataLoader } from "@/hooks/gear-form/useEquipmentDataLoader";
-import { useEditGearFormSubmission } from "@/hooks/gear-form/useEditGearFormSubmission";
+import { useMultipleEditGearFormSubmission } from "@/hooks/gear-form/useMultipleEditGearFormSubmission";
 
 export const useEditGearForm = () => {
   const navigate = useNavigate();
@@ -36,8 +36,8 @@ export const useEditGearForm = () => {
     setMeasurementUnit: formState.setMeasurementUnit,
   });
 
-  // Handle form submission
-  const { handleSubmit, handleCancel, isSubmitting } = useEditGearFormSubmission({
+  // Handle form submission using multiple image submission
+  const { handleSubmit, handleCancel, isSubmitting } = useMultipleEditGearFormSubmission({
     equipment: equipment ? {
       ...equipment,
       status: (equipment.status as 'available' | 'booked' | 'unavailable') || 'available',
