@@ -5,6 +5,7 @@ export const mapGearTypeToCategory = (gearType: string): string => {
     "skis": "skis",
     "surfboard": "surfboards",
     "sup": "sups",
+    "mountain-bike": "mountain-bikes",
     "skateboard": "skateboards"
   };
   return typeMap[gearType] || gearType;

@@ -2,7 +2,7 @@
 export const mapCategoryToGearType = (category: string): string => {
   const categoryMap: { [key: string]: string } = {
     "snowboards": "snowboard",
-    "skis": "skis",
+    "skis": "skis", 
     "surfboards": "surfboard",
     "sups": "sup",
     "mountain-bikes": "mountain-bike"
