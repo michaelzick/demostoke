@@ -49,8 +49,8 @@ export interface FormState {
   setZipCode: (value: string) => void;
   measurementUnit: string;
   setMeasurementUnit: (value: string) => void;
-  dimensions: { length: string; width: string; thickness: string };
-  setDimensions: (value: { length: string; width: string; thickness: string }) => void;
+  dimensions: { length: string; width: string; thickness?: string };
+  setDimensions: (value: { length: string; width: string; thickness?: string }) => void;
   skillLevel: string;
   setSkillLevel: (value: string) => void;
   images: File[];
