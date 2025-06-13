@@ -2,8 +2,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useEquipmentById } from "@/hooks/useEquipmentById";
-import { useEditGearForm } from "@/hooks/useEditGearForm";
+import { useEditGearFormState } from "@/hooks/gear-form/useEditGearFormState";
+import { useEquipmentDataLoader } from "@/hooks/gear-form/useEquipmentDataLoader";
+import { useMultipleEditGearFormSubmission } from "@/hooks/gear-form/useMultipleEditGearFormSubmission";
 import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 // Import form section components
 import FormHeader from "@/components/gear-form/FormHeader";
@@ -15,11 +19,59 @@ import FormActions from "@/components/gear-form/FormActions";
 
 const EditGearForm = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const { data: equipment, isLoading, error } = useEquipmentById(id || "");
   const [currentImages, setCurrentImages] = useState<string[]>([]);
   
-  // Use the centralized hook that manages all form logic
-  const { formState, handlers, isSubmitting, navigate, toast } = useEditGearForm();
+  // Use the individual form state hook directly
+  const formState = useEditGearFormState();
+
+  // Load equipment data when available
+  useEquipmentDataLoader({
+    equipment: equipment ? {
+      ...equipment,
+      status: (equipment.status as 'available' | 'booked' | 'unavailable') || 'available',
+      created_at: equipment.created_at || new Date().toISOString(),
+      updated_at: equipment.updated_at || new Date().toISOString(),
+      visible_on_map: equipment.visible_on_map !== undefined ? equipment.visible_on_map : true,
+      review_count: equipment.review_count || 0
+    } : undefined,
+    setGearName: formState.setGearName,
+    setGearType: formState.setGearType,
+    setDescription: formState.setDescription,
+    setZipCode: formState.setZipCode,
+    setDimensions: formState.setDimensions,
+    setSkillLevel: formState.setSkillLevel,
+    setPricingOptions: formState.setPricingOptions,
+    setDamageDeposit: formState.setDamageDeposit,
+    setImageUrls: formState.setImageUrls,
+    setMeasurementUnit: formState.setMeasurementUnit,
+  });
+
+  // Handle form submission using multiple image submission
+  const { handleSubmit, handleCancel, isSubmitting } = useMultipleEditGearFormSubmission({
+    equipment: equipment ? {
+      ...equipment,
+      status: (equipment.status as 'available' | 'booked' | 'unavailable') || 'available',
+      created_at: equipment.created_at || new Date().toISOString(),
+      updated_at: equipment.updated_at || new Date().toISOString(),
+      visible_on_map: equipment.visible_on_map !== undefined ? equipment.visible_on_map : true,
+      review_count: equipment.review_count || 0
+    } : undefined,
+    gearName: formState.gearName,
+    gearType: formState.gearType,
+    description: formState.description,
+    zipCode: formState.zipCode,
+    measurementUnit: formState.measurementUnit,
+    dimensions: formState.dimensions,
+    skillLevel: formState.skillLevel,
+    images: formState.images,
+    pricingOptions: formState.pricingOptions,
+    damageDeposit: formState.damageDeposit,
+    imageUrls: formState.imageUrls,
+    useImageUrls: formState.useImageUrls,
+  });
 
   // Load equipment images when equipment is available
   useEffect(() => {
@@ -67,7 +119,7 @@ const EditGearForm = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <form onSubmit={handlers.handleSubmit} className="max-w-2xl mx-auto space-y-6">
+      <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-6">
         <FormHeader title={`Edit ${equipment.name}`} route='/my-gear' buttonText='Back to My Gear Page' />
 
         <GearBasicInfo
@@ -110,8 +162,8 @@ const EditGearForm = () => {
         />
 
         <FormActions
-          handleSubmit={handlers.handleSubmit}
-          handleCancel={handlers.handleCancel}
+          handleSubmit={handleSubmit}
+          handleCancel={handleCancel}
           isEditing={true}
           isSubmitting={isSubmitting}
         />
