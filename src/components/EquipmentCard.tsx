@@ -38,7 +38,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
                   <img
                     src={imageUrl}
                     alt={`${equipment.name} - Image ${index + 1}`}
-                    className="h-full w-full object-cover"
+                    className="h-full w-full object-cover max-h-[290px]"
                   />
                 </CarouselItem>
               ))}
@@ -50,17 +50,17 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
           <img
             src={images[0] || equipment.image_url}
             alt={equipment.name}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover max-h-[290px]"
           />
         )}
-        
+
         <Badge
           className="absolute top-2 right-2 z-10"
           variant="secondary"
         >
           {getCategoryDisplayName(equipment.category)}
         </Badge>
-        
+
         {/* Shop or Private Party indicator */}
         {isShop && (
           <Badge
@@ -81,7 +81,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
           </Badge>
         )}
       </div>
-      
+
       <CardContent className="p-4">
         <div className="flex justify-between items-start gap-2 mb-2">
           <h3 className="font-medium text-lg truncate">{equipment.name}</h3>
@@ -112,7 +112,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
           </Link>
         </div>
       </CardContent>
-      
+
       <CardFooter className="p-4 pt-0 flex justify-between">
         <Button asChild size="sm">
           <Link to={`/equipment/${equipment.id}`}>View Details</Link>
