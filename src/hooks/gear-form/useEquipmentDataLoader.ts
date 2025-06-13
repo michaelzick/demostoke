@@ -33,10 +33,12 @@ export const useEquipmentDataLoader = ({
   setMeasurementUnit,
 }: UseEquipmentDataLoaderProps) => {
   const { data: pricingOptionsData = [] } = usePricingOptions(equipment?.id || "");
-  const dataLoadedRef = useRef(false);
+  const equipmentDataLoadedRef = useRef(false);
+  const pricingDataLoadedRef = useRef(false);
 
+  // Load equipment basic data
   useEffect(() => {
-    if (equipment && !dataLoadedRef.current) {
+    if (equipment && !equipmentDataLoadedRef.current) {
       console.log('Loading equipment data for editing (one-time):', equipment);
       const mappedGearType = mapCategoryToGearType(equipment.category);
       
@@ -80,24 +82,31 @@ export const useEquipmentDataLoader = ({
       const mappedSkillLevel = mapSkillLevel(equipment.specifications?.suitable || "", mappedGearType);
       setSkillLevel(mappedSkillLevel || "");
       
-      // Mark as loaded to prevent re-loading
-      dataLoadedRef.current = true;
-      console.log('Equipment data loaded successfully for editing - form is now editable');
+      // Mark equipment data as loaded
+      equipmentDataLoadedRef.current = true;
+      console.log('Equipment basic data loaded successfully for editing - form is now editable');
     }
   }, [equipment?.id]); // Only depend on equipment.id to prevent re-loading
 
+  // Load pricing options data separately
   useEffect(() => {
-    if (pricingOptionsData.length > 0 && !dataLoadedRef.current) {
-      const formattedOptions = pricingOptionsData.map(option => ({
-        price: option.price.toString(),
-        duration: option.duration
-      }));
-      setPricingOptions(formattedOptions);
-    } else if (equipment && !dataLoadedRef.current) {
-      // Fallback to default pricing if no options exist
-      setPricingOptions([
-        { price: equipment.price_per_day.toString(), duration: "day" }
-      ]);
+    if (equipment && !pricingDataLoadedRef.current) {
+      if (pricingOptionsData.length > 0) {
+        console.log('Loading pricing options from database:', pricingOptionsData);
+        const formattedOptions = pricingOptionsData.map(option => ({
+          price: option.price.toString(),
+          duration: option.duration
+        }));
+        setPricingOptions(formattedOptions);
+      } else {
+        console.log('No pricing options found, using default from equipment price_per_day');
+        // Fallback to default pricing if no options exist
+        setPricingOptions([
+          { price: equipment.price_per_day.toString(), duration: "day" }
+        ]);
+      }
+      pricingDataLoadedRef.current = true;
+      console.log('Pricing options loaded successfully');
     }
-  }, [pricingOptionsData, equipment?.price_per_day, equipment?.id]); // Only depend on specific values
+  }, [pricingOptionsData, equipment?.price_per_day, equipment?.id]);
 };
