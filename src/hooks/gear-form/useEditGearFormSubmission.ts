@@ -52,10 +52,55 @@ export const useEditGearFormSubmission = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log('=== FORM SUBMISSION START ===');
+    console.log('Form data at submission:', {
+      pricingOptions,
+      damageDeposit,
+      equipment: equipment?.id,
+      user: user?.id
+    });
+
     if (!user || !equipment) {
+      console.error('Missing user or equipment:', { user: !!user, equipment: !!equipment });
       toast({
         title: "Error",
         description: "Authentication error or equipment not found.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate pricing options before proceeding
+    if (!pricingOptions || pricingOptions.length === 0) {
+      console.error('No pricing options provided');
+      toast({
+        title: "Error",
+        description: "At least one pricing option is required.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate each pricing option
+    for (let i = 0; i < pricingOptions.length; i++) {
+      const option = pricingOptions[i];
+      if (!option.price || parseFloat(option.price) <= 0) {
+        console.error('Invalid pricing option:', option);
+        toast({
+          title: "Error",
+          description: `Price for option ${i + 1} must be greater than 0.`,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    // Validate damage deposit
+    if (!damageDeposit || parseFloat(damageDeposit) < 0) {
+      console.error('Invalid damage deposit:', damageDeposit);
+      toast({
+        title: "Error",
+        description: "Damage deposit must be a valid number (0 or greater).",
         variant: "destructive",
       });
       return;
@@ -82,6 +127,7 @@ export const useEditGearFormSubmission = ({
     };
 
     if (!validateForm(formData)) {
+      console.error('Form validation failed');
       return;
     }
 
@@ -129,6 +175,12 @@ export const useEditGearFormSubmission = ({
       // Prepare equipment data for update - using the first pricing option for the main price
       const firstPricingPrice = pricingOptions.length > 0 ? pricingOptions[0].price : equipment.price_per_day.toString();
       
+      console.log('Preparing equipment data with:', {
+        firstPricingPrice,
+        damageDeposit,
+        finalImageUrl
+      });
+
       const equipmentData = prepareEquipmentData({
         gearName,
         gearType,
@@ -143,20 +195,25 @@ export const useEditGearFormSubmission = ({
         damageDeposit,
       });
 
-      console.log('Updating equipment with data:', equipmentData);
-      console.log('Damage deposit value:', damageDeposit);
-      console.log('Pricing options to save:', pricingOptions);
+      console.log('Final equipment data to save:', equipmentData);
 
       // Update equipment in database
-      await updateEquipmentInDatabase(equipment, equipmentData, user.id);
+      console.log('=== UPDATING EQUIPMENT ===');
+      const updatedEquipment = await updateEquipmentInDatabase(equipment, equipmentData, user.id);
+      console.log('Equipment update completed:', updatedEquipment);
 
       // Update pricing options - ensure we have valid pricing options
+      console.log('=== UPDATING PRICING OPTIONS ===');
+      console.log('Pricing options to save:', pricingOptions);
+      
       if (pricingOptions.length > 0) {
-        console.log('Updating pricing options:', pricingOptions);
-        await updatePricingOptions(equipment.id, pricingOptions);
+        const pricingResult = await updatePricingOptions(equipment.id, pricingOptions);
+        console.log('Pricing options update completed:', pricingResult);
       } else {
-        console.log('No pricing options to update');
+        console.warn('No pricing options to update');
       }
+
+      console.log('=== FORM SUBMISSION SUCCESS ===');
 
       toast({
         title: "Equipment Updated",
@@ -166,6 +223,7 @@ export const useEditGearFormSubmission = ({
       navigate("/my-gear");
 
     } catch (error) {
+      console.error('=== FORM SUBMISSION ERROR ===');
       console.error('Error updating equipment:', error);
       
       // Provide more detailed error information
@@ -173,6 +231,7 @@ export const useEditGearFormSubmission = ({
       if (error instanceof Error) {
         errorMessage = error.message;
         console.error('Detailed error:', error);
+        console.error('Error stack:', error.stack);
       }
       
       toast({

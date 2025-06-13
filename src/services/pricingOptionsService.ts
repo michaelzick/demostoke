@@ -6,8 +6,9 @@ export const updatePricingOptions = async (
   equipmentId: string,
   pricingOptions: PricingOption[]
 ) => {
-  console.log('Updating pricing options for equipment:', equipmentId);
-  console.log('Pricing options data:', pricingOptions);
+  console.log('=== PRICING OPTIONS SERVICE ===');
+  console.log('Equipment ID:', equipmentId);
+  console.log('Pricing options to save:', pricingOptions);
 
   if (!equipmentId) {
     throw new Error('Equipment ID is required');
@@ -18,8 +19,20 @@ export const updatePricingOptions = async (
     return;
   }
 
+  // Validate pricing options
+  for (let i = 0; i < pricingOptions.length; i++) {
+    const option = pricingOptions[i];
+    if (!option.price || isNaN(parseFloat(option.price))) {
+      throw new Error(`Invalid price for option ${i + 1}: ${option.price}`);
+    }
+    if (!option.duration) {
+      throw new Error(`Duration is required for option ${i + 1}`);
+    }
+  }
+
   try {
     // First, delete existing pricing options
+    console.log('Deleting existing pricing options...');
     const { error: deleteError } = await supabase
       .from('pricing_options')
       .delete()
@@ -33,11 +46,20 @@ export const updatePricingOptions = async (
     console.log('Existing pricing options deleted successfully');
 
     // Then, insert new pricing options
-    const pricingData = pricingOptions.map(option => ({
-      equipment_id: equipmentId,
-      price: parseFloat(option.price),
-      duration: option.duration
-    }));
+    const pricingData = pricingOptions.map((option, index) => {
+      const price = parseFloat(option.price);
+      console.log(`Processing option ${index + 1}:`, { 
+        originalPrice: option.price, 
+        parsedPrice: price, 
+        duration: option.duration 
+      });
+      
+      return {
+        equipment_id: equipmentId,
+        price: price,
+        duration: option.duration
+      };
+    });
 
     console.log('Inserting new pricing options:', pricingData);
 
@@ -48,10 +70,16 @@ export const updatePricingOptions = async (
 
     if (insertError) {
       console.error('Error inserting new pricing options:', insertError);
+      console.error('Insert error details:', {
+        code: insertError.code,
+        message: insertError.message,
+        details: insertError.details,
+        hint: insertError.hint
+      });
       throw new Error(`Failed to insert pricing options: ${insertError.message}`);
     }
 
-    console.log('Pricing options updated successfully:', data);
+    console.log('Pricing options inserted successfully:', data);
     return data;
 
   } catch (error) {
