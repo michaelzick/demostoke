@@ -73,10 +73,21 @@ export const useEquipmentDataLoader = ({
         }
       }
 
-      // Set damage deposit from equipment data, with fallback to "100"
+      // Set damage deposit from equipment data with proper handling
       if (setDamageDeposit) {
-        const damageDepositValue = equipment.damage_deposit ? equipment.damage_deposit.toString() : "100";
-        console.log('Setting damage deposit from equipment:', equipment.damage_deposit, 'as string:', damageDepositValue);
+        console.log('Equipment object for damage deposit:', equipment);
+        console.log('Equipment damage_deposit value:', equipment.damage_deposit);
+        console.log('Equipment damage_deposit type:', typeof equipment.damage_deposit);
+        
+        let damageDepositValue = "100"; // default fallback
+        
+        if (equipment.damage_deposit !== undefined && equipment.damage_deposit !== null) {
+          damageDepositValue = equipment.damage_deposit.toString();
+        } else {
+          console.log('No damage_deposit found in equipment, using default value');
+        }
+        
+        console.log('Setting damage deposit value:', damageDepositValue);
         setDamageDeposit(damageDepositValue);
       }
 
@@ -88,7 +99,7 @@ export const useEquipmentDataLoader = ({
       equipmentDataLoadedRef.current = true;
       console.log('Equipment basic data loaded successfully for editing - form is now editable');
     }
-  }, [equipment?.id]); // Only depend on equipment.id to prevent re-loading
+  }, [equipment?.id, equipment?.damage_deposit]); // Add damage_deposit to dependencies
 
   // Load pricing options data separately
   useEffect(() => {
