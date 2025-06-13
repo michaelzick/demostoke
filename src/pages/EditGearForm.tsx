@@ -1,26 +1,75 @@
 
-import React, { useEffect } from "react";
-import { useEditGearForm } from "@/hooks/useEditGearForm";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { useEquipmentById } from "@/hooks/useEquipmentById";
+import { useMultipleGearFormState } from "@/hooks/gear-form/useMultipleGearFormState";
+import { useMultipleEditGearFormSubmission } from "@/hooks/gear-form/useMultipleEditGearFormSubmission";
+import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 
 // Import form section components
 import FormHeader from "@/components/gear-form/FormHeader";
 import GearBasicInfo from "@/components/gear-form/GearBasicInfo";
 import GearSpecifications from "@/components/gear-form/GearSpecifications";
-import GearMedia from "@/components/gear-form/GearMedia";
+import MultipleGearMedia from "@/components/gear-form/MultipleGearMedia";
 import GearPricing from "@/components/gear-form/GearPricing";
 import FormActions from "@/components/gear-form/FormActions";
 
 const EditGearForm = () => {
-  const {
-    equipment,
-    isLoading,
-    error,
-    formState,
-    handlers,
-    isSubmitting,
-    navigate,
-    toast,
-  } = useEditGearForm();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { data: equipment, isLoading, error } = useEquipmentById(id || "");
+  const formState = useMultipleGearFormState();
+  const [currentImages, setCurrentImages] = useState<string[]>([]);
+
+  // Load equipment data when available
+  useEffect(() => {
+    if (equipment) {
+      formState.setGearName(equipment.name);
+      formState.setGearType(equipment.category);
+      formState.setDescription(equipment.description || "");
+      formState.setZipCode(equipment.location?.zip || "");
+      formState.setSkillLevel(equipment.specifications?.suitable || "");
+      
+      // Set pricing options
+      if (equipment.pricing_options && equipment.pricing_options.length > 0) {
+        formState.setPricingOptions([
+          { price: equipment.pricing_options[0].price.toString(), duration: equipment.pricing_options[0].duration }
+        ]);
+      }
+
+      // Load current images
+      const loadImages = async () => {
+        const images = await fetchEquipmentImages(equipment.id);
+        setCurrentImages(images.length > 0 ? images : (equipment.image_url ? [equipment.image_url] : []));
+      };
+      loadImages();
+    }
+  }, [equipment]);
+
+  const { handleSubmit, handleCancel, isSubmitting } = useMultipleEditGearFormSubmission({
+    equipment: equipment ? {
+      ...equipment,
+      status: (equipment.status as 'available' | 'booked' | 'unavailable') || 'available',
+      created_at: equipment.created_at || new Date().toISOString(),
+      updated_at: equipment.updated_at || new Date().toISOString(),
+      visible_on_map: equipment.visible_on_map !== undefined ? equipment.visible_on_map : true,
+      review_count: equipment.review_count || 0
+    } : undefined,
+    gearName: formState.gearName,
+    gearType: formState.gearType,
+    description: formState.description,
+    zipCode: formState.zipCode,
+    measurementUnit: formState.measurementUnit,
+    dimensions: formState.dimensions,
+    skillLevel: formState.skillLevel,
+    images: formState.images,
+    pricingOptions: formState.pricingOptions,
+    damageDeposit: formState.damageDeposit,
+    imageUrls: formState.imageUrls,
+    useImageUrls: formState.useImageUrls,
+  });
 
   // Handle error navigation
   useEffect(() => {
@@ -52,7 +101,7 @@ const EditGearForm = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <form onSubmit={handlers.handleSubmit} className="max-w-2xl mx-auto space-y-6">
+      <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-6">
         <FormHeader title={equipment.name} route='/my-gear' buttonText='Back to My Gear Page' />
 
         <GearBasicInfo
@@ -76,13 +125,15 @@ const EditGearForm = () => {
           gearType={formState.gearType}
         />
 
-        <GearMedia
-          handleImageUpload={handlers.handleImageUpload}
-          currentImageUrl={equipment.image_url}
-          imageUrl={formState.imageUrl}
-          setImageUrl={formState.setImageUrl}
-          useImageUrl={formState.useImageUrl}
-          setUseImageUrl={formState.setUseImageUrl}
+        <MultipleGearMedia
+          handleMultipleImageUpload={formState.handleImageUpload}
+          currentImages={currentImages}
+          imageUrls={formState.imageUrls}
+          setImageUrls={formState.setImageUrls}
+          useImageUrls={formState.useImageUrls}
+          setUseImageUrls={formState.setUseImageUrls}
+          selectedFiles={formState.images}
+          setSelectedFiles={formState.setImages}
         />
 
         <GearPricing
@@ -93,8 +144,8 @@ const EditGearForm = () => {
         />
 
         <FormActions
-          handleSubmit={handlers.handleSubmit}
-          handleCancel={handlers.handleCancel}
+          handleSubmit={handleSubmit}
+          handleCancel={handleCancel}
           isEditing={true}
           isSubmitting={isSubmitting}
         />

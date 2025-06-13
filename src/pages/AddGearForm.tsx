@@ -3,10 +3,12 @@ import React, { useEffect } from "react";
 import FormHeader from "@/components/gear-form/FormHeader";
 import GearBasicInfo from "@/components/gear-form/GearBasicInfo";
 import GearSpecifications from "@/components/gear-form/GearSpecifications";
-import GearMedia from "@/components/gear-form/GearMedia";
+import MultipleGearMedia from "@/components/gear-form/MultipleGearMedia";
 import GearPricing from "@/components/gear-form/GearPricing";
 import FormActions from "@/components/gear-form/FormActions";
-import { useAddGearForm } from "@/hooks/useAddGearForm";
+import { useMultipleGearFormState } from "@/hooks/gear-form/useMultipleGearFormState";
+import { useMultipleGearFormSubmission } from "@/hooks/gear-form/useMultipleGearFormSubmission";
+import { useAuth } from "@/helpers";
 
 const AddGearForm = () => {
   // Scroll to top on page load
@@ -14,16 +16,32 @@ const AddGearForm = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const {
-    formState,
-    handlers,
-    isSubmitting,
-    duplicatedImageUrl,
-  } = useAddGearForm();
+  const { user } = useAuth();
+  const formState = useMultipleGearFormState();
+
+  const { handleSubmit, isSubmitting } = useMultipleGearFormSubmission({
+    gearName: formState.gearName,
+    gearType: formState.gearType,
+    description: formState.description,
+    zipCode: formState.zipCode,
+    measurementUnit: formState.measurementUnit,
+    dimensions: formState.dimensions,
+    skillLevel: formState.skillLevel,
+    images: formState.images,
+    pricingOptions: formState.pricingOptions,
+    damageDeposit: formState.damageDeposit,
+    role: user?.role || "private-party",
+    imageUrls: formState.imageUrls,
+    useImageUrls: formState.useImageUrls,
+  });
+
+  const handleCancel = () => {
+    window.history.back();
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <form onSubmit={handlers.handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-8">
         <FormHeader title="Add New Gear" route='/list-your-gear' buttonText='Back to List Gear Page' />
 
         <GearBasicInfo
@@ -47,13 +65,14 @@ const AddGearForm = () => {
           gearType={formState.gearType}
         />
 
-        <GearMedia
-          handleImageUpload={handlers.handleImageUpload}
-          duplicatedImageUrl={duplicatedImageUrl}
-          imageUrl={formState.imageUrl}
-          setImageUrl={formState.setImageUrl}
-          useImageUrl={formState.useImageUrl}
-          setUseImageUrl={formState.setUseImageUrl}
+        <MultipleGearMedia
+          handleMultipleImageUpload={formState.handleImageUpload}
+          imageUrls={formState.imageUrls}
+          setImageUrls={formState.setImageUrls}
+          useImageUrls={formState.useImageUrls}
+          setUseImageUrls={formState.setUseImageUrls}
+          selectedFiles={formState.images}
+          setSelectedFiles={formState.setImages}
         />
 
         <GearPricing
@@ -64,8 +83,8 @@ const AddGearForm = () => {
         />
 
         <FormActions
-          handleSubmit={handlers.handleSubmit}
-          handleCancel={handlers.handleCancel}
+          handleSubmit={handleSubmit}
+          handleCancel={handleCancel}
           isEditing={false}
           isSubmitting={isSubmitting}
         />

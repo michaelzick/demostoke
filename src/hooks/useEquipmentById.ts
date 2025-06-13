@@ -2,6 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Equipment } from "@/types";
+import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 
 export const useEquipmentById = (id: string) => {
   return useQuery({
@@ -26,6 +27,10 @@ export const useEquipmentById = (id: string) => {
         return null;
       }
 
+      // Fetch additional images from equipment_images table
+      const additionalImages = await fetchEquipmentImages(data.id);
+      const allImages = additionalImages.length > 0 ? additionalImages : (data.image_url ? [data.image_url] : []);
+
       // Convert to Equipment type
       return {
         id: data.id,
@@ -33,6 +38,7 @@ export const useEquipmentById = (id: string) => {
         category: data.category,
         description: data.description || '',
         image_url: data.image_url || '',
+        images: allImages, // Include all images
         price_per_day: Number(data.price_per_day),
         rating: Number(data.rating || 0),
         review_count: data.review_count || 0,
@@ -41,7 +47,7 @@ export const useEquipmentById = (id: string) => {
           name: 'Owner',
           imageUrl: 'https://api.dicebear.com/6.x/avataaars/svg?seed=' + data.user_id,
           rating: 4.8,
-          reviewCount: 15, // Add reviewCount
+          reviewCount: 15,
           responseRate: 95,
         },
         location: {

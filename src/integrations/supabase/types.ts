@@ -41,6 +41,7 @@ export type Database = {
           category: string
           created_at: string
           description: string | null
+          has_multiple_images: boolean | null
           id: string
           image_url: string | null
           location_lat: number | null
@@ -63,6 +64,7 @@ export type Database = {
           category: string
           created_at?: string
           description?: string | null
+          has_multiple_images?: boolean | null
           id?: string
           image_url?: string | null
           location_lat?: number | null
@@ -85,6 +87,7 @@ export type Database = {
           category?: string
           created_at?: string
           description?: string | null
+          has_multiple_images?: boolean | null
           id?: string
           image_url?: string | null
           location_lat?: number | null
@@ -109,6 +112,44 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      equipment_images: {
+        Row: {
+          created_at: string
+          display_order: number
+          equipment_id: string
+          id: string
+          image_url: string
+          is_primary: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          equipment_id: string
+          id?: string
+          image_url: string
+          is_primary?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          equipment_id?: string
+          id?: string
+          image_url?: string
+          is_primary?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipment_images_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment"
             referencedColumns: ["id"]
           },
         ]
