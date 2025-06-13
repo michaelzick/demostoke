@@ -1,3 +1,4 @@
+
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -11,15 +12,15 @@ import AuthLayout from "./layouts/AuthLayout";
 const HomePage = lazy(() => import("./pages/HomePage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
-const ContactPage = lazy(() => import("./pages/ContactPage"));
+const ContactPage = lazy(() => import("./pages/ContactUsPage"));
 const PricingPage = lazy(() => import("./pages/PricingPage"));
 const TermsPage = lazy(() => import("./pages/TermsPage"));
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
-const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+const NotFoundPage = lazy(() => import("./pages/NotFound"));
 const ExplorePage = lazy(() => import("./pages/ExplorePage"));
 const EquipmentDetailPage = lazy(() => import("./pages/EquipmentDetailPage"));
-const ListGearPage = lazy(() => import("./pages/ListGearPage"));
-const EditGearPage = lazy(() => import("./pages/EditGearPage"));
+const ListGearPage = lazy(() => import("./pages/ListYourGearPage"));
+const EditGearPage = lazy(() => import("./pages/EditGearForm"));
 const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 const SignInPage = lazy(() => import("./pages/SignInPage"));
 const SignUpPage = lazy(() => import("./pages/SignUpPage"));
