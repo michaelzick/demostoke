@@ -7,24 +7,30 @@ export const useMultipleGearFormState = () => {
   const [gearType, setGearType] = useState("");
   const [description, setDescription] = useState("");
   const [zipCode, setZipCode] = useState("");
-  const [measurementUnit, setMeasurementUnit] = useState("cm");
-  const [dimensions, setDimensions] = useState({
-    length: "",
-    width: "",
-    thickness: "",
-  });
+  const [measurementUnit, setMeasurementUnit] = useState("");
+  const [dimensions, setDimensions] = useState({ length: "", width: "", thickness: "" });
   const [skillLevel, setSkillLevel] = useState("");
   const [images, setImages] = useState<File[]>([]);
-  const [pricingOptions, setPricingOptions] = useState<PricingOption[]>([
-    { price: "", duration: "day" },
-  ]);
-  const [damageDeposit, setDamageDeposit] = useState("");
   const [imageUrls, setImageUrls] = useState<string[]>([""]);
   const [useImageUrls, setUseImageUrls] = useState(false);
+  const [pricingOptions, setPricingOptions] = useState<PricingOption[]>([
+    { price: "", duration: "day" }
+  ]);
+  const [damageDeposit, setDamageDeposit] = useState("");
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setImages(files);
+    if (e.target.files) {
+      setImages(Array.from(e.target.files));
+    }
+  };
+
+  // Create a wrapper for setDimensions to handle the optional thickness
+  const handleSetDimensions = (value: { length: string; width: string; thickness?: string }) => {
+    setDimensions({
+      length: value.length,
+      width: value.width,
+      thickness: value.thickness || ""
+    });
   };
 
   return {
@@ -39,19 +45,19 @@ export const useMultipleGearFormState = () => {
     measurementUnit,
     setMeasurementUnit,
     dimensions,
-    setDimensions,
+    setDimensions: handleSetDimensions,
     skillLevel,
     setSkillLevel,
     images,
     setImages,
-    pricingOptions,
-    setPricingOptions,
-    damageDeposit,
-    setDamageDeposit,
     imageUrls,
     setImageUrls,
     useImageUrls,
     setUseImageUrls,
+    pricingOptions,
+    setPricingOptions,
+    damageDeposit,
+    setDamageDeposit,
     handleImageUpload,
   };
 };

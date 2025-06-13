@@ -8,7 +8,7 @@ import { geocodeZipCode } from "@/utils/geocoding";
 import { uploadMultipleGearImages, saveEquipmentImages } from "@/utils/multipleImageHandling";
 import { prepareEquipmentData } from "@/utils/equipmentDataPreparation";
 import { createEquipmentInDatabase, createPricingOptionsInDatabase } from "@/utils/gearDatabaseOperations";
-import { PricingOption } from "./types";
+import { PricingOption, FormData } from "./types";
 
 interface UseMultipleGearFormSubmissionProps {
   gearName: string;
@@ -62,7 +62,7 @@ export const useMultipleGearFormSubmission = ({
     }
 
     // Use the validation hook to validate the form
-    const formData = {
+    const formData: FormData = {
       gearName,
       gearType,
       description,

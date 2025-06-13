@@ -8,7 +8,7 @@ import { geocodeZipCode } from "@/utils/geocoding";
 import { handleGearImageUpload } from "@/utils/gearImageHandling";
 import { prepareEquipmentData } from "@/utils/equipmentDataPreparation";
 import { createEquipmentInDatabase, createPricingOptionsInDatabase } from "@/utils/gearDatabaseOperations";
-import { PricingOption } from "./types";
+import { PricingOption, FormData } from "./types";
 
 interface UseGearFormSubmissionProps {
   gearName: string;
@@ -62,7 +62,7 @@ export const useGearFormSubmission = ({
     }
 
     // Use the validation hook to validate the form
-    const formData = {
+    const formData: FormData = {
       gearName,
       gearType,
       description,

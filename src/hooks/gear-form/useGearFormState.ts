@@ -19,6 +19,15 @@ export const useGearFormState = () => {
   const [damageDeposit, setDamageDeposit] = useState("");
   const [role, setRole] = useState("");
 
+  // Create a wrapper for setDimensions to handle the optional thickness
+  const handleSetDimensions = (value: { length: string; width: string; thickness?: string }) => {
+    setDimensions({
+      length: value.length,
+      width: value.width,
+      thickness: value.thickness || ""
+    });
+  };
+
   return {
     gearName,
     setGearName,
@@ -31,7 +40,7 @@ export const useGearFormState = () => {
     measurementUnit,
     setMeasurementUnit,
     dimensions,
-    setDimensions,
+    setDimensions: handleSetDimensions,
     skillLevel,
     setSkillLevel,
     images,

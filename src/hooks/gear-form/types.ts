@@ -18,7 +18,23 @@ export interface DuplicatedGear {
   skillLevel: string;
   price: string;
   damageDeposit: string;
-  imageUrl?: string; // Add optional image URL
+  imageUrl?: string;
+}
+
+// Create a specific FormData interface for validation
+export interface FormData {
+  gearName: string;
+  gearType: string;
+  description: string;
+  zipCode: string;
+  measurementUnit: string;
+  dimensions: { length: string; width: string; thickness?: string };
+  skillLevel: string;
+  damageDeposit: string;
+  pricingOptions: PricingOption[];
+  imageUrl: string;
+  useImageUrl: boolean;
+  role: string;
 }
 
 export interface FormState {

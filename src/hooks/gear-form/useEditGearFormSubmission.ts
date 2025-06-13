@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -7,7 +8,7 @@ import { uploadGearImage } from "@/utils/imageUpload";
 import { useGearFormValidation } from "@/hooks/useGearFormValidation";
 import { geocodeZipCode } from "@/utils/geocoding";
 import { UserEquipment } from "@/types/equipment";
-import { PricingOption } from "./types";
+import { PricingOption, FormData } from "./types";
 
 interface UseEditGearFormSubmissionProps {
   equipment: UserEquipment | null | undefined;
@@ -70,7 +71,7 @@ export const useEditGearFormSubmission = ({
     }
 
     // Use the validation hook to validate the form
-    const formData = {
+    const formData: FormData = {
       gearName,
       gearType,
       description,

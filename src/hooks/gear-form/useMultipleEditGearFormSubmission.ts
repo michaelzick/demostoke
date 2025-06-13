@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -7,7 +8,7 @@ import { uploadMultipleGearImages, saveEquipmentImages, deleteEquipmentImages } 
 import { useGearFormValidation } from "@/hooks/useGearFormValidation";
 import { geocodeZipCode } from "@/utils/geocoding";
 import { UserEquipment } from "@/types/equipment";
-import { PricingOption } from "./types";
+import { PricingOption, FormData } from "./types";
 
 interface UseMultipleEditGearFormSubmissionProps {
   equipment: UserEquipment | null | undefined;
@@ -70,7 +71,7 @@ export const useMultipleEditGearFormSubmission = ({
     }
 
     // Use the validation hook to validate the form
-    const formData = {
+    const formData: FormData = {
       gearName,
       gearType,
       description,
