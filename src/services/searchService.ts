@@ -2,16 +2,23 @@
 import { Equipment } from "@/types";
 import { mockEquipment } from "@/lib/mockData";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 
 // Convert Supabase equipment to Equipment type
-const convertSupabaseToEquipment = (item: any): Equipment => {
+const convertSupabaseToEquipment = async (item: any): Promise<Equipment> => {
   console.log('Converting equipment item:', item.name, 'category:', item.category);
+  
+  // Fetch additional images from equipment_images table
+  const additionalImages = await fetchEquipmentImages(item.id);
+  const allImages = additionalImages.length > 0 ? additionalImages : (item.image_url ? [item.image_url] : []);
+  
   return {
     id: item.id,
     name: item.name,
     category: item.category,
     description: item.description || '',
     image_url: item.image_url || '',
+    images: allImages, // Include the fetched images
     price_per_day: Number(item.price_per_day),
     rating: Number(item.rating || 0),
     review_count: item.review_count || 0,
@@ -99,7 +106,9 @@ const getEquipmentData = async (): Promise<Equipment[]> => {
       console.log(`Equipment: ${item.name}, Category: ${item.category}, Location: ${item.location_lat}, ${item.location_lng}`);
     });
 
-    return (data || []).map(convertSupabaseToEquipment);
+    // Convert all equipment items and fetch their images
+    const equipmentPromises = (data || []).map(item => convertSupabaseToEquipment(item));
+    return await Promise.all(equipmentPromises);
   } catch (error) {
     console.error('❌ Exception fetching equipment from database:', error);
     console.log('🔄 Falling back to empty array (no mock data fallback)');
