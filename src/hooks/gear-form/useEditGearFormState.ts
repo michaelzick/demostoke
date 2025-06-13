@@ -24,15 +24,6 @@ export const useEditGearFormState = () => {
     }
   };
 
-  // Create a wrapper for setDimensions to handle the optional thickness
-  const handleSetDimensions = (value: { length: string; width: string; thickness?: string }) => {
-    setDimensions({
-      length: value.length,
-      width: value.width,
-      thickness: value.thickness || ""
-    });
-  };
-
   return {
     gearName,
     setGearName,
@@ -45,7 +36,7 @@ export const useEditGearFormState = () => {
     measurementUnit,
     setMeasurementUnit,
     dimensions,
-    setDimensions: handleSetDimensions,
+    setDimensions,
     skillLevel,
     setSkillLevel,
     images,

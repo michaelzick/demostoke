@@ -1,5 +1,6 @@
 
 export interface PricingOption {
+  id?: string;
   price: string;
   duration: string;
 }
@@ -28,7 +29,7 @@ export interface FormData {
   description: string;
   zipCode: string;
   measurementUnit: string;
-  dimensions: { length: string; width: string; thickness?: string };
+  dimensions: { length: string; width: string; thickness: string };
   skillLevel: string;
   damageDeposit: string;
   pricingOptions: PricingOption[];
@@ -48,8 +49,8 @@ export interface FormState {
   setZipCode: (value: string) => void;
   measurementUnit: string;
   setMeasurementUnit: (value: string) => void;
-  dimensions: { length: string; width: string; thickness?: string };
-  setDimensions: (value: { length: string; width: string; thickness?: string }) => void;
+  dimensions: { length: string; width: string; thickness: string };
+  setDimensions: (value: { length: string; width: string; thickness: string }) => void;
   skillLevel: string;
   setSkillLevel: (value: string) => void;
   images: File[];
