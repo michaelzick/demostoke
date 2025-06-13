@@ -46,6 +46,8 @@ export const saveEquipmentImages = async (
     console.error('Error saving equipment images:', error);
     throw error;
   }
+
+  console.log('Equipment images saved successfully');
 };
 
 export const fetchEquipmentImages = async (equipmentId: string): Promise<string[]> => {
@@ -71,6 +73,28 @@ export const deleteEquipmentImages = async (equipmentId: string): Promise<void> 
 
   if (error) {
     console.error('Error deleting equipment images:', error);
+    throw error;
+  }
+
+  console.log('Equipment images deleted successfully');
+};
+
+// Update the equipment table to reflect if it has multiple images
+export const updateEquipmentMultipleImagesFlag = async (equipmentId: string): Promise<void> => {
+  const { data: images } = await supabase
+    .from('equipment_images')
+    .select('id')
+    .eq('equipment_id', equipmentId);
+
+  const hasMultipleImages = (images?.length || 0) > 1;
+
+  const { error } = await supabase
+    .from('equipment')
+    .update({ has_multiple_images: hasMultipleImages })
+    .eq('id', equipmentId);
+
+  if (error) {
+    console.error('Error updating multiple images flag:', error);
     throw error;
   }
 };

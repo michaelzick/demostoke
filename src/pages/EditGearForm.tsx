@@ -4,14 +4,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useEquipmentById } from "@/hooks/useEquipmentById";
 import { useEditGearFormState } from "@/hooks/gear-form/useEditGearFormState";
-import { useEditGearFormSubmission } from "@/hooks/gear-form/useEditGearFormSubmission";
+import { useMultipleEditGearFormSubmission } from "@/hooks/gear-form/useMultipleEditGearFormSubmission";
 import { useEquipmentDataLoader } from "@/hooks/gear-form/useEquipmentDataLoader";
+import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 
 // Import form section components
 import FormHeader from "@/components/gear-form/FormHeader";
 import GearBasicInfo from "@/components/gear-form/GearBasicInfo";
 import GearSpecifications from "@/components/gear-form/GearSpecifications";
-import GearMedia from "@/components/gear-form/GearMedia";
+import MultipleGearMedia from "@/components/gear-form/MultipleGearMedia";
 import GearPricing from "@/components/gear-form/GearPricing";
 import FormActions from "@/components/gear-form/FormActions";
 
@@ -20,7 +21,24 @@ const EditGearForm = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { data: equipment, isLoading, error } = useEquipmentById(id || "");
+  const [currentImages, setCurrentImages] = useState<string[]>([]);
   const formState = useEditGearFormState();
+
+  // Load equipment images when equipment is available
+  useEffect(() => {
+    const loadImages = async () => {
+      if (equipment?.id) {
+        try {
+          const images = await fetchEquipmentImages(equipment.id);
+          setCurrentImages(images.length > 0 ? images : equipment.image_url ? [equipment.image_url] : []);
+        } catch (error) {
+          console.error('Error fetching equipment images:', error);
+          setCurrentImages(equipment.image_url ? [equipment.image_url] : []);
+        }
+      }
+    };
+    loadImages();
+  }, [equipment]);
 
   // Load equipment data when available using the centralized data loader
   useEquipmentDataLoader({
@@ -40,11 +58,11 @@ const EditGearForm = () => {
     setSkillLevel: formState.setSkillLevel,
     setPricingOptions: formState.setPricingOptions,
     setDamageDeposit: formState.setDamageDeposit,
-    setImageUrl: formState.setImageUrl,
+    setImageUrls: formState.setImageUrls,
     setMeasurementUnit: formState.setMeasurementUnit,
   });
 
-  const { handleSubmit, handleCancel, isSubmitting } = useEditGearFormSubmission({
+  const { handleSubmit, handleCancel, isSubmitting } = useMultipleEditGearFormSubmission({
     equipment: equipment ? {
       ...equipment,
       status: (equipment.status as 'available' | 'booked' | 'unavailable') || 'available',
@@ -63,8 +81,8 @@ const EditGearForm = () => {
     images: formState.images,
     pricingOptions: formState.pricingOptions,
     damageDeposit: formState.damageDeposit,
-    imageUrl: formState.imageUrl,
-    useImageUrl: formState.useImageUrl,
+    imageUrls: formState.imageUrls,
+    useImageUrls: formState.useImageUrls,
   });
 
   // Handle error navigation
@@ -121,13 +139,15 @@ const EditGearForm = () => {
           gearType={formState.gearType}
         />
 
-        <GearMedia
-          handleImageUpload={formState.handleImageUpload}
-          currentImageUrl={equipment.image_url}
-          imageUrl={formState.imageUrl}
-          setImageUrl={formState.setImageUrl}
-          useImageUrl={formState.useImageUrl}
-          setUseImageUrl={formState.setUseImageUrl}
+        <MultipleGearMedia
+          handleMultipleImageUpload={formState.handleImageUpload}
+          currentImages={currentImages}
+          imageUrls={formState.imageUrls}
+          setImageUrls={formState.setImageUrls}
+          useImageUrls={formState.useImageUrls}
+          setUseImageUrls={formState.setUseImageUrls}
+          selectedFiles={formState.images}
+          setSelectedFiles={formState.setImages}
         />
 
         <GearPricing
