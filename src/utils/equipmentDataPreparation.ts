@@ -1,38 +1,24 @@
 
 import { mapGearTypeToCategory } from "./gearTypeMapping";
 
-interface Coordinates {
-  lat: number;
-  lng: number;
+interface Dimensions {
+  length: string;
+  width: string;
+  thickness?: string;
 }
 
-interface EquipmentDataParams {
-  userId: string;
-  gearName: string;
-  gearType: string;
-  description: string;
-  zipCode: string;
-  coordinates: Coordinates | null;
-  dimensions: { length: string; width: string; thickness?: string };
-  measurementUnit: string;
-  skillLevel: string;
-  firstPricingOptionPrice: string;
-  finalImageUrl: string;
-}
-
-export const prepareEquipmentData = ({
-  userId,
-  gearName,
-  gearType,
-  description,
-  zipCode,
-  coordinates,
-  dimensions,
-  measurementUnit,
-  skillLevel,
-  firstPricingOptionPrice,
-  finalImageUrl,
-}: EquipmentDataParams) => {
+export const prepareEquipmentData = (
+  gearName: string,
+  gearType: string,
+  description: string,
+  zipCode: string,
+  measurementUnit: string,
+  dimensions: Dimensions,
+  skillLevel: string,
+  price: number,
+  imageUrl: string,
+  coordinates?: { lat: number; lng: number }
+) => {
   const isMountainBike = gearType === "mountain-bike";
   const sizeString = isMountainBike
     ? dimensions.length // For mountain bikes, just use the size (S/M/L/XL/XXL)
@@ -40,25 +26,18 @@ export const prepareEquipmentData = ({
       ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness} ${measurementUnit}`
       : `${dimensions.length} x ${dimensions.width} ${measurementUnit}`;
 
-  const category = mapGearTypeToCategory(gearType);
-  console.log('Preparing equipment data - gearType:', gearType, 'mapped category:', category);
-
   return {
-    user_id: userId,
     name: gearName,
-    category: category,
+    category: mapGearTypeToCategory(gearType),
     description: description,
     location_zip: zipCode,
-    location_lat: coordinates?.lat || null,
-    location_lng: coordinates?.lng || null,
+    ...(coordinates && {
+      location_lat: coordinates.lat,
+      location_lng: coordinates.lng,
+    }),
     size: sizeString,
     suitable_skill_level: skillLevel,
-    price_per_day: parseFloat(firstPricingOptionPrice),
-    status: 'available' as const,
-    image_url: finalImageUrl,
-    rating: 0,
-    review_count: 0,
-    weight: null,
-    material: null
+    price_per_day: price,
+    image_url: imageUrl,
   };
 };
