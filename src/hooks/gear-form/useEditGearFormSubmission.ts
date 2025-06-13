@@ -167,9 +167,17 @@ export const useEditGearFormSubmission = ({
 
     } catch (error) {
       console.error('Error updating equipment:', error);
+      
+      // Provide more detailed error information
+      let errorMessage = "Failed to update equipment. Please try again.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        console.error('Detailed error:', error);
+      }
+      
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update equipment. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

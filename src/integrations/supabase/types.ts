@@ -40,6 +40,7 @@ export type Database = {
         Row: {
           category: string
           created_at: string
+          damage_deposit: number | null
           description: string | null
           has_multiple_images: boolean | null
           id: string
@@ -63,6 +64,7 @@ export type Database = {
         Insert: {
           category: string
           created_at?: string
+          damage_deposit?: number | null
           description?: string | null
           has_multiple_images?: boolean | null
           id?: string
@@ -86,6 +88,7 @@ export type Database = {
         Update: {
           category?: string
           created_at?: string
+          damage_deposit?: number | null
           description?: string | null
           has_multiple_images?: boolean | null
           id?: string
