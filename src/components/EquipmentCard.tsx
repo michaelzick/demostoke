@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,35 +23,47 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
       ? `/private-party/${equipment.owner.partyId}`
       : `/gear-owner/${equipment.owner.id}`;
 
-  // Handle both single image_url and multiple images array
-  const images = equipment.images || (equipment.image_url ? [equipment.image_url] : []);
+  // Handle both single image_url and multiple images array - ensure we always have an array
+  const images = equipment.images && equipment.images.length > 0 
+    ? equipment.images 
+    : equipment.image_url 
+      ? [equipment.image_url] 
+      : [];
+  
   const hasMultipleImages = images.length > 1;
+  const hasImages = images.length > 0;
 
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
-      <div className="relative w-full overflow-hidden max-h-[290px]">
-        {hasMultipleImages ? (
-          <Carousel className="w-full h-full" opts={{ loop: true }}>
-            <CarouselContent>
-              {images.map((imageUrl, index) => (
-                <CarouselItem key={index}>
-                  <img
-                    src={imageUrl}
-                    alt={`${equipment.name} - Image ${index + 1}`}
-                    className="h-[290px] w-full object-cover"
-                  />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="left-2" />
-            <CarouselNext className="right-2" />
-          </Carousel>
+      <div className="relative w-full overflow-hidden h-[290px]">
+        {hasImages ? (
+          hasMultipleImages ? (
+            <Carousel className="w-full h-full" opts={{ loop: true }}>
+              <CarouselContent>
+                {images.map((imageUrl, index) => (
+                  <CarouselItem key={index}>
+                    <img
+                      src={imageUrl}
+                      alt={`${equipment.name} - Image ${index + 1}`}
+                      className="h-[290px] w-full object-cover"
+                    />
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="left-2" />
+              <CarouselNext className="right-2" />
+            </Carousel>
+          ) : (
+            <img
+              src={images[0]}
+              alt={equipment.name}
+              className="h-[290px] w-full object-cover"
+            />
+          )
         ) : (
-          <img
-            src={images[0] || equipment.image_url}
-            alt={equipment.name}
-            className="h-[290px] w-full object-cover"
-          />
+          <div className="h-[290px] w-full bg-gray-200 flex items-center justify-center">
+            <span className="text-gray-500">No image available</span>
+          </div>
         )}
 
         <Badge
