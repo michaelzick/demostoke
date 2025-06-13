@@ -1,26 +1,6 @@
 
 import { useToast } from "@/hooks/use-toast";
-
-interface PricingOption {
-  id: string;
-  price: string;
-  duration: string;
-}
-
-interface FormData {
-  gearName: string;
-  gearType: string;
-  description: string;
-  zipCode: string;
-  measurementUnit: string;
-  dimensions: { length: string; width: string; thickness?: string };
-  skillLevel: string;
-  damageDeposit: string;
-  pricingOptions: PricingOption[];
-  imageUrl?: string;
-  useImageUrl?: boolean;
-  role: string;
-}
+import { PricingOption, FormData } from "@/hooks/gear-form/types";
 
 export const useGearFormValidation = () => {
   const { toast } = useToast();

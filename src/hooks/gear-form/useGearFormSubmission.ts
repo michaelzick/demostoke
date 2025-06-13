@@ -68,7 +68,11 @@ export const useGearFormSubmission = ({
       description,
       zipCode,
       measurementUnit,
-      dimensions,
+      dimensions: {
+        length: dimensions.length,
+        width: dimensions.width,
+        thickness: dimensions.thickness || ""
+      },
       skillLevel,
       damageDeposit,
       pricingOptions,
