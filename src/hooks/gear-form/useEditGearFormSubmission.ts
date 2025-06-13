@@ -126,25 +126,37 @@ export const useEditGearFormSubmission = ({
         }
       }
 
-      // Prepare equipment data for update
-      const equipmentData = prepareEquipmentData(
+      // Prepare equipment data for update - using the first pricing option for the main price
+      const firstPricingPrice = pricingOptions.length > 0 ? pricingOptions[0].price : equipment.price_per_day.toString();
+      
+      const equipmentData = prepareEquipmentData({
         gearName,
         gearType,
         description,
         zipCode,
-        measurementUnit,
+        coordinates,
         dimensions,
+        measurementUnit,
         skillLevel,
-        parseFloat(pricingOptions[0].price),
+        firstPricingOptionPrice: firstPricingPrice,
         finalImageUrl,
-        coordinates
-      );
+        damageDeposit,
+      });
+
+      console.log('Updating equipment with data:', equipmentData);
+      console.log('Damage deposit value:', damageDeposit);
+      console.log('Pricing options to save:', pricingOptions);
 
       // Update equipment in database
       await updateEquipmentInDatabase(equipment, equipmentData, user.id);
 
-      // Update pricing options
-      await updatePricingOptions(equipment.id, pricingOptions);
+      // Update pricing options - ensure we have valid pricing options
+      if (pricingOptions.length > 0) {
+        console.log('Updating pricing options:', pricingOptions);
+        await updatePricingOptions(equipment.id, pricingOptions);
+      } else {
+        console.log('No pricing options to update');
+      }
 
       toast({
         title: "Equipment Updated",

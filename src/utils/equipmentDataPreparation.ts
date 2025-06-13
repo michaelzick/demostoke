@@ -19,6 +19,7 @@ interface PrepareEquipmentDataParams {
   skillLevel: string;
   firstPricingOptionPrice: string;
   finalImageUrl: string;
+  damageDeposit?: string;
 }
 
 // Overloaded function to handle both creation (with userId) and update (without userId) scenarios
@@ -61,7 +62,8 @@ export function prepareEquipmentData(
       measurementUnit,
       skillLevel,
       firstPricingOptionPrice,
-      finalImageUrl
+      finalImageUrl,
+      damageDeposit
     } = paramsOrGearName;
 
     const isMountainBike = gearType === "mountain-bike";
@@ -85,6 +87,11 @@ export function prepareEquipmentData(
       price_per_day: parseFloat(firstPricingOptionPrice),
       image_url: finalImageUrl,
     };
+
+    // Add damage deposit if provided
+    if (damageDeposit) {
+      result.damage_deposit = parseFloat(damageDeposit);
+    }
 
     // Only add user_id if it's provided (for creation)
     if (userId) {
