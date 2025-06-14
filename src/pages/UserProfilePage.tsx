@@ -9,9 +9,11 @@ import { useAuth } from "@/helpers";
 import { supabase } from "@/integrations/supabase/client";
 import { generateDicebearAvatar } from "@/utils/profileImageUpload";
 import { ProfileImageSection } from "@/components/profile/ProfileImageSection";
+import { HeroImageSection } from "@/components/profile/HeroImageSection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { ProfileLoadingSkeleton } from "@/components/profile/ProfileLoadingSkeleton";
 import { useProfileImageHandlers } from "@/hooks/useProfileImageHandlers";
+import { useHeroImageHandlers } from "@/hooks/useHeroImageHandlers";
 
 const UserProfilePage = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -22,9 +24,12 @@ const UserProfilePage = () => {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [heroImage, setHeroImage] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isDeletingImage, setIsDeletingImage] = useState(false);
+  const [isUploadingHeroImage, setIsUploadingHeroImage] = useState(false);
+  const [isDeletingHeroImage, setIsDeletingHeroImage] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
 
   const { handleImageUpload, handleDeletePhoto } = useProfileImageHandlers({
@@ -33,6 +38,14 @@ const UserProfilePage = () => {
     setProfileImage,
     setIsUploadingImage,
     setIsDeletingImage,
+  });
+
+  const { handleHeroImageUpload, handleDeleteHeroImage } = useHeroImageHandlers({
+    user,
+    heroImage,
+    setHeroImage,
+    setIsUploadingHeroImage,
+    setIsDeletingHeroImage,
   });
 
   useEffect(() => {
@@ -62,6 +75,7 @@ const UserProfilePage = () => {
         setName(user.name || "");
         setRole("private-party");
         setProfileImage(generateDicebearAvatar(user.id));
+        setHeroImage(null);
       } else {
         setName(profileData.name || "");
         setRole(profileData.role || "private-party");
@@ -69,6 +83,7 @@ const UserProfilePage = () => {
         const imageUrl = profileData.hero_image_url || profileData.avatar_url || generateDicebearAvatar(user.id);
         console.log('Setting profile image:', imageUrl);
         setProfileImage(imageUrl);
+        setHeroImage(profileData.hero_image_url);
       }
 
       setEmail(user.email || "");
@@ -79,6 +94,7 @@ const UserProfilePage = () => {
       setEmail(user.email || "");
       setRole("private-party");
       setProfileImage(generateDicebearAvatar(user.id));
+      setHeroImage(null);
       setProfileLoaded(true);
     }
   };
@@ -122,7 +138,7 @@ const UserProfilePage = () => {
   }
 
   return (
-    <div className="container max-w-3xl py-10">
+    <div className="container max-w-3xl py-10 space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">Your Profile</CardTitle>
@@ -157,6 +173,15 @@ const UserProfilePage = () => {
           </CardFooter>
         </form>
       </Card>
+
+      <HeroImageSection
+        heroImage={heroImage}
+        role={role}
+        isUploadingHeroImage={isUploadingHeroImage}
+        isDeletingHeroImage={isDeletingHeroImage}
+        onHeroImageUpload={handleHeroImageUpload}
+        onDeleteHeroImage={handleDeleteHeroImage}
+      />
     </div>
   );
 };

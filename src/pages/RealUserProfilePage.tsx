@@ -233,43 +233,72 @@ const RealUserProfilePage = () => {
       </div>
     );
   } else {
-    // Shop template
-    const hero = profile.hero_image_url
-      || "https://images.unsplash.com/photo-1543286386-713bdd548da4?auto=format&fit=crop&w=1200&q=80";
+    // Business template - only show hero image if one is uploaded
     return (
       <div className="min-h-screen">
-        <div
-          className="relative h-64 bg-cover bg-center"
-          style={{ backgroundImage: `url('${hero}')` }}
-        >
-          <div className="absolute inset-0 bg-black/50" />
-          <div className="relative container mx-auto px-4 h-full flex items-center">
-            <div className="flex items-center gap-4">
-              <Avatar className="h-24 w-24 border-4 border-white">
-                <AvatarImage src={profile.avatar_url || undefined} alt={profile.name || ""} />
-                <AvatarFallback>{profile.name?.charAt(0) || 'S'}</AvatarFallback>
-              </Avatar>
-              <div className="text-white">
-                <h1 className="text-4xl font-bold mb-2">{profile.name}</h1>
-                {stats && stats.totalReviews > 0 && (
-                  <div className="flex items-center gap-2 mb-2">
-                    <StarIcon className="h-5 w-5 text-yellow-400 fill-yellow-400" />
-                    <span className="text-lg">{stats.averageRating}</span>
-                    <span className="text-gray-300">({stats.totalReviews} reviews)</span>
+        {profile.hero_image_url ? (
+          <div
+            className="relative h-64 bg-cover bg-center"
+            style={{ backgroundImage: `url('${profile.hero_image_url}')` }}
+          >
+            <div className="absolute inset-0 bg-black/50" />
+            <div className="relative container mx-auto px-4 h-full flex items-center">
+              <div className="flex items-center gap-4">
+                <Avatar className="h-24 w-24 border-4 border-white">
+                  <AvatarImage src={profile.avatar_url || undefined} alt={profile.name || ""} />
+                  <AvatarFallback>{profile.name?.charAt(0) || 'S'}</AvatarFallback>
+                </Avatar>
+                <div className="text-white">
+                  <h1 className="text-4xl font-bold mb-2">{profile.name}</h1>
+                  {stats && stats.totalReviews > 0 && (
+                    <div className="flex items-center gap-2 mb-2">
+                      <StarIcon className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                      <span className="text-lg">{stats.averageRating}</span>
+                      <span className="text-gray-300">({stats.totalReviews} reviews)</span>
+                    </div>
+                  )}
+                  <p className="text-sm mb-2">Est. {memberSinceDate}</p>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="secondary" className="capitalize">
+                      {profile.role === 'retail-store' ? 'Retail Store' :
+                       profile.role === 'builder' ? 'Builder' :
+                       profile.role === 'retail-website' ? 'Retail Website' : 'Business'}
+                    </Badge>
                   </div>
-                )}
-                <p className="text-sm mb-2">Est. {memberSinceDate}</p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="secondary" className="capitalize">
-                    {profile.role === 'retail-store' ? 'Retail Store' :
-                     profile.role === 'builder' ? 'Builder' :
-                     profile.role === 'retail-website' ? 'Retail Website' : 'Business'}
-                  </Badge>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-zinc-900 dark:to-zinc-800 py-12">
+            <div className="container mx-auto px-4">
+              <div className="flex items-center gap-6">
+                <Avatar className="h-24 w-24 border-4 border-white">
+                  <AvatarImage src={profile.avatar_url || undefined} alt={profile.name || ""} />
+                  <AvatarFallback>{profile.name?.charAt(0) || 'S'}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <h1 className="text-4xl font-bold mb-2">{profile.name}</h1>
+                  {stats && stats.totalReviews > 0 && (
+                    <div className="flex items-center gap-2 mb-2">
+                      <StarIcon className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                      <span className="text-lg">{stats.averageRating}</span>
+                      <span className="text-gray-300">({stats.totalReviews} reviews)</span>
+                    </div>
+                  )}
+                  <p className="text-sm mb-2">Est. {memberSinceDate}</p>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="secondary" className="capitalize">
+                      {profile.role === 'retail-store' ? 'Retail Store' :
+                       profile.role === 'builder' ? 'Builder' :
+                       profile.role === 'retail-website' ? 'Retail Website' : 'Business'}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-1">
