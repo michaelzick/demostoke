@@ -1,7 +1,8 @@
 
 import { useRef } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { User, Upload, Trash2 } from "lucide-react";
+import { User, Upload, Trash2, Eye } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,6 +23,7 @@ interface ProfileImageSectionProps {
   isDeletingImage: boolean;
   onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onDeletePhoto: () => void;
+  userId?: string;
 }
 
 export const ProfileImageSection = ({
@@ -32,6 +34,7 @@ export const ProfileImageSection = ({
   isDeletingImage,
   onImageUpload,
   onDeletePhoto,
+  userId,
 }: ProfileImageSectionProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -113,6 +116,14 @@ export const ProfileImageSection = ({
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+          {userId && (
+            <Button type="button" size="sm" asChild>
+              <Link to={`/profile/${userId}`}>
+                <Eye className="h-4 w-4 mr-2" />
+                View Profile
+              </Link>
+            </Button>
+          )}
         </div>
         <input
           ref={fileInputRef}
