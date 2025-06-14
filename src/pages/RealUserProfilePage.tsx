@@ -33,10 +33,10 @@ const RealUserProfilePage = () => {
   const { mockEquipment } = useMockData();
 
   // Determine if we should use mock data
-  const isMockUser = !profileLoading && (profileError || !dbProfile) && mockProfile;
+  const isMockUser = !profileLoading && (profileError || !dbProfile) && !!mockProfile;
   
-  // Fix: Provide correct types
-  const profile: UserProfile | undefined = isMockUser ? mockProfile : dbProfile as UserProfile | undefined;
+  // Use the correct profile data
+  const profile: UserProfile | undefined = isMockUser ? mockProfile : (dbProfile as UserProfile | undefined);
   const stats = isMockUser ? mockStats : dbStats;
   const userEquipment = isMockUser ? mockEquipment.filter(item => item.owner.id === id) : dbUserEquipment;
   const isLoading = isMockUser ? false : (profileLoading || statsLoading);
