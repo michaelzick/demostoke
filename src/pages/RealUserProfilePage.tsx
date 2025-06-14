@@ -233,9 +233,14 @@ const RealUserProfilePage = () => {
     );
   } else {
     // Shop template
+    const hero = profile.hero_image_url
+      || "https://images.unsplash.com/photo-1543286386-713bdd548da4?auto=format&fit=crop&w=1200&q=80";
     return (
       <div className="min-h-screen">
-        <div className="relative h-64 bg-cover bg-center" style={{ backgroundImage: `url('https://images.unsplash.com/photo-1543286386-713bdd548da4?auto=format&fit=crop&w=1200&q=80')` }}>
+        <div
+          className="relative h-64 bg-cover bg-center"
+          style={{ backgroundImage: `url('${hero}')` }}
+        >
           <div className="absolute inset-0 bg-black/50" />
           <div className="relative container mx-auto px-4 h-full flex items-center">
             <div className="flex items-center gap-4">

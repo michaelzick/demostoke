@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import { ProfileImageSection } from "@/components/profile/ProfileImageSection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { ProfileLoadingSkeleton } from "@/components/profile/ProfileLoadingSkeleton";
 import { useProfileImageHandlers } from "@/hooks/useProfileImageHandlers";
+import { useHeroImageUpload } from "@/hooks/useHeroImageUpload";
 
 const UserProfilePage = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -26,6 +26,8 @@ const UserProfilePage = () => {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isDeletingImage, setIsDeletingImage] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
+  const [heroImage, setHeroImage] = useState<string | null>(null);
+  const [isUploadingHero, setIsUploadingHero] = useState(false);
 
   const { handleImageUpload, handleDeletePhoto } = useProfileImageHandlers({
     user,
@@ -33,6 +35,11 @@ const UserProfilePage = () => {
     setProfileImage,
     setIsUploadingImage,
     setIsDeletingImage,
+  });
+
+  const { uploadHeroImage } = useHeroImageUpload({
+    userId: user?.id,
+    onUrl: (url: string) => setHeroImage(url)
   });
 
   useEffect(() => {
@@ -52,23 +59,23 @@ const UserProfilePage = () => {
 
   const fetchProfileData = async () => {
     if (!user?.id) return;
-
     try {
       const { data: profileData, error } = await supabase
         .from('profiles')
-        .select('name, role, avatar_url')
+        .select('name, role, avatar_url, hero_image_url')
         .eq('id', user.id)
         .single();
 
       if (error) {
-        console.error('Error fetching profile:', error);
         // Fallback to user data if profile fetch fails
         setName(user.name || "");
         setRole("private-party");
+        setHeroImage(null);
       } else {
         setName(profileData.name || "");
         setRole(profileData.role || "private-party");
         setProfileImage(profileData.avatar_url || generateDicebearAvatar(user.id));
+        setHeroImage(profileData.hero_image_url || null);
       }
 
       setEmail(user.email || "");
@@ -80,8 +87,17 @@ const UserProfilePage = () => {
       setEmail(user.email || "");
       setRole("private-party");
       setProfileImage(user.imageUrl || generateDicebearAvatar(user.id));
+      setHeroImage(null);
       setProfileLoaded(true);
     }
+  };
+
+  const handleHeroImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingHero(true);
+    await uploadHeroImage(file);
+    setIsUploadingHero(false);
   };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
@@ -97,6 +113,7 @@ const UserProfilePage = () => {
         .update({
           name: name,
           role: role,
+          ...(role !== "private-party" && { hero_image_url: heroImage })
         })
         .eq('id', user.id);
 
@@ -143,9 +160,28 @@ const UserProfilePage = () => {
               onImageUpload={handleImageUpload}
               onDeletePhoto={handleDeletePhoto}
             />
-
+            {role !== "private-party" && (
+              <div>
+                <label className="block text-sm font-medium mb-1">Hero Image</label>
+                {heroImage && (
+                  <img src={heroImage} alt="Hero" className="w-full max-h-48 object-cover rounded mb-2" />
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  disabled={isUploadingHero}
+                  onChange={handleHeroImageChange}
+                  className="block text-sm"
+                />
+                {isUploadingHero && (
+                  <div className="text-xs text-muted-foreground mt-1">Uploading...</div>
+                )}
+                <div className="text-xs text-muted-foreground mt-1">
+                  Recommended size: 1200x400px.
+                </div>
+              </div>
+            )}
             <Separator />
-
             <ProfileForm
               name={name}
               email={email}
