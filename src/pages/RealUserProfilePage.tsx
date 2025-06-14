@@ -1,10 +1,12 @@
-
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useUserStats } from "@/hooks/useUserStats";
 import { useUserEquipment } from "@/hooks/useUserEquipment";
+import { useMockUserProfile } from "@/hooks/useMockUserProfile";
+import { useMockUserStats } from "@/hooks/useMockUserStats";
+import { useMockData } from "@/hooks/useMockData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { StarIcon, MapPinIcon, CalendarIcon, UsersIcon } from "lucide-react";
@@ -19,11 +21,26 @@ const RealUserProfilePage = () => {
 
   const { id } = useParams();
 
-  const { data: profile, isLoading: profileLoading, error: profileError } = useUserProfile(id || "");
-  const { data: stats, isLoading: statsLoading } = useUserStats(id || "");
-  const { data: userEquipment, isLoading: equipmentLoading } = useUserEquipment(id || "");
+  // Try to fetch from database first
+  const { data: dbProfile, isLoading: profileLoading, error: profileError } = useUserProfile(id || "");
+  const { data: dbStats, isLoading: statsLoading } = useUserStats(id || "");
+  const { data: dbUserEquipment, isLoading: equipmentLoading } = useUserEquipment(id || "");
 
-  if (profileLoading) {
+  // Fallback to mock data if database query fails or returns null
+  const mockProfile = useMockUserProfile(id || "");
+  const mockStats = useMockUserStats(id || "");
+  const { mockEquipment } = useMockData();
+
+  // Determine if we should use mock data
+  const isMockUser = !profileLoading && (profileError || !dbProfile) && mockProfile;
+  
+  // Use appropriate data source
+  const profile = isMockUser ? mockProfile : dbProfile;
+  const stats = isMockUser ? mockStats : dbStats;
+  const userEquipment = isMockUser ? mockEquipment.filter(item => item.owner.id === id) : dbUserEquipment;
+  const isLoading = isMockUser ? false : profileLoading;
+
+  if (isLoading) {
     return (
       <div className="container px-4 md:px-6 py-8 max-w-5xl mx-auto">
         <div className="flex flex-col md:flex-row items-start gap-6 mb-8">
@@ -53,7 +70,7 @@ const RealUserProfilePage = () => {
     );
   }
 
-  if (profileError || !profile) {
+  if (!profile) {
     return (
       <div className="container px-4 py-8">
         <div className="text-center py-20">
@@ -94,7 +111,7 @@ const RealUserProfilePage = () => {
                        profile.role === 'retail-website' ? 'Retail Website' : 'User'}
                     </span>
                   </div>
-                  {!statsLoading && stats && stats.totalReviews > 0 && (
+                  {stats && stats.totalReviews > 0 && (
                     <div className="flex items-center bg-yellow-50 text-yellow-700 px-2 py-1 rounded">
                       <StarIcon className="h-4 w-4 text-yellow-500 fill-yellow-500 mr-1 flex-shrink-0" />
                       <span className="font-medium">{stats.averageRating}</span>
@@ -103,7 +120,7 @@ const RealUserProfilePage = () => {
                 </div>
 
                 <div className="mt-4 space-y-3 text-sm">
-                  {!statsLoading && stats && (
+                  {stats && (
                     <div className="flex items-center">
                       <UsersIcon className="h-4 w-4 text-slate-500 mr-2 flex-shrink-0" />
                       <span>Response Rate: {stats.responseRate}%</span>
@@ -135,7 +152,7 @@ const RealUserProfilePage = () => {
 
       <div>
         <h2 className="text-xl font-medium mb-6 dark:text-white">Available Gear</h2>
-        {equipmentLoading ? (
+        {equipmentLoading && !isMockUser ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {Array.from({ length: 3 }).map((_, i) => (
               <Card key={i} className="overflow-hidden">
@@ -156,7 +173,7 @@ const RealUserProfilePage = () => {
               <Card key={item.id} className="overflow-hidden">
                 <div className="h-48 overflow-hidden">
                   <img
-                    src={item.image_url || "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80"}
+                    src={item.image_url || item.imageUrl || "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80"}
                     alt={item.name}
                     className="h-full w-full object-cover"
                   />
@@ -164,7 +181,7 @@ const RealUserProfilePage = () => {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-medium dark:text-white">{item.name}</h3>
-                    <span className="font-medium text-primary">${item.price_per_day}/day</span>
+                    <span className="font-medium text-primary">${item.price_per_day || item.pricePerDay}/day</span>
                   </div>
                   <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
                     {item.description}
