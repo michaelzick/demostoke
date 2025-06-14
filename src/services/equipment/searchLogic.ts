@@ -167,6 +167,13 @@ export const processSearchQuery = async (query: string, equipmentData: Equipment
   const locationMatches = extractLocationMatches(lowerQuery);
   const skillLevelKeywords = extractSkillLevelKeywords(lowerQuery);
 
+  console.log('🔍 Search criteria extracted:', {
+    categoryMatches,
+    locationMatches,
+    skillLevelKeywords,
+    equipmentCount: equipmentData.length
+  });
+
   // Add a short delay to simulate AI processing time
   await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -179,6 +186,12 @@ export const processSearchQuery = async (query: string, equipmentData: Equipment
     skillLevelKeywords
   );
 
+  console.log('🔍 Filtered equipment count:', filteredEquipment.length);
+
   // Sort by relevance
-  return sortEquipmentByRelevance(filteredEquipment, categoryMatches, locationMatches);
+  const sortedResults = sortEquipmentByRelevance(filteredEquipment, categoryMatches, locationMatches);
+
+  console.log('🔍 Final search results:', sortedResults.length, 'items');
+
+  return sortedResults;
 };
