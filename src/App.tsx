@@ -33,6 +33,7 @@ const RealUserProfilePage = lazy(() => import("./pages/RealUserProfilePage"));
 const GearOwnerProfilePage = lazy(() => import("./pages/GearOwnerProfilePage"));
 const ShopPage = lazy(() => import("./pages/ShopPage"));
 const PrivatePartyPage = lazy(() => import("./pages/PrivatePartyPage"));
+const SearchResultsPage = lazy(() => import("./pages/SearchResultsPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -79,6 +80,7 @@ const App = () => {
                     <Route path="owner/:id" element={<GearOwnerProfilePage />} />
                     <Route path="shop/:shopId" element={<ShopPage />} />
                     <Route path="private-party/:partyId" element={<PrivatePartyPage />} />
+                    <Route path="search" element={<SearchResultsPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                   </Route>
                 </Routes>
