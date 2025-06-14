@@ -9,6 +9,8 @@ import { AuthProvider } from "./contexts/auth/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import MainLayout from "./layouts/MainLayout";
 import AuthLayout from "./layouts/AuthLayout";
+import AddGearForm from './pages/AddGearForm';
+import LightspeedPOSPage from './pages/LightspeedPOSPage';
 const HomePage = lazy(() => import("./pages/HomePage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
@@ -64,6 +66,8 @@ const App = () => {
                     <Route path="explore" element={<ExplorePage />} />
                     <Route path="equipment/:id" element={<EquipmentDetailPage />} />
                     <Route path="list-your-gear" element={<ListGearPage />} />
+                    <Route path="list-your-gear/add-gear-form" element={<AddGearForm />} />
+                    <Route path="list-your-gear/lightspeed-pos" element={<LightspeedPOSPage />} />
                     <Route path="edit-gear/:id" element={<EditGearPage />} />
                     <Route path="profile" element={<UserProfilePage />} />
                     <Route path="my-gear" element={<MyEquipmentPage />} />
