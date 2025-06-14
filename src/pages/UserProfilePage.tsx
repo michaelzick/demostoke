@@ -44,16 +44,45 @@ const UserProfilePage = () => {
       return;
     }
 
-    // When user data becomes available, populate the form
+    // When user data becomes available, fetch the profile data directly from the database
     if (user) {
+      fetchProfileData();
+    }
+  }, [user, isAuthenticated, isLoading, navigate]);
+
+  const fetchProfileData = async () => {
+    if (!user?.id) return;
+
+    try {
+      const { data: profileData, error } = await supabase
+        .from('profiles')
+        .select('name, role, avatar_url')
+        .eq('id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        // Fallback to user data if profile fetch fails
+        setName(user.name || "");
+        setRole("private-party");
+      } else {
+        setName(profileData.name || "");
+        setRole(profileData.role || "private-party");
+        setProfileImage(profileData.avatar_url || generateDicebearAvatar(user.id));
+      }
+
+      setEmail(user.email || "");
+      setProfileLoaded(true);
+    } catch (error) {
+      console.error('Error in fetchProfileData:', error);
+      // Fallback to user data
       setName(user.name || "");
       setEmail(user.email || "");
-      setRole(user.role || "private-party");
-      // Use user's avatar or generate a dicebear avatar as fallback
+      setRole("private-party");
       setProfileImage(user.imageUrl || generateDicebearAvatar(user.id));
       setProfileLoaded(true);
     }
-  }, [user, isAuthenticated, isLoading, navigate]);
+  };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
