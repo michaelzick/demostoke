@@ -47,7 +47,7 @@ export const useProfileImageHandlers = ({
     setIsUploadingImage(true);
 
     try {
-      // Delete old profile image if it exists and is from profile-images bucket
+      // Delete old hero image if it exists and is from profile-images bucket
       if (profileImage && !profileImage.includes('dicebear.com')) {
         await deleteProfileImage(profileImage, user.id);
       }
@@ -55,10 +55,10 @@ export const useProfileImageHandlers = ({
       // Upload the new image
       const imageUrl = await uploadProfileImage(file, user.id);
 
-      // Update the profile in the database
+      // Update the hero_image_url in the database
       const { error } = await supabase
         .from('profiles')
-        .update({ avatar_url: imageUrl })
+        .update({ hero_image_url: imageUrl })
         .eq('id', user.id);
 
       if (error) throw error;
@@ -67,11 +67,11 @@ export const useProfileImageHandlers = ({
       setProfileImage(imageUrl);
 
       toast({
-        title: "Profile photo updated",
-        description: "Your profile photo has been updated successfully.",
+        title: "Profile hero image updated",
+        description: "Your profile header image has been updated successfully.",
       });
     } catch (error: unknown) {
-      console.error('Error uploading profile image:', error);
+      console.error('Error uploading profile hero image:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to upload image. Please try again.';
       toast({
         title: "Error uploading image",
@@ -86,7 +86,7 @@ export const useProfileImageHandlers = ({
       // Update database with fallback avatar
       await supabase
         .from('profiles')
-        .update({ avatar_url: fallbackAvatar })
+        .update({ hero_image_url: fallbackAvatar })
         .eq('id', user.id);
     } finally {
       setIsUploadingImage(false);
@@ -99,7 +99,7 @@ export const useProfileImageHandlers = ({
     setIsDeletingImage(true);
 
     try {
-      // Delete the current profile image if it exists and is from profile-images bucket
+      // Delete the current hero image if it exists and is from profile-images bucket
       if (profileImage && !profileImage.includes('dicebear.com')) {
         await deleteProfileImage(profileImage, user.id);
       }
@@ -107,10 +107,10 @@ export const useProfileImageHandlers = ({
       // Generate a new dicebear avatar
       const fallbackAvatar = generateDicebearAvatar(user.id);
 
-      // Update the profile in the database
+      // Update the hero_image_url in the database
       const { error } = await supabase
         .from('profiles')
-        .update({ avatar_url: fallbackAvatar })
+        .update({ hero_image_url: fallbackAvatar })
         .eq('id', user.id);
 
       if (error) throw error;
@@ -119,11 +119,11 @@ export const useProfileImageHandlers = ({
       setProfileImage(fallbackAvatar);
 
       toast({
-        title: "Profile photo deleted",
-        description: "Your profile photo has been removed and replaced with a default avatar.",
+        title: "Profile hero image deleted",
+        description: "Your profile hero image has been removed and replaced with a default avatar.",
       });
     } catch (error: unknown) {
-      console.error('Error deleting profile image:', error);
+      console.error('Error deleting profile hero image:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to delete image. Please try again.';
       toast({
         title: "Error deleting image",

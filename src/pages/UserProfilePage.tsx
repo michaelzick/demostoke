@@ -21,7 +21,7 @@ const UserProfilePage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [profileImage, setProfileImage] = useState<string | null>(null); // This will be hero image now
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isDeletingImage, setIsDeletingImage] = useState(false);
@@ -31,8 +31,8 @@ const UserProfilePage = () => {
 
   const { handleImageUpload, handleDeletePhoto } = useProfileImageHandlers({
     user,
-    profileImage,
-    setProfileImage,
+    profileImage, // acts as hero image now
+    setProfileImage, // acts on hero image now
     setIsUploadingImage,
     setIsDeletingImage,
   });
@@ -67,15 +67,14 @@ const UserProfilePage = () => {
         .single();
 
       if (error) {
-        // Fallback to user data if profile fetch fails
         setName(user.name || "");
         setRole("private-party");
-        setHeroImage(null);
+        setProfileImage(null);
       } else {
         setName(profileData.name || "");
         setRole(profileData.role || "private-party");
-        setProfileImage(profileData.avatar_url || generateDicebearAvatar(user.id));
-        setHeroImage(profileData.hero_image_url || null);
+        // Use hero_image_url as the main profileImage
+        setProfileImage(profileData.hero_image_url || null);
       }
 
       setEmail(user.email || "");
@@ -152,7 +151,7 @@ const UserProfilePage = () => {
         <form onSubmit={handleUpdateProfile}>
           <CardContent className="space-y-6">
             <ProfileImageSection
-              profileImage={profileImage}
+              profileImage={profileImage} // use hero image now
               name={name}
               email={email}
               isUploadingImage={isUploadingImage}
