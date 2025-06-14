@@ -1,4 +1,3 @@
-
 export interface Equipment {
   id: string;
   name: string;
@@ -62,6 +61,19 @@ export interface User {
   email: string;
   imageUrl: string | null;
   role: string;
+}
+
+// Add UserProfile interface
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  avatar_url: string | null;
+  role: string;
+  about?: string;
+  hero_image_url?: string | null;
+  created_at?: string;
+  member_since?: string;
 }
 
 // Add GearOwner interface (alias for Owner for backward compatibility)
