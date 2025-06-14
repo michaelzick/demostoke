@@ -8,6 +8,7 @@ import GearPricing from "@/components/gear-form/GearPricing";
 import FormActions from "@/components/gear-form/FormActions";
 import { useMultipleGearFormState } from "@/hooks/gear-form/useMultipleGearFormState";
 import { useMultipleGearFormSubmission } from "@/hooks/gear-form/useMultipleGearFormSubmission";
+import { useDuplicatedGearDataForMultiple } from "@/hooks/gear-form/useDuplicatedGearDataForMultiple";
 import { useAuth } from "@/helpers";
 
 const AddGearForm = () => {
@@ -18,6 +19,21 @@ const AddGearForm = () => {
 
   const { user } = useAuth();
   const formState = useMultipleGearFormState();
+
+  // Handle duplicated gear data
+  useDuplicatedGearDataForMultiple({
+    setGearName: formState.setGearName,
+    setGearType: formState.setGearType,
+    setDescription: formState.setDescription,
+    setZipCode: formState.setZipCode,
+    setMeasurementUnit: formState.setMeasurementUnit,
+    setDimensions: formState.setDimensions,
+    setSkillLevel: formState.setSkillLevel,
+    setPricingOptions: formState.setPricingOptions,
+    setDamageDeposit: formState.setDamageDeposit,
+    setImageUrls: formState.setImageUrls,
+    setUseImageUrls: formState.setUseImageUrls,
+  });
 
   const { handleSubmit, isSubmitting } = useMultipleGearFormSubmission({
     gearName: formState.gearName,
