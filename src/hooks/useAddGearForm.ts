@@ -49,8 +49,8 @@ export const useAddGearForm = () => {
   // Get duplicated image URL if available
   useEffect(() => {
     const duplicatedData = getDuplicatedGearData();
-    if (duplicatedData?.imageUrl) {
-      setDuplicatedImageUrl(duplicatedData.imageUrl);
+    if (duplicatedData?.image_url) {
+      setDuplicatedImageUrl(duplicatedData.image_url);
     }
   }, [getDuplicatedGearData]);
 

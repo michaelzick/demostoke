@@ -127,27 +127,8 @@ const MyEquipmentPage = () => {
   };
 
   const handleDuplicate = (item: UserEquipment) => {
-    // Parse size string safely
-    const sizeParts = item.specifications.size?.split('x').map(part => part?.trim()) || [];
-
-    // Store the item data in sessionStorage to use it in the add gear form
-    sessionStorage.setItem('duplicatedGear', JSON.stringify({
-      gearName: item.name,
-      gearType: item.category.slice(0, -1), // Remove the 's' at the end (snowboards -> snowboard)
-      description: item.description,
-      zipCode: item.location?.zip || '',
-      // Extract dimensions from size if possible
-      measurementUnit: "inches", // Default to inches
-      dimensions: {
-        length: sizeParts[0] || "",
-        width: sizeParts[1] || "",
-        thickness: sizeParts[2] || ""
-      },
-      skillLevel: item.specifications.suitable,
-      price: item.price_per_day.toString(),
-      damageDeposit: "50", // Default value
-      imageUrl: item.image_url,
-    }));
+    // Store the complete equipment data in sessionStorage for duplication
+    sessionStorage.setItem('duplicatedEquipment', JSON.stringify(item));
 
     navigate('/list-your-gear/add-gear-form');
 
