@@ -118,7 +118,7 @@ export const ProfileImageSection = ({
           </AlertDialog>
           {userId && (
             <Button type="button" size="sm" asChild>
-              <Link to={`/profile/${userId}`}>
+              <Link to={`/user-profile/${userId}`}>
                 <Eye className="h-4 w-4 mr-2" />
                 View Profile
               </Link>
