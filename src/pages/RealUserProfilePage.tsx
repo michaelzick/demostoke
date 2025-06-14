@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import type { UserProfile } from "@/types";
 
 const RealUserProfilePage = () => {
   useEffect(() => {
@@ -34,8 +35,8 @@ const RealUserProfilePage = () => {
   // Determine if we should use mock data
   const isMockUser = !profileLoading && (profileError || !dbProfile) && mockProfile;
   
-  // Use appropriate data source
-  const profile = isMockUser ? mockProfile : dbProfile;
+  // Fix: Provide correct types
+  const profile: UserProfile | undefined = isMockUser ? mockProfile : dbProfile as UserProfile | undefined;
   const stats = isMockUser ? mockStats : dbStats;
   const userEquipment = isMockUser ? mockEquipment.filter(item => item.owner.id === id) : dbUserEquipment;
   const isLoading = isMockUser ? false : (profileLoading || statsLoading);
