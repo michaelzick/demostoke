@@ -1,5 +1,6 @@
 
 import { useAppSettings } from "@/hooks/useAppSettings";
+import { mockEquipment, ownerPersonas } from "@/lib/mockData";
 
 export const useMockData = () => {
   const { data: appSettings, isLoading } = useAppSettings();
@@ -11,6 +12,8 @@ export const useMockData = () => {
 
   return {
     showMockData,
-    isLoading
+    isLoading,
+    mockEquipment,
+    owners: ownerPersonas
   };
 };
