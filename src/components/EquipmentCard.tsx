@@ -19,17 +19,15 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
 
   const ownerLinkPath = isShop
     ? `/shop/${equipment.owner.shopId}`
-    : isPrivateParty
-      ? `/private-party/${equipment.owner.partyId}`
-      : `/gear-owner/${equipment.owner.id}`;
+    : `/user-profile/${equipment.owner.id}`;
 
   // Handle both single image_url and multiple images array - ensure we always have an array
-  const images = equipment.images && equipment.images.length > 0 
-    ? equipment.images 
-    : equipment.image_url 
-      ? [equipment.image_url] 
+  const images = equipment.images && equipment.images.length > 0
+    ? equipment.images
+    : equipment.image_url
+      ? [equipment.image_url]
       : [];
-  
+
   const hasMultipleImages = images.length > 1;
   const hasImages = images.length > 0;
 

@@ -16,10 +16,8 @@ const OwnerCard = ({ owner }: OwnerCardProps) => {
   const { data: stats } = useUserStats(owner.id);
 
   // Determine the correct profile link - use real user profile for DB users
-  const profileLinkPath = owner.shopId 
-    ? `/shop/${owner.shopId}` 
-    : owner.partyId 
-    ? `/private-party/${owner.partyId}`
+  const profileLinkPath = owner.shopId
+    ? `/shop/${owner.shopId}`
     : `/user-profile/${owner.id}`;
 
   // Use real data if available, fallback to mock data
@@ -56,7 +54,8 @@ const OwnerCard = ({ owner }: OwnerCardProps) => {
         </div>
       </div>
       <div className="text-sm mb-4">
-        <p className="mb-2">Response rate: {displayResponseRate}%</p>
+        {/* ADD THIS IN WHEN IT'S WORKING */}
+        {/* <p className="mb-2">Response rate: {displayResponseRate}%</p> */}
         <p className="text-muted-foreground">
           Member since {memberSince}
         </p>
