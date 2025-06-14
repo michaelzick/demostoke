@@ -26,6 +26,9 @@ const AdminPage = lazy(() => import("./pages/AdminPage"));
 const SignInPage = lazy(() => import("./pages/SignInPage"));
 const SignUpPage = lazy(() => import("./pages/SignUpPage"));
 const RealUserProfilePage = lazy(() => import("./pages/RealUserProfilePage"));
+const GearOwnerProfilePage = lazy(() => import("./pages/GearOwnerProfilePage"));
+const ShopPage = lazy(() => import("./pages/ShopPage"));
+const PrivatePartyPage = lazy(() => import("./pages/PrivatePartyPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -66,6 +69,9 @@ const App = () => {
                     <Route path="bookings" element={<BookingsPage />} />
                     <Route path="admin" element={<AdminPage />} />
                     <Route path="user-profile/:id" element={<RealUserProfilePage />} />
+                    <Route path="owner/:id" element={<GearOwnerProfilePage />} />
+                    <Route path="shop/:shopId" element={<ShopPage />} />
+                    <Route path="private-party/:partyId" element={<PrivatePartyPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                   </Route>
                 </Routes>
