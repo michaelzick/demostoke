@@ -79,8 +79,8 @@ const UserProfilePage = () => {
       } else {
         setName(profileData.name || "");
         setRole(profileData.role || "private-party");
-        // Priority: hero_image_url > avatar_url > dicebear fallback
-        const imageUrl = profileData.hero_image_url || profileData.avatar_url || generateDicebearAvatar(user.id);
+        // Priority: avatar_url > hero_image_url > dicebear fallback
+        const imageUrl = profileData.avatar_url || profileData.hero_image_url || generateDicebearAvatar(user.id);
         console.log('Setting profile image:', imageUrl);
         setProfileImage(imageUrl);
         setHeroImage(profileData.hero_image_url);
@@ -143,7 +143,7 @@ const UserProfilePage = () => {
         <CardHeader>
           <CardTitle className="text-2xl">Your Profile</CardTitle>
           <CardDescription>
-            Manage your personal information and account settings
+            Manage your personal information and account settings.
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleUpdateProfile}>
