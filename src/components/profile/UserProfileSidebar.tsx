@@ -29,13 +29,13 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="whitespace-pre-line text-sm text-muted-foreground leading-relaxed">
-          {profile.about || 
-           (profile.role === 'private-party' 
-             ? `Hi, I'm ${profile.name?.split(" ")[0] || 'User'}! I love sharing my gear with others and helping them enjoy their adventures.`
-             : "This user has not provided an 'about' section.")}
+          {profile.about ||
+            (profile.role === 'private-party'
+              ? `Hi, I'm ${profile.name?.split(" ")[0] || 'User'}! I love sharing my gear with others and helping them enjoy their adventures.`
+              : "This user has not provided an 'about' section.")}
         </div>
         <Separator />
-        <div className="space-y-3 pt-4 border-t">
+        <div className="space-y-3 pt-4">
           {profile.role === 'private-party' ? (
             <>
               {stats && (
