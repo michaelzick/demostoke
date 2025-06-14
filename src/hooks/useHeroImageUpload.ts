@@ -2,7 +2,12 @@
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-export function useHeroImageUpload({ userId, onUrl }) {
+interface UseHeroImageUploadProps {
+  userId: string | undefined;
+  onUrl: (url: string) => void;
+}
+
+export function useHeroImageUpload({ userId, onUrl }: UseHeroImageUploadProps) {
   const { toast } = useToast();
 
   const uploadHeroImage = async (file: File) => {
@@ -27,26 +32,39 @@ export function useHeroImageUpload({ userId, onUrl }) {
 
     const ext = file.name.split(".").pop();
     const path = `${userId}/${Date.now()}-${Math.random().toString(36).substr(2, 4)}.${ext}`;
-    const { data, error } = await supabase.storage.from("profile-hero-images").upload(path, file, { upsert: true });
+    
+    try {
+      const { data, error } = await supabase.storage
+        .from("profile-images")
+        .upload(path, file, { upsert: true });
 
-    if (error) {
+      if (error) {
+        toast({
+          title: "Upload error",
+          description: error.message,
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from("profile-images")
+        .getPublicUrl(data.path);
+      
+      if (urlData?.publicUrl) {
+        onUrl(urlData.publicUrl);
+        toast({
+          title: "Hero image uploaded",
+          description: "Image uploaded successfully."
+        });
+      }
+    } catch (error) {
+      console.error('Hero image upload error:', error);
       toast({
         title: "Upload error",
-        description: error.message,
+        description: "Failed to upload image. Please try again.",
         variant: "destructive"
-      });
-      return;
-    }
-    // Get public URL
-    const { data: urlData } = supabase
-      .storage
-      .from("profile-hero-images")
-      .getPublicUrl(data.path);
-    if (urlData?.publicUrl) {
-      onUrl(urlData.publicUrl);
-      toast({
-        title: "Hero image uploaded",
-        description: "Image uploaded successfully."
       });
     }
   };

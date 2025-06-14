@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,6 @@ import { ProfileImageSection } from "@/components/profile/ProfileImageSection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 import { ProfileLoadingSkeleton } from "@/components/profile/ProfileLoadingSkeleton";
 import { useProfileImageHandlers } from "@/hooks/useProfileImageHandlers";
-import { useHeroImageUpload } from "@/hooks/useHeroImageUpload";
 
 const UserProfilePage = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -21,37 +21,28 @@ const UserProfilePage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
-  const [profileImage, setProfileImage] = useState<string | null>(null); // This will be hero image now
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isDeletingImage, setIsDeletingImage] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
-  const [heroImage, setHeroImage] = useState<string | null>(null);
-  const [isUploadingHero, setIsUploadingHero] = useState(false);
 
   const { handleImageUpload, handleDeletePhoto } = useProfileImageHandlers({
     user,
-    profileImage, // acts as hero image now
-    setProfileImage, // acts on hero image now
+    profileImage,
+    setProfileImage,
     setIsUploadingImage,
     setIsDeletingImage,
-  });
-
-  const { uploadHeroImage } = useHeroImageUpload({
-    userId: user?.id,
-    onUrl: (url: string) => setHeroImage(url)
   });
 
   useEffect(() => {
     console.log("Profile page effect - auth status:", { isAuthenticated, isLoading, userId: user?.id });
 
-    // If auth check is complete and user is not authenticated, redirect to sign in
     if (!isLoading && !isAuthenticated) {
       navigate("/auth/signin");
       return;
     }
 
-    // When user data becomes available, fetch the profile data directly from the database
     if (user) {
       fetchProfileData();
     }
@@ -69,34 +60,28 @@ const UserProfilePage = () => {
       if (error) {
         setName(user.name || "");
         setRole("private-party");
-        setProfileImage(null);
+        setProfileImage(generateDicebearAvatar(user.id));
       } else {
         setName(profileData.name || "");
         setRole(profileData.role || "private-party");
-        // Use hero_image_url as the main profileImage
-        setProfileImage(profileData.hero_image_url || null);
+        // Use hero_image_url as the profile image, fallback to avatar_url, then dicebear
+        setProfileImage(
+          profileData.hero_image_url || 
+          profileData.avatar_url || 
+          generateDicebearAvatar(user.id)
+        );
       }
 
       setEmail(user.email || "");
       setProfileLoaded(true);
     } catch (error) {
       console.error('Error in fetchProfileData:', error);
-      // Fallback to user data
       setName(user.name || "");
       setEmail(user.email || "");
       setRole("private-party");
-      setProfileImage(user.imageUrl || generateDicebearAvatar(user.id));
-      setHeroImage(null);
+      setProfileImage(generateDicebearAvatar(user.id));
       setProfileLoaded(true);
     }
-  };
-
-  const handleHeroImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setIsUploadingHero(true);
-    await uploadHeroImage(file);
-    setIsUploadingHero(false);
   };
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
@@ -112,7 +97,6 @@ const UserProfilePage = () => {
         .update({
           name: name,
           role: role,
-          ...(role !== "private-party" && { hero_image_url: heroImage })
         })
         .eq('id', user.id);
 
@@ -134,7 +118,6 @@ const UserProfilePage = () => {
     }
   };
 
-  // Show loading state while authentication is being checked or user data is loading
   if (isLoading || (!profileLoaded && isAuthenticated)) {
     return <ProfileLoadingSkeleton />;
   }
@@ -151,7 +134,7 @@ const UserProfilePage = () => {
         <form onSubmit={handleUpdateProfile}>
           <CardContent className="space-y-6">
             <ProfileImageSection
-              profileImage={profileImage} // use hero image now
+              profileImage={profileImage}
               name={name}
               email={email}
               isUploadingImage={isUploadingImage}
@@ -159,27 +142,6 @@ const UserProfilePage = () => {
               onImageUpload={handleImageUpload}
               onDeletePhoto={handleDeletePhoto}
             />
-            {role !== "private-party" && (
-              <div>
-                <label className="block text-sm font-medium mb-1">Hero Image</label>
-                {heroImage && (
-                  <img src={heroImage} alt="Hero" className="w-full max-h-48 object-cover rounded mb-2" />
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  disabled={isUploadingHero}
-                  onChange={handleHeroImageChange}
-                  className="block text-sm"
-                />
-                {isUploadingHero && (
-                  <div className="text-xs text-muted-foreground mt-1">Uploading...</div>
-                )}
-                <div className="text-xs text-muted-foreground mt-1">
-                  Recommended size: 1200x400px.
-                </div>
-              </div>
-            )}
             <Separator />
             <ProfileForm
               name={name}
