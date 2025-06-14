@@ -24,8 +24,8 @@ const convertSupabaseToEquipment = async (item: any): Promise<Equipment> => {
     review_count: item.review_count || 0,
     owner: {
       id: item.user_id,
-      name: 'Owner', // We'd need to join with profiles to get real name
-      imageUrl: 'https://api.dicebear.com/6.x/avataaars/svg?seed=' + item.user_id,
+      name: item.profile_name || 'Owner', // Use the joined profile name or fallback to 'Owner'
+      imageUrl: item.profile_avatar_url || 'https://api.dicebear.com/6.x/avataaars/svg?seed=' + item.user_id,
       rating: 4.8,
       reviewCount: 15, // Add reviewCount
       responseRate: 95,
@@ -91,7 +91,13 @@ const getEquipmentData = async (): Promise<Equipment[]> => {
   try {
     const { data, error } = await supabase
       .from('equipment')
-      .select('*')
+      .select(`
+        *,
+        profiles!equipment_user_id_fkey (
+          name,
+          avatar_url
+        )
+      `)
       .eq('status', 'available')
       .eq('visible_on_map', true); // Only fetch visible equipment
 
@@ -103,11 +109,19 @@ const getEquipmentData = async (): Promise<Equipment[]> => {
 
     console.log('✅ Fetched equipment from database:', data?.length, 'items');
     data?.forEach(item => {
-      console.log(`Equipment: ${item.name}, Category: ${item.category}, Location: ${item.location_lat}, ${item.location_lng}`);
+      console.log(`Equipment: ${item.name}, Category: ${item.category}, Owner: ${item.profiles?.name || 'Owner'}, Location: ${item.location_lat}, ${item.location_lng}`);
     });
 
     // Convert all equipment items and fetch their images
-    const equipmentPromises = (data || []).map(item => convertSupabaseToEquipment(item));
+    const equipmentPromises = (data || []).map(item => {
+      // Flatten the profile data for easier access in convertSupabaseToEquipment
+      const flatItem = {
+        ...item,
+        profile_name: item.profiles?.name,
+        profile_avatar_url: item.profiles?.avatar_url
+      };
+      return convertSupabaseToEquipment(flatItem);
+    });
     return await Promise.all(equipmentPromises);
   } catch (error) {
     console.error('❌ Exception fetching equipment from database:', error);

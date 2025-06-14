@@ -14,7 +14,13 @@ export const useEquipmentById = (id: string) => {
 
       const { data, error } = await supabase
         .from('equipment')
-        .select('*')
+        .select(`
+          *,
+          profiles!equipment_user_id_fkey (
+            name,
+            avatar_url
+          )
+        `)
         .eq('id', id)
         .single();
 
@@ -29,13 +35,14 @@ export const useEquipmentById = (id: string) => {
 
       // Log the raw data to see what we're getting from the database
       console.log('Raw equipment data from database:', data);
+      console.log('Profile data:', data.profiles);
       console.log('Damage deposit from database:', data.damage_deposit);
 
       // Fetch additional images from equipment_images table
       const additionalImages = await fetchEquipmentImages(data.id);
       const allImages = additionalImages.length > 0 ? additionalImages : (data.image_url ? [data.image_url] : []);
 
-      // Convert to Equipment type with proper damage_deposit mapping
+      // Convert to Equipment type with proper damage_deposit mapping and real owner name
       const equipment = {
         id: data.id,
         name: data.name,
@@ -49,8 +56,8 @@ export const useEquipmentById = (id: string) => {
         damage_deposit: data.damage_deposit ? Number(data.damage_deposit) : undefined, // Add damage_deposit mapping
         owner: {
           id: data.user_id,
-          name: 'Owner',
-          imageUrl: 'https://api.dicebear.com/6.x/avataaars/svg?seed=' + data.user_id,
+          name: data.profiles?.name || 'Owner', // Use the joined profile name or fallback to 'Owner'
+          imageUrl: data.profiles?.avatar_url || 'https://api.dicebear.com/6.x/avataaars/svg?seed=' + data.user_id,
           rating: 4.8,
           reviewCount: 15,
           responseRate: 95,
@@ -80,6 +87,7 @@ export const useEquipmentById = (id: string) => {
       };
 
       console.log('Mapped equipment object:', equipment);
+      console.log('Mapped owner name:', equipment.owner.name);
       console.log('Mapped damage_deposit:', equipment.damage_deposit);
 
       return equipment;
