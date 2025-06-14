@@ -47,31 +47,45 @@ export const useProfileImageHandlers = ({
     setIsUploadingImage(true);
 
     try {
+      console.log('Starting image upload for user:', user.id);
+      
       // Delete old hero image if it exists and is from profile-images bucket
-      if (profileImage && !profileImage.includes('dicebear.com')) {
+      if (profileImage && profileImage.includes('profile-images') && !profileImage.includes('dicebear.com')) {
+        console.log('Deleting old image:', profileImage);
         await deleteProfileImage(profileImage, user.id);
       }
 
       // Upload the new image
+      console.log('Uploading new image');
       const imageUrl = await uploadProfileImage(file, user.id);
+      console.log('Upload successful, URL:', imageUrl);
 
       // Update the hero_image_url in the database
       const { error } = await supabase
         .from('profiles')
-        .update({ hero_image_url: imageUrl })
-        .eq('id', user.id);
+        .upsert({ 
+          id: user.id,
+          hero_image_url: imageUrl,
+          name: user.name || '',
+          role: 'private-party'
+        }, {
+          onConflict: 'id'
+        });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database update error:', error);
+        throw error;
+      }
 
       // Update local state
       setProfileImage(imageUrl);
 
       toast({
-        title: "Profile hero image updated",
-        description: "Your profile header image has been updated successfully.",
+        title: "Profile image updated",
+        description: "Your profile image has been updated successfully.",
       });
     } catch (error: unknown) {
-      console.error('Error uploading profile hero image:', error);
+      console.error('Error uploading profile image:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to upload image. Please try again.';
       toast({
         title: "Error uploading image",
@@ -86,8 +100,14 @@ export const useProfileImageHandlers = ({
       // Update database with fallback avatar
       await supabase
         .from('profiles')
-        .update({ hero_image_url: fallbackAvatar })
-        .eq('id', user.id);
+        .upsert({ 
+          id: user.id,
+          hero_image_url: fallbackAvatar,
+          name: user.name || '',
+          role: 'private-party'
+        }, {
+          onConflict: 'id'
+        });
     } finally {
       setIsUploadingImage(false);
     }
@@ -100,7 +120,7 @@ export const useProfileImageHandlers = ({
 
     try {
       // Delete the current hero image if it exists and is from profile-images bucket
-      if (profileImage && !profileImage.includes('dicebear.com')) {
+      if (profileImage && profileImage.includes('profile-images') && !profileImage.includes('dicebear.com')) {
         await deleteProfileImage(profileImage, user.id);
       }
 
@@ -110,8 +130,14 @@ export const useProfileImageHandlers = ({
       // Update the hero_image_url in the database
       const { error } = await supabase
         .from('profiles')
-        .update({ hero_image_url: fallbackAvatar })
-        .eq('id', user.id);
+        .upsert({ 
+          id: user.id,
+          hero_image_url: fallbackAvatar,
+          name: user.name || '',
+          role: 'private-party'
+        }, {
+          onConflict: 'id'
+        });
 
       if (error) throw error;
 
@@ -119,11 +145,11 @@ export const useProfileImageHandlers = ({
       setProfileImage(fallbackAvatar);
 
       toast({
-        title: "Profile hero image deleted",
-        description: "Your profile hero image has been removed and replaced with a default avatar.",
+        title: "Profile image deleted",
+        description: "Your profile image has been removed and replaced with a default avatar.",
       });
     } catch (error: unknown) {
-      console.error('Error deleting profile hero image:', error);
+      console.error('Error deleting profile image:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to delete image. Please try again.';
       toast({
         title: "Error deleting image",

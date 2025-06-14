@@ -58,18 +58,17 @@ const UserProfilePage = () => {
         .single();
 
       if (error) {
+        console.log('No profile found, using defaults');
         setName(user.name || "");
         setRole("private-party");
         setProfileImage(generateDicebearAvatar(user.id));
       } else {
         setName(profileData.name || "");
         setRole(profileData.role || "private-party");
-        // Use hero_image_url as the profile image, fallback to avatar_url, then dicebear
-        setProfileImage(
-          profileData.hero_image_url || 
-          profileData.avatar_url || 
-          generateDicebearAvatar(user.id)
-        );
+        // Priority: hero_image_url > avatar_url > dicebear fallback
+        const imageUrl = profileData.hero_image_url || profileData.avatar_url || generateDicebearAvatar(user.id);
+        console.log('Setting profile image:', imageUrl);
+        setProfileImage(imageUrl);
       }
 
       setEmail(user.email || "");
