@@ -12,6 +12,7 @@ import AuthLayout from "./layouts/AuthLayout";
 const HomePage = lazy(() => import("./pages/HomePage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
+const BlogPostPage = lazy(() => import("./pages/BlogPostPage"));
 const ContactPage = lazy(() => import("./pages/ContactUsPage"));
 const NotFoundPage = lazy(() => import("./pages/NotFound"));
 const ExplorePage = lazy(() => import("./pages/ExplorePage"));
@@ -58,6 +59,7 @@ const App = () => {
                     <Route index element={<HomePage />} />
                     <Route path="about" element={<AboutPage />} />
                     <Route path="blog" element={<BlogPage />} />
+                    <Route path="blog/:slug" element={<BlogPostPage />} />
                     <Route path="contact" element={<ContactPage />} />
                     <Route path="explore" element={<ExplorePage />} />
                     <Route path="equipment/:id" element={<EquipmentDetailPage />} />
