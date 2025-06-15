@@ -4,8 +4,8 @@ import HowItWorksSection from "@/components/home/HowItWorksSection";
 import FeaturedGearSection from "@/components/home/FeaturedGearSection";
 import CategoriesSection from "@/components/home/CategoriesSection";
 import CtaSection from "@/components/home/CtaSection";
-import { mockEquipment } from "@/lib/mockData";
 import { useTrendingEquipment } from "@/hooks/useTrendingEquipment";
+import { useRecentEquipment } from "@/hooks/useRecentEquipment";
 import {
   Dialog,
   DialogContent,
@@ -28,8 +28,9 @@ const HomePage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Fetch trending equipment
+  // Fetch trending and recent equipment
   const { data: trendingEquipment, isLoading: trendingLoading } = useTrendingEquipment();
+  const { data: recentEquipment, isLoading: recentLoading } = useRecentEquipment();
 
   // Get a mix of equipment for the "Featured Used Gear" section (fallback to mock)
   const featuredUsedGear = mockEquipment
@@ -263,11 +264,15 @@ const HomePage = () => {
         />
       )}
       
-      <FeaturedGearSection
-        title="Fresh Picks"
-        equipment={featuredUsedGear}
-        className="bg-white dark:bg-zinc-900"
-      />
+      {/* Fresh Picks section with recent equipment */}
+      {!recentLoading && recentEquipment && recentEquipment.length > 0 && (
+        <FeaturedGearSection
+          title="Fresh Picks"
+          equipment={recentEquipment}
+          className="bg-white dark:bg-zinc-900"
+        />
+      )}
+      
       <CategoriesSection />
       <CtaSection />
     </div>
