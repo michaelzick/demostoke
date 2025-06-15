@@ -195,6 +195,41 @@ export type Database = {
           },
         ]
       }
+      equipment_views: {
+        Row: {
+          created_at: string
+          equipment_id: string
+          id: string
+          user_id: string | null
+          viewed_at: string
+          viewer_ip: string | null
+        }
+        Insert: {
+          created_at?: string
+          equipment_id: string
+          id?: string
+          user_id?: string | null
+          viewed_at?: string
+          viewer_ip?: string | null
+        }
+        Update: {
+          created_at?: string
+          equipment_id?: string
+          id?: string
+          user_id?: string | null
+          viewed_at?: string
+          viewer_ip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipment_views_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pricing_options: {
         Row: {
           created_at: string
@@ -316,6 +351,13 @@ export type Database = {
       get_app_setting: {
         Args: { key: string }
         Returns: Json
+      }
+      get_trending_equipment: {
+        Args: { limit_count?: number }
+        Returns: {
+          equipment_id: string
+          view_count: number
+        }[]
       }
       get_user_role: {
         Args: { user_id: string }

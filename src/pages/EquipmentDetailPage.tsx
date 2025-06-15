@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState, useRef } from "react";
@@ -7,6 +6,7 @@ import { useSimilarEquipment } from "@/hooks/useSimilarEquipment";
 import { Skeleton } from "@/components/ui/skeleton";
 import { mockEquipment } from "@/lib/mockData";
 import { Card } from "@/components/ui/card";
+import { trackEquipmentView } from "@/services/viewTrackingService";
 
 // Import component modules
 import EquipmentDetailPageDb from "./EquipmentDetailPageDb";
@@ -23,9 +23,14 @@ const EquipmentDetailPage = () => {
   const [showWaiver, setShowWaiver] = useState(false);
   const bookingCardRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to top on page load
+  // Scroll to top and track view on page load
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // Track equipment view if we have a valid ID
+    if (id) {
+      trackEquipmentView(id);
+    }
   }, [id]);
 
   // Only fetch from DB if id is a valid UUID

@@ -5,6 +5,7 @@ import FeaturedGearSection from "@/components/home/FeaturedGearSection";
 import CategoriesSection from "@/components/home/CategoriesSection";
 import CtaSection from "@/components/home/CtaSection";
 import { mockEquipment } from "@/lib/mockData";
+import { useTrendingEquipment } from "@/hooks/useTrendingEquipment";
 import {
   Dialog,
   DialogContent,
@@ -27,12 +28,10 @@ const HomePage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Get top rated equipment for the "Hot & Fresh" section
-  const hotAndFreshEquipment = mockEquipment
-    .sort((a, b) => parseFloat(b.rating.toString()) - parseFloat(a.rating.toString()))
-    .slice(0, 3);
+  // Fetch trending equipment
+  const { data: trendingEquipment, isLoading: trendingLoading } = useTrendingEquipment();
 
-  // Get a mix of equipment for the "Featured Used Gear" section
+  // Get a mix of equipment for the "Featured Used Gear" section (fallback to mock)
   const featuredUsedGear = mockEquipment
     .filter((item, index, self) =>
       index === self.findIndex(t => t.category === item.category) || index < 6
@@ -255,13 +254,18 @@ const HomePage = () => {
       </Dialog>
       <HeroSection />
       <HowItWorksSection />
-      <FeaturedGearSection
-        title="Trending"
-        equipment={featuredUsedGear}
-      />
+      
+      {/* Conditionally render trending section only if we have trending data */}
+      {!trendingLoading && trendingEquipment && trendingEquipment.length > 0 && (
+        <FeaturedGearSection
+          title="Trending"
+          equipment={trendingEquipment}
+        />
+      )}
+      
       <FeaturedGearSection
         title="Fresh Picks"
-        equipment={hotAndFreshEquipment}
+        equipment={featuredUsedGear}
         className="bg-white dark:bg-zinc-900"
       />
       <CategoriesSection />
