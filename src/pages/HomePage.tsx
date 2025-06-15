@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import HeroSection from "@/components/HeroSection";
 import HowItWorksSection from "@/components/home/HowItWorksSection";
@@ -31,13 +32,6 @@ const HomePage = () => {
   // Fetch trending and recent equipment
   const { data: trendingEquipment, isLoading: trendingLoading } = useTrendingEquipment();
   const { data: recentEquipment, isLoading: recentLoading } = useRecentEquipment();
-
-  // Get a mix of equipment for the "Featured Used Gear" section (fallback to mock)
-  const featuredUsedGear = mockEquipment
-    .filter((item, index, self) =>
-      index === self.findIndex(t => t.category === item.category) || index < 6
-    )
-    .slice(3, 6);
 
   // Modal state and localStorage logic
   const [showModal, setShowModal] = useState(false);
