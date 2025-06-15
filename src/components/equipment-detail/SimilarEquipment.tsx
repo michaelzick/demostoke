@@ -11,6 +11,11 @@ interface SimilarEquipmentProps {
 }
 
 const SimilarEquipment = ({ similarEquipment }: SimilarEquipmentProps) => {
+  // Hide the section if no similar equipment is found
+  if (!similarEquipment || similarEquipment.length === 0) {
+    return null;
+  }
+
   return (
     <div>
       <h3 className="font-medium mb-3">Similar Equipment</h3>
