@@ -1,7 +1,9 @@
+
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useEquipmentById } from "@/hooks/useEquipmentById";
+import { useSimilarEquipment } from "@/hooks/useSimilarEquipment";
 import { Skeleton } from "@/components/ui/skeleton";
 import { mockEquipment } from "@/lib/mockData";
 import { Card } from "@/components/ui/card";
@@ -86,20 +88,15 @@ const EquipmentDetailPage = () => {
     return null;
   }, [id]);
 
-  // Similar equipment logic
-  const similarEquipmentDb = useMemo(() => {
-    if (!equipmentForDisplayDb) return [];
-    return mockEquipment
-      .filter(item => item.category === equipmentForDisplayDb.category && item.id !== equipmentForDisplayDb.id)
-      .slice(0, 3);
-  }, [equipmentForDisplayDb]);
+  // Fetch similar equipment using the new hook
+  const currentEquipment = equipmentForDisplayDb || equipmentForDisplayMock;
+  const { data: similarEquipmentFromDb, isLoading: similarLoading } = useSimilarEquipment(
+    currentEquipment?.category || '',
+    currentEquipment?.id || ''
+  );
 
-  const similarEquipmentMock = useMemo(() => {
-    if (!equipmentForDisplayMock) return [];
-    return mockEquipment
-      .filter(item => item.category === equipmentForDisplayMock.category && item.id !== equipmentForDisplayMock.id)
-      .slice(0, 3);
-  }, [equipmentForDisplayMock]);
+  // Use real similar equipment data, fallback to empty array
+  const similarEquipment = similarEquipmentFromDb || [];
 
   // Shared handlers
   const handleBookNowClick = () => {
@@ -155,7 +152,7 @@ const EquipmentDetailPage = () => {
     return (
       <EquipmentDetailPageDb
         equipment={equipmentForDisplayDb}
-        similarEquipment={similarEquipmentDb}
+        similarEquipment={similarEquipment}
         waiverCompleted={waiverCompleted}
         showWaiver={showWaiver}
         setShowWaiver={setShowWaiver}
@@ -171,7 +168,7 @@ const EquipmentDetailPage = () => {
     return (
       <EquipmentDetailPageMock
         equipment={equipmentForDisplayMock}
-        similarEquipment={similarEquipmentMock}
+        similarEquipment={similarEquipment}
         waiverCompleted={waiverCompleted}
         showWaiver={showWaiver}
         setShowWaiver={setShowWaiver}
