@@ -40,7 +40,16 @@ export const trackEquipmentView = async (equipmentId: string) => {
       return;
     }
 
-    // Record the view
+    // Increment the view count in the equipment table using the new function
+    const { error: incrementError } = await supabase
+      .rpc('increment_equipment_view_count', { equipment_id: equipmentId });
+
+    if (incrementError) {
+      console.error('❌ Error incrementing view count:', incrementError);
+      return;
+    }
+
+    // Still record the detailed view for analytics (optional)
     const { error: insertError } = await supabase
       .from('equipment_views')
       .insert({
@@ -51,11 +60,11 @@ export const trackEquipmentView = async (equipmentId: string) => {
       });
 
     if (insertError) {
-      console.error('❌ Error recording equipment view:', insertError);
-      return;
+      console.error('❌ Error recording detailed equipment view:', insertError);
+      // Don't return here - the view count was already incremented successfully
     }
 
-    console.log('✅ Equipment view recorded successfully');
+    console.log('✅ Equipment view tracked successfully');
     
   } catch (error) {
     console.error('❌ Exception tracking equipment view:', error);

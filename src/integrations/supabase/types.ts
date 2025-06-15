@@ -58,6 +58,7 @@ export type Database = {
           suitable_skill_level: string | null
           updated_at: string
           user_id: string
+          view_count: number | null
           visible_on_map: boolean
           weight: string | null
         }
@@ -82,6 +83,7 @@ export type Database = {
           suitable_skill_level?: string | null
           updated_at?: string
           user_id: string
+          view_count?: number | null
           visible_on_map?: boolean
           weight?: string | null
         }
@@ -106,6 +108,7 @@ export type Database = {
           suitable_skill_level?: string | null
           updated_at?: string
           user_id?: string
+          view_count?: number | null
           visible_on_map?: boolean
           weight?: string | null
         }
@@ -362,6 +365,10 @@ export type Database = {
       get_user_role: {
         Args: { user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
+      }
+      increment_equipment_view_count: {
+        Args: { equipment_id: string }
+        Returns: undefined
       }
       is_admin: {
         Args: { user_id: string }

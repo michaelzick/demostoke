@@ -19,6 +19,7 @@ export interface Database {
           status: string;
           user_id: string;
           weight: string;
+          view_count: number;
         };
         Insert: {
           category: string;
@@ -37,6 +38,7 @@ export interface Database {
           status?: string;
           user_id?: string;
           weight?: string;
+          view_count?: number;
         };
         Update: {
           category?: string;
@@ -55,6 +57,7 @@ export interface Database {
           status?: string;
           user_id?: string;
           weight?: string;
+          view_count?: number;
         };
       };
       user_preferences: {
@@ -141,4 +144,4 @@ export interface Database {
     Enums: {};
     CompositeTypes: {};
   };
-} 
+}

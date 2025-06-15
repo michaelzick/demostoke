@@ -27,7 +27,7 @@ export const useTrendingEquipment = () => {
       console.log('🗄️ Fetching real trending equipment from database');
       
       try {
-        // Get trending equipment IDs with view counts
+        // Get trending equipment IDs with view counts using the optimized function
         const { data: trendingData, error: trendingError } = await supabase
           .rpc('get_trending_equipment', { limit_count: 3 });
 
