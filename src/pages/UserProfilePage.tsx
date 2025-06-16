@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import { generateDicebearAvatar } from "@/utils/profileImageUpload";
 import { ProfileImageSection } from "@/components/profile/ProfileImageSection";
 import { HeroImageSection } from "@/components/profile/HeroImageSection";
 import { ProfileForm } from "@/components/profile/ProfileForm";
+import { PasswordChangeSection } from "@/components/profile/PasswordChangeSection";
 import { ProfileLoadingSkeleton } from "@/components/profile/ProfileLoadingSkeleton";
 import { useProfileImageHandlers } from "@/hooks/useProfileImageHandlers";
 import { useHeroImageHandlers } from "@/hooks/useHeroImageHandlers";
@@ -188,6 +188,8 @@ const UserProfilePage = () => {
           </CardFooter>
         </form>
       </Card>
+
+      <PasswordChangeSection />
 
       <HeroImageSection
         heroImage={heroImage}
