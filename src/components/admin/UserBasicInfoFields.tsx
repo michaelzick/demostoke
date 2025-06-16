@@ -1,7 +1,7 @@
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RoleSelect } from "@/components/ui/role-select";
 
 interface UserBasicInfoFieldsProps {
   formData: {
@@ -59,23 +59,13 @@ const UserBasicInfoFields = ({ formData, isCreating, onInputChange }: UserBasicI
         </div>
         <div className="space-y-2">
           <Label htmlFor="role">Role *</Label>
-          <Select 
-            value={formData.role} 
+          <RoleSelect
+            id="role"
+            value={formData.role}
             onValueChange={(value) => onInputChange('role', value)}
             disabled={isCreating}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select user role" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="private-party">Private Party</SelectItem>
-              <SelectItem value="shop">Shop</SelectItem>
-              <SelectItem value="builder">Builder</SelectItem>
-              <SelectItem value="rental-company">Rental Company</SelectItem>
-              <SelectItem value="guide">Guide</SelectItem>
-              <SelectItem value="instructor">Instructor</SelectItem>
-            </SelectContent>
-          </Select>
+            placeholder="Select user role"
+          />
         </div>
       </div>
     </>

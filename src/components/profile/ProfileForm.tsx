@@ -1,13 +1,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { RoleSelect } from "@/components/ui/role-select";
 
 interface ProfileFormProps {
   name: string;
@@ -50,17 +44,12 @@ export const ProfileForm = ({
 
       <div className="space-y-2">
         <Label htmlFor="role">Your Role</Label>
-        <Select value={role} onValueChange={onRoleChange}>
-          <SelectTrigger id="role">
-            <SelectValue placeholder="Select Your Role" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="private-party">Private Party</SelectItem>
-            <SelectItem value="builder">Builder (Surfboard Shaper, Etc.)</SelectItem>
-            <SelectItem value="retail-store">Retail Store</SelectItem>
-            <SelectItem value="retail-website">Retail Website</SelectItem>
-          </SelectContent>
-        </Select>
+        <RoleSelect
+          id="role"
+          value={role}
+          onValueChange={onRoleChange}
+          placeholder="Select Your Role"
+        />
         <p className="text-xs text-muted-foreground">
           This role will be used for all gear you list on the platform.
         </p>
