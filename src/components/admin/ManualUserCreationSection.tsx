@@ -48,13 +48,15 @@ const ManualUserCreationSection = () => {
     setIsCreating(true);
 
     try {
-      // Create the user account
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+      // Use regular signup instead of admin.createUser
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
-        email_confirm: true, // Auto-confirm email for admin-created users
-        user_metadata: {
-          name: formData.name,
+        options: {
+          data: {
+            name: formData.name,
+          },
+          emailRedirectTo: window.location.origin
         }
       });
 
@@ -65,6 +67,9 @@ const ManualUserCreationSection = () => {
       if (!authData.user) {
         throw new Error('User creation failed - no user data returned');
       }
+
+      // Wait a moment for the user to be created and profile trigger to run
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // Update the profile with additional information
       const { error: profileError } = await supabase
@@ -79,7 +84,6 @@ const ManualUserCreationSection = () => {
 
       if (profileError) {
         console.error('Profile update error:', profileError);
-        // Don't throw here as the user was created successfully
         toast({
           title: "User Created with Warning",
           description: `User account created successfully, but profile update failed: ${profileError.message}`,
@@ -88,7 +92,7 @@ const ManualUserCreationSection = () => {
       } else {
         toast({
           title: "User Created Successfully",
-          description: `New user account created for ${formData.name} (${formData.email})`,
+          description: `New user account created for ${formData.name} (${formData.email}). They will need to confirm their email address.`,
         });
       }
 
@@ -104,11 +108,21 @@ const ManualUserCreationSection = () => {
 
     } catch (error: any) {
       console.error('Error creating user:', error);
-      toast({
-        title: "Error Creating User",
-        description: error.message || "Failed to create user account. Please try again.",
-        variant: "destructive"
-      });
+      
+      // Handle specific error cases
+      if (error.message?.includes('User already registered')) {
+        toast({
+          title: "User Already Exists",
+          description: "A user with this email address already exists.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Error Creating User",
+          description: error.message || "Failed to create user account. Please try again.",
+          variant: "destructive"
+        });
+      }
     } finally {
       setIsCreating(false);
     }
@@ -119,7 +133,7 @@ const ManualUserCreationSection = () => {
       <CardHeader>
         <CardTitle>Create User Manually</CardTitle>
         <CardDescription>
-          Add a new user account with profile information
+          Add a new user account with profile information. The user will receive an email confirmation.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -226,7 +240,7 @@ const ManualUserCreationSection = () => {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            * Required fields. The user ID will be generated automatically, and profile information will be linked to the user account.
+            * Required fields. The user will receive an email confirmation and must verify their email address before they can log in.
           </p>
         </form>
       </CardContent>
