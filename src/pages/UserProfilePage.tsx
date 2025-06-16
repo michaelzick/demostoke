@@ -26,6 +26,7 @@ const UserProfilePage = () => {
     name,
     setName,
     email,
+    setEmail,
     role,
     setRole,
     phone,
@@ -68,7 +69,7 @@ const UserProfilePage = () => {
 
   const onUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    await handleUpdateProfile({ name, role, phone, address });
+    await handleUpdateProfile({ name, email, role, phone, address });
   };
 
   if (isLoading || (!profileLoaded && isAuthenticated)) {
@@ -89,6 +90,7 @@ const UserProfilePage = () => {
         isUpdating={isUpdating}
         userId={user?.id}
         onNameChange={setName}
+        onEmailChange={setEmail}
         onRoleChange={setRole}
         onPhoneChange={setPhone}
         onAddressChange={setAddress}

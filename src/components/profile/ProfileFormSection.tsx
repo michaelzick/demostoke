@@ -18,6 +18,7 @@ interface ProfileFormSectionProps {
   isUpdating: boolean;
   userId?: string;
   onNameChange: (value: string) => void;
+  onEmailChange: (value: string) => void;
   onRoleChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
   onAddressChange: (value: string) => void;
@@ -38,6 +39,7 @@ export const ProfileFormSection = ({
   isUpdating,
   userId,
   onNameChange,
+  onEmailChange,
   onRoleChange,
   onPhoneChange,
   onAddressChange,
@@ -73,6 +75,7 @@ export const ProfileFormSection = ({
             phone={phone}
             address={address}
             onNameChange={onNameChange}
+            onEmailChange={onEmailChange}
             onRoleChange={onRoleChange}
             onPhoneChange={onPhoneChange}
             onAddressChange={onAddressChange}

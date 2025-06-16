@@ -33,6 +33,15 @@ export class AuthService {
     return data;
   }
 
+  static async changeEmail(newEmail: string) {
+    const { data, error } = await supabase.auth.updateUser({
+      email: newEmail,
+    });
+
+    if (error) throw error;
+    return data;
+  }
+
   static async logout() {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;

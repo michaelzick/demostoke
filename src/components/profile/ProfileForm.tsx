@@ -11,6 +11,7 @@ interface ProfileFormProps {
   phone: string;
   address: string;
   onNameChange: (value: string) => void;
+  onEmailChange: (value: string) => void;
   onRoleChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
   onAddressChange: (value: string) => void;
@@ -23,6 +24,7 @@ export const ProfileForm = ({
   phone,
   address,
   onNameChange,
+  onEmailChange,
   onRoleChange,
   onPhoneChange,
   onAddressChange,
@@ -42,12 +44,12 @@ export const ProfileForm = ({
         <Label htmlFor="email">Email</Label>
         <Input
           id="email"
+          type="email"
           value={email}
-          disabled
-          className="bg-muted"
+          onChange={(e) => onEmailChange(e.target.value)}
         />
         <p className="text-xs text-muted-foreground">
-          Email cannot be changed. Contact support for assistance.
+          Changing your email will require confirmation from both your old and new email addresses.
         </p>
       </div>
 
