@@ -28,11 +28,11 @@ export const useManualUserCreation = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const isFormValid = () => {
-    return formData.name && 
+  const isFormValid = (): boolean => {
+    return !!(formData.name && 
            formData.email && 
            formData.password && 
-           formData.role;
+           formData.role);
   };
 
   const resetForm = () => {
@@ -59,7 +59,7 @@ export const useManualUserCreation = () => {
     setIsCreating(true);
 
     try {
-      // Use regular signup instead of admin.createUser
+      // Use regular signup without captcha verification
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
