@@ -37,9 +37,10 @@ export const useProfileData = () => {
         setRole(profileData.role || "private-party");
         setPhone(profileData.phone || "");
         setAddress(profileData.address || "");
-        const imageUrl = profileData.avatar_url || profileData.hero_image_url || generateDicebearAvatar(user.id);
-        console.log('Setting profile image:', imageUrl);
-        setProfileImage(imageUrl);
+        // Use avatar_url for profile image, fallback to dicebear if not set
+        const avatarUrl = profileData.avatar_url || generateDicebearAvatar(user.id);
+        console.log('Setting profile image from avatar_url:', avatarUrl);
+        setProfileImage(avatarUrl);
         setHeroImage(profileData.hero_image_url);
       }
 

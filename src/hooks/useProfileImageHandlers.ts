@@ -47,25 +47,25 @@ export const useProfileImageHandlers = ({
     setIsUploadingImage(true);
 
     try {
-      console.log('Starting image upload for user:', user.id);
+      console.log('Starting profile image upload for user:', user.id);
       
-      // Delete old hero image if it exists and is from profile-images bucket
+      // Delete old profile image if it exists and is from profile-images bucket
       if (profileImage && profileImage.includes('profile-images') && !profileImage.includes('dicebear.com')) {
-        console.log('Deleting old image:', profileImage);
+        console.log('Deleting old profile image:', profileImage);
         await deleteProfileImage(profileImage, user.id);
       }
 
       // Upload the new image
-      console.log('Uploading new image');
+      console.log('Uploading new profile image');
       const imageUrl = await uploadProfileImage(file, user.id);
       console.log('Upload successful, URL:', imageUrl);
 
-      // Update the hero_image_url in the database
+      // Update the avatar_url in the database
       const { error } = await supabase
         .from('profiles')
         .upsert({ 
           id: user.id,
-          hero_image_url: imageUrl,
+          avatar_url: imageUrl,
           name: user.name || '',
           role: 'private-party'
         }, {
@@ -102,7 +102,7 @@ export const useProfileImageHandlers = ({
         .from('profiles')
         .upsert({ 
           id: user.id,
-          hero_image_url: fallbackAvatar,
+          avatar_url: fallbackAvatar,
           name: user.name || '',
           role: 'private-party'
         }, {
@@ -119,7 +119,7 @@ export const useProfileImageHandlers = ({
     setIsDeletingImage(true);
 
     try {
-      // Delete the current hero image if it exists and is from profile-images bucket
+      // Delete the current profile image if it exists and is from profile-images bucket
       if (profileImage && profileImage.includes('profile-images') && !profileImage.includes('dicebear.com')) {
         await deleteProfileImage(profileImage, user.id);
       }
@@ -127,12 +127,12 @@ export const useProfileImageHandlers = ({
       // Generate a new dicebear avatar
       const fallbackAvatar = generateDicebearAvatar(user.id);
 
-      // Update the hero_image_url in the database
+      // Update the avatar_url in the database
       const { error } = await supabase
         .from('profiles')
         .upsert({ 
           id: user.id,
-          hero_image_url: fallbackAvatar,
+          avatar_url: fallbackAvatar,
           name: user.name || '',
           role: 'private-party'
         }, {
