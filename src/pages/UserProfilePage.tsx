@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,8 @@ const UserProfilePage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [heroImage, setHeroImage] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -65,7 +68,7 @@ const UserProfilePage = () => {
     try {
       const { data: profileData, error } = await supabase
         .from('profiles')
-        .select('name, role, avatar_url, hero_image_url')
+        .select('name, role, avatar_url, hero_image_url, phone, address')
         .eq('id', user.id)
         .single();
 
@@ -73,11 +76,15 @@ const UserProfilePage = () => {
         console.log('No profile found, using defaults');
         setName(user.name || "");
         setRole("private-party");
+        setPhone("");
+        setAddress("");
         setProfileImage(generateDicebearAvatar(user.id));
         setHeroImage(null);
       } else {
         setName(profileData.name || "");
         setRole(profileData.role || "private-party");
+        setPhone(profileData.phone || "");
+        setAddress(profileData.address || "");
         // Priority: avatar_url > hero_image_url > dicebear fallback
         const imageUrl = profileData.avatar_url || profileData.hero_image_url || generateDicebearAvatar(user.id);
         console.log('Setting profile image:', imageUrl);
@@ -92,6 +99,8 @@ const UserProfilePage = () => {
       setName(user.name || "");
       setEmail(user.email || "");
       setRole("private-party");
+      setPhone("");
+      setAddress("");
       setProfileImage(generateDicebearAvatar(user.id));
       setHeroImage(null);
       setProfileLoaded(true);
@@ -111,6 +120,8 @@ const UserProfilePage = () => {
         .update({
           name: name,
           role: role,
+          phone: phone,
+          address: address,
         })
         .eq('id', user.id);
 
@@ -162,8 +173,12 @@ const UserProfilePage = () => {
               name={name}
               email={email}
               role={role}
+              phone={phone}
+              address={address}
               onNameChange={setName}
               onRoleChange={setRole}
+              onPhoneChange={setPhone}
+              onAddressChange={setAddress}
             />
           </CardContent>
           <CardFooter>
