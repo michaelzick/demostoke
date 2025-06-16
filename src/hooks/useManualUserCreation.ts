@@ -37,6 +37,7 @@ export const useManualUserCreation = () => {
     return !!(formData.name && 
            formData.email && 
            formData.password && 
+           formData.password.length >= 6 &&
            formData.role &&
            captchaToken);
   };
@@ -53,13 +54,29 @@ export const useManualUserCreation = () => {
     setCaptchaToken("");
   };
 
+  const resetCaptcha = () => {
+    setCaptchaToken("");
+  };
+
   const createUser = async () => {
+    // Validate password length
+    if (formData.password.length < 6) {
+      toast({
+        title: "Password Too Short",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive"
+      });
+      resetCaptcha();
+      return;
+    }
+
     if (!isFormValid()) {
       toast({
         title: "Validation Error",
         description: "Please fill in all required fields and complete the captcha verification.",
         variant: "destructive"
       });
+      resetCaptcha();
       return;
     }
 
@@ -120,11 +137,20 @@ export const useManualUserCreation = () => {
     } catch (error: any) {
       console.error('Error creating user:', error);
       
+      // Reset captcha on any error to allow retry
+      resetCaptcha();
+      
       // Handle specific error cases
       if (error.message?.includes('User already registered')) {
         toast({
           title: "User Already Exists",
           description: "A user with this email address already exists.",
+          variant: "destructive"
+        });
+      } else if (error.message?.includes('Password should be at least 6 characters')) {
+        toast({
+          title: "Password Too Short",
+          description: "Password must be at least 6 characters long.",
           variant: "destructive"
         });
       } else if (error.message?.includes('captcha')) {
@@ -133,7 +159,6 @@ export const useManualUserCreation = () => {
           description: "Please complete the captcha verification and try again.",
           variant: "destructive"
         });
-        setCaptchaToken(""); // Reset captcha on failure
       } else {
         toast({
           title: "Error Creating User",
@@ -153,6 +178,7 @@ export const useManualUserCreation = () => {
     isFormValid,
     handleInputChange,
     handleCaptchaVerify,
-    createUser
+    createUser,
+    resetCaptcha
   };
 };

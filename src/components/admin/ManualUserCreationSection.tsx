@@ -10,9 +10,11 @@ const ManualUserCreationSection = () => {
     formData, 
     isCreating, 
     isFormValid, 
+    captchaToken,
     handleInputChange, 
     handleCaptchaVerify, 
-    createUser 
+    createUser,
+    resetCaptcha
   } = useManualUserCreation();
 
   const handleCreateUser = async (e: React.FormEvent) => {
@@ -47,6 +49,8 @@ const ManualUserCreationSection = () => {
             isFormValid={isFormValid()}
             onSubmit={() => createUser()}
             onCaptchaVerify={handleCaptchaVerify}
+            captchaToken={captchaToken}
+            resetCaptcha={resetCaptcha}
           />
         </form>
       </CardContent>

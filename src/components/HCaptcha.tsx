@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 
 interface HCaptchaProps {
   siteKey: string;
@@ -13,8 +13,18 @@ declare global {
   }
 }
 
-const HCaptcha = ({ siteKey, onVerify }: HCaptchaProps) => {
+const HCaptcha = forwardRef<{ reset: () => void }, HCaptchaProps>(({ siteKey, onVerify }, ref) => {
   const [loaded, setLoaded] = useState(false);
+  const [widgetId, setWidgetId] = useState<string | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    reset: () => {
+      if (window.hcaptcha && widgetId) {
+        window.hcaptcha.reset(widgetId);
+        onVerify(''); // Clear the token
+      }
+    }
+  }));
 
   // Load the hCaptcha script once
   useEffect(() => {
@@ -43,7 +53,7 @@ const HCaptcha = ({ siteKey, onVerify }: HCaptchaProps) => {
       const container = document.getElementById('h-captcha-container');
       if (container) {
         try {
-          window.hcaptcha.render('h-captcha-container', {
+          const id = window.hcaptcha.render('h-captcha-container', {
             sitekey: siteKey,
             callback: (token: string) => {
               console.log('hCaptcha verification successful');
@@ -58,6 +68,7 @@ const HCaptcha = ({ siteKey, onVerify }: HCaptchaProps) => {
               onVerify('');
             }
           });
+          setWidgetId(id);
         } catch (error) {
           console.error('hCaptcha rendering error:', error);
         }
@@ -66,6 +77,8 @@ const HCaptcha = ({ siteKey, onVerify }: HCaptchaProps) => {
   }, [loaded, siteKey, onVerify]);
 
   return <div id="h-captcha-container" className="mt-4"></div>;
-};
+});
+
+HCaptcha.displayName = 'HCaptcha';
 
 export default HCaptcha;
