@@ -6,7 +6,14 @@ import UserContactFields from "./UserContactFields";
 import UserCreationFormActions from "./UserCreationFormActions";
 
 const ManualUserCreationSection = () => {
-  const { formData, isCreating, isFormValid, handleInputChange, createUser } = useManualUserCreation();
+  const { 
+    formData, 
+    isCreating, 
+    isFormValid, 
+    handleInputChange, 
+    handleCaptchaVerify, 
+    createUser 
+  } = useManualUserCreation();
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,7 +25,7 @@ const ManualUserCreationSection = () => {
       <CardHeader>
         <CardTitle>Create User Manually</CardTitle>
         <CardDescription>
-          Add a new user account with profile information. The user will receive an email confirmation.
+          Add a new user account with profile information. Complete the captcha verification and the user will receive an email confirmation.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -39,6 +46,7 @@ const ManualUserCreationSection = () => {
             isCreating={isCreating}
             isFormValid={isFormValid()}
             onSubmit={() => createUser()}
+            onCaptchaVerify={handleCaptchaVerify}
           />
         </form>
       </CardContent>

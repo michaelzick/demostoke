@@ -1,16 +1,28 @@
 
 import { Button } from "@/components/ui/button";
 import { UserPlus, Loader2 } from "lucide-react";
+import HCaptcha from "@/components/HCaptcha";
 
 interface UserCreationFormActionsProps {
   isCreating: boolean;
   isFormValid: boolean;
   onSubmit: () => void;
+  onCaptchaVerify: (token: string) => void;
 }
 
-const UserCreationFormActions = ({ isCreating, isFormValid, onSubmit }: UserCreationFormActionsProps) => {
+const UserCreationFormActions = ({ 
+  isCreating, 
+  isFormValid, 
+  onSubmit, 
+  onCaptchaVerify 
+}: UserCreationFormActionsProps) => {
   return (
     <>
+      <HCaptcha
+        siteKey="e30661ca-467c-43cc-899c-be56ab28c2a2"
+        onVerify={onCaptchaVerify}
+      />
+
       <div className="pt-4">
         <Button 
           type="submit" 
@@ -28,7 +40,7 @@ const UserCreationFormActions = ({ isCreating, isFormValid, onSubmit }: UserCrea
       </div>
 
       <p className="text-sm text-muted-foreground">
-        * Required fields. The user will receive an email confirmation and must verify their email address before they can log in.
+        * Required fields. Complete the captcha verification and the user will receive an email confirmation.
       </p>
     </>
   );

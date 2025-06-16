@@ -15,6 +15,7 @@ interface UserFormData {
 export const useManualUserCreation = () => {
   const { toast } = useToast();
   const [isCreating, setIsCreating] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState("");
   const [formData, setFormData] = useState<UserFormData>({
     name: '',
     email: '',
@@ -28,11 +29,16 @@ export const useManualUserCreation = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleCaptchaVerify = (token: string) => {
+    setCaptchaToken(token);
+  };
+
   const isFormValid = (): boolean => {
     return !!(formData.name && 
            formData.email && 
            formData.password && 
-           formData.role);
+           formData.role &&
+           captchaToken);
   };
 
   const resetForm = () => {
@@ -44,13 +50,14 @@ export const useManualUserCreation = () => {
       phone: '',
       address: '',
     });
+    setCaptchaToken("");
   };
 
   const createUser = async () => {
     if (!isFormValid()) {
       toast({
         title: "Validation Error",
-        description: "Please fill in all required fields (name, email, password, and role).",
+        description: "Please fill in all required fields and complete the captcha verification.",
         variant: "destructive"
       });
       return;
@@ -59,7 +66,7 @@ export const useManualUserCreation = () => {
     setIsCreating(true);
 
     try {
-      // Use signup with email confirmation disabled for admin creation
+      // Use signup with captcha token
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -68,21 +75,11 @@ export const useManualUserCreation = () => {
             name: formData.name,
           },
           emailRedirectTo: window.location.origin,
-          // Skip email confirmation for admin-created users
-          captchaToken: undefined
+          captchaToken: captchaToken
         }
       });
 
       if (authError) {
-        // If captcha is still required, show a specific error message
-        if (authError.message?.includes('captcha')) {
-          toast({
-            title: "Captcha Required",
-            description: "This Supabase project has captcha enabled. Admin user creation requires captcha to be disabled in project settings or a different implementation.",
-            variant: "destructive"
-          });
-          return;
-        }
         throw authError;
       }
 
@@ -132,10 +129,11 @@ export const useManualUserCreation = () => {
         });
       } else if (error.message?.includes('captcha')) {
         toast({
-          title: "Captcha Configuration Issue",
-          description: "This feature requires captcha to be disabled in Supabase project settings for admin user creation.",
+          title: "Captcha Verification Failed",
+          description: "Please complete the captcha verification and try again.",
           variant: "destructive"
         });
+        setCaptchaToken(""); // Reset captcha on failure
       } else {
         toast({
           title: "Error Creating User",
@@ -151,8 +149,10 @@ export const useManualUserCreation = () => {
   return {
     formData,
     isCreating,
+    captchaToken,
     isFormValid,
     handleInputChange,
+    handleCaptchaVerify,
     createUser
   };
 };
