@@ -6,6 +6,7 @@ import { Navigate } from "react-router-dom";
 import DataDisplaySettings from "@/components/admin/DataDisplaySettings";
 import VideoUploadSection from "@/components/admin/VideoUploadSection";
 import UserManagementSection from "@/components/admin/UserManagementSection";
+import ManualUserCreationSection from "@/components/admin/ManualUserCreationSection";
 
 const AdminPage = () => {
   const { isAuthenticated } = useAuth();
@@ -43,6 +44,7 @@ const AdminPage = () => {
       <div className="space-y-6">
         <DataDisplaySettings />
         <UserManagementSection />
+        <ManualUserCreationSection />
         <VideoUploadSection />
       </div>
     </div>

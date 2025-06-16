@@ -1,3 +1,4 @@
+
 export interface Database {
   public: {
     Tables: {
@@ -88,28 +89,40 @@ export interface Database {
           id: string;
           created_at: string;
           updated_at: string;
-          username: string;
+          name: string;
           avatar_url: string;
-          website: string;
+          role: string;
           about: string;
+          phone: string;
+          address: string;
+          hero_image_url: string;
+          member_since: string;
         };
         Insert: {
           id: string;
           created_at?: string;
           updated_at?: string;
-          username: string;
+          name?: string;
           avatar_url?: string;
-          website?: string;
+          role?: string;
           about?: string;
+          phone?: string;
+          address?: string;
+          hero_image_url?: string;
+          member_since?: string;
         };
         Update: {
           id?: string;
           created_at?: string;
           updated_at?: string;
-          username?: string;
+          name?: string;
           avatar_url?: string;
-          website?: string;
+          role?: string;
           about?: string;
+          phone?: string;
+          address?: string;
+          hero_image_url?: string;
+          member_since?: string;
         };
       };
       pricing_options: {
