@@ -1,5 +1,6 @@
 
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { RoleSelect } from "@/components/ui/role-select";
 
@@ -63,7 +64,7 @@ export const ProfileForm = ({
 
       <div className="space-y-2">
         <Label htmlFor="address">Address</Label>
-        <Input
+        <Textarea
           id="address"
           value={address}
           onChange={(e) => onAddressChange(e.target.value)}
