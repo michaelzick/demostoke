@@ -59,7 +59,7 @@ export const useManualUserCreation = () => {
     setIsCreating(true);
 
     try {
-      // Use regular signup without captcha verification
+      // Use signup with email confirmation disabled for admin creation
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -67,11 +67,22 @@ export const useManualUserCreation = () => {
           data: {
             name: formData.name,
           },
-          emailRedirectTo: window.location.origin
+          emailRedirectTo: window.location.origin,
+          // Skip email confirmation for admin-created users
+          captchaToken: undefined
         }
       });
 
       if (authError) {
+        // If captcha is still required, show a specific error message
+        if (authError.message?.includes('captcha')) {
+          toast({
+            title: "Captcha Required",
+            description: "This Supabase project has captcha enabled. Admin user creation requires captcha to be disabled in project settings or a different implementation.",
+            variant: "destructive"
+          });
+          return;
+        }
         throw authError;
       }
 
@@ -117,6 +128,12 @@ export const useManualUserCreation = () => {
         toast({
           title: "User Already Exists",
           description: "A user with this email address already exists.",
+          variant: "destructive"
+        });
+      } else if (error.message?.includes('captcha')) {
+        toast({
+          title: "Captcha Configuration Issue",
+          description: "This feature requires captcha to be disabled in Supabase project settings for admin user creation.",
           variant: "destructive"
         });
       } else {
