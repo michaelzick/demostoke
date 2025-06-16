@@ -39,9 +39,6 @@ export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfi
                     <span className="text-lg font-medium">{stats.averageRating}</span>
                   </div>
                 )}
-                {stats && (
-                  <Badge variant="secondary">{stats.responseRate}% response rate</Badge>
-                )}
                 <Badge variant="outline">Private Party</Badge>
               </div>
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -80,7 +77,7 @@ export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfi
                   <span className="text-gray-300">({stats.totalReviews} reviews)</span>
                 </div>
               )}
-              <p className="text-sm mb-2">Est. {memberSinceDate}</p>
+              <p className="text-sm mb-2">{memberSinceDate}</p>
               <div className="flex flex-wrap gap-2">
                 <Badge variant="secondary" className="capitalize">
                   {profile.role === 'retail-store' ? 'Retail Store' :
@@ -112,7 +109,7 @@ export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfi
                 <span className="text-gray-300">({stats.totalReviews} reviews)</span>
               </div>
             )}
-            <p className="text-sm mb-2">Est. {memberSinceDate}</p>
+            <p className="text-sm mb-2">{memberSinceDate}</p>
             <div className="flex flex-wrap gap-2">
               <Badge variant="secondary" className="capitalize">
                 {profile.role === 'retail-store' ? 'Retail Store' :
