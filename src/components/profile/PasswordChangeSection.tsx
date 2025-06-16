@@ -8,7 +8,6 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 export const PasswordChangeSection = () => {
-  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
@@ -43,7 +42,7 @@ export const PasswordChangeSection = () => {
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!currentPassword || !newPassword || !confirmPassword) {
+    if (!newPassword || !confirmPassword) {
       toast({
         title: "Error",
         description: "All password fields are required",
@@ -74,27 +73,7 @@ export const PasswordChangeSection = () => {
     setIsUpdating(true);
 
     try {
-      // First, verify the current password by attempting to sign in
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user?.email) {
-        throw new Error("Unable to get user email");
-      }
-
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: user.user.email,
-        password: currentPassword,
-      });
-
-      if (signInError) {
-        toast({
-          title: "Error",
-          description: "Current password is incorrect",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Update the password
+      // Update the password directly - Supabase handles authentication verification
       const { error: updateError } = await supabase.auth.updateUser({
         password: newPassword,
       });
@@ -109,7 +88,6 @@ export const PasswordChangeSection = () => {
       });
 
       // Clear the form
-      setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
 
@@ -132,17 +110,6 @@ export const PasswordChangeSection = () => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handlePasswordChange} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="current-password">Current Password</Label>
-            <Input
-              id="current-password"
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              placeholder="Enter your current password"
-            />
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="new-password">New Password</Label>
             <Input
