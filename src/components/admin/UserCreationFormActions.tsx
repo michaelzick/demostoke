@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { UserPlus, Loader2 } from "lucide-react";
 import HCaptcha from "@/components/HCaptcha";
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 
 interface UserCreationFormActionsProps {
   isCreating: boolean;
@@ -10,7 +10,7 @@ interface UserCreationFormActionsProps {
   onSubmit: () => void;
   onCaptchaVerify: (token: string) => void;
   captchaToken: string;
-  resetCaptcha?: () => void;
+  shouldResetCaptcha?: boolean;
 }
 
 const UserCreationFormActions = ({ 
@@ -19,16 +19,9 @@ const UserCreationFormActions = ({
   onSubmit, 
   onCaptchaVerify,
   captchaToken,
-  resetCaptcha
+  shouldResetCaptcha
 }: UserCreationFormActionsProps) => {
   const hcaptchaRef = useRef<{ reset: () => void }>(null);
-
-  // Reset captcha when resetCaptcha is called
-  useEffect(() => {
-    if (resetCaptcha && !captchaToken && hcaptchaRef.current) {
-      hcaptchaRef.current.reset();
-    }
-  }, [captchaToken, resetCaptcha]);
 
   return (
     <>
@@ -36,6 +29,7 @@ const UserCreationFormActions = ({
         ref={hcaptchaRef}
         siteKey="e30661ca-467c-43cc-899c-be56ab28c2a2"
         onVerify={onCaptchaVerify}
+        shouldReset={shouldResetCaptcha}
       />
 
       <div className="pt-4">

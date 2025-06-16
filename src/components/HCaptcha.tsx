@@ -4,6 +4,7 @@ import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 interface HCaptchaProps {
   siteKey: string;
   onVerify: (token: string) => void;
+  shouldReset?: boolean;
 }
 
 declare global {
@@ -13,18 +14,29 @@ declare global {
   }
 }
 
-const HCaptcha = forwardRef<{ reset: () => void }, HCaptchaProps>(({ siteKey, onVerify }, ref) => {
+const HCaptcha = forwardRef<{ reset: () => void }, HCaptchaProps>(({ siteKey, onVerify, shouldReset }, ref) => {
   const [loaded, setLoaded] = useState(false);
   const [widgetId, setWidgetId] = useState<string | null>(null);
 
   useImperativeHandle(ref, () => ({
     reset: () => {
-      if (window.hcaptcha && widgetId) {
-        window.hcaptcha.reset(widgetId);
-        onVerify(''); // Clear the token
-      }
+      resetCaptcha();
     }
   }));
+
+  const resetCaptcha = () => {
+    if (window.hcaptcha && widgetId) {
+      window.hcaptcha.reset(widgetId);
+      onVerify(''); // Clear the token
+    }
+  };
+
+  // Handle reset from parent component
+  useEffect(() => {
+    if (shouldReset && window.hcaptcha && widgetId) {
+      resetCaptcha();
+    }
+  }, [shouldReset, widgetId]);
 
   // Load the hCaptcha script once
   useEffect(() => {

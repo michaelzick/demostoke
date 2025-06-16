@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -16,6 +16,7 @@ export const useManualUserCreation = () => {
   const { toast } = useToast();
   const [isCreating, setIsCreating] = useState(false);
   const [captchaToken, setCaptchaToken] = useState("");
+  const [shouldResetCaptcha, setShouldResetCaptcha] = useState(false);
   const [formData, setFormData] = useState<UserFormData>({
     name: '',
     email: '',
@@ -31,16 +32,17 @@ export const useManualUserCreation = () => {
 
   const handleCaptchaVerify = (token: string) => {
     setCaptchaToken(token);
+    setShouldResetCaptcha(false);
   };
 
-  const isFormValid = (): boolean => {
+  const isFormValid = useMemo((): boolean => {
     return !!(formData.name && 
            formData.email && 
            formData.password && 
            formData.password.length >= 6 &&
            formData.role &&
            captchaToken);
-  };
+  }, [formData.name, formData.email, formData.password, formData.role, captchaToken]);
 
   const resetForm = () => {
     setFormData({
@@ -52,10 +54,12 @@ export const useManualUserCreation = () => {
       address: '',
     });
     setCaptchaToken("");
+    setShouldResetCaptcha(true);
   };
 
   const resetCaptcha = () => {
     setCaptchaToken("");
+    setShouldResetCaptcha(true);
   };
 
   const createUser = async () => {
@@ -70,7 +74,7 @@ export const useManualUserCreation = () => {
       return;
     }
 
-    if (!isFormValid()) {
+    if (!isFormValid) {
       toast({
         title: "Validation Error",
         description: "Please fill in all required fields and complete the captcha verification.",
@@ -175,6 +179,7 @@ export const useManualUserCreation = () => {
     formData,
     isCreating,
     captchaToken,
+    shouldResetCaptcha,
     isFormValid,
     handleInputChange,
     handleCaptchaVerify,

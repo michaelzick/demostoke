@@ -11,6 +11,7 @@ const ManualUserCreationSection = () => {
     isCreating, 
     isFormValid, 
     captchaToken,
+    shouldResetCaptcha,
     handleInputChange, 
     handleCaptchaVerify, 
     createUser,
@@ -46,11 +47,11 @@ const ManualUserCreationSection = () => {
 
           <UserCreationFormActions 
             isCreating={isCreating}
-            isFormValid={isFormValid()}
+            isFormValid={isFormValid}
             onSubmit={() => createUser()}
             onCaptchaVerify={handleCaptchaVerify}
             captchaToken={captchaToken}
-            resetCaptcha={resetCaptcha}
+            shouldResetCaptcha={shouldResetCaptcha}
           />
         </form>
       </CardContent>
