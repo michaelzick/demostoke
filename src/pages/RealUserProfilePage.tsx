@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useUserProfile } from "@/hooks/useUserProfile";
@@ -58,7 +57,7 @@ const RealUserProfilePage = () => {
       avatar_url: ownProfileData.profileImage,
       hero_image_url: ownProfileData.heroImage,
       role: ownProfileData.role,
-      about: null,
+      about: ownProfileData.about,
       member_since: new Date().toISOString(),
       created_at: new Date().toISOString(),
     } as UserProfile;

@@ -11,6 +11,7 @@ export const useProfileData = () => {
   const [role, setRole] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [about, setAbout] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [heroImage, setHeroImage] = useState<string | null>(null);
 
@@ -22,6 +23,7 @@ export const useProfileData = () => {
       setRole(profileData.role);
       setPhone(profileData.phone);
       setAddress(profileData.address);
+      setAbout(profileData.about || "");
       setProfileImage(profileData.profileImage);
       setHeroImage(profileData.heroImage);
     }
@@ -42,6 +44,8 @@ export const useProfileData = () => {
     setPhone,
     address,
     setAddress,
+    about,
+    setAbout,
     profileImage,
     setProfileImage,
     heroImage,
