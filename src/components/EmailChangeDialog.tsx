@@ -19,8 +19,17 @@ export const EmailChangeDialog = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    let urlMessage = null;
+    
+    // Check URL search parameters first
     const urlParams = new URLSearchParams(location.search);
-    const urlMessage = urlParams.get("message");
+    urlMessage = urlParams.get("message");
+    
+    // If not found in search params, check the hash fragment
+    if (!urlMessage && location.hash) {
+      const hashParams = new URLSearchParams(location.hash.substring(1));
+      urlMessage = hashParams.get("message");
+    }
     
     if (urlMessage) {
       setMessage(decodeURIComponent(urlMessage));
@@ -34,14 +43,26 @@ export const EmailChangeDialog = () => {
       setIsSuccess(isEmailChangeComplete);
       setIsOpen(true);
     }
-  }, [location.search]);
+  }, [location.search, location.hash]);
 
   const handleClose = () => {
     setIsOpen(false);
-    // Clean up the URL by removing the message parameter
+    
+    // Clean up the URL by removing the message parameter from both search and hash
     const urlParams = new URLSearchParams(location.search);
     urlParams.delete("message");
-    const newUrl = `${location.pathname}${urlParams.toString() ? `?${urlParams.toString()}` : ""}`;
+    
+    // Handle hash cleanup
+    let newHash = "";
+    if (location.hash) {
+      const hashParams = new URLSearchParams(location.hash.substring(1));
+      hashParams.delete("message");
+      if (hashParams.toString()) {
+        newHash = `#${hashParams.toString()}`;
+      }
+    }
+    
+    const newUrl = `${location.pathname}${urlParams.toString() ? `?${urlParams.toString()}` : ""}${newHash}`;
     navigate(newUrl, { replace: true });
   };
 
