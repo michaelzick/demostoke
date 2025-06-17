@@ -13,6 +13,7 @@ interface ProfileFormSectionProps {
   role: string;
   phone: string;
   address: string;
+  about: string;
   isUploadingImage: boolean;
   isDeletingImage: boolean;
   isUpdating: boolean;
@@ -22,6 +23,7 @@ interface ProfileFormSectionProps {
   onRoleChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
   onAddressChange: (value: string) => void;
+  onAboutChange: (value: string) => void;
   onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onDeletePhoto: () => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -34,6 +36,7 @@ export const ProfileFormSection = ({
   role,
   phone,
   address,
+  about,
   isUploadingImage,
   isDeletingImage,
   isUpdating,
@@ -43,6 +46,7 @@ export const ProfileFormSection = ({
   onRoleChange,
   onPhoneChange,
   onAddressChange,
+  onAboutChange,
   onImageUpload,
   onDeletePhoto,
   onSubmit,
@@ -74,11 +78,13 @@ export const ProfileFormSection = ({
             role={role}
             phone={phone}
             address={address}
+            about={about}
             onNameChange={onNameChange}
             onEmailChange={onEmailChange}
             onRoleChange={onRoleChange}
             onPhoneChange={onPhoneChange}
             onAddressChange={onAddressChange}
+            onAboutChange={onAboutChange}
           />
         </CardContent>
         <CardFooter>

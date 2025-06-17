@@ -10,11 +10,13 @@ interface ProfileFormProps {
   role: string;
   phone: string;
   address: string;
+  about: string;
   onNameChange: (value: string) => void;
   onEmailChange: (value: string) => void;
   onRoleChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
   onAddressChange: (value: string) => void;
+  onAboutChange: (value: string) => void;
 }
 
 export const ProfileForm = ({
@@ -23,11 +25,13 @@ export const ProfileForm = ({
   role,
   phone,
   address,
+  about,
   onNameChange,
   onEmailChange,
   onRoleChange,
   onPhoneChange,
   onAddressChange,
+  onAboutChange,
 }: ProfileFormProps) => {
   return (
     <div className="space-y-4">
@@ -71,6 +75,17 @@ export const ProfileForm = ({
           value={address}
           onChange={(e) => onAddressChange(e.target.value)}
           placeholder="Enter your address"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="about">About</Label>
+        <Textarea
+          id="about"
+          value={about}
+          onChange={(e) => onAboutChange(e.target.value)}
+          placeholder="Tell us about yourself..."
+          className="min-h-[100px]"
         />
       </div>
 

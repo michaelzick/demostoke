@@ -33,6 +33,8 @@ const UserProfilePage = () => {
     setPhone,
     address,
     setAddress,
+    about,
+    setAbout,
     profileImage,
     setProfileImage,
     heroImage,
@@ -69,7 +71,7 @@ const UserProfilePage = () => {
 
   const onUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    await handleUpdateProfile({ name, email, role, phone, address });
+    await handleUpdateProfile({ name, email, role, phone, address, about });
   };
 
   if (isLoading || (!profileLoaded && isAuthenticated)) {
@@ -85,6 +87,7 @@ const UserProfilePage = () => {
         role={role}
         phone={phone}
         address={address}
+        about={about}
         isUploadingImage={isUploadingImage}
         isDeletingImage={isDeletingImage}
         isUpdating={isUpdating}
@@ -94,6 +97,7 @@ const UserProfilePage = () => {
         onRoleChange={setRole}
         onPhoneChange={setPhone}
         onAddressChange={setAddress}
+        onAboutChange={setAbout}
         onImageUpload={handleImageUpload}
         onDeletePhoto={handleDeletePhoto}
         onSubmit={onUpdateProfile}

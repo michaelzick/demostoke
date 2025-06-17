@@ -19,6 +19,7 @@ export const useProfileUpdate = () => {
     role: string;
     phone: string;
     address: string;
+    about: string;
   }) => {
     if (!user) return;
 
@@ -44,6 +45,7 @@ export const useProfileUpdate = () => {
           role: profileData.role,
           phone: profileData.phone,
           address: profileData.address,
+          about: profileData.about,
         })
         .eq('id', user.id);
 
