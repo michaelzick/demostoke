@@ -2,6 +2,7 @@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadProfileImage, deleteProfileImage, generateDicebearAvatar } from "@/utils/profileImageUpload";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface UseProfileImageHandlersProps {
   user: any;
@@ -19,6 +20,7 @@ export const useProfileImageHandlers = ({
   setIsDeletingImage,
 }: UseProfileImageHandlersProps) => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -79,6 +81,9 @@ export const useProfileImageHandlers = ({
 
       // Update local state
       setProfileImage(imageUrl);
+
+      // Invalidate profile query to refresh data everywhere
+      queryClient.invalidateQueries({ queryKey: ['profile', user.id] });
 
       toast({
         title: "Profile image updated",
@@ -143,6 +148,9 @@ export const useProfileImageHandlers = ({
 
       // Update local state
       setProfileImage(fallbackAvatar);
+
+      // Invalidate profile query to refresh data everywhere
+      queryClient.invalidateQueries({ queryKey: ['profile', user.id] });
 
       toast({
         title: "Profile image deleted",

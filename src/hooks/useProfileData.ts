@@ -1,11 +1,11 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { generateDicebearAvatar } from "@/utils/profileImageUpload";
-import { useAuth } from "@/helpers";
+import { useProfileQuery } from "@/hooks/useProfileQuery";
 
 export const useProfileData = () => {
-  const { user } = useAuth();
+  const { data: profileData, isLoading, refetch } = useProfileQuery();
+  
+  // Local state for form inputs
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
@@ -13,57 +13,23 @@ export const useProfileData = () => {
   const [address, setAddress] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [heroImage, setHeroImage] = useState<string | null>(null);
-  const [profileLoaded, setProfileLoaded] = useState(false);
+
+  // Update local state when profileData changes
+  useEffect(() => {
+    if (profileData) {
+      setName(profileData.name);
+      setEmail(profileData.email);
+      setRole(profileData.role);
+      setPhone(profileData.phone);
+      setAddress(profileData.address);
+      setProfileImage(profileData.profileImage);
+      setHeroImage(profileData.heroImage);
+    }
+  }, [profileData]);
 
   const fetchProfileData = async () => {
-    if (!user?.id) return;
-    try {
-      const { data: profileData, error } = await supabase
-        .from('profiles')
-        .select('name, role, avatar_url, hero_image_url, phone, address')
-        .eq('id', user.id)
-        .single();
-
-      if (error) {
-        console.log('No profile found, using defaults');
-        setName(user.name || "");
-        setRole("private-party");
-        setPhone("");
-        setAddress("");
-        setProfileImage(generateDicebearAvatar(user.id));
-        setHeroImage(null);
-      } else {
-        setName(profileData.name || "");
-        setRole(profileData.role || "private-party");
-        setPhone(profileData.phone || "");
-        setAddress(profileData.address || "");
-        // Use avatar_url for profile image, fallback to dicebear if not set
-        const avatarUrl = profileData.avatar_url || generateDicebearAvatar(user.id);
-        console.log('Setting profile image from avatar_url:', avatarUrl);
-        setProfileImage(avatarUrl);
-        setHeroImage(profileData.hero_image_url);
-      }
-
-      setEmail(user.email || "");
-      setProfileLoaded(true);
-    } catch (error) {
-      console.error('Error in fetchProfileData:', error);
-      setName(user.name || "");
-      setEmail(user.email || "");
-      setRole("private-party");
-      setPhone("");
-      setAddress("");
-      setProfileImage(generateDicebearAvatar(user.id));
-      setHeroImage(null);
-      setProfileLoaded(true);
-    }
+    await refetch();
   };
-
-  useEffect(() => {
-    if (user) {
-      fetchProfileData();
-    }
-  }, [user]);
 
   return {
     name,
@@ -80,7 +46,7 @@ export const useProfileData = () => {
     setProfileImage,
     heroImage,
     setHeroImage,
-    profileLoaded,
+    profileLoaded: !isLoading,
     fetchProfileData,
   };
 };

@@ -4,12 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
 import { useEmailChange } from "@/hooks/useEmailChange";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useProfileUpdate = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isUpdating, setIsUpdating] = useState(false);
   const { handleEmailChange, isChangingEmail } = useEmailChange();
+  const queryClient = useQueryClient();
 
   const handleUpdateProfile = async (profileData: {
     name: string;
@@ -46,6 +48,9 @@ export const useProfileUpdate = () => {
         .eq('id', user.id);
 
       if (error) throw error;
+
+      // Invalidate profile query to refresh data everywhere
+      queryClient.invalidateQueries({ queryKey: ['profile', user.id] });
 
       if (emailChanged) {
         toast({

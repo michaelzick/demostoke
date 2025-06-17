@@ -7,6 +7,8 @@ import { useUserEquipment } from "@/hooks/useUserEquipment";
 import { useMockUserProfile } from "@/hooks/useMockUserProfile";
 import { useMockUserStats } from "@/hooks/useMockUserStats";
 import { useMockData } from "@/hooks/useMockData";
+import { useProfileQuery } from "@/hooks/useProfileQuery";
+import { useAuth } from "@/helpers";
 import { Badge } from "@/components/ui/badge";
 import { UserProfileHeader } from "@/components/profile/UserProfileHeader";
 import { UserProfileSidebar } from "@/components/profile/UserProfileSidebar";
@@ -21,6 +23,11 @@ const RealUserProfilePage = () => {
   }, []);
 
   const { id } = useParams();
+  const { user } = useAuth();
+  
+  // Use React Query profile data if viewing own profile
+  const isOwnProfile = user?.id === id;
+  const { data: ownProfileData, refetch: refetchOwnProfile } = useProfileQuery();
 
   // Try to fetch from database first
   const { data: dbProfile, isLoading: profileLoading, error: profileError } = useUserProfile(id || "");
@@ -32,11 +39,35 @@ const RealUserProfilePage = () => {
   const mockStats = useMockUserStats(id || "");
   const { mockEquipment } = useMockData();
 
+  // Refetch own profile data when navigating to own profile page
+  useEffect(() => {
+    if (isOwnProfile && ownProfileData) {
+      refetchOwnProfile();
+    }
+  }, [isOwnProfile, id, refetchOwnProfile]);
+
   // Determine if we should use mock data
   const isMockUser = !profileLoading && (profileError || !dbProfile) && !!mockProfile;
   
-  // Use the correct profile data
-  const profile: UserProfile | undefined = isMockUser ? mockProfile : (dbProfile as UserProfile | undefined);
+  // Use the correct profile data - prioritize own profile data for current user
+  let profile: UserProfile | undefined;
+  if (isOwnProfile && ownProfileData) {
+    profile = {
+      id: user.id,
+      name: ownProfileData.name,
+      avatar_url: ownProfileData.profileImage,
+      hero_image_url: ownProfileData.heroImage,
+      role: ownProfileData.role,
+      about: null,
+      member_since: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+    } as UserProfile;
+  } else if (isMockUser) {
+    profile = mockProfile;
+  } else {
+    profile = dbProfile as UserProfile | undefined;
+  }
+
   const stats = isMockUser ? mockStats : dbStats;
   const userEquipment = isMockUser ? mockEquipment.filter(item => item.owner.id === id) : dbUserEquipment;
   const isLoading = isMockUser ? false : (profileLoading || statsLoading);
