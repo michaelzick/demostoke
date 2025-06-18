@@ -12,6 +12,10 @@ export const useProfileQuery = () => {
     if (!user?.id) throw new Error("No user found");
 
     try {
+      // First get the current email from auth.users table
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      const currentEmail = authData?.user?.email || user.email || "";
+
       const { data: profileData, error } = await supabase
         .from('profiles')
         .select('name, role, avatar_url, hero_image_url, phone, address, about')
@@ -22,7 +26,7 @@ export const useProfileQuery = () => {
         console.log('No profile found, using defaults');
         return {
           name: user.name || "",
-          email: user.email || "",
+          email: currentEmail,
           role: "private-party",
           phone: "",
           address: "",
@@ -38,7 +42,7 @@ export const useProfileQuery = () => {
 
       return {
         name: profileData.name || "",
-        email: user.email || "",
+        email: currentEmail, // Use the current email from auth
         role: profileData.role || "private-party",
         phone: profileData.phone || "",
         address: profileData.address || "",
@@ -48,9 +52,13 @@ export const useProfileQuery = () => {
       };
     } catch (error) {
       console.error('Error in fetchProfileData:', error);
+      // Fallback to current email from auth
+      const { data: authData } = await supabase.auth.getUser();
+      const currentEmail = authData?.user?.email || user.email || "";
+      
       return {
         name: user.name || "",
-        email: user.email || "",
+        email: currentEmail,
         role: "private-party",
         phone: "",
         address: "",

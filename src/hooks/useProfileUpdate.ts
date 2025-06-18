@@ -26,11 +26,15 @@ export const useProfileUpdate = () => {
     setIsUpdating(true);
 
     try {
+      // Get the current email from auth to compare
+      const { data: authData } = await supabase.auth.getUser();
+      const currentEmail = authData?.user?.email || user.email || "";
+      
       // Check if email has changed
-      const emailChanged = profileData.email !== user.email;
+      const emailChanged = profileData.email !== currentEmail;
       
       if (emailChanged) {
-        const emailChangeSuccess = await handleEmailChange(profileData.email, user.email || "");
+        const emailChangeSuccess = await handleEmailChange(profileData.email, currentEmail);
         if (!emailChangeSuccess) {
           setIsUpdating(false);
           return;
