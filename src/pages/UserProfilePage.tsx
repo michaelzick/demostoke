@@ -11,7 +11,6 @@ import { useProfileUpdate } from "@/hooks/useProfileUpdate";
 import { ProfileFormSection } from "@/components/profile/ProfileFormSection";
 import { PasswordChangeSection } from "@/components/profile/PasswordChangeSection";
 import { HeroImageSection } from "@/components/profile/HeroImageSection";
-import { EmailChangeDialog } from "@/components/EmailChangeDialog";
 
 const UserProfilePage = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -81,8 +80,6 @@ const UserProfilePage = () => {
 
   return (
     <div className="container max-w-3xl py-10 space-y-6">
-      <EmailChangeDialog />
-      
       <ProfileFormSection
         profileImage={profileImage}
         name={name}

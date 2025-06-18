@@ -15,6 +15,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { EmailChangeDialog } from "@/components/EmailChangeDialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -155,6 +156,9 @@ const HomePage = () => {
 
   return (
     <div>
+      {/* Email Change Dialog */}
+      <EmailChangeDialog />
+
       {/* Email Modal */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent>
@@ -249,7 +253,7 @@ const HomePage = () => {
       </Dialog>
       <HeroSection />
       <HowItWorksSection />
-      
+
       {/* Conditionally render trending section only if we have trending data */}
       {!trendingLoading && trendingEquipment && trendingEquipment.length > 0 && (
         <FeaturedGearSection
@@ -257,7 +261,7 @@ const HomePage = () => {
           equipment={trendingEquipment}
         />
       )}
-      
+
       {/* Fresh Picks section with recent equipment */}
       {!recentLoading && recentEquipment && recentEquipment.length > 0 && (
         <FeaturedGearSection
@@ -266,7 +270,7 @@ const HomePage = () => {
           className="bg-white dark:bg-zinc-900"
         />
       )}
-      
+
       <CategoriesSection />
       <CtaSection />
     </div>
