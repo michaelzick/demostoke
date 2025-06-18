@@ -1,3 +1,4 @@
+
 export interface Equipment {
   id: string;
   name: string;
@@ -71,6 +72,8 @@ export interface UserProfile {
   avatar_url: string | null;
   role: string;
   about?: string;
+  phone?: string | null;
+  address?: string | null;
   hero_image_url?: string | null;
   created_at?: string;
   member_since?: string;
