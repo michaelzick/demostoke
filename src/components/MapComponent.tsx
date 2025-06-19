@@ -1,9 +1,10 @@
-
 import { useRef, useEffect, useState } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useToast } from '@/hooks/use-toast';
 import { initializeMap, fitMapBounds } from '@/utils/mapUtils';
 import { useMapMarkers } from '@/hooks/useMapMarkers';
+import { useAppSettings } from '@/hooks/useAppSettings';
+import { useUserLocations } from '@/hooks/useUserLocations';
 import MapboxTokenForm from './map/MapboxTokenForm';
 import MapLegend from './map/MapLegend';
 import { supabase } from '@/integrations/supabase/client';
@@ -37,29 +38,55 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
   const [isLoadingToken, setIsLoadingToken] = useState(true);
   const [hasShownNoGearToast, setHasShownNoGearToast] = useState(false);
 
-  // Use the custom hook for managing markers
-  const displayEquipment = initialEquipment || [];
-  useMapMarkers({ map: map.current, mapLoaded, equipment: displayEquipment, isSingleView });
+  // Get app settings to determine display mode
+  const { data: appSettings } = useAppSettings();
+  const isUserLocationMode = appSettings?.map_display_mode === 'user_locations';
 
-  // Show toast when no gear is found (only once per search/filter change)
+  // Fetch user locations when in user location mode
+  const { data: userLocations = [], isLoading: userLocationsLoading } = useUserLocations();
+
+  // Determine what to display based on mode
+  const displayEquipment = isUserLocationMode ? [] : (initialEquipment || []);
+  const displayUserLocations = isUserLocationMode ? userLocations : [];
+
+  // Use the custom hook for managing markers
+  useMapMarkers({ 
+    map: map.current, 
+    mapLoaded, 
+    equipment: displayEquipment, 
+    userLocations: displayUserLocations,
+    isSingleView 
+  });
+
+  // Show toast when no data is found (only once per search/filter change)
   useEffect(() => {
-    if (mapLoaded && displayEquipment.length === 0 && !isSingleView) {
-      if (!hasShownNoGearToast) {
-        toast({
-          title: "No gear found",
-          description: searchQuery
+    if (mapLoaded && !isSingleView) {
+      const hasData = isUserLocationMode 
+        ? displayUserLocations.length > 0 
+        : displayEquipment.length > 0;
+
+      if (!hasData && !userLocationsLoading) {
+        if (!hasShownNoGearToast) {
+          const message = isUserLocationMode
+            ? "No user locations found. Users need to add addresses to their profiles to appear on the map."
+            : searchQuery
             ? `No equipment found matching "${searchQuery}". Try adjusting your search or filters.`
             : activeCategory
             ? `No equipment found in the ${activeCategory} category. Try a different category or clear filters.`
-            : "No equipment found in this area. Try expanding your search area or adjusting filters.",
-          variant: "default",
-        });
-        setHasShownNoGearToast(true);
+            : "No equipment found in this area. Try expanding your search area or adjusting filters.";
+
+          toast({
+            title: isUserLocationMode ? "No user locations found" : "No gear found",
+            description: message,
+            variant: "default",
+          });
+          setHasShownNoGearToast(true);
+        }
+      } else {
+        setHasShownNoGearToast(false);
       }
-    } else {
-      setHasShownNoGearToast(false);
     }
-  }, [mapLoaded, displayEquipment.length, isSingleView, searchQuery, activeCategory, toast, hasShownNoGearToast]);
+  }, [mapLoaded, displayEquipment.length, displayUserLocations.length, userLocationsLoading, isSingleView, searchQuery, activeCategory, toast, hasShownNoGearToast, isUserLocationMode]);
 
   // Load token on component mount
   useEffect(() => {
@@ -157,12 +184,13 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
     }
   }, [token, toast, isLoadingToken]);
 
-  // Fit bounds when equipment changes
+  // Fit bounds when data changes
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
 
-    fitMapBounds(map.current, displayEquipment, isSingleView);
-  }, [mapLoaded, displayEquipment, isSingleView]);
+    const locations = isUserLocationMode ? displayUserLocations : displayEquipment;
+    fitMapBounds(map.current, locations, isSingleView);
+  }, [mapLoaded, displayEquipment, displayUserLocations, isSingleView, isUserLocationMode]);
 
   const handleTokenSubmit = (tokenInput: string) => {
     console.log('Token submitted by user');
@@ -189,6 +217,14 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
         <>
           <MapLegend />
           <div ref={mapContainer} className="w-full h-full" />
+          {isUserLocationMode && userLocationsLoading && (
+            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-md">
+              <div className="flex items-center gap-2 text-sm">
+                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-400" />
+                Loading user locations...
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

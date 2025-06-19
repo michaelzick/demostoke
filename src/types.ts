@@ -75,6 +75,8 @@ export interface UserProfile {
   phone?: string | null;
   address?: string | null;
   hero_image_url?: string | null;
+  location_lat?: number | null;
+  location_lng?: number | null;
   created_at?: string;
   member_since?: string;
 }

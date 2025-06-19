@@ -273,6 +273,8 @@ export type Database = {
           created_at: string
           hero_image_url: string | null
           id: string
+          location_lat: number | null
+          location_lng: number | null
           member_since: string | null
           name: string | null
           phone: string | null
@@ -285,6 +287,8 @@ export type Database = {
           created_at?: string
           hero_image_url?: string | null
           id: string
+          location_lat?: number | null
+          location_lng?: number | null
           member_since?: string | null
           name?: string | null
           phone?: string | null
@@ -297,6 +301,8 @@ export type Database = {
           created_at?: string
           hero_image_url?: string | null
           id?: string
+          location_lat?: number | null
+          location_lng?: number | null
           member_since?: string | null
           name?: string | null
           phone?: string | null

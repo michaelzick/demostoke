@@ -1,7 +1,7 @@
 
 import { useRef, useEffect } from 'react';
 import mapboxgl from 'mapbox-gl';
-import { createMarkerElement, createPopupContent } from '@/utils/mapUtils';
+import { createMarkerElement, createPopupContent, createUserLocationMarkerElement, createUserLocationPopupContent } from '@/utils/mapUtils';
 
 interface MapEquipment {
   id: string;
@@ -14,14 +14,26 @@ interface MapEquipment {
   };
 }
 
+interface UserLocation {
+  id: string;
+  name: string;
+  role: string;
+  address: string;
+  location: {
+    lat: number;
+    lng: number;
+  };
+}
+
 interface UseMapMarkersProps {
   map: mapboxgl.Map | null;
   mapLoaded: boolean;
-  equipment: MapEquipment[];
+  equipment?: MapEquipment[];
+  userLocations?: UserLocation[];
   isSingleView?: boolean;
 }
 
-export const useMapMarkers = ({ map, mapLoaded, equipment, isSingleView = false }: UseMapMarkersProps) => {
+export const useMapMarkers = ({ map, mapLoaded, equipment = [], userLocations = [], isSingleView = false }: UseMapMarkersProps) => {
   const markers = useRef<mapboxgl.Marker[]>([]);
 
   useEffect(() => {
@@ -31,7 +43,7 @@ export const useMapMarkers = ({ map, mapLoaded, equipment, isSingleView = false 
     markers.current.forEach(marker => marker.remove());
     markers.current = [];
 
-    // Add new markers
+    // Add equipment markers
     equipment.forEach((item) => {
       if (!item.location?.lat || !item.location?.lng) {
         console.warn(`Equipment ${item.id} has invalid location data`);
@@ -59,12 +71,40 @@ export const useMapMarkers = ({ map, mapLoaded, equipment, isSingleView = false 
       }
     });
 
+    // Add user location markers
+    userLocations.forEach((user) => {
+      if (!user.location?.lat || !user.location?.lng) {
+        console.warn(`User ${user.id} has invalid location data`);
+        return;
+      }
+
+      try {
+        const el = createUserLocationMarkerElement(user.role);
+
+        const marker = new mapboxgl.Marker(el)
+          .setLngLat([user.location.lng, user.location.lat]);
+
+        // Only add popup if not in single view mode
+        if (!isSingleView) {
+          marker.setPopup(
+            new mapboxgl.Popup({ offset: 25 })
+              .setHTML(createUserLocationPopupContent(user))
+          );
+        }
+
+        marker.addTo(map);
+        markers.current.push(marker);
+      } catch (err) {
+        console.error(`Error creating marker for user ${user.id}:`, err);
+      }
+    });
+
     // Cleanup function
     return () => {
       markers.current.forEach(marker => marker.remove());
       markers.current = [];
     };
-  }, [mapLoaded, equipment, map, isSingleView]);
+  }, [mapLoaded, equipment, userLocations, map, isSingleView]);
 
   return markers.current;
 };
