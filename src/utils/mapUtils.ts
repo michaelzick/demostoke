@@ -56,7 +56,7 @@ export const createUserLocationMarkerElement = (role: string): HTMLDivElement =>
 
   const icon = document.createElement('div');
   icon.className = 'text-white';
-  
+
   // Different icons for shops vs private parties
   if (role === 'shop') {
     icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
@@ -95,7 +95,7 @@ export const createUserLocationPopupContent = (user: { id: string; name: string;
       <p class="text-xs mt-1">${user.address}</p>
       <button
         class="mt-2 px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
-        onclick="window.location.href='/user/${user.id}'"
+        onclick="window.location.href='/user-profile/${user.id}'"
       >
         View Profile
       </button>
