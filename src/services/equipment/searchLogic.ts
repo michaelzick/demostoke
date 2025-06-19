@@ -1,5 +1,60 @@
-
 import { Equipment } from "@/types";
+import { AISearchResult } from "./aiSearchService";
+
+// Legacy search logic for backwards compatibility
+export const processSearchQuery = async (query: string, equipmentData: Equipment[]): Promise<Equipment[]> => {
+  console.log(`🔍 Processing search query (legacy): "${query}"`);
+
+  if (equipmentData.length === 0) {
+    console.log('⚠️ No equipment data available for search');
+    return [];
+  }
+
+  // Convert query to lowercase for easier matching
+  const lowerQuery = query.toLowerCase();
+
+  // Extract search criteria
+  const categoryMatches = extractCategoryMatches(lowerQuery);
+  const locationMatches = extractLocationMatches(lowerQuery);
+  const skillLevelKeywords = extractSkillLevelKeywords(lowerQuery);
+
+  console.log('🔍 Search criteria extracted:', {
+    categoryMatches,
+    locationMatches,
+    skillLevelKeywords,
+    equipmentCount: equipmentData.length
+  });
+
+  // Add a short delay to simulate AI processing time
+  await new Promise(resolve => setTimeout(resolve, 300));
+
+  // Filter and score equipment
+  const filteredEquipment = filterAndScoreEquipment(
+    equipmentData,
+    lowerQuery,
+    categoryMatches,
+    locationMatches,
+    skillLevelKeywords
+  );
+
+  console.log('🔍 Filtered equipment count:', filteredEquipment.length);
+
+  // Sort by relevance
+  const sortedResults = sortEquipmentByRelevance(filteredEquipment, categoryMatches, locationMatches);
+
+  console.log('🔍 Final search results:', sortedResults.length, 'items');
+
+  return sortedResults;
+};
+
+// Helper function to process AI search results for display
+export const processAISearchResults = (results: AISearchResult[]): AISearchResult[] => {
+  return results.map(item => ({
+    ...item,
+    // Add any additional processing here if needed
+    searchScore: item.ai_relevance_score || 0
+  }));
+};
 
 interface CategoryMatches {
   [key: string]: number;
@@ -148,50 +203,4 @@ export const sortEquipmentByRelevance = (
     // Finally sort by rating
     return b.rating - a.rating;
   });
-};
-
-// Main search logic function
-export const processSearchQuery = async (query: string, equipmentData: Equipment[]): Promise<Equipment[]> => {
-  console.log(`🔍 Processing natural language query: "${query}"`);
-
-  if (equipmentData.length === 0) {
-    console.log('⚠️ No equipment data available for search');
-    return [];
-  }
-
-  // Convert query to lowercase for easier matching
-  const lowerQuery = query.toLowerCase();
-
-  // Extract search criteria
-  const categoryMatches = extractCategoryMatches(lowerQuery);
-  const locationMatches = extractLocationMatches(lowerQuery);
-  const skillLevelKeywords = extractSkillLevelKeywords(lowerQuery);
-
-  console.log('🔍 Search criteria extracted:', {
-    categoryMatches,
-    locationMatches,
-    skillLevelKeywords,
-    equipmentCount: equipmentData.length
-  });
-
-  // Add a short delay to simulate AI processing time
-  await new Promise(resolve => setTimeout(resolve, 500));
-
-  // Filter and score equipment
-  const filteredEquipment = filterAndScoreEquipment(
-    equipmentData,
-    lowerQuery,
-    categoryMatches,
-    locationMatches,
-    skillLevelKeywords
-  );
-
-  console.log('🔍 Filtered equipment count:', filteredEquipment.length);
-
-  // Sort by relevance
-  const sortedResults = sortEquipmentByRelevance(filteredEquipment, categoryMatches, locationMatches);
-
-  console.log('🔍 Final search results:', sortedResults.length, 'items');
-
-  return sortedResults;
 };

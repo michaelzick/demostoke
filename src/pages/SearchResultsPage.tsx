@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { searchEquipmentWithNLP, getEquipmentData } from "@/services/searchService";
-import { Equipment } from "@/types";
+import { AISearchResult } from "@/services/equipment/aiSearchService";
 import EquipmentCard from "@/components/EquipmentCard";
 import MapComponent from "@/components/MapComponent";
 import FilterBar from "@/components/FilterBar";
 import { Button } from "@/components/ui/button";
-import { Loader2, Search } from "lucide-react";
+import { Loader2, Search, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useMockData } from "@/hooks/useMockData";
@@ -14,12 +14,13 @@ import { useMockData } from "@/hooks/useMockData";
 const SearchResultsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
-  const [results, setResults] = useState<Equipment[]>([]);
+  const [results, setResults] = useState<AISearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [viewMode, setViewMode] = useState<"map" | "list">("list");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [searchInput, setSearchInput] = useState(query);
+  const [isAISearch, setIsAISearch] = useState(false);
   const { toast } = useToast();
   const { showMockData } = useMockData();
 
@@ -31,6 +32,7 @@ const SearchResultsPage = () => {
         try {
           const equipmentResults = await getEquipmentData();
           setResults(equipmentResults);
+          setIsAISearch(false);
         } catch (error) {
           console.error("Failed to load equipment:", error);
           setResults([]);
@@ -39,6 +41,7 @@ const SearchResultsPage = () => {
       }
 
       setIsLoading(true);
+      setIsAISearch(true);
       try {
         const equipmentResults = await searchEquipmentWithNLP(query);
         setResults(equipmentResults);
@@ -74,7 +77,10 @@ const SearchResultsPage = () => {
         return a.distance - b.distance;
       case "rating":
         return b.rating - a.rating;
-      default: // relevance - keep original order from search
+      default: // relevance - use AI score if available, otherwise keep original order
+        if (isAISearch && a.ai_relevance_score && b.ai_relevance_score) {
+          return b.ai_relevance_score - a.ai_relevance_score;
+        }
         return 0;
     }
   });
@@ -127,7 +133,15 @@ const SearchResultsPage = () => {
     <div className="min-h-screen">
       <div className="bg-muted py-8">
         <div className="container px-4 md:px-6">
-          <h1 className="text-3xl font-bold mb-4">Search Results</h1>
+          <div className="flex items-center gap-2 mb-4">
+            <h1 className="text-3xl font-bold">Search Results</h1>
+            {isAISearch && (
+              <div className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <span className="text-xs font-medium text-primary">AI-Enhanced</span>
+              </div>
+            )}
+          </div>
           
           {/* Search form */}
           <form onSubmit={handleSearch} className="flex gap-2 mb-6">
@@ -149,6 +163,7 @@ const SearchResultsPage = () => {
             <div className="mb-4">
               <p className="text-sm text-muted-foreground">
                 Showing results for: <span className="font-medium">{query}</span>
+                {isAISearch && <span className="ml-2 text-primary">✨ AI-powered search</span>}
               </p>
               {!isLoading && (
                 <p className="text-sm">
@@ -184,7 +199,7 @@ const SearchResultsPage = () => {
       {isLoading ? (
         <div className="flex justify-center items-center py-20">
           <Loader2 className="h-10 w-10 animate-spin text-primary" />
-          <span className="ml-4 text-lg">Processing your search...</span>
+          <span className="ml-4 text-lg">Processing your search with AI...</span>
         </div>
       ) : viewMode === "map" ? (
         <div className="h-[calc(100vh-14rem)]">
@@ -199,7 +214,15 @@ const SearchResultsPage = () => {
           {sortedResults.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {sortedResults.map((equipment) => (
-                <EquipmentCard key={equipment.id} equipment={equipment} />
+                <div key={equipment.id} className="relative">
+                  <EquipmentCard equipment={equipment} />
+                  {equipment.ai_relevance_score && equipment.ai_relevance_score > 70 && (
+                    <div className="absolute top-2 right-2 bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                      <Sparkles className="h-3 w-3" />
+                      {equipment.ai_relevance_score}%
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           ) : (
@@ -209,14 +232,14 @@ const SearchResultsPage = () => {
                 Try adjusting your search terms or browse our categories below.
               </p>
               <div className="flex flex-wrap gap-2 justify-center">
-                <Button variant="outline" onClick={() => handleSuggestionClick("beginner surfboard")}>
-                  Beginner Surfboards
+                <Button variant="outline" onClick={() => handleSuggestionClick("DHD surfboard")}>
+                  DHD Surfboards
                 </Button>
-                <Button variant="outline" onClick={() => handleSuggestionClick("all-mountain snowboard")}>
-                  All-Mountain Snowboards
+                <Button variant="outline" onClick={() => handleSuggestionClick("beginner mountain bike")}>
+                  Beginner Mountain Bikes
                 </Button>
-                <Button variant="outline" onClick={() => handleSuggestionClick("mountain bike trail")}>
-                  Mountain Bikes for Trails
+                <Button variant="outline" onClick={() => handleSuggestionClick("advanced snowboard")}>
+                  Advanced Snowboards
                 </Button>
               </div>
             </div>

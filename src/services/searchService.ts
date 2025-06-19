@@ -1,24 +1,24 @@
 
 import { Equipment } from "@/types";
 import { getEquipmentData } from "./equipment/equipmentDataService";
-import { processSearchQuery } from "./equipment/searchLogic";
+import { searchWithAI, AISearchResult } from "./equipment/aiSearchService";
 
-// Simulated AI-based search function
-export const searchEquipmentWithNLP = async (query: string): Promise<Equipment[]> => {
-  console.log(`🔍 Starting search for query: "${query}"`);
+// AI-enhanced search function
+export const searchEquipmentWithNLP = async (query: string): Promise<AISearchResult[]> => {
+  console.log(`🔍 Starting AI-enhanced search for query: "${query}"`);
   
   // Get the appropriate dataset based on global setting
   const equipmentData = await getEquipmentData();
-  console.log(`📦 Retrieved ${equipmentData.length} equipment items for search`);
+  console.log(`📦 Retrieved ${equipmentData.length} equipment items for AI search`);
   
   if (equipmentData.length === 0) {
     console.log('⚠️ No equipment data available for search');
     return [];
   }
   
-  // Process the search query
-  const results = await processSearchQuery(query, equipmentData);
-  console.log(`✅ Search completed. Found ${results.length} results`);
+  // Use AI-powered search
+  const results = await searchWithAI(query, equipmentData);
+  console.log(`✅ AI search completed. Found ${results.length} results`);
   
   return results;
 };
