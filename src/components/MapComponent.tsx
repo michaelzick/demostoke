@@ -52,11 +52,19 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
     console.log('👥 Is user location mode:', isUserLocationMode);
     console.log('📍 User locations count:', userLocations.length);
     console.log('⚙️ Equipment count:', initialEquipment?.length || 0);
-  }, [appSettings, isUserLocationMode, userLocations.length, initialEquipment?.length]);
+    console.log('🏷️ Active category:', activeCategory);
+  }, [appSettings, isUserLocationMode, userLocations.length, initialEquipment?.length, activeCategory]);
+
+  // Filter user locations based on active category
+  const filteredUserLocations = isUserLocationMode && activeCategory 
+    ? userLocations.filter(user => 
+        user.equipment_categories.includes(activeCategory)
+      )
+    : userLocations;
 
   // Determine what to display based on mode
   const displayEquipment = isUserLocationMode ? [] : (initialEquipment || []);
-  const displayUserLocations = isUserLocationMode ? userLocations : [];
+  const displayUserLocations = isUserLocationMode ? filteredUserLocations : [];
 
   // Use the custom hook for managing markers
   useMapMarkers({ 
@@ -77,7 +85,9 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
       if (!hasData && !userLocationsLoading) {
         if (!hasShownNoGearToast) {
           const message = isUserLocationMode
-            ? "No user locations found. Users need to add addresses to their profiles to appear on the map."
+            ? activeCategory
+              ? `No users found with ${activeCategory} in their inventory. Try selecting a different category or clearing filters.`
+              : "No user locations found. Users need to add addresses to their profiles to appear on the map."
             : searchQuery
             ? `No equipment found matching "${searchQuery}". Try adjusting your search or filters.`
             : activeCategory

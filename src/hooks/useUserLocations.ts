@@ -12,17 +12,27 @@ export interface UserLocation {
     lng: number;
   };
   avatar_url: string | null;
+  equipment_categories: string[];
 }
 
 export const useUserLocations = () => {
   return useQuery({
     queryKey: ['userLocations'],
     queryFn: async (): Promise<UserLocation[]> => {
-      console.log('🔍 Fetching user locations for map...');
+      console.log('🔍 Fetching user locations with equipment categories...');
       
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, name, role, address, location_lat, location_lng, avatar_url')
+        .select(`
+          id, 
+          name, 
+          role, 
+          address, 
+          location_lat, 
+          location_lng, 
+          avatar_url,
+          equipment:equipment(category)
+        `)
         .not('address', 'is', null)
         .not('address', 'eq', '')
         .not('location_lat', 'is', null)
@@ -33,24 +43,32 @@ export const useUserLocations = () => {
         throw error;
       }
 
-      console.log('📍 Raw profile data:', data);
+      console.log('📍 Raw profile data with equipment:', data);
 
       const userLocations: UserLocation[] = data
         .filter(profile => profile.location_lat && profile.location_lng)
-        .map(profile => ({
-          id: profile.id,
-          name: profile.name || 'Unknown User',
-          role: profile.role,
-          address: profile.address,
-          location: {
-            lat: Number(profile.location_lat),
-            lng: Number(profile.location_lng)
-          },
-          avatar_url: profile.avatar_url
-        }));
+        .map(profile => {
+          // Extract unique categories from user's equipment
+          const equipmentCategories = profile.equipment
+            ? Array.from(new Set(profile.equipment.map((eq: any) => eq.category)))
+            : [];
+
+          return {
+            id: profile.id,
+            name: profile.name || 'Unknown User',
+            role: profile.role,
+            address: profile.address,
+            location: {
+              lat: Number(profile.location_lat),
+              lng: Number(profile.location_lng)
+            },
+            avatar_url: profile.avatar_url,
+            equipment_categories: equipmentCategories
+          };
+        });
 
       console.log('✅ User locations processed:', userLocations.length, 'locations');
-      console.log('📍 User locations details:', userLocations);
+      console.log('📍 User locations with categories:', userLocations);
       return userLocations;
     },
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes

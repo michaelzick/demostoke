@@ -23,6 +23,7 @@ interface UserLocation {
     lat: number;
     lng: number;
   };
+  equipment_categories: string[];
 }
 
 interface UseMapMarkersProps {
@@ -86,9 +87,16 @@ export const useMapMarkers = ({ map, mapLoaded, equipment = [], userLocations = 
 
         // Only add popup if not in single view mode
         if (!isSingleView) {
+          const popupContent = createUserLocationPopupContent({
+            id: user.id,
+            name: user.name,
+            role: user.role,
+            address: user.address
+          });
+          
           marker.setPopup(
             new mapboxgl.Popup({ offset: 25 })
-              .setHTML(createUserLocationPopupContent(user))
+              .setHTML(popupContent)
           );
         }
 
