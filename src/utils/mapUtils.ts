@@ -1,4 +1,3 @@
-
 import mapboxgl from 'mapbox-gl';
 
 export const getCategoryColor = (category: string): string => {
@@ -21,10 +20,14 @@ export const getCategoryColor = (category: string): string => {
 
 export const getUserRoleColor = (role: string): string => {
   switch (role.toLowerCase()) {
-    case 'shop':
-      return 'bg-emerald-600';
+    case 'retail-store':
+      return 'bg-[#d3ff00]';
+    case 'retail-website':
+      return 'bg-[#d300ff]';
+    case 'builder':
+      return 'bg-[#ffd700]';
     case 'private-party':
-      return 'bg-orange-600';
+      return 'bg-[#fe0065]';
     default:
       return 'bg-gray-600';
   }
@@ -55,13 +58,13 @@ export const createUserLocationMarkerElement = (role: string): HTMLDivElement =>
   markerIcon.className = `p-1 rounded-full ${getUserRoleColor(role)}`;
 
   const icon = document.createElement('div');
-  icon.className = 'text-white';
+  icon.className = role.toLowerCase() === 'private-party' ? 'text-white' : 'text-black';
 
   // Different icons for shops vs private parties
-  if (role === 'shop') {
-    icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
-  } else {
+  if (role === 'private-party') {
     icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+  } else {
+    icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
   }
 
   markerIcon.appendChild(icon);
@@ -70,7 +73,7 @@ export const createUserLocationMarkerElement = (role: string): HTMLDivElement =>
   return el;
 };
 
-export const createPopupContent = (item: { id: string; name: string; category: string; price_per_day: number }): string => {
+export const createPopupContent = (item: { id: string; name: string; category: string; price_per_day: number; }): string => {
   return `
     <div>
       <h3 class="text-sm font-medium">${item.name}</h3>
@@ -86,7 +89,7 @@ export const createPopupContent = (item: { id: string; name: string; category: s
   `;
 };
 
-export const createUserLocationPopupContent = (user: { id: string; name: string; role: string; address: string }): string => {
+export const createUserLocationPopupContent = (user: { id: string; name: string; role: string; address: string; }): string => {
   const roleDisplay = user.role === 'shop' ? 'Shop' : 'Private Party';
   return `
     <div>
@@ -124,7 +127,7 @@ export const initializeMap = (container: HTMLDivElement, token: string): mapboxg
   return map;
 };
 
-export const fitMapBounds = (map: mapboxgl.Map, locations: Array<{ location: { lat: number; lng: number } }>, isSingleView: boolean = false): void => {
+export const fitMapBounds = (map: mapboxgl.Map, locations: Array<{ location: { lat: number; lng: number; }; }>, isSingleView: boolean = false): void => {
   if (locations.length === 0) {
     map.setCenter([-118.2437, 34.0522]);
     map.setZoom(11);
