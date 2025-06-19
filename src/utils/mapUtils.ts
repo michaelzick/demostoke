@@ -33,6 +33,21 @@ export const getUserRoleColor = (role: string): string => {
   }
 };
 
+export const getRoleDisplayName = (role: string): string => {
+  switch (role.toLowerCase()) {
+    case 'retail-store':
+      return 'Retail Store';
+    case 'retail-website':
+      return 'Retail Website';
+    case 'builder':
+      return 'Builder';
+    case 'private-party':
+      return 'Private Party';
+    default:
+      return 'Unknown Role';
+  }
+};
+
 export const createMarkerElement = (category: string): HTMLDivElement => {
   const el = document.createElement('div');
   el.className = 'flex items-center justify-center';
@@ -90,7 +105,7 @@ export const createPopupContent = (item: { id: string; name: string; category: s
 };
 
 export const createUserLocationPopupContent = (user: { id: string; name: string; role: string; address: string; }): string => {
-  const roleDisplay = user.role === 'shop' ? 'Shop' : 'Private Party';
+  const roleDisplay = getRoleDisplayName(user.role);
   return `
     <div>
       <h3 class="text-sm font-medium">${user.name}</h3>
