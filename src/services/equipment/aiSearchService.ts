@@ -52,7 +52,9 @@ const fallbackSearch = (query: string, equipmentData: Equipment[]): AISearchResu
     const nameMatch = item.name.toLowerCase().includes(lowerQuery);
     const descriptionMatch = item.description?.toLowerCase().includes(lowerQuery);
     const categoryMatch = item.category.toLowerCase().includes(lowerQuery);
-    const brandMatch = item.specifications?.brand?.toLowerCase().includes(lowerQuery);
+    
+    // Check if owner has brand-like information in their name
+    const ownerNameMatch = item.owner?.name?.toLowerCase().includes(lowerQuery);
     
     // Category keyword matching
     const categoryKeywords = {
@@ -72,7 +74,7 @@ const fallbackSearch = (query: string, equipmentData: Equipment[]): AISearchResu
       lowerQuery.includes(keyword) && item.category === category
     );
     
-    return nameMatch || descriptionMatch || categoryMatch || brandMatch || categoryKeywordMatch;
+    return nameMatch || descriptionMatch || categoryMatch || ownerNameMatch || categoryKeywordMatch;
   }).sort((a, b) => {
     // Sort by rating as fallback
     return b.rating - a.rating;
