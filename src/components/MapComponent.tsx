@@ -1,3 +1,4 @@
+
 import { useRef, useEffect, useState } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useToast } from '@/hooks/use-toast';
@@ -44,6 +45,14 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
 
   // Fetch user locations when in user location mode
   const { data: userLocations = [], isLoading: userLocationsLoading } = useUserLocations();
+
+  // Debug logging for display mode
+  useEffect(() => {
+    console.log('🔍 Map display mode:', appSettings?.map_display_mode);
+    console.log('👥 Is user location mode:', isUserLocationMode);
+    console.log('📍 User locations count:', userLocations.length);
+    console.log('⚙️ Equipment count:', initialEquipment?.length || 0);
+  }, [appSettings, isUserLocationMode, userLocations.length, initialEquipment?.length]);
 
   // Determine what to display based on mode
   const displayEquipment = isUserLocationMode ? [] : (initialEquipment || []);

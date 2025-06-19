@@ -33,6 +33,8 @@ export const useUserLocations = () => {
         throw error;
       }
 
+      console.log('📍 Raw profile data:', data);
+
       const userLocations: UserLocation[] = data
         .filter(profile => profile.location_lat && profile.location_lng)
         .map(profile => ({
@@ -47,7 +49,8 @@ export const useUserLocations = () => {
           avatar_url: profile.avatar_url
         }));
 
-      console.log('✅ User locations fetched:', userLocations.length, 'locations');
+      console.log('✅ User locations processed:', userLocations.length, 'locations');
+      console.log('📍 User locations details:', userLocations);
       return userLocations;
     },
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
