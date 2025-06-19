@@ -1,12 +1,24 @@
+import { useAppSettings } from '@/hooks/useAppSettings';
+
+const gearLegendItems = [
+  { category: 'Snowboards', color: 'bg-fuchsia-600' },
+  { category: 'Skis', color: 'bg-lime-600' },
+  { category: 'Surfboards', color: 'bg-blue-600' },
+  { category: 'SUPs', color: 'bg-violet-600' },
+  { category: 'Mountain Bikes', color: 'bg-red-600' },
+];
+
+const profileLegendItems = [
+  { category: 'Retail Store', color: 'bg-[#d3ff00]' },
+  { category: 'Retail Website', color: 'bg-[#d300ff]' },
+  { category: 'Builder', color: 'bg-[#ffa700]' },
+  { category: 'Private Party', color: 'bg-[#fe0065]' },
+];
 
 const MapLegend = () => {
-  const legendItems = [
-    { category: 'Snowboards', color: 'bg-fuchsia-600' },
-    { category: 'Skis', color: 'bg-lime-600' },
-    { category: 'Surfboards', color: 'bg-blue-600' },
-    { category: 'SUPs', color: 'bg-violet-600' },
-    { category: 'Mountain Bikes', color: 'bg-red-600' },
-  ];
+  const { data: appSettings } = useAppSettings();
+  const isUserLocationMode = appSettings?.map_display_mode === 'user_locations';
+  const legendItems = isUserLocationMode ? profileLegendItems : gearLegendItems;
 
   return (
     <div className="absolute top-4 left-4 z-10 bg-background/90 p-2 rounded-md backdrop-blur-sm">

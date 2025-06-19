@@ -25,7 +25,7 @@ export const getUserRoleColor = (role: string): string => {
     case 'retail-website':
       return 'bg-[#d300ff]';
     case 'builder':
-      return 'bg-[#ffd700]';
+      return 'bg-[#ffa700]';
     case 'private-party':
       return 'bg-[#fe0065]';
     default:
