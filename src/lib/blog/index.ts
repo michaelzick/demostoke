@@ -10,7 +10,7 @@ import { gearReviewsPosts } from './gearReviewsPosts';
 export type { BlogPost };
 
 // Your user ID - replace this with your actual user ID
-const MICHAEL_ZICK_USER_ID = "michael-zick-profile";
+const MICHAEL_ZICK_USER_ID = "98f914a6-2a72-455d-aa4b-41b081f4014d";
 
 // Update all blog posts to have Michael Zick as author
 const updatePostsWithAuthor = (posts: Omit<BlogPost, 'author' | 'authorId'>[]): BlogPost[] => {

@@ -37,7 +37,7 @@ const BlogPage = () => {
     setIsSearching(true);
     try {
       const results = await searchBlogPostsWithNLP(searchQuery, blogPosts);
-      const filteredResults = selectedFilter 
+      const filteredResults = selectedFilter
         ? results.filter(post => post.category === selectedFilter || post.tags.includes(selectedFilter))
         : results;
       setSearchResults(filteredResults);
@@ -57,13 +57,13 @@ const BlogPage = () => {
 
   const applyFilter = (filter: string) => {
     setSelectedFilter(filter);
-    
+
     if (!filter) {
       setSearchResults(blogPosts);
       return;
     }
 
-    const filtered = blogPosts.filter(post => 
+    const filtered = blogPosts.filter(post =>
       post.category === filter || post.tags.includes(filter)
     );
     setSearchResults(filtered);
@@ -139,8 +139,8 @@ const BlogPage = () => {
                   size="sm"
                   onClick={() => applyFilter("")}
                   className={`px-4 py-2 text-sm ${
-                    selectedFilter === "" 
-                      ? "bg-white text-blue-600 hover:bg-blue-50" 
+                    selectedFilter === ""
+                      ? "bg-white text-blue-600 hover:bg-blue-50"
                       : "bg-transparent border-white text-white hover:bg-white hover:text-blue-600"
                   }`}
                 >
@@ -153,8 +153,8 @@ const BlogPage = () => {
                     size="sm"
                     onClick={() => applyFilter(filter.value)}
                     className={`px-4 py-2 text-sm ${
-                      selectedFilter === filter.value 
-                        ? "bg-white text-blue-600 hover:bg-blue-50" 
+                      selectedFilter === filter.value
+                        ? "bg-white text-blue-600 hover:bg-blue-50"
                         : "bg-transparent border-white text-white hover:bg-white hover:text-blue-600"
                     }`}
                   >
@@ -240,7 +240,7 @@ const BlogPage = () => {
                     <div className="flex items-center">
                       <User className="h-3 w-3 mr-1" />
                       <Link
-                        to={`/profile/${post.authorId}`}
+                        to={`/user-profile/${post.authorId}`}
                         className="hover:text-primary transition-colors"
                       >
                         {post.author}
