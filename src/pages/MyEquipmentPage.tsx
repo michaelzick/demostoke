@@ -1,5 +1,6 @@
+
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Edit, Trash2, Copy, ExternalLink, Eye, EyeOff } from "lucide-react";
 import { Snowflake, Waves, Bicycle } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,21 @@ const MyEquipmentPage = () => {
   const { data: userEquipment = [], isLoading, error } = useUserEquipment(user?.id);
   const deleteEquipmentMutation = useDeleteEquipment();
   const updateVisibilityMutation = useUpdateEquipmentVisibility();
+
+  // Calculate master toggle state
+  const masterToggleState = useMemo(() => {
+    if (userEquipment.length === 0) return { checked: false, indeterminate: false };
+    
+    const visibleCount = userEquipment.filter(item => item.visible_on_map).length;
+    
+    if (visibleCount === 0) {
+      return { checked: false, indeterminate: false };
+    } else if (visibleCount === userEquipment.length) {
+      return { checked: true, indeterminate: false };
+    } else {
+      return { checked: false, indeterminate: true };
+    }
+  }, [userEquipment]);
 
   // Handle authentication and scroll to top
   useEffect(() => {
@@ -118,6 +134,36 @@ const MyEquipmentPage = () => {
     );
   };
 
+  const handleMasterToggle = () => {
+    const shouldShowAll = !masterToggleState.checked;
+    
+    // Update all equipment visibility
+    userEquipment.forEach(item => {
+      if (item.visible_on_map !== shouldShowAll) {
+        updateVisibilityMutation.mutate(
+          { equipmentId: item.id, visible: shouldShowAll },
+          {
+            onError: (error: unknown) => {
+              console.error('Error updating visibility:', error);
+              toast({
+                title: "Error",
+                description: `Failed to update visibility for ${item.name}`,
+                variant: "destructive",
+              });
+            },
+          }
+        );
+      }
+    });
+
+    toast({
+      title: shouldShowAll ? "All Gear Shown" : "All Gear Hidden",
+      description: shouldShowAll 
+        ? "All your gear is now visible to others." 
+        : "All your gear is now hidden from public view.",
+    });
+  };
+
   const handleUpdate = (id: string) => {
     navigate(`/edit-gear/${id}`);
   };
@@ -205,126 +251,158 @@ const MyEquipmentPage = () => {
           <Button onClick={handleListGearClick}>List Your First Item</Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {userEquipment.map((item) => (
-            <Card key={item.id} className="overflow-hidden">
-              <div className="relative h-48 cursor-pointer" onClick={() => handleViewDetails(item.id)}>
-                <img
-                  src={item.image_url}
-                  alt={item.name}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
-                  <div className="flex items-center gap-1.5">
-                    {getEquipmentIcon(item.category)}
-                    <span className="capitalize text-sm font-medium">
-                      {getCategoryDisplayName(item.category)}
+        <>
+          {/* Master visibility toggle */}
+          <div className="mb-6 p-4 bg-muted/50 rounded-lg border">
+            <div className="flex items-center space-x-2">
+              <Checkbox 
+                id="master-visibility-toggle"
+                checked={masterToggleState.checked}
+                // @ts-ignore - indeterminate is a valid prop but not in types
+                ref={(el) => {
+                  if (el) el.indeterminate = masterToggleState.indeterminate;
+                }}
+                onCheckedChange={handleMasterToggle}
+                disabled={updateVisibilityMutation.isPending}
+              />
+              <label 
+                htmlFor="master-visibility-toggle"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                {masterToggleState.indeterminate 
+                  ? "Some gear visible - click to show all" 
+                  : masterToggleState.checked 
+                    ? "Hide all gear from map and search results" 
+                    : "Show all gear on map and in search results"
+                }
+              </label>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1 ml-6">
+              Control visibility of all your gear items at once
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {userEquipment.map((item) => (
+              <Card key={item.id} className="overflow-hidden">
+                <div className="relative h-48 cursor-pointer" onClick={() => handleViewDetails(item.id)}>
+                  <img
+                    src={item.image_url}
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
+                    <div className="flex items-center gap-1.5">
+                      {getEquipmentIcon(item.category)}
+                      <span className="capitalize text-sm font-medium">
+                        {getCategoryDisplayName(item.category)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="absolute top-2 left-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
+                    <ExternalLink className="h-4 w-4" />
+                  </div>
+                  {/* Visibility indicator */}
+                  <div className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
+                    {item.visible_on_map ? (
+                      <Eye className="h-4 w-4 text-green-600" />
+                    ) : (
+                      <EyeOff className="h-4 w-4 text-gray-500" />
+                    )}
+                  </div>
+                </div>
+                <CardHeader className="cursor-pointer" onClick={() => handleViewDetails(item.id)}>
+                  <CardTitle className="line-clamp-1">{item.name}</CardTitle>
+                  <CardDescription className="flex justify-between">
+                    <span>${item.price_per_day}/day</span>
+                    <span className="badge bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 px-2 py-0.5 rounded text-xs">
+                      {item.status.toUpperCase()}
                     </span>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground line-clamp-2">{item.description}</p>
+                  <div className="mt-4">
+                    <div className="text-sm">
+                      <span className="font-medium">Location:</span> {item.location?.zip || 'N/A'}
+                    </div>
+                    <div className="text-sm">
+                      <span className="font-medium">Added:</span> {item.created_at ? formatDate(item.created_at) : 'N/A'}
+                    </div>
+                    <div className="text-sm">
+                      <span className="font-medium">Skill Level:</span> {item.specifications?.suitable || 'N/A'}
+                    </div>
                   </div>
-                </div>
-                <div className="absolute top-2 left-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
-                  <ExternalLink className="h-4 w-4" />
-                </div>
-                {/* Visibility indicator */}
-                <div className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
-                  {item.visible_on_map ? (
-                    <Eye className="h-4 w-4 text-green-600" />
-                  ) : (
-                    <EyeOff className="h-4 w-4 text-gray-500" />
-                  )}
-                </div>
-              </div>
-              <CardHeader className="cursor-pointer" onClick={() => handleViewDetails(item.id)}>
-                <CardTitle className="line-clamp-1">{item.name}</CardTitle>
-                <CardDescription className="flex justify-between">
-                  <span>${item.price_per_day}/day</span>
-                  <span className="badge bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 px-2 py-0.5 rounded text-xs">
-                    {item.status.toUpperCase()}
-                  </span>
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground line-clamp-2">{item.description}</p>
-                <div className="mt-4">
-                  <div className="text-sm">
-                    <span className="font-medium">Location:</span> {item.location?.zip || 'N/A'}
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-medium">Added:</span> {item.created_at ? formatDate(item.created_at) : 'N/A'}
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-medium">Skill Level:</span> {item.specifications?.suitable || 'N/A'}
-                  </div>
-                </div>
-                
-                {/* Visibility toggle */}
-                <div className="mt-4 pt-4 border-t">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id={`visibility-${item.id}`}
-                      checked={item.visible_on_map}
-                      onCheckedChange={() => handleVisibilityToggle(item.id, item.visible_on_map)}
-                      disabled={updateVisibilityMutation.isPending}
-                    />
-                    <label 
-                      htmlFor={`visibility-${item.id}`}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                    >
-                      Show on map and in search results
-                    </label>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-between gap-2">
-                <Button
-                  variant="default"
-                  className="flex-1"
-                  onClick={() => handleUpdate(item.id)}
-                >
-                  <Edit className="h-4 w-4 mr-2" />
-                  Update
-                </Button>
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => handleDuplicate(item)}
-                >
-                  <Copy className="h-4 w-4 mr-2" />
-                  Duplicate
-                </Button>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="destructive"
-                      className="flex-1"
-                      disabled={deleteEquipmentMutation.isPending}
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Equipment</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to delete "{item.name}"? This action cannot be undone and will permanently remove this equipment from your listings.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleDelete(item.id)}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  
+                  {/* Visibility toggle */}
+                  <div className="mt-4 pt-4 border-t">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={`visibility-${item.id}`}
+                        checked={item.visible_on_map}
+                        onCheckedChange={() => handleVisibilityToggle(item.id, item.visible_on_map)}
+                        disabled={updateVisibilityMutation.isPending}
+                      />
+                      <label 
+                        htmlFor={`visibility-${item.id}`}
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                       >
+                        Show on map and in search results
+                      </label>
+                    </div>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex justify-between gap-2">
+                  <Button
+                    variant="default"
+                    className="flex-1"
+                    onClick={() => handleUpdate(item.id)}
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Update
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => handleDuplicate(item)}
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    Duplicate
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="destructive"
+                        className="flex-1"
+                        disabled={deleteEquipmentMutation.isPending}
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
                         Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Equipment</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete "{item.name}"? This action cannot be undone and will permanently remove this equipment from your listings.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => handleDelete(item.id)}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
