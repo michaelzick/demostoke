@@ -1,4 +1,3 @@
-
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -106,7 +105,12 @@ const BlogPostPage = () => {
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center">
                     <User className="h-4 w-4 mr-1" />
-                    {post.author}
+                    <Link
+                      to={`/profile/${post.authorId}`}
+                      className="hover:text-primary transition-colors"
+                    >
+                      {post.author}
+                    </Link>
                   </div>
                   <div className="flex items-center">
                     <Clock className="h-4 w-4 mr-1" />
