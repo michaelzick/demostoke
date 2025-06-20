@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState, useMemo } from "react";
 import { Edit, Trash2, Copy, ExternalLink, Eye, EyeOff } from "lucide-react";
@@ -255,13 +254,13 @@ const MyEquipmentPage = () => {
           {/* Master visibility toggle */}
           <div className="mb-6 p-4 bg-muted/50 rounded-lg border">
             <div className="flex items-center space-x-2">
-              <div className="relative">
+              <div className="relative flex items-center">
                 <Checkbox 
                   id="master-visibility-toggle"
                   checked={masterToggleState.checked}
                   onCheckedChange={handleMasterToggle}
                   disabled={updateVisibilityMutation.isPending}
-                  className={masterToggleState.indeterminate ? "data-[state=checked]:bg-primary/50 data-[state=checked]:border-primary" : ""}
+                  className={`${masterToggleState.indeterminate ? "data-[state=checked]:bg-primary/50 data-[state=checked]:border-primary" : ""} flex-shrink-0`}
                 />
                 {masterToggleState.indeterminate && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -271,7 +270,7 @@ const MyEquipmentPage = () => {
               </div>
               <label 
                 htmlFor="master-visibility-toggle"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex-1"
               >
                 {masterToggleState.indeterminate 
                   ? "Some gear visible - click to show all" 
