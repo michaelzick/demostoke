@@ -32,18 +32,18 @@ interface UserEquipment {
   };
 }
 
-export const useUserEquipment = (userId?: string) => {
+export const useUserEquipment = (userId?: string, visibleOnly: boolean = false) => {
   const { user } = useAuth();
   const effectiveUserId = userId || user?.id;
 
   return useQuery({
-    queryKey: ['userEquipment', effectiveUserId],
+    queryKey: ['userEquipment', effectiveUserId, visibleOnly],
     queryFn: async (): Promise<UserEquipment[]> => {
       if (!effectiveUserId) {
         throw new Error('User ID is required');
       }
 
-      const { data, error } = await supabase
+      let query = supabase
         .from('equipment')
         .select(`
           id,
@@ -66,8 +66,14 @@ export const useUserEquipment = (userId?: string) => {
           material,
           suitable_skill_level
         `)
-        .eq('user_id', effectiveUserId)
-        .order('created_at', { ascending: false });
+        .eq('user_id', effectiveUserId);
+
+      // If visibleOnly is true, only return equipment that's visible on map
+      if (visibleOnly) {
+        query = query.eq('visible_on_map', true);
+      }
+
+      const { data, error } = await query.order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching user equipment:', error);

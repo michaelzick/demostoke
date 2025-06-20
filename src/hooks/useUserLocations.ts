@@ -19,7 +19,7 @@ export const useUserLocations = () => {
   return useQuery({
     queryKey: ['userLocations'],
     queryFn: async (): Promise<UserLocation[]> => {
-      console.log('🔍 Fetching user locations with equipment categories...');
+      console.log('🔍 Fetching user locations with visible equipment categories...');
       
       const { data, error } = await supabase
         .from('profiles')
@@ -31,7 +31,7 @@ export const useUserLocations = () => {
           location_lat, 
           location_lng, 
           avatar_url,
-          equipment:equipment(category)
+          equipment:equipment!equipment_user_id_fkey(category, visible_on_map)
         `)
         .not('address', 'is', null)
         .not('address', 'eq', '')
@@ -48,10 +48,9 @@ export const useUserLocations = () => {
       const userLocations: UserLocation[] = data
         .filter(profile => profile.location_lat && profile.location_lng)
         .map(profile => {
-          // Extract unique categories from user's equipment
-          const equipmentCategories = profile.equipment
-            ? Array.from(new Set(profile.equipment.map((eq: any) => eq.category)))
-            : [];
+          // Extract unique categories from user's VISIBLE equipment only
+          const visibleEquipment = profile.equipment?.filter((eq: any) => eq.visible_on_map) || [];
+          const equipmentCategories = Array.from(new Set(visibleEquipment.map((eq: any) => eq.category)));
 
           return {
             id: profile.id,
@@ -65,9 +64,11 @@ export const useUserLocations = () => {
             avatar_url: profile.avatar_url,
             equipment_categories: equipmentCategories
           };
-        });
+        })
+        // Filter out users who have no visible equipment
+        .filter(user => user.equipment_categories.length > 0);
 
-      console.log('✅ User locations processed:', userLocations.length, 'locations');
+      console.log('✅ User locations processed:', userLocations.length, 'locations with visible equipment');
       console.log('📍 User locations with categories:', userLocations);
       return userLocations;
     },

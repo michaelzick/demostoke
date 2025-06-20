@@ -32,7 +32,8 @@ const RealUserProfilePage = () => {
   // Try to fetch from database first
   const { data: dbProfile, isLoading: profileLoading, error: profileError } = useUserProfile(id || "");
   const { data: dbStats, isLoading: statsLoading } = useUserStats(id || "");
-  const { data: dbUserEquipment, isLoading: equipmentLoading } = useUserEquipment(id || "");
+  // Only show visible equipment on public profiles (visibleOnly = true for other users, false for own profile)
+  const { data: dbUserEquipment, isLoading: equipmentLoading } = useUserEquipment(id || "", !isOwnProfile);
 
   // Fallback to mock data if database query fails or returns null
   const mockProfile = useMockUserProfile(id || "");
@@ -71,7 +72,12 @@ const RealUserProfilePage = () => {
   }
 
   const stats = isMockUser ? mockStats : dbStats;
-  const userEquipment = isMockUser ? mockEquipment.filter(item => item.owner.id === id) : dbUserEquipment;
+  
+  // For mock users, filter visible equipment; for real users, visibility is already handled by the hook
+  const userEquipment = isMockUser 
+    ? mockEquipment.filter(item => item.owner.id === id) // Mock data doesn't have visibility field, so show all
+    : dbUserEquipment;
+    
   const isLoading = isMockUser ? false : (profileLoading || statsLoading);
 
   if (isLoading) {

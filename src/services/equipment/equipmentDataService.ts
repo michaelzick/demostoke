@@ -36,7 +36,7 @@ export const getEquipmentData = async (): Promise<Equipment[]> => {
 
     console.log('✅ Fetched equipment from database:', data?.length, 'items');
     data?.forEach(item => {
-      console.log(`Equipment: ${item.name}, Category: ${item.category}, Owner: ${item.profiles?.name || 'Owner'}, Location: ${item.location_lat}, ${item.location_lng}`);
+      console.log(`Equipment: ${item.name}, Category: ${item.category}, Owner: ${item.profiles?.name || 'Owner'}, Location: ${item.location_lat}, ${item.location_lng}, Visible: ${item.visible_on_map}`);
     });
 
     // Convert all equipment items and fetch their images
