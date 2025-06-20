@@ -64,7 +64,7 @@ serve(async (req) => {
       id: item.id,
       name: item.name,
       category: item.category,
-      description: item.description,
+      description: item.description || '',
       brand: item.specifications?.brand || 'Unknown',
       suitable: item.specifications?.suitable || 'All levels',
       material: item.specifications?.material || '',
@@ -83,16 +83,21 @@ ${JSON.stringify(equipmentSummary, null, 2)}
 
 INSTRUCTIONS:
 1. Score each equipment item from 0-100 based on relevance to the search query
-2. Consider these factors:
+2. Consider these factors in order of importance:
+   - Exact category matching (e.g., "mountain bikes" for mountain-bikes category)
+   - Skill level matching (e.g., "beginner" must match "suitable for beginners")
+   - Name and description content matching (search for keywords in both name and description)
    - Brand name matching (e.g., "DHD" should match DHD surfboards)
-   - Category matching (e.g., "mountain bikes" for mountain-bikes category)
-   - Skill level matching (e.g., "beginner" matches "suitable for beginners")
    - Equipment attributes (size, material, style)
    - Semantic understanding (e.g., "bikes" = mountain bikes, "boards" = surfboards/snowboards)
-   - Description keywords
    - Location relevance if mentioned
 
-3. Provide brief reasoning for scores above 30
+3. STRICT FILTERING RULES:
+   - If query specifies a category (like "mountain bike"), ONLY return items from that category
+   - If query specifies skill level (like "beginner"), ONLY return items suitable for that level
+   - Items that don't match both category AND skill level (when specified) should get score 0
+
+4. Provide brief reasoning for scores above 25
 
 RESPOND WITH VALID JSON ONLY in this exact format:
 {
@@ -100,7 +105,7 @@ RESPOND WITH VALID JSON ONLY in this exact format:
     {
       "equipment_id": "item_id",
       "relevance_score": 85,
-      "reasoning": "DHD brand surfboard matches brand search perfectly"
+      "reasoning": "Perfect match for beginner mountain bike - category and skill level both match"
     }
   ]
 }`;
@@ -116,14 +121,14 @@ RESPOND WITH VALID JSON ONLY in this exact format:
         messages: [
           {
             role: 'system',
-            content: 'You are a search relevance expert. Always respond with valid JSON only.'
+            content: 'You are a search relevance expert. Always respond with valid JSON only. Pay special attention to category and skill level matching.'
           },
           {
             role: 'user',
             content: prompt
           }
         ],
-        temperature: 0.3,
+        temperature: 0.2,
         max_tokens: 2000,
       }),
     });

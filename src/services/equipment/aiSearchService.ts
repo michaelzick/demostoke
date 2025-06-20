@@ -61,9 +61,16 @@ const fallbackSearch = (query: string, equipmentData: Equipment[]): AISearchResu
                             skillLevelKeywords.isAdvancedSearch;
   
   return equipmentData.filter(item => {
-    // Basic text matching
+    // Enhanced text matching including description
     const nameMatch = item.name.toLowerCase().includes(lowerQuery);
-    const descriptionMatch = item.description?.toLowerCase().includes(lowerQuery);
+    const descriptionMatch = item.description?.toLowerCase().includes(lowerQuery) || false;
+    
+    // Check for individual words in description for better matching
+    const queryWords = lowerQuery.split(' ').filter(word => word.length > 2); // Skip short words
+    const descriptionWordMatch = queryWords.some(word => 
+      item.description?.toLowerCase().includes(word) || 
+      item.name.toLowerCase().includes(word)
+    );
     
     // Category matching - if categories were specified, item must match one of them
     let categoryMatch = true;
@@ -78,33 +85,63 @@ const fallbackSearch = (query: string, equipmentData: Equipment[]): AISearchResu
     }
     
     // Owner name matching for brand searches
-    const ownerNameMatch = item.owner?.name?.toLowerCase().includes(lowerQuery);
+    const ownerNameMatch = item.owner?.name?.toLowerCase().includes(lowerQuery) || false;
     
-    // For generic searches (no specific category or skill level), allow broader matches
-    if (categoriesRequested.length === 0 && !hasSkillLevelQuery) {
-      return nameMatch || descriptionMatch || ownerNameMatch;
+    // Combined text matching
+    const textMatch = nameMatch || descriptionMatch || descriptionWordMatch || ownerNameMatch;
+    
+    // If specific categories or skill levels are requested, require strict matching
+    if (categoriesRequested.length > 0 || hasSkillLevelQuery) {
+      return categoryMatch && skillLevelMatch && textMatch;
     }
     
-    // For specific searches, require both category and skill level to match (if specified)
-    // Plus allow name/description matches that also meet the category/skill requirements
-    const textMatch = nameMatch || descriptionMatch || ownerNameMatch;
-    return categoryMatch && skillLevelMatch && (textMatch || categoriesRequested.length > 0 || hasSkillLevelQuery);
+    // For general searches, allow broader matches
+    return textMatch;
     
   }).sort((a, b) => {
-    // Sort by skill level relevance first if query contains skill level
-    const skillLevelRelevance = getSkillLevelRelevance(lowerQuery, a, b);
-    if (skillLevelRelevance !== 0) return skillLevelRelevance;
+    // Calculate relevance scores for better sorting
+    const aScore = calculateRelevanceScore(lowerQuery, a, categoryMatches);
+    const bScore = calculateRelevanceScore(lowerQuery, b, categoryMatches);
     
-    // Then sort by category relevance
-    const aCategoryScore = categoryMatches[a.category] || 0;
-    const bCategoryScore = categoryMatches[b.category] || 0;
-    if (aCategoryScore !== bCategoryScore) {
-      return bCategoryScore - aCategoryScore;
+    if (aScore !== bScore) {
+      return bScore - aScore; // Higher score first
     }
     
     // Finally sort by rating
     return b.rating - a.rating;
   });
+};
+
+// Calculate relevance score for better sorting
+const calculateRelevanceScore = (query: string, item: Equipment, categoryMatches: { [key: string]: number }): number => {
+  let score = 0;
+  
+  // Exact name match gets highest score
+  if (item.name.toLowerCase() === query.toLowerCase()) {
+    score += 10;
+  } else if (item.name.toLowerCase().includes(query.toLowerCase())) {
+    score += 5;
+  }
+  
+  // Description matches
+  if (item.description?.toLowerCase().includes(query.toLowerCase())) {
+    score += 3;
+  }
+  
+  // Category relevance
+  score += categoryMatches[item.category] || 0;
+  
+  // Skill level relevance
+  if (checkSkillLevelMatch(query, item.specifications.suitable)) {
+    score += 4;
+  }
+  
+  // Owner/brand matches
+  if (item.owner?.name?.toLowerCase().includes(query.toLowerCase())) {
+    score += 2;
+  }
+  
+  return score;
 };
 
 // Extract category keywords from search query
@@ -164,15 +201,4 @@ const checkSkillLevelMatch = (query: string, suitable: string): boolean => {
   }
   
   return false;
-};
-
-// Helper function to provide skill level relevance scoring for sorting
-const getSkillLevelRelevance = (query: string, a: Equipment, b: Equipment): number => {
-  const aSkillMatch = checkSkillLevelMatch(query, a.specifications.suitable);
-  const bSkillMatch = checkSkillLevelMatch(query, b.specifications.suitable);
-  
-  if (aSkillMatch && !bSkillMatch) return -1; // a is more relevant
-  if (!aSkillMatch && bSkillMatch) return 1;  // b is more relevant
-  
-  return 0; // equal relevance
 };
