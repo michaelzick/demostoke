@@ -47,45 +47,103 @@ const fallbackSearch = (query: string, equipmentData: Equipment[]): AISearchResu
   
   const lowerQuery = query.toLowerCase();
   
+  // Extract search criteria
+  const categoryMatches = extractCategoryMatches(lowerQuery);
+  const skillLevelKeywords = extractSkillLevelKeywords(lowerQuery);
+  
+  // Check if specific categories and skill levels were mentioned
+  const categoriesRequested = Object.entries(categoryMatches)
+    .filter(([_, score]) => score > 0)
+    .map(([category]) => category);
+    
+  const hasSkillLevelQuery = skillLevelKeywords.isBeginnerSearch || 
+                            skillLevelKeywords.isIntermediateSearch || 
+                            skillLevelKeywords.isAdvancedSearch;
+  
   return equipmentData.filter(item => {
     // Basic text matching
     const nameMatch = item.name.toLowerCase().includes(lowerQuery);
     const descriptionMatch = item.description?.toLowerCase().includes(lowerQuery);
-    const categoryMatch = item.category.toLowerCase().includes(lowerQuery);
     
-    // Check if owner has brand-like information in their name
+    // Category matching - if categories were specified, item must match one of them
+    let categoryMatch = true;
+    if (categoriesRequested.length > 0) {
+      categoryMatch = categoriesRequested.includes(item.category);
+    }
+    
+    // Skill level matching - if skill level was specified, item must match
+    let skillLevelMatch = true;
+    if (hasSkillLevelQuery) {
+      skillLevelMatch = checkSkillLevelMatch(lowerQuery, item.specifications.suitable);
+    }
+    
+    // Owner name matching for brand searches
     const ownerNameMatch = item.owner?.name?.toLowerCase().includes(lowerQuery);
     
-    // Skill level matching - check if query contains skill level keywords
-    const skillLevelMatch = checkSkillLevelMatch(lowerQuery, item.specifications.suitable);
+    // For generic searches (no specific category or skill level), allow broader matches
+    if (categoriesRequested.length === 0 && !hasSkillLevelQuery) {
+      return nameMatch || descriptionMatch || ownerNameMatch;
+    }
     
-    // Category keyword matching
-    const categoryKeywords = {
-      'bike': 'mountain-bikes',
-      'mountain bike': 'mountain-bikes',
-      'mtb': 'mountain-bikes',
-      'surf': 'surfboards',
-      'surfboard': 'surfboards',
-      'snow': 'snowboards',
-      'snowboard': 'snowboards',
-      'ski': 'skis',
-      'paddle': 'sups',
-      'sup': 'sups'
-    };
+    // For specific searches, require both category and skill level to match (if specified)
+    // Plus allow name/description matches that also meet the category/skill requirements
+    const textMatch = nameMatch || descriptionMatch || ownerNameMatch;
+    return categoryMatch && skillLevelMatch && (textMatch || categoriesRequested.length > 0 || hasSkillLevelQuery);
     
-    const categoryKeywordMatch = Object.entries(categoryKeywords).some(([keyword, category]) => 
-      lowerQuery.includes(keyword) && item.category === category
-    );
-    
-    return nameMatch || descriptionMatch || categoryMatch || ownerNameMatch || categoryKeywordMatch || skillLevelMatch;
   }).sort((a, b) => {
     // Sort by skill level relevance first if query contains skill level
     const skillLevelRelevance = getSkillLevelRelevance(lowerQuery, a, b);
     if (skillLevelRelevance !== 0) return skillLevelRelevance;
     
-    // Then sort by rating as fallback
+    // Then sort by category relevance
+    const aCategoryScore = categoryMatches[a.category] || 0;
+    const bCategoryScore = categoryMatches[b.category] || 0;
+    if (aCategoryScore !== bCategoryScore) {
+      return bCategoryScore - aCategoryScore;
+    }
+    
+    // Finally sort by rating
     return b.rating - a.rating;
   });
+};
+
+// Extract category keywords from search query
+const extractCategoryMatches = (lowerQuery: string) => {
+  const categoryMatches: { [key: string]: number } = {
+    snowboards: 0,
+    skis: 0,
+    surfboards: 0,
+    sups: 0,
+    "mountain-bikes": 0,
+  };
+
+  // Check for category keywords
+  if (lowerQuery.includes("snow") || lowerQuery.includes("snowboard")) {
+    categoryMatches.snowboards += 3;
+  }
+  if (lowerQuery.includes("ski") || lowerQuery.includes("skiing")) {
+    categoryMatches.skis += 3;
+  }
+  if (lowerQuery.includes("surf") || lowerQuery.includes("surfboard") || lowerQuery.includes("waves")) {
+    categoryMatches.surfboards += 3;
+  }
+  if (lowerQuery.includes("paddle") || lowerQuery.includes("sup") || lowerQuery.includes("stand up paddle")) {
+    categoryMatches.sups += 3;
+  }
+  if (lowerQuery.includes("bike") || lowerQuery.includes("mountain bike") || lowerQuery.includes("mtb") || lowerQuery.includes("cycling")) {
+    categoryMatches["mountain-bikes"] += 3;
+  }
+
+  return categoryMatches;
+};
+
+// Extract skill level keywords from search query
+const extractSkillLevelKeywords = (lowerQuery: string) => {
+  return {
+    isBeginnerSearch: lowerQuery.includes("beginner") || lowerQuery.includes("beginners") || lowerQuery.includes("new") || lowerQuery.includes("learning"),
+    isIntermediateSearch: lowerQuery.includes("intermediate"),
+    isAdvancedSearch: lowerQuery.includes("advanced") || lowerQuery.includes("expert") || lowerQuery.includes("pro"),
+  };
 };
 
 // Helper function to check if skill level in query matches equipment suitability
@@ -93,7 +151,7 @@ const checkSkillLevelMatch = (query: string, suitable: string): boolean => {
   const suitableLower = suitable.toLowerCase();
   
   // Check for skill level keywords in query
-  if (query.includes('beginner') || query.includes('beginners')) {
+  if (query.includes('beginner') || query.includes('beginners') || query.includes('new') || query.includes('learning')) {
     return suitableLower.includes('beginner');
   }
   
@@ -101,7 +159,7 @@ const checkSkillLevelMatch = (query: string, suitable: string): boolean => {
     return suitableLower.includes('intermediate');
   }
   
-  if (query.includes('advanced') || query.includes('expert')) {
+  if (query.includes('advanced') || query.includes('expert') || query.includes('pro')) {
     return suitableLower.includes('advanced') || suitableLower.includes('expert');
   }
   
