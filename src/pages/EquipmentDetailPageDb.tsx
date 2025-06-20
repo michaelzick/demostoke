@@ -125,10 +125,10 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
               <LocationTab equipment={equipment} />
             </TabsContent>
             <TabsContent value="reviews">
-              <ReviewsTab 
-                equipmentId={equipment.id} 
-                rating={equipment.rating} 
-                reviewCount={equipment.review_count} 
+              <ReviewsTab
+                equipmentId={equipment.id}
+                rating={equipment.rating}
+                reviewCount={equipment.review_count}
               />
             </TabsContent>
             <TabsContent value="policy">
@@ -144,11 +144,13 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
         <div className="space-y-6">
           {/* Booking Card */}
           <Card className="p-6" ref={bookingCardRef}>
-            <BookingCard
+            {/* <BookingCard
               equipment={equipment}
               waiverCompleted={waiverCompleted}
               onWaiverClick={() => setShowWaiver(true)}
-            />
+            /> */}
+            <h3 className="text-lg font-semibold mb-4">The ability to book here is coming soon.<br />
+              Please contact <a href={`/user-profile/${equipment.owner.id}`} className="text-primary underline underline-offset-4 hover:underline hover:text-primary/80 transition-colors">{equipment.owner.name}</a> to book.</h3>
           </Card>
           {/* Similar Equipment */}
           <SimilarEquipment similarEquipment={similarEquipment} />
