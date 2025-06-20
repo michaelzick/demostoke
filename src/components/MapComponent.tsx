@@ -1,4 +1,3 @@
-
 import { useRef, useEffect, useState } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useToast } from '@/hooks/use-toast';
@@ -21,14 +20,27 @@ interface MapEquipment {
   };
 }
 
+interface UserLocation {
+  id: string;
+  name: string;
+  role: string;
+  address: string;
+  location: {
+    lat: number;
+    lng: number;
+  };
+  equipment_categories: string[];
+}
+
 interface MapComponentProps {
   activeCategory: string | null;
   initialEquipment?: MapEquipment[];
+  userLocations?: UserLocation[];
   isSingleView?: boolean;
   searchQuery?: string;
 }
 
-const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, searchQuery }: MapComponentProps) => {
+const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUserLocations, isSingleView = false, searchQuery }: MapComponentProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -43,8 +55,11 @@ const MapComponent = ({ activeCategory, initialEquipment, isSingleView = false, 
   const { data: appSettings } = useAppSettings();
   const isUserLocationMode = appSettings?.map_display_mode === 'user_locations';
 
-  // Fetch user locations when in user location mode
-  const { data: userLocations = [], isLoading: userLocationsLoading } = useUserLocations();
+  // Fetch user locations when in user location mode and no specific user locations are provided
+  const { data: fetchedUserLocations = [], isLoading: userLocationsLoading } = useUserLocations();
+
+  // Use provided user locations or fetched ones
+  const userLocations = propUserLocations || fetchedUserLocations;
 
   // Debug logging for display mode
   useEffect(() => {
