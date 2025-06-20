@@ -135,14 +135,14 @@ const SearchResultsPage = () => {
         <div className="container px-4 md:px-6">
           <div className="flex items-center gap-2 mb-4">
             <h1 className="text-3xl font-bold">Search Results</h1>
-            {isAISearch && (
+            {/* {isAISearch && (
               <div className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full">
                 <Sparkles className="h-4 w-4 text-primary" />
                 <span className="text-xs font-medium text-primary">AI-Enhanced</span>
               </div>
-            )}
+            )} */}
           </div>
-          
+
           {/* Search form */}
           <form onSubmit={handleSearch} className="flex gap-2 mb-6">
             <div className="relative flex-1">
@@ -163,12 +163,12 @@ const SearchResultsPage = () => {
             <div className="mb-4">
               <p className="text-sm text-muted-foreground">
                 Showing results for: <span className="font-medium">{query}</span>
-                {isAISearch && <span className="ml-2 text-primary">✨ AI-powered search</span>}
+                {/* {isAISearch && <span className="ml-2 text-primary">✨ AI-powered search</span>} */}
               </p>
               {!isLoading && (
                 <p className="text-sm">
                   Found {filteredResults.length} {filteredResults.length === 1 ? "item" : "items"}
-                  {showMockData ? " (mock data)" : " (real data)"}
+                  {/* {showMockData ? " (mock data)" : " (real data)"} */}
                 </p>
               )}
             </div>
@@ -203,7 +203,7 @@ const SearchResultsPage = () => {
         </div>
       ) : viewMode === "map" ? (
         <div className="h-[calc(100vh-14rem)]">
-          <MapComponent 
+          <MapComponent
             initialEquipment={mapEquipment}
             activeCategory={activeCategory}
             searchQuery={query?.toLowerCase()}
