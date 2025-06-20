@@ -255,16 +255,20 @@ const MyEquipmentPage = () => {
           {/* Master visibility toggle */}
           <div className="mb-6 p-4 bg-muted/50 rounded-lg border">
             <div className="flex items-center space-x-2">
-              <Checkbox 
-                id="master-visibility-toggle"
-                checked={masterToggleState.checked}
-                // @ts-ignore - indeterminate is a valid prop but not in types
-                ref={(el) => {
-                  if (el) el.indeterminate = masterToggleState.indeterminate;
-                }}
-                onCheckedChange={handleMasterToggle}
-                disabled={updateVisibilityMutation.isPending}
-              />
+              <div className="relative">
+                <Checkbox 
+                  id="master-visibility-toggle"
+                  checked={masterToggleState.checked}
+                  onCheckedChange={handleMasterToggle}
+                  disabled={updateVisibilityMutation.isPending}
+                  className={masterToggleState.indeterminate ? "data-[state=checked]:bg-primary/50 data-[state=checked]:border-primary" : ""}
+                />
+                {masterToggleState.indeterminate && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="w-2 h-0.5 bg-primary rounded-sm" />
+                  </div>
+                )}
+              </div>
               <label 
                 htmlFor="master-visibility-toggle"
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
