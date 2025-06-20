@@ -149,7 +149,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
               waiverCompleted={waiverCompleted}
               onWaiverClick={() => setShowWaiver(true)}
             /> */}
-            <h3 className="text-lg font-semibold mb-4">The ability to book here is coming soon.<br />
+            <h3 className="text-lg font-semibold mb-4">The ability to book here is coming soon.
               Please contact <a href={`/user-profile/${equipment.owner.id}`} className="text-primary underline underline-offset-4 hover:underline hover:text-primary/80 transition-colors">{equipment.owner.name}</a> to book.</h3>
           </Card>
           {/* Similar Equipment */}
