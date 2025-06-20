@@ -1,7 +1,7 @@
 
 import { BlogPost } from './types';
 
-export const skisPosts: BlogPost[] = [
+export const skisPosts: Omit<BlogPost, 'author' | 'authorId'>[] = [
   {
     id: "ski-waxing-guide",
     title: "The Complete Guide to Ski Waxing: Keep Your Skis Running Fast",
@@ -116,7 +116,6 @@ Regular waxing transforms your skiing experience. Well-maintained skis are more 
 
 Remember, consistency is more important than perfection. Regular waxing with basic techniques beats occasional professional tuning for most recreational skiers.`,
     category: "skis",
-    author: "David Park",
     publishedAt: "2025-01-18",
     readTime: 9,
     heroImage: "https://shop-raze-cat.com/cdn/shop/articles/warum-ski-wachsen-und-welches-wachs-sollte-ich-benutzen-raze-cat.jpg?v=1712086056",
@@ -317,7 +316,6 @@ Avalanche safety is a lifelong learning process. Even experienced professionals 
 
 Remember: no powder run is worth your life or the lives of your partners. When in doubt, choose conservative terrain and live to ski another day.`,
     category: "skis",
-    author: "Lisa Thompson",
     publishedAt: "2025-01-10",
     readTime: 12,
     heroImage: "https://www.weather.gov/images/wrn/Infographics/2021/ww-avalanche.png",

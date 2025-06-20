@@ -1,7 +1,7 @@
 
 import { BlogPost } from './types';
 
-export const surfboardsPosts: BlogPost[] = [
+export const surfboardsPosts: Omit<BlogPost, 'author' | 'authorId'>[] = [
   {
     id: "surfboard-shapes-explained",
     title: "Surfboard Shapes Explained: Finding Your Perfect Wave Riding Tool",
@@ -174,7 +174,6 @@ Remember that the "perfect" surfboard doesn't exist—every design involves comp
 
 Start with a shape that's forgiving and appropriate for your level, then experiment as you gain experience and better understand your preferences.`,
     category: "surfboards",
-    author: "Carlos Martinez",
     publishedAt: "2025-01-16",
     readTime: 11,
     heroImage: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=1200&q=80",
@@ -392,7 +391,6 @@ Remember, forecasting is both science and art. While technology provides incredi
 
 The best surfers combine technical forecast reading with intuitive understanding of their local breaks, weather patterns, and seasonal variations.`,
     category: "surfboards",
-    author: "Maya Patel",
     publishedAt: "2025-01-14",
     readTime: 9,
     heroImage: "https://images.ctfassets.net/xhzuh2up4xai/1GZGyT2Xcd0W8CYYHVyEg7/ae886cec8bb759d248841e3840da6ce6/How-to-Read-a-Surf-Forecast-_-Swell-Charts.jpg",

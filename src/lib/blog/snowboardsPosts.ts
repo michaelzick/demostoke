@@ -1,6 +1,7 @@
+
 import { BlogPost } from './types';
 
-export const snowboardsPosts: BlogPost[] = [
+export const snowboardsPosts: Omit<BlogPost, 'author' | 'authorId'>[] = [
   {
     id: "snowboard-buying-guide-2025",
     title: "The Ultimate Snowboard Buying Guide for 2025: Everything You Need to Know",
@@ -216,7 +217,6 @@ Remember, progression in snowboarding is rarely linear. Some days will feel like
 The key to mastering these advanced techniques is consistent practice and patience. Focus on quality over quantity, and don't be afraid to go back to basics when needed. Each technique will enhance your overall riding ability and open up new possibilities on the mountain.
 `,
     category: "snowboards",
-    author: "Emma Rodriguez",
     publishedAt: "2025-01-12",
     readTime: 10,
     heroImage: "https://neversummer.com/cdn/shop/articles/10TipsBlog.jpg?v=1653255663",

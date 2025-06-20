@@ -1,6 +1,7 @@
+
 import { BlogPost } from './types';
 
-export const gearReviewsPosts: BlogPost[] = [
+export const gearReviewsPosts: Omit<BlogPost, 'author' | 'authorId'>[] = [
   {
     id: "mountain-bike-gear-review-2024",
     title: "Best Mountain Bike Gear of 2024: Complete Buying Guide",
@@ -196,7 +197,6 @@ Consider your riding style, local terrain, and budget when making upgrade decisi
 
 Remember, expensive gear won't automatically make you a better rider, but the right equipment can enhance your enjoyment and safety on the trails. Happy riding!`,
     category: "gear reviews",
-    author: "Tom Wilson",
     publishedAt: "2024-01-20",
     readTime: 15,
     tags: ["gear", "reviews", "2024", "buying guide", "mountain-bikes"],
@@ -252,7 +252,6 @@ The Never Summer Proto Type Two delivers on its promise as a high-performance al
 If you're an experienced rider looking for a daily driver that excels in carving, handles powder well, and will last for years, the Proto Type Two should be at the top of your list.
 `,
     category: "gear reviews",
-    author: "Sarah Chen",
     publishedAt: "2025-01-15",
     readTime: 7,
     heroImage: "https://www.outdoorsports.com/cdn/shop/files/NEVERS_2_109a2da9-eae2-4d78-8617-ae3319d5ffe1.png?v=1724440627",
@@ -324,7 +323,6 @@ The Firewire Seaside delivers exactly what it promises - pure fun in small waves
 If you find yourself struggling to have fun in typical beach break surf or want to rediscover the joy of surfing in less-than-perfect conditions, the Seaside might just change your perspective on what makes a good surf session.
 `,
     category: "gear reviews",
-    author: "Marcus Torres",
     publishedAt: "2025-01-08",
     readTime: 6,
     heroImage: "https://www.stokedfortravel.com/wp-content/uploads/2021/04/firewire-glazer-review-rob-machado-surfboards-6-1920x960.jpg",

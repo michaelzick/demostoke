@@ -1,6 +1,7 @@
+
 import { BlogPost } from './types';
 
-export const mountainBikesPosts: BlogPost[] = [
+export const mountainBikesPosts: Omit<BlogPost, 'author' | 'authorId'>[] = [
   {
     id: 'mountain-bike-beginner-guide',
     title: 'The Complete Beginner\'s Guide to Mountain Biking',
@@ -89,7 +90,6 @@ Start with easier trails and gradually progress. Consider taking a skills clinic
 
 Remember, mountain biking is about having fun and enjoying the outdoors. Take your time, be safe, and enjoy the ride!
     `,
-    author: 'Sarah Johnson',
     publishedAt: '2024-01-15',
     readTime: 8,
     category: 'mountain-bikes',
@@ -215,7 +215,6 @@ Regular maintenance not only extends your bike's life but also ensures safer, mo
 
 A well-maintained mountain bike is a reliable companion for countless adventures on the trails!
     `,
-    author: 'Mike Chen',
     publishedAt: '2024-01-10',
     readTime: 10,
     category: 'mountain-bikes',
@@ -341,7 +340,6 @@ If you're new to mountain biking in LA, consider:
 
 Los Angeles mountain biking offers something for every rider. From beginner-friendly paths to world-class technical trails, there's always a new adventure waiting on the trails!
     `,
-    author: 'Jessica Rodriguez',
     publishedAt: '2024-01-05',
     readTime: 12,
     category: 'mountain-bikes',

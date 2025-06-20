@@ -1,7 +1,7 @@
 
 import { BlogPost } from './types';
 
-export const supsPosts: BlogPost[] = [
+export const supsPosts: Omit<BlogPost, 'author' | 'authorId'>[] = [
   {
     id: "sup-yoga-beginner-guide",
     title: "SUP Yoga for Beginners: Find Your Balance on Water",
@@ -269,7 +269,6 @@ SUP yoga offers a unique way to deepen both your yoga practice and connection to
 
 Remember that every session on the water teaches you something new about balance, breath, and presence. Embrace the challenge and enjoy the unique perspective that only SUP yoga can provide.`,
     category: "sups",
-    author: "Jennifer Walsh",
     publishedAt: "2025-01-13",
     readTime: 10,
     heroImage: "https://www.gilisports.com/cdn/shop/articles/what-is-sup-yoga-featured_1900x.jpg?v=1616791847",
@@ -525,7 +524,6 @@ SUP touring offers incredible opportunities for adventure and exploration. Succe
 
 Remember that the journey is as important as the destination. Take time to appreciate the unique perspective SUP touring provides and the incredible places it can take you.`,
     category: "sups",
-    author: "Alex Rivera",
     publishedAt: "2025-01-11",
     readTime: 12,
     heroImage: "https://www.inflatableboarder.com/wp-content/uploads/2022/10/thurso-expedition138-2.jpg",
