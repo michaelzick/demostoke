@@ -199,7 +199,7 @@ const SearchResultsPage = () => {
       {isLoading ? (
         <div className="flex justify-center items-center py-20">
           <Loader2 className="h-10 w-10 animate-spin text-primary" />
-          <span className="ml-4 text-lg">Processing your search with AI...</span>
+          <span className="ml-4 text-lg">Processing your search...</span>
         </div>
       ) : viewMode === "map" ? (
         <div className="h-[calc(100vh-14rem)]">
