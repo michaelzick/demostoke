@@ -56,6 +56,9 @@ const fallbackSearch = (query: string, equipmentData: Equipment[]): AISearchResu
     // Check if owner has brand-like information in their name
     const ownerNameMatch = item.owner?.name?.toLowerCase().includes(lowerQuery);
     
+    // Skill level matching - check if query contains skill level keywords
+    const skillLevelMatch = checkSkillLevelMatch(lowerQuery, item.specifications.suitable);
+    
     // Category keyword matching
     const categoryKeywords = {
       'bike': 'mountain-bikes',
@@ -74,9 +77,44 @@ const fallbackSearch = (query: string, equipmentData: Equipment[]): AISearchResu
       lowerQuery.includes(keyword) && item.category === category
     );
     
-    return nameMatch || descriptionMatch || categoryMatch || ownerNameMatch || categoryKeywordMatch;
+    return nameMatch || descriptionMatch || categoryMatch || ownerNameMatch || categoryKeywordMatch || skillLevelMatch;
   }).sort((a, b) => {
-    // Sort by rating as fallback
+    // Sort by skill level relevance first if query contains skill level
+    const skillLevelRelevance = getSkillLevelRelevance(lowerQuery, a, b);
+    if (skillLevelRelevance !== 0) return skillLevelRelevance;
+    
+    // Then sort by rating as fallback
     return b.rating - a.rating;
   });
+};
+
+// Helper function to check if skill level in query matches equipment suitability
+const checkSkillLevelMatch = (query: string, suitable: string): boolean => {
+  const suitableLower = suitable.toLowerCase();
+  
+  // Check for skill level keywords in query
+  if (query.includes('beginner') || query.includes('beginners')) {
+    return suitableLower.includes('beginner');
+  }
+  
+  if (query.includes('intermediate')) {
+    return suitableLower.includes('intermediate');
+  }
+  
+  if (query.includes('advanced') || query.includes('expert')) {
+    return suitableLower.includes('advanced') || suitableLower.includes('expert');
+  }
+  
+  return false;
+};
+
+// Helper function to provide skill level relevance scoring for sorting
+const getSkillLevelRelevance = (query: string, a: Equipment, b: Equipment): number => {
+  const aSkillMatch = checkSkillLevelMatch(query, a.specifications.suitable);
+  const bSkillMatch = checkSkillLevelMatch(query, b.specifications.suitable);
+  
+  if (aSkillMatch && !bSkillMatch) return -1; // a is more relevant
+  if (!aSkillMatch && bSkillMatch) return 1;  // b is more relevant
+  
+  return 0; // equal relevance
 };
