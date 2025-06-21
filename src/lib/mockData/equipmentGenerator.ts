@@ -44,8 +44,12 @@ const supImages = [
   "https://images.unsplash.com/photo-1598112747595-0ac8aa788d4d?auto=format&fit=crop&w=800&q=80"
 ];
 
-// Updated mountain bike image - single URL for Sports Ltd. Rentals
-const mountainBikeImage = "https://images.unsplash.com/photo-1534150034764-046bf225d3fa?auto=format&fit=crop&w=800&q=80";
+const bikeImages = [
+  "https://images.unsplash.com/photo-1673121414328-52eff37bc6d0?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1566480047210-b10eaa1f8095?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1633707167682-9068729bc84c?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1589100984317-79246528923c?auto=format&fit=crop&w=800&q=80"
+];
 
 // Mock equipment data generator
 export function generateMockEquipment(count: number = 20): Equipment[] {
@@ -128,8 +132,9 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         name = `${['Trail', 'Cross Country', 'Enduro', 'Downhill'][i % 4]} Mountain Bike`;
         material = bikeMaterials[i % bikeMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Expert'][i % 4]} Riders`;
-        // Use single mountain bike image for all bikes
-        images = [mountainBikeImage];
+        // Randomize 2-4 images from bike collection
+        const bikeCount = Math.floor(Math.random() * 3) + 2; // 2-4 images
+        images = bikeImages.slice(0, bikeCount);
         break;
       }
       default:
