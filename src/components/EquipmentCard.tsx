@@ -13,6 +13,9 @@ interface EquipmentCardProps {
 }
 
 const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
+  // Debug logging
+  console.log(`Equipment ${equipment.name} subcategory:`, equipment.subcategory);
+
   // Determine if this is from a shop or private party based on owner
   const isShop = equipment.owner.shopId;
   const isPrivateParty = equipment.owner.partyId;
@@ -67,7 +70,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         {/* Subcategory badge in upper left */}
         {equipment.subcategory && (
           <Badge
-            className="absolute top-2 left-2 z-10"
+            className="absolute top-2 left-2 z-20 bg-white text-gray-900 border shadow-sm"
             variant="secondary"
           >
             {equipment.subcategory}

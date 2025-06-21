@@ -15,6 +15,9 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // Debug logging
+  console.log(`Equipment detail ${equipment.name} subcategory:`, equipment.subcategory);
+
   // Check if current user is the owner of this gear
   const isOwner = user?.id === equipment.owner.id;
 
@@ -41,7 +44,9 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
         <div className="flex items-center gap-2 mb-2">
           <Badge>{equipment.category}</Badge>
           {equipment.subcategory && (
-            <Badge variant="outline">{equipment.subcategory}</Badge>
+            <Badge variant="outline" className="bg-white border-gray-300">
+              {equipment.subcategory}
+            </Badge>
           )}
           <div className="flex items-center text-sm">
             <StarIcon className="h-4 w-4 text-yellow-500 fill-yellow-500 mr-1" />
