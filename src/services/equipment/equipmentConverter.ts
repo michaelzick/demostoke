@@ -5,15 +5,16 @@ import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 // Convert Supabase equipment to Equipment type
 export const convertSupabaseToEquipment = async (item: any): Promise<Equipment> => {
   console.log('Converting equipment item:', item.name, 'category:', item.category);
-  
+
   // Fetch additional images from equipment_images table
   const additionalImages = await fetchEquipmentImages(item.id);
   const allImages = additionalImages.length > 0 ? additionalImages : (item.image_url ? [item.image_url] : []);
-  
+
   return {
     id: item.id,
     name: item.name,
     category: item.category,
+    subcategory: item.subcategory,
     description: item.description || '',
     image_url: item.image_url || '',
     images: allImages, // Include the fetched images

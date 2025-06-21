@@ -17,7 +17,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
   console.log(`Equipment ${equipment.name} subcategory:`, equipment.subcategory);
 
   // Determine if this is from a shop or private party based on owner
-  const isShop = equipment.owner.shopId;
+  const isShop = !equipment.owner.partyId;
   const isPrivateParty = equipment.owner.partyId;
 
   const ownerLinkPath = isShop
@@ -71,7 +71,6 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         {equipment.subcategory && (
           <Badge
             className="absolute top-2 left-2 z-20 bg-white text-gray-900 border shadow-sm"
-            variant="secondary"
           >
             {equipment.subcategory}
           </Badge>
@@ -85,7 +84,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         </Badge>
 
         {/* Shop or Private Party indicator */}
-        {isShop && (
+        {/* {isShop && (
           <Badge
             className="absolute top-12 left-2 bg-shop text-shop-foreground hover:bg-shop/90 z-10"
             variant="default"
@@ -93,7 +92,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
             <StoreIcon className="h-3 w-3 mr-1" />
             Shop
           </Badge>
-        )}
+        )} */}
         {isPrivateParty && (
           <Badge
             className="absolute top-12 left-2 bg-green-600 hover:bg-green-700 z-10"

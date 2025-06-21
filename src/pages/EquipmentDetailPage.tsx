@@ -26,7 +26,7 @@ const EquipmentDetailPage = () => {
   // Scroll to top and track view on page load
   useEffect(() => {
     window.scrollTo(0, 0);
-    
+
     // Track equipment view if we have a valid ID
     if (id) {
       trackEquipmentView(id);
@@ -52,6 +52,7 @@ const EquipmentDetailPage = () => {
         id: equipment.id,
         name: equipment.name,
         category: equipment.category,
+        subcategory: equipment.subcategory,
         description: equipment.description || "",
         price_per_day: Number(equipment.price_per_day),
         image_url: equipment.image_url || "",

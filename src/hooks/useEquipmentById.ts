@@ -47,6 +47,7 @@ export const useEquipmentById = (id: string) => {
         id: data.id,
         name: data.name,
         category: data.category,
+        subcategory: data.subcategory,
         description: data.description || '',
         image_url: data.image_url || '',
         images: allImages, // Include all images

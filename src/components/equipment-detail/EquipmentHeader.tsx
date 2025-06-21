@@ -44,7 +44,7 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
         <div className="flex items-center gap-2 mb-2">
           <Badge>{equipment.category}</Badge>
           {equipment.subcategory && (
-            <Badge variant="outline" className="bg-white border-gray-300">
+            <Badge className="bg-white text-gray-900 border shadow-sm">
               {equipment.subcategory}
             </Badge>
           )}
