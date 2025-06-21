@@ -3,6 +3,7 @@ export interface Equipment {
   id: string;
   name: string;
   category: string;
+  subcategory?: string; // Add optional subcategory field
   description: string;
   price_per_day: number;
   image_url: string;

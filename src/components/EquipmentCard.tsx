@@ -64,6 +64,16 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
           </div>
         )}
 
+        {/* Subcategory badge in upper left */}
+        {equipment.subcategory && (
+          <Badge
+            className="absolute top-2 left-2 z-10"
+            variant="secondary"
+          >
+            {equipment.subcategory}
+          </Badge>
+        )}
+
         <Badge
           className="absolute top-2 right-2 z-10"
           variant="secondary"
@@ -74,7 +84,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         {/* Shop or Private Party indicator */}
         {isShop && (
           <Badge
-            className="absolute top-2 left-2 bg-shop text-shop-foreground hover:bg-shop/90 z-10"
+            className="absolute top-12 left-2 bg-shop text-shop-foreground hover:bg-shop/90 z-10"
             variant="default"
           >
             <StoreIcon className="h-3 w-3 mr-1" />
@@ -83,7 +93,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         )}
         {isPrivateParty && (
           <Badge
-            className="absolute top-2 left-2 bg-green-600 hover:bg-green-700 z-10"
+            className="absolute top-12 left-2 bg-green-600 hover:bg-green-700 z-10"
             variant="default"
           >
             <UsersIcon className="h-3 w-3 mr-1" />
