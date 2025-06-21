@@ -95,17 +95,17 @@ const SignInPage = () => {
             />
           </div>
           <div className="flex items-center space-x-2">
-            <input 
-              type="checkbox" 
-              id="remember" 
-              className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800" 
+            <input
+              type="checkbox"
+              id="remember"
+              className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800"
             />
             <Label htmlFor="remember" className="text-sm font-normal">
               Remember me
             </Label>
           </div>
-          
-          <HCaptcha 
+
+          <HCaptcha
             siteKey="e30661ca-467c-43cc-899c-be56ab28c2a2"
             onVerify={setCaptchaToken}
           />
@@ -114,12 +114,12 @@ const SignInPage = () => {
           <Button type="submit" className="w-full" disabled={buttonDisabled}>
             {buttonText}
           </Button>
-          <div className="text-center text-sm dark:text-gray-400">
+          {/* <div className="text-center text-sm dark:text-gray-400">
             Don't have an account?{" "}
             <Link to="/auth/signup" className="text-primary hover:underline dark:text-blue-400">
               Sign up
             </Link>
-          </div>
+          </div> */}
         </CardFooter>
       </form>
     </Card>

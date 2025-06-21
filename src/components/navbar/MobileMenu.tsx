@@ -119,13 +119,13 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
               >
                 <Link to="/auth/signin">Sign In</Link>
               </Button>
-              <Button
+              {/* <Button
                 className="w-full"
                 asChild
                 onClick={onClose}
               >
                 <Link to="/auth/signup">Sign Up</Link>
-              </Button>
+              </Button> */}
             </div>
           )}
         </div>

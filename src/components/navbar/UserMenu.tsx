@@ -54,9 +54,9 @@ const UserMenu = () => {
       <Button variant="ghost" asChild>
         <Link to="/auth/signin">Sign In</Link>
       </Button>
-      <Button asChild>
+      {/* <Button asChild>
         <Link to="/auth/signup">Sign Up</Link>
-      </Button>
+      </Button> */}
     </>
   );
 };

@@ -113,11 +113,11 @@ const SignUpPage = () => {
             />
           </div>
           <div className="flex items-center space-x-2">
-            <input 
-              type="checkbox" 
-              id="tos" 
-              className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800" 
-              required 
+            <input
+              type="checkbox"
+              id="tos"
+              className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800"
+              required
             />
             <Label htmlFor="tos" className="text-sm font-normal">
               I agree to the{" "}
@@ -130,16 +130,16 @@ const SignUpPage = () => {
               </Link>
             </Label>
           </div>
-          
-          <HCaptcha 
+
+          <HCaptcha
             siteKey="e30661ca-467c-43cc-899c-be56ab28c2a2"
             onVerify={setCaptchaToken}
           />
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <Button type="submit" className="w-full" disabled={buttonDisabled}>
+          {/* <Button type="submit" className="w-full" disabled={buttonDisabled}>
             {isLoading ? "Creating account..." : "Sign Up"}
-          </Button>
+          </Button> */}
           <div className="text-center text-sm dark:text-gray-400">
             Already have an account?{" "}
             <Link to="/auth/signin" className="text-primary hover:underline dark:text-blue-400">
