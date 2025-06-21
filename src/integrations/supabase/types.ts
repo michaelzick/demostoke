@@ -55,6 +55,7 @@ export type Database = {
           review_count: number | null
           size: string | null
           status: string | null
+          subcategory: string | null
           suitable_skill_level: string | null
           updated_at: string
           user_id: string
@@ -80,6 +81,7 @@ export type Database = {
           review_count?: number | null
           size?: string | null
           status?: string | null
+          subcategory?: string | null
           suitable_skill_level?: string | null
           updated_at?: string
           user_id: string
@@ -105,6 +107,7 @@ export type Database = {
           review_count?: number | null
           size?: string | null
           status?: string | null
+          subcategory?: string | null
           suitable_skill_level?: string | null
           updated_at?: string
           user_id?: string
