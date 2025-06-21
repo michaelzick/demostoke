@@ -1,3 +1,4 @@
+
 import React, { useMemo } from "react";
 import { Equipment } from "@/types";
 import { usePricingOptions } from "@/hooks/usePricingOptions";
@@ -89,7 +90,7 @@ const PriceDisplay = ({ equipment, equipmentHeader }: PriceDisplayProps) => {
             ))}
           </div>
         ) : (
-          <p className="text-2xl font-bold">${equipment.price_per_day} <span className="text-sm font-normal">/ day</span></p>
+          <p className="text-2xl font-bold text-primary">${equipment.price_per_day} <span className="text-sm font-normal">/ day</span></p>
         )}
         {!equipmentHeader && (
           <div className="flex items-center mt-1">
