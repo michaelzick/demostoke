@@ -1,3 +1,4 @@
+
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -61,6 +62,7 @@ const GearBasicInfo = ({
             <SelectItem value="surfboard">Surfboard</SelectItem>
             <SelectItem value="sup">SUP</SelectItem>
             <SelectItem value="mountain-bike">Mountain Bike</SelectItem>
+            <SelectItem value="e-bike">E-Bike</SelectItem>
           </SelectContent>
         </Select>
       </div>

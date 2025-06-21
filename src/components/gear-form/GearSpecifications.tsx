@@ -39,6 +39,7 @@ const GearSpecifications = ({
     surfboard: ["Beginner", "Intermediate", "Advanced", "All Levels"],
     sup: ["Flat Water", "Surf", "Racing", "Yoga"],
     "mountain-bike": ["Beginner", "Intermediate", "Advanced", "Expert"],
+    "e-bike": ["Beginner", "Intermediate", "Advanced", "Expert"],
   };
 
   // Reset skill level if it's not valid for the current gear type
@@ -54,12 +55,12 @@ const GearSpecifications = ({
 
   console.log('GearSpecifications render - gearType:', gearType, 'skillLevel:', skillLevel);
 
-  const isMountainBike = gearType === "mountain-bike";
+  const isBikeType = gearType === "mountain-bike" || gearType === "e-bike";
 
   return (
     <>
-      {/* Measurement Unit - Only show for non-mountain bikes */}
-      {!isMountainBike && (
+      {/* Measurement Unit - Only show for non-bike types */}
+      {!isBikeType && (
         <div>
           <Label htmlFor="measurementUnit" className="block text-lg font-medium mb-2">
             Measurement Unit <span className="text-red-500">*</span>
@@ -77,7 +78,7 @@ const GearSpecifications = ({
       )}
 
       {/* Dimensions or Size */}
-      {isMountainBike ? (
+      {isBikeType ? (
         <div>
           <Label htmlFor="bikeSize" className="block text-lg font-medium mb-2">
             Size <span className="text-red-500">*</span>
@@ -88,7 +89,7 @@ const GearSpecifications = ({
             required
           >
             <SelectTrigger id="bikeSize">
-              <SelectValue placeholder="Select Bike Size" />
+              <SelectValue placeholder="Select Size" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="Small">Small</SelectItem>

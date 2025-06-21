@@ -22,7 +22,7 @@ export const useGearFormValidation = () => {
     } = formData;
 
     // Validate required fields
-    const isMountainBike = gearType === "mountain-bike";
+    const isBikeType = gearType === "mountain-bike" || gearType === "e-bike";
     
     // Base validation for all gear types
     if (!gearName || !gearType || !description || !zipCode || !skillLevel || !damageDeposit) {
@@ -34,8 +34,8 @@ export const useGearFormValidation = () => {
       return false;
     }
 
-    // Additional validation for non-mountain bikes
-    if (!isMountainBike && (!measurementUnit || !dimensions.length || !dimensions.width)) {
+    // Additional validation for non-bike types
+    if (!isBikeType && (!measurementUnit || !dimensions.length || !dimensions.width)) {
       toast({
         title: "Missing Dimensions",
         description: "Please provide all dimension measurements for your gear.",
@@ -44,21 +44,21 @@ export const useGearFormValidation = () => {
       return false;
     }
 
-    // Validate mountain bike size
-    if (isMountainBike && !dimensions.length) {
+    // Validate bike size
+    if (isBikeType && !dimensions.length) {
       toast({
         title: "Missing Size",
-        description: "Please select a size for your mountain bike.",
+        description: "Please select a size for your bike.",
         variant: "destructive",
       });
       return false;
     }
 
-    // Validate that mountain bike size is valid
-    if (isMountainBike && !['Small', 'Medium', 'Large', 'XL', 'XXL'].includes(dimensions.length)) {
+    // Validate that bike size is valid
+    if (isBikeType && !['Small', 'Medium', 'Large', 'XL', 'XXL'].includes(dimensions.length)) {
       toast({
         title: "Invalid Size",
-        description: "Please select a valid size for your mountain bike.",
+        description: "Please select a valid size for your bike.",
         variant: "destructive",
       });
       return false;
