@@ -17,7 +17,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
   console.log(`Equipment ${equipment.name} subcategory:`, equipment.subcategory);
 
   // Determine if this is from a shop or private party based on owner
-  const isShop = !equipment.owner.partyId;
+  const isShop = equipment.owner.shopId;
   const isPrivateParty = equipment.owner.partyId;
 
   const ownerLinkPath = isShop
