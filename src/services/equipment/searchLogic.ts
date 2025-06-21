@@ -1,3 +1,4 @@
+
 import { Equipment } from "@/types";
 import { AISearchResult } from "./aiSearchService";
 
@@ -28,8 +29,8 @@ export const processSearchQuery = async (query: string, equipmentData: Equipment
   // Add a short delay to simulate AI processing time
   await new Promise(resolve => setTimeout(resolve, 300));
 
-  // Filter and score equipment
-  const filteredEquipment = filterAndScoreEquipment(
+  // Filter and score equipment with enhanced text matching
+  const filteredEquipment = filterAndScoreEquipmentWithTextPriority(
     equipmentData,
     lowerQuery,
     categoryMatches,
@@ -39,8 +40,8 @@ export const processSearchQuery = async (query: string, equipmentData: Equipment
 
   console.log('🔍 Filtered equipment count:', filteredEquipment.length);
 
-  // Sort by relevance
-  const sortedResults = sortEquipmentByRelevance(filteredEquipment, categoryMatches, locationMatches);
+  // Sort by relevance with text priority scoring
+  const sortedResults = sortEquipmentByTextRelevance(filteredEquipment);
 
   console.log('🔍 Final search results:', sortedResults.length, 'items');
 
@@ -58,6 +59,10 @@ export const processAISearchResults = (results: AISearchResult[]): AISearchResul
 
 interface CategoryMatches {
   [key: string]: number;
+}
+
+interface EquipmentWithScore extends Equipment {
+  searchScore: number;
 }
 
 // Extract category keywords from search query
@@ -113,7 +118,103 @@ const extractSkillLevelKeywords = (lowerQuery: string) => {
   };
 };
 
-// Filter and score equipment based on search criteria
+// Enhanced filter and score equipment with text priority scoring
+const filterAndScoreEquipmentWithTextPriority = (
+  equipmentData: Equipment[],
+  lowerQuery: string,
+  categoryMatches: CategoryMatches,
+  locationMatches: string[],
+  skillLevelKeywords: { isBeginnerSearch: boolean; isIntermediateSearch: boolean; isAdvancedSearch: boolean; }
+): EquipmentWithScore[] => {
+  // Check if any specific categories were mentioned
+  const categoriesRequested = Object.entries(categoryMatches)
+    .filter(([_, score]) => score > 0)
+    .map(([category]) => category);
+
+  // Extract individual search terms for text matching
+  const searchTerms = lowerQuery.split(/\s+/).filter(term => term.length > 0);
+
+  return equipmentData
+    .map(item => {
+      let score = 0;
+      let textScore = 0;
+
+      // Calculate text matching score with priority: title > subcategory > description
+      searchTerms.forEach(term => {
+        // Title matching (highest priority - 10 points)
+        if (item.name.toLowerCase().includes(term)) {
+          textScore += 10;
+        }
+        
+        // Subcategory matching (medium priority - 7 points)
+        if (item.subcategory && item.subcategory.toLowerCase().includes(term)) {
+          textScore += 7;
+        }
+        
+        // Description matching (lowest priority - 3 points)
+        if (item.description && item.description.toLowerCase().includes(term)) {
+          textScore += 3;
+        }
+      });
+
+      // Category filtering and scoring
+      if (categoriesRequested.length > 0) {
+        if (!categoriesRequested.includes(item.category)) {
+          return null; // Filter out items that don't match requested categories
+        }
+        score += categoryMatches[item.category] || 0;
+      } else {
+        // If no specific categories requested, give base score
+        score += 1;
+      }
+
+      // Location matching
+      if (locationMatches.length > 0) {
+        if (locationMatches.some(loc =>
+          item.location.zip.toLowerCase().includes(loc.toLowerCase()))) {
+          score += 2;
+        }
+      } else {
+        // If no locations were specified, don't filter by location
+        score += 1;
+      }
+
+      // Skill level matching
+      if (skillLevelKeywords.isBeginnerSearch && item.specifications.suitable.toLowerCase().includes("beginner")) {
+        score += 2;
+      }
+      if (skillLevelKeywords.isIntermediateSearch && item.specifications.suitable.toLowerCase().includes("intermediate")) {
+        score += 2;
+      }
+      if (skillLevelKeywords.isAdvancedSearch && item.specifications.suitable.toLowerCase().includes("advanced")) {
+        score += 2;
+      }
+
+      // Combine text score with other factors
+      const totalScore = textScore + score;
+
+      // Only return items with some relevance
+      return totalScore > 0 ? { ...item, searchScore: totalScore } : null;
+    })
+    .filter((item): item is EquipmentWithScore => item !== null);
+};
+
+// Sort equipment based on text relevance priority
+const sortEquipmentByTextRelevance = (equipment: EquipmentWithScore[]): Equipment[] => {
+  return equipment
+    .sort((a, b) => {
+      // Primary sort: by search score (higher is better)
+      if (a.searchScore !== b.searchScore) {
+        return b.searchScore - a.searchScore;
+      }
+
+      // Secondary sort: by rating (higher is better)
+      return b.rating - a.rating;
+    })
+    .map(({ searchScore, ...item }) => item); // Remove searchScore from final result
+};
+
+// Legacy functions for backwards compatibility
 export const filterAndScoreEquipment = (
   equipmentData: Equipment[],
   lowerQuery: string,
@@ -121,86 +222,26 @@ export const filterAndScoreEquipment = (
   locationMatches: string[],
   skillLevelKeywords: { isBeginnerSearch: boolean; isIntermediateSearch: boolean; isAdvancedSearch: boolean; }
 ): Equipment[] => {
-  // Check if any specific categories were mentioned
-  const categoriesRequested = Object.entries(categoryMatches)
-    .filter(([_, score]) => score > 0)
-    .map(([category]) => category);
-
-  // Filter equipment based on extracted info
-  return equipmentData.filter(item => {
-    // If specific categories were mentioned, only show those categories
-    if (categoriesRequested.length > 0 && !categoriesRequested.includes(item.category)) {
-      return false;
-    }
-
-    let score = 0;
-
-    // Category matching (only relevant if categories were specified)
-    if (categoryMatches[item.category] > 0) {
-      score += categoryMatches[item.category];
-    } else if (categoriesRequested.length === 0) {
-      // If no categories were specified, don't filter by category
-      score += 1;
-    }
-
-    // Location matching
-    if (locationMatches.length > 0) {
-      if (locationMatches.some(loc =>
-        item.location.zip.toLowerCase().includes(loc.toLowerCase()))) {
-        score += 2;
-      }
-    } else {
-      // If no locations were specified, don't filter by location
-      score += 1;
-    }
-
-    // Description and name matching
-    if (item.name.toLowerCase().includes(lowerQuery) ||
-        item.description.toLowerCase().includes(lowerQuery)) {
-      score += 2;
-    }
-
-    // Skill level matching
-    if (skillLevelKeywords.isBeginnerSearch && item.specifications.suitable.toLowerCase().includes("beginner")) {
-      score += 2;
-    }
-    if (skillLevelKeywords.isIntermediateSearch && item.specifications.suitable.toLowerCase().includes("intermediate")) {
-      score += 2;
-    }
-    if (skillLevelKeywords.isAdvancedSearch && item.specifications.suitable.toLowerCase().includes("advanced")) {
-      score += 2;
-    }
-
-    return score > 0;
-  });
+  return filterAndScoreEquipmentWithTextPriority(
+    equipmentData,
+    lowerQuery,
+    categoryMatches,
+    locationMatches,
+    skillLevelKeywords
+  );
 };
 
-// Sort equipment based on search criteria
 export const sortEquipmentByRelevance = (
   equipment: Equipment[],
   categoryMatches: CategoryMatches,
   locationMatches: string[]
 ): Equipment[] => {
-  return equipment.sort((a, b) => {
-    // Sort by location match
-    if (locationMatches.length > 0) {
-      const aLocationMatch = locationMatches.some(loc =>
-        a.location.zip.toLowerCase().includes(loc.toLowerCase()));
-      const bLocationMatch = locationMatches.some(loc =>
-        b.location.zip.toLowerCase().includes(loc.toLowerCase()));
-
-      if (aLocationMatch && !bLocationMatch) return -1;
-      if (!aLocationMatch && bLocationMatch) return 1;
-    }
-
-    // Then sort by category relevance
-    const aCategoryScore = categoryMatches[a.category] || 0;
-    const bCategoryScore = categoryMatches[b.category] || 0;
-    if (aCategoryScore !== bCategoryScore) {
-      return bCategoryScore - aCategoryScore;
-    }
-
-    // Finally sort by rating
-    return b.rating - a.rating;
-  });
+  // Convert to EquipmentWithScore for sorting
+  const equipmentWithScore: EquipmentWithScore[] = equipment.map(item => ({
+    ...item,
+    searchScore: (categoryMatches[item.category] || 0) + 
+                 (locationMatches.some(loc => item.location.zip.toLowerCase().includes(loc.toLowerCase())) ? 2 : 0)
+  }));
+  
+  return sortEquipmentByTextRelevance(equipmentWithScore);
 };

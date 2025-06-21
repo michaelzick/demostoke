@@ -89,56 +89,67 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
     }
 
     // Generate different details based on category
-    let name, material, suitable, images;
+    let name, material, suitable, images, subcategory;
 
     switch (category) {
       case "snowboards": {
-        name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][i % 4]} Snowboard`;
+        const snowboardTypes = ['All-Mountain', 'Freestyle', 'Freeride', 'Powder'];
+        const snowboardType = snowboardTypes[i % 4];
+        name = `${snowboardType} Snowboard`;
+        subcategory = snowboardType;
         material = snowboardMaterials[i % snowboardMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][i % 4]}`;
-        // Randomize 2-4 images from snowboard collection
-        const snowboardCount = Math.floor(Math.random() * 3) + 2; // 2-4 images
+        const snowboardCount = Math.floor(Math.random() * 3) + 2;
         images = snowboardImages.slice(0, snowboardCount);
         break;
       }
       case "skis": {
-        name = `${['All-Mountain', 'Freestyle', 'Freeride', 'Powder'][i % 4]} Skis`;
+        const skiTypes = ['All-Mountain', 'Freestyle', 'Freeride', 'Powder'];
+        const skiType = skiTypes[i % 4];
+        name = `${skiType} Skis`;
+        subcategory = skiType;
         material = skiMaterials[i % skiMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][i % 4]}`;
-        // Randomize 2-4 images from ski collection
-        const skiCount = Math.floor(Math.random() * 3) + 2; // 2-4 images
+        const skiCount = Math.floor(Math.random() * 3) + 2;
         images = skiImages.slice(0, skiCount);
         break;
       }
       case "surfboards": {
-        name = `${['Shortboard', 'Longboard', 'Fish', 'Funboard'][i % 4]} Surfboard`;
+        const surfboardTypes = ['Shortboard', 'Longboard', 'Fish', 'Funboard'];
+        const surfboardType = surfboardTypes[i % 4];
+        name = `${surfboardType} Surfboard`;
+        subcategory = surfboardType;
         material = surfboardMaterials[i % surfboardMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][i % 4]} Surfers`;
-        // Randomize 2-4 images from surfboard collection
-        const surfboardCount = Math.floor(Math.random() * 3) + 2; // 2-4 images
+        const surfboardCount = Math.floor(Math.random() * 3) + 2;
         images = surfboardImages.slice(0, surfboardCount);
         break;
       }
       case "sups": {
-        name = `${['Touring', 'All-Around', 'Inflatable', 'Racing'][i % 4]} Paddle Board`;
+        const supTypes = ['Touring', 'All-Around', 'Inflatable', 'Racing'];
+        const supType = supTypes[i % 4];
+        name = `${supType} Paddle Board`;
+        subcategory = supType;
         material = paddleMaterials[i % paddleMaterials.length];
         suitable = `${['Flat Water', 'Surf', 'Racing', 'Yoga'][i % 4]}`;
-        // Randomize 2-4 images from SUP collection
-        const supCount = Math.floor(Math.random() * 3) + 2; // 2-4 images
+        const supCount = Math.floor(Math.random() * 3) + 2;
         images = supImages.slice(0, supCount);
         break;
       }
       case "mountain-bikes": {
-        name = `${['Trail', 'Cross Country', 'Enduro', 'Downhill'][i % 4]} Mountain Bike`;
+        const bikeTypes = ['Trail', 'Cross Country', 'Enduro', 'Downhill'];
+        const bikeType = bikeTypes[i % 4];
+        name = `${bikeType} Mountain Bike`;
+        subcategory = bikeType;
         material = bikeMaterials[i % bikeMaterials.length];
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Expert'][i % 4]} Riders`;
-        // Randomize 2-4 images from bike collection
-        const bikeCount = Math.floor(Math.random() * 3) + 2; // 2-4 images
+        const bikeCount = Math.floor(Math.random() * 3) + 2;
         images = bikeImages.slice(0, bikeCount);
         break;
       }
       default:
         name = "Equipment";
+        subcategory = "General";
         material = "Various";
         suitable = "All Levels";
         images = ["https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80"];
@@ -154,7 +165,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
       name: `Owner ${ownerId}`,
       imageUrl: `https://api.dicebear.com/6.x/avataaars/svg?seed=${i}`,
       rating: Number((Math.random() * 1 + 4).toFixed(1)),
-      reviewCount: Math.floor(Math.random() * 50) + 1, // Add reviewCount
+      reviewCount: Math.floor(Math.random() * 50) + 1,
       responseRate: Math.floor(Math.random() * 20) + 80,
     };
 
@@ -162,11 +173,12 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
       id,
       name,
       category,
+      subcategory, // Now properly assigned for all categories
       description: `Great ${category.replace('-', ' ')} for ${suitable.toLowerCase()}. Well maintained and ready for your next adventure!`,
-      image_url: images[0], // Primary image is the first one
-      images: images, // Array of all images
-      price_per_day: Math.floor(Math.random() * 30) + 20, // $20-$50
-      rating: Number((Math.random() * 2 + 3).toFixed(1)), // 3.0-5.0 as a number
+      image_url: images[0],
+      images: images,
+      price_per_day: Math.floor(Math.random() * 30) + 20,
+      rating: Number((Math.random() * 2 + 3).toFixed(1)),
       review_count: Math.floor(Math.random() * 50) + 1,
       owner: ownerData,
       location: {
@@ -174,7 +186,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         lng: location.lng,
         zip: locationName,
       },
-      distance: +(Math.random() * 8).toFixed(1), // 0-8 miles
+      distance: +(Math.random() * 8).toFixed(1),
       specifications: {
         size: category === "mountain-bikes"
           ? `${['Small', 'Medium', 'Large', 'XL', 'XXL'][i % 5]}`
@@ -184,7 +196,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         suitable,
       },
       availability: {
-        available: Math.random() > 0.2, // 80% are available
+        available: Math.random() > 0.2,
         nextAvailableDate: Math.random() > 0.2 ? undefined : new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       },
       pricing_options: [
