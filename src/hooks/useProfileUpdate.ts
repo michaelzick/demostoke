@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -6,6 +5,7 @@ import { useAuth } from "@/helpers";
 import { useEmailChange } from "@/hooks/useEmailChange";
 import { useQueryClient } from "@tanstack/react-query";
 import { geocodeAddress } from "@/utils/geocoding";
+import type { UserProfile } from "@/types";
 
 export const useProfileUpdate = () => {
   const { user } = useAuth();
@@ -30,10 +30,10 @@ export const useProfileUpdate = () => {
       // Get the current email from auth to compare
       const { data: authData } = await supabase.auth.getUser();
       const currentEmail = authData?.user?.email || user.email || "";
-      
+
       // Check if email has changed
       const emailChanged = profileData.email !== currentEmail;
-      
+
       if (emailChanged) {
         const emailChangeSuccess = await handleEmailChange(profileData.email, currentEmail);
         if (!emailChangeSuccess) {
@@ -55,7 +55,7 @@ export const useProfileUpdate = () => {
       console.log('🏠 New address:', profileData.address);
 
       // Prepare update data
-      const updateData: any = {
+      const updateData: Partial<UserProfile> = {
         name: profileData.name,
         role: profileData.role,
         phone: profileData.phone,
@@ -68,7 +68,7 @@ export const useProfileUpdate = () => {
         if (profileData.address.trim()) {
           console.log('🌍 Attempting to geocode new address:', profileData.address);
           const coordinates = await geocodeAddress(profileData.address);
-          
+
           if (coordinates) {
             console.log('✅ Geocoding successful:', coordinates);
             updateData.location_lat = coordinates.lat;
@@ -114,11 +114,11 @@ export const useProfileUpdate = () => {
         const hasCoordinates = updateData.location_lat && updateData.location_lng;
         toast({
           title: "Profile updated",
-          description: hasCoordinates 
+          description: hasCoordinates
             ? "Your profile has been updated and your address has been geocoded for map display."
-            : addressChanged 
-            ? "Your profile has been updated. Address geocoding failed - you may not appear on the map."
-            : "Your profile has been updated successfully.",
+            : addressChanged
+              ? "Your profile has been updated. Address geocoding failed - you may not appear on the map."
+              : "Your profile has been updated successfully.",
         });
       }
     } catch (error: unknown) {
