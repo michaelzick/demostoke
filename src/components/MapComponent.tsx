@@ -250,7 +250,7 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
         <MapboxTokenForm onTokenSubmit={handleTokenSubmit} isLoading={false} />
       ) : (
         <>
-          <MapLegend />
+          <MapLegend activeCategory={activeCategory} />
           <div ref={mapContainer} className="w-full h-full" />
           {isUserLocationMode && userLocationsLoading && (
             <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-md">
