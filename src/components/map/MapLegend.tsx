@@ -1,3 +1,4 @@
+
 import { useAppSettings } from '@/hooks/useAppSettings';
 
 const gearLegendItems = [
@@ -10,15 +11,21 @@ const gearLegendItems = [
 
 const profileLegendItems = [
   { category: 'Retail Store', color: 'bg-[#d3ff00]' },
-  { category: 'Retail Website', color: 'bg-[#d300ff]' },
   { category: 'Builder', color: 'bg-[#ffa700]' },
   { category: 'Private Party', color: 'bg-[#fe0065]' },
 ];
 
-const MapLegend = () => {
+interface MapLegendProps {
+  activeCategory?: string | null;
+}
+
+const MapLegend = ({ activeCategory }: MapLegendProps) => {
   const { data: appSettings } = useAppSettings();
   const isUserLocationMode = appSettings?.map_display_mode === 'user_locations';
-  const legendItems = isUserLocationMode ? profileLegendItems : gearLegendItems;
+  
+  // Show gear legend when a specific category is selected, profile legend otherwise
+  const showGearLegend = isUserLocationMode && activeCategory;
+  const legendItems = showGearLegend ? gearLegendItems : profileLegendItems;
 
   return (
     <div className="absolute top-4 left-4 z-10 bg-background/90 p-2 rounded-md backdrop-blur-sm">

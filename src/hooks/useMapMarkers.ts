@@ -32,9 +32,10 @@ interface UseMapMarkersProps {
   equipment?: MapEquipment[];
   userLocations?: UserLocation[];
   isSingleView?: boolean;
+  activeCategory?: string | null;
 }
 
-export const useMapMarkers = ({ map, mapLoaded, equipment = [], userLocations = [], isSingleView = false }: UseMapMarkersProps) => {
+export const useMapMarkers = ({ map, mapLoaded, equipment = [], userLocations = [], isSingleView = false, activeCategory }: UseMapMarkersProps) => {
   const markers = useRef<mapboxgl.Marker[]>([]);
 
   useEffect(() => {
@@ -80,7 +81,7 @@ export const useMapMarkers = ({ map, mapLoaded, equipment = [], userLocations = 
       }
 
       try {
-        const el = createUserLocationMarkerElement(user.role);
+        const el = createUserLocationMarkerElement(user.role, activeCategory || undefined);
 
         const marker = new mapboxgl.Marker(el)
           .setLngLat([user.location.lng, user.location.lat]);
@@ -112,7 +113,7 @@ export const useMapMarkers = ({ map, mapLoaded, equipment = [], userLocations = 
       markers.current.forEach(marker => marker.remove());
       markers.current = [];
     };
-  }, [mapLoaded, equipment, userLocations, map, isSingleView]);
+  }, [mapLoaded, equipment, userLocations, map, isSingleView, activeCategory]);
 
   return markers.current;
 };

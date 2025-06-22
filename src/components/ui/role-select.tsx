@@ -35,7 +35,6 @@ export const RoleSelect = ({
         <SelectItem value="private-party">Private Party</SelectItem>
         <SelectItem value="builder">Builder (Surfboard Shaper, Etc.)</SelectItem>
         <SelectItem value="retail-store">Retail Store</SelectItem>
-        <SelectItem value="retail-website">Retail Website</SelectItem>
       </SelectContent>
     </Select>
   );

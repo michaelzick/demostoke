@@ -87,7 +87,8 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
     mapLoaded, 
     equipment: displayEquipment, 
     userLocations: displayUserLocations,
-    isSingleView 
+    isSingleView,
+    activeCategory 
   });
 
   // Show toast when no data is found (only once per search/filter change)

@@ -1,3 +1,4 @@
+
 import mapboxgl from 'mapbox-gl';
 
 export const getCategoryColor = (category: string): string => {
@@ -22,8 +23,6 @@ export const getUserRoleColor = (role: string): string => {
   switch (role.toLowerCase()) {
     case 'retail-store':
       return 'bg-[#d3ff00]';
-    case 'retail-website':
-      return 'bg-[#d300ff]';
     case 'builder':
       return 'bg-[#ffa700]';
     case 'private-party':
@@ -37,8 +36,6 @@ export const getRoleDisplayName = (role: string): string => {
   switch (role.toLowerCase()) {
     case 'retail-store':
       return 'Retail Store';
-    case 'retail-website':
-      return 'Retail Website';
     case 'builder':
       return 'Builder';
     case 'private-party':
@@ -65,12 +62,15 @@ export const createMarkerElement = (category: string): HTMLDivElement => {
   return el;
 };
 
-export const createUserLocationMarkerElement = (role: string): HTMLDivElement => {
+export const createUserLocationMarkerElement = (role: string, activeCategory?: string): HTMLDivElement => {
   const el = document.createElement('div');
   el.className = 'flex items-center justify-center';
 
   const markerIcon = document.createElement('div');
-  markerIcon.className = `p-1 rounded-full ${getUserRoleColor(role)}`;
+  
+  // Use category color if active category is selected, otherwise use role color
+  const backgroundColor = activeCategory ? getCategoryColor(activeCategory) : getUserRoleColor(role);
+  markerIcon.className = `p-1 rounded-full ${backgroundColor}`;
 
   const icon = document.createElement('div');
   icon.className = role.toLowerCase() === 'private-party' ? 'text-white' : 'text-black';
