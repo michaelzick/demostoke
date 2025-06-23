@@ -13,7 +13,7 @@ const generateRandomEquipment = (count: number, showMockData: boolean = true): E
   for (let i = 0; i < count; i++) {
     const category = filteredCategories[Math.floor(Math.random() * filteredCategories.length)];
     const location = locations[Math.floor(Math.random() * locations.length)];
-    const owner = ownerPersonas[Math.floor(Math.random() * ownerPersonas.length)];
+    const ownerPersona = ownerPersonas[Math.floor(Math.random() * ownerPersonas.length)];
     
     // Generate subcategory based on category (excluding SUPs)
     let subcategory = "";
@@ -31,6 +31,18 @@ const generateRandomEquipment = (count: number, showMockData: boolean = true): E
         subcategory = ['Trail', 'Cross-Country', 'Enduro', 'Downhill', 'Fat Bike'][Math.floor(Math.random() * 5)];
         break;
     }
+
+    // Create owner object that matches the Owner interface
+    const owner = {
+      id: ownerPersona.id,
+      name: ownerPersona.name,
+      imageUrl: ownerPersona.avatar_url,
+      rating: 4.5 + Math.random() * 0.5, // Random rating between 4.5-5.0
+      reviewCount: Math.floor(Math.random() * 50) + 5, // Random review count 5-55
+      responseRate: 90 + Math.floor(Math.random() * 10), // Random response rate 90-99%
+      location: location.name,
+      memberSince: '2020',
+    };
     
     const item: Equipment = {
       id: `mock-${i + 1}`,
@@ -45,14 +57,23 @@ const generateRandomEquipment = (count: number, showMockData: boolean = true): E
       location: {
         lat: location.lat + (Math.random() - 0.5) * 0.1,
         lng: location.lng + (Math.random() - 0.5) * 0.1,
+        zip: generateRandomZip(), // Add zip code
       },
       distance: Math.floor(Math.random() * 50) + 1,
-      suitable_skill_level: skillLevels[Math.floor(Math.random() * skillLevels.length)],
-      material: materials[Math.floor(Math.random() * materials.length)],
-      size: generateSizeForCategory(category),
-      weight: `${Math.floor(Math.random() * 10) + 5} lbs`,
-      status: 'available' as const,
-      user_id: owner.id,
+      specifications: {
+        size: generateSizeForCategory(category),
+        weight: `${Math.floor(Math.random() * 10) + 5} lbs`,
+        material: materials[Math.floor(Math.random() * materials.length)],
+        suitable: skillLevels[Math.floor(Math.random() * skillLevels.length)],
+      },
+      availability: {
+        available: true,
+      },
+      pricing_options: [{
+        id: `pricing-${i + 1}`,
+        price: Math.floor(Math.random() * 200) + 50,
+        duration: '1 day',
+      }],
       owner: owner,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -96,4 +117,11 @@ const generateSizeForCategory = (category: string): string => {
   }
 };
 
+const generateRandomZip = (): string => {
+  // Generate a random 5-digit ZIP code for California
+  return (90000 + Math.floor(Math.random() * 9999)).toString();
+};
+
+// Export with the correct name
+export const generateMockEquipment = generateRandomEquipment;
 export { generateRandomEquipment };
