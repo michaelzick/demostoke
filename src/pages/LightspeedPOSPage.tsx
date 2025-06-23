@@ -242,7 +242,7 @@ const LightspeedPOSPage = () => {
                       <Badge variant="secondary">Surfboards</Badge>
                       <Badge variant="secondary">Snowboards</Badge>
                       <Badge variant="secondary">Skateboards</Badge>
-                      <Badge variant="secondary">SUPs</Badge>
+                      <Badge variant="secondary">Mountain Bikes</Badge>
                       <Badge variant="secondary">Accessories</Badge>
                     </div>
                   </div>

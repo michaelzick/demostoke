@@ -9,11 +9,9 @@ export const getCategoryColor = (category: string): string => {
       return 'bg-lime-600';
     case 'surfboards':
       return 'bg-blue-600';
-    case 'sups':
-      return 'bg-violet-600';
     case 'mountain-bikes':
     case 'mountain-bike':  // Handle both variations
-      return 'bg-red-600';
+      return 'bg-violet-600';
     default:
       return 'bg-black';
   }
@@ -67,7 +65,7 @@ export const createUserLocationMarkerElement = (role: string, activeCategory?: s
   el.className = 'flex items-center justify-center';
 
   const markerIcon = document.createElement('div');
-  
+
   // Use category color if active category is selected, otherwise use role color
   const backgroundColor = activeCategory ? getCategoryColor(activeCategory) : getUserRoleColor(role);
   markerIcon.className = `p-1 rounded-full ${backgroundColor}`;

@@ -5,8 +5,7 @@ const gearLegendItems = [
   { category: 'Snowboards', color: 'bg-fuchsia-600' },
   { category: 'Skis', color: 'bg-lime-600' },
   { category: 'Surfboards', color: 'bg-blue-600' },
-  { category: 'SUPs', color: 'bg-violet-600' },
-  { category: 'Mountain Bikes', color: 'bg-red-600' },
+  { category: 'Mountain Bikes', color: 'bg-violet-600' },
 ];
 
 const profileLegendItems = [
@@ -22,7 +21,7 @@ interface MapLegendProps {
 const MapLegend = ({ activeCategory }: MapLegendProps) => {
   const { data: appSettings } = useAppSettings();
   const isUserLocationMode = appSettings?.map_display_mode === 'user_locations';
-  
+
   // Show gear legend when a specific category is selected, profile legend otherwise
   const showGearLegend = isUserLocationMode && activeCategory;
   const legendItems = showGearLegend ? gearLegendItems : profileLegendItems;

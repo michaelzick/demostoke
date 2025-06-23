@@ -2,11 +2,9 @@
 export const mapCategoryToGearType = (category: string): string => {
   const categoryMap: { [key: string]: string } = {
     "snowboards": "snowboard",
-    "skis": "skis", 
+    "skis": "skis",
     "surfboards": "surfboard",
-    "sups": "sup",
     "mountain-bikes": "mountain-bike",
-    "e-bikes": "e-bike"
   };
   return categoryMap[category] || category;
 };
@@ -16,7 +14,7 @@ export const mapSkillLevel = (skillLevel: string, gearType: string): string => {
   const skillLevelMappings: { [key: string]: { [key: string]: string } } = {
     snowboard: {
       "Beginner": "Beginner",
-      "Intermediate": "Intermediate", 
+      "Intermediate": "Intermediate",
       "Advanced": "Advanced",
       "Park Rider": "Park Rider",
       "All Levels": "Beginner" // Default fallback
@@ -24,7 +22,7 @@ export const mapSkillLevel = (skillLevel: string, gearType: string): string => {
     skis: {
       "Beginner": "Beginner",
       "Intermediate": "Intermediate",
-      "Advanced": "Advanced", 
+      "Advanced": "Advanced",
       "Park Rider": "Park Rider",
       "All Levels": "Beginner" // Default fallback
     },
@@ -78,7 +76,7 @@ export const parseSize = (sizeString: string): { length: string; width: string; 
   }
 
   const parts = sizeString.split(' x ').map(part => part.trim());
-  
+
   if (parts.length >= 3) {
     // Extract thickness (remove unit from the last part)
     const thicknessPart = parts[2].replace(/[a-zA-Z\s]+$/, '');
@@ -96,6 +94,6 @@ export const parseSize = (sizeString: string): { length: string; width: string; 
       thickness: ""
     };
   }
-  
+
   return { length: "", width: "", thickness: "" };
 };

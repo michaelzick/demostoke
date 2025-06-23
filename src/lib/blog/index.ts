@@ -3,7 +3,6 @@ import { BlogPost } from './types';
 import { snowboardsPosts } from './snowboardsPosts';
 import { skisPosts } from './skisPosts';
 import { surfboardsPosts } from './surfboardsPosts';
-import { supsPosts } from './supsPosts';
 import { mountainBikesPosts } from './mountainBikesPosts';
 import { gearReviewsPosts } from './gearReviewsPosts';
 
@@ -25,7 +24,6 @@ export const blogPosts: BlogPost[] = [
   ...updatePostsWithAuthor(snowboardsPosts as Omit<BlogPost, 'author' | 'authorId'>[]),
   ...updatePostsWithAuthor(skisPosts as Omit<BlogPost, 'author' | 'authorId'>[]),
   ...updatePostsWithAuthor(surfboardsPosts as Omit<BlogPost, 'author' | 'authorId'>[]),
-  ...updatePostsWithAuthor(supsPosts as Omit<BlogPost, 'author' | 'authorId'>[]),
   ...updatePostsWithAuthor(mountainBikesPosts as Omit<BlogPost, 'author' | 'authorId'>[]),
   ...updatePostsWithAuthor(gearReviewsPosts as Omit<BlogPost, 'author' | 'authorId'>[])
 ].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());

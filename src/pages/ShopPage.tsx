@@ -41,21 +41,6 @@ const shops: { [key: string]: Shop; } = {
     foundedYear: "2003",
     aboutSection: "Founded in 2003, The Boarder has been Los Angeles' premier surfboard destination for over two decades. Located in the heart of Venice Beach, we're more than just a shop—we're a community of surfers passionate about the craft of board making and the art of riding waves.\n\nOur team consists of seasoned shapers, professional surfers, and wave enthusiasts who understand that every surfer is unique. Whether you're taking your first steps into the lineup or you're a seasoned pro looking for that perfect custom board, we have the expertise and inventory to match you with your ideal ride.\n\nWe specialize in high-performance shortboards, classic longboards, and everything in between. Our custom shaping service allows you to work directly with master craftsmen to create a board tailored specifically to your style, local breaks, and performance goals."
   },
-  "rei": {
-    id: "rei",
-    name: "REI",
-    description: "Your local REI Co-op store offering premium stand-up paddleboards and outdoor gear. We're committed to helping you get outside and enjoy nature.",
-    imageUrl: "/img/logos/rei-tents.webp",
-    address: "5678 Sunset Blvd, Los Angeles, CA 90028",
-    phone: "(323) 555-0456",
-    website: "www.rei.com",
-    hours: "Mon-Sat: 10AM-9PM, Sun: 11AM-6PM",
-    rating: 4.7,
-    reviewCount: 89,
-    categories: ["sups"],
-    foundedYear: "1938",
-    aboutSection: "REI has been inspiring outdoor adventures since 1938, and our Los Angeles location continues that tradition by connecting people with the transformative power of the outdoors. As a co-op, we're owned by our members and driven by a shared passion for outdoor exploration and environmental stewardship.\n\nOur stand-up paddleboard selection represents the best in outdoor water sports equipment. We carry top brands known for their innovation, durability, and performance across various water conditions. From inflatable SUPs perfect for travel and storage to rigid boards designed for performance and touring, our curated selection ensures you'll find the right board for your adventures.\n\nWhat sets REI apart is our commitment to education and community. Our knowledgeable staff aren't just salespeople—they're outdoor enthusiasts who regularly use the gear we sell."
-  },
   "the-pow-house": {
     id: "the-pow-house",
     name: "The Pow House",

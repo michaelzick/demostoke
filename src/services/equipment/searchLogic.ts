@@ -71,7 +71,6 @@ const extractCategoryMatches = (lowerQuery: string): CategoryMatches => {
     snowboards: 0,
     skis: 0,
     surfboards: 0,
-    sups: 0,
     "mountain-bikes": 0,
   };
 
@@ -84,9 +83,6 @@ const extractCategoryMatches = (lowerQuery: string): CategoryMatches => {
   }
   if (lowerQuery.includes("surf") || lowerQuery.includes("surfboard") || lowerQuery.includes("waves")) {
     categoryMatches.surfboards += 3;
-  }
-  if (lowerQuery.includes("paddle") || lowerQuery.includes("sup") || lowerQuery.includes("stand up paddle")) {
-    categoryMatches.sups += 3;
   }
   if (lowerQuery.includes("bike") || lowerQuery.includes("mountain bike") || lowerQuery.includes("mtb") || lowerQuery.includes("cycling")) {
     categoryMatches["mountain-bikes"] += 3;
@@ -145,12 +141,12 @@ const filterAndScoreEquipmentWithTextPriority = (
         if (item.name.toLowerCase().includes(term)) {
           textScore += 10;
         }
-        
+
         // Subcategory matching (medium priority - 7 points)
         if (item.subcategory && item.subcategory.toLowerCase().includes(term)) {
           textScore += 7;
         }
-        
+
         // Description matching (lowest priority - 3 points)
         if (item.description && item.description.toLowerCase().includes(term)) {
           textScore += 3;
@@ -239,9 +235,9 @@ export const sortEquipmentByRelevance = (
   // Convert to EquipmentWithScore for sorting
   const equipmentWithScore: EquipmentWithScore[] = equipment.map(item => ({
     ...item,
-    searchScore: (categoryMatches[item.category] || 0) + 
+    searchScore: (categoryMatches[item.category] || 0) +
                  (locationMatches.some(loc => item.location.zip.toLowerCase().includes(loc.toLowerCase())) ? 2 : 0)
   }));
-  
+
   return sortEquipmentByTextRelevance(equipmentWithScore);
 };

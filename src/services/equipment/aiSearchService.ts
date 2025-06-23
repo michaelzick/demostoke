@@ -158,7 +158,6 @@ const extractCategoryMatches = (lowerQuery: string) => {
     snowboards: 0,
     skis: 0,
     surfboards: 0,
-    sups: 0,
     "mountain-bikes": 0,
   };
 
@@ -171,9 +170,6 @@ const extractCategoryMatches = (lowerQuery: string) => {
   }
   if (lowerQuery.includes("surf") || lowerQuery.includes("surfboard") || lowerQuery.includes("waves")) {
     categoryMatches.surfboards += 3;
-  }
-  if (lowerQuery.includes("paddle") || lowerQuery.includes("sup") || lowerQuery.includes("stand up paddle")) {
-    categoryMatches.sups += 3;
   }
   if (lowerQuery.includes("bike") || lowerQuery.includes("mountain bike") || lowerQuery.includes("mtb") || lowerQuery.includes("cycling")) {
     categoryMatches["mountain-bikes"] += 3;

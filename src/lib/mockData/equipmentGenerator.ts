@@ -53,7 +53,7 @@ const bikeImages = [
 
 // Mock equipment data generator
 export function generateMockEquipment(count: number = 20): Equipment[] {
-  const categories = ["snowboards", "skis", "surfboards", "sups", "mountain-bikes"];
+  const categories = ["snowboards", "skis", "surfboards", "mountain-bikes"];
   const snowboardMaterials = ["Wood Core", "Carbon", "Fiberglass", "Cap Construction"];
   const skiMaterials = ["Wood Core", "Carbon", "Fiberglass", "Cap Construction"];
   const surfboardMaterials = ["Polyurethane", "Epoxy", "Soft-top", "Carbon Fiber"];
@@ -72,9 +72,6 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
     switch (category) {
       case "surfboards":
         ownerId = "shop-the-boarder";
-        break;
-      case "sups":
-        ownerId = "shop-rei";
         break;
       case "snowboards":
       case "skis":
@@ -123,17 +120,6 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
         suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][i % 4]} Surfers`;
         const surfboardCount = Math.floor(Math.random() * 3) + 2;
         images = surfboardImages.slice(0, surfboardCount);
-        break;
-      }
-      case "sups": {
-        const supTypes = ['Touring', 'All-Around', 'Inflatable', 'Racing'];
-        const supType = supTypes[i % 4];
-        name = `${supType} Paddle Board`;
-        subcategory = supType;
-        material = paddleMaterials[i % paddleMaterials.length];
-        suitable = `${['Flat Water', 'Surf', 'Racing', 'Yoga'][i % 4]}`;
-        const supCount = Math.floor(Math.random() * 3) + 2;
-        images = supImages.slice(0, supCount);
         break;
       }
       case "mountain-bikes": {
