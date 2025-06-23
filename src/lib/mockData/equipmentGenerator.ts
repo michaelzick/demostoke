@@ -78,7 +78,6 @@ const generateRandomEquipment = (count: number, showMockData: boolean = true): E
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       visible_on_map: true,
-      view_count: Math.floor(Math.random() * 100),
       has_multiple_images: Math.random() > 0.7,
     };
     
