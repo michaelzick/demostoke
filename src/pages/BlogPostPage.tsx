@@ -6,7 +6,7 @@ import { blogPosts } from "@/lib/blog";
 import { useEffect, useState } from "react";
 
 const BlogPostPage = () => {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug } = useParams<{ slug: string; }>();
   const post = blogPosts.find(p => p.id === slug);
   const [showBackToTop, setShowBackToTop] = useState(false);
   console.log("Post ID:", slug);
@@ -56,8 +56,7 @@ const BlogPostPage = () => {
       snowboards: "bg-blue-100 text-blue-800",
       skis: "bg-purple-100 text-purple-800",
       surfboards: "bg-cyan-100 text-cyan-800",
-      sups: "bg-green-100 text-green-800",
-      skateboards: "bg-orange-100 text-orange-800"
+      "mountain-bikes": "bg-orange-100 text-orange-800"
     };
     return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800";
   };
@@ -204,11 +203,10 @@ const BlogPostPage = () => {
       {/* Floating Back to Top Button */}
       <Button
         onClick={scrollToTop}
-        className={`fixed bottom-6 left-6 z-50 rounded-full w-12 h-12 p-0 shadow-lg hover:shadow-xl transition-all duration-300 ${
-          showBackToTop
+        className={`fixed bottom-6 left-6 z-50 rounded-full w-12 h-12 p-0 shadow-lg hover:shadow-xl transition-all duration-300 ${showBackToTop
             ? 'opacity-100 translate-y-0'
             : 'opacity-0 translate-y-4 pointer-events-none'
-        }`}
+          }`}
         size="icon"
       >
         <ArrowUp className="h-5 w-5" />

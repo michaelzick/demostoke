@@ -24,7 +24,6 @@ const BlogPage = () => {
     { label: "Snowboards", value: "snowboards" },
     { label: "Skis", value: "skis" },
     { label: "Surfboards", value: "surfboards" },
-    { label: "SUPs", value: "sups" },
     { label: "Mountain Bikes", value: "mountain-bikes" }
   ];
 
@@ -88,8 +87,6 @@ const BlogPage = () => {
       snowboards: "bg-blue-100 text-blue-800",
       skis: "bg-purple-100 text-purple-800",
       surfboards: "bg-cyan-100 text-cyan-800",
-      sups: "bg-green-100 text-green-800",
-      skateboards: "bg-orange-100 text-orange-800",
       "gear reviews": "bg-yellow-100 text-yellow-800",
       "mountain-bikes": "bg-red-100 text-red-800"
     };

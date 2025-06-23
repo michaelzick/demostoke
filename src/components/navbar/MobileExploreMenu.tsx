@@ -11,7 +11,6 @@ const gearCategories = [
   { name: "Snowboards", category: "snowboards" },
   { name: "Skis", category: "skis" },
   { name: "Surfboards", category: "surfboards" },
-  { name: "SUPs", category: "sups" },
   { name: "Mountain Bikes", category: "mountain-bikes" },
 ];
 
@@ -36,7 +35,7 @@ const MobileExploreMenu = ({ onClose }: MobileExploreMenuProps) => {
           <ChevronDown className="h-4 w-4" />
         )}
       </button>
-      
+
       {isExpanded && (
         <div className="pl-4 space-y-2 pb-2">
           {gearCategories.map((gear) => (

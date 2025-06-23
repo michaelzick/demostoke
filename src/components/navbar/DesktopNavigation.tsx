@@ -20,7 +20,6 @@ const gearCategories = [
   { name: "Snowboards", category: "snowboards" },
   { name: "Skis", category: "skis" },
   { name: "Surfboards", category: "surfboards" },
-  { name: "SUPs", category: "sups" },
   { name: "Mountain Bikes", category: "mountain-bikes" },
 ];
 
