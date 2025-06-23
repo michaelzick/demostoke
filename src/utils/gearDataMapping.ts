@@ -32,13 +32,6 @@ export const mapSkillLevel = (skillLevel: string, gearType: string): string => {
       "Advanced": "Advanced",
       "All Levels": "All Levels"
     },
-    sup: {
-      "Flat Water": "Flat Water",
-      "Surf": "Surf",
-      "Racing": "Racing",
-      "Yoga": "Yoga",
-      "All Levels": "Flat Water" // Default fallback
-    },
     "mountain-bike": {
       "Beginner": "Beginner",
       "Intermediate": "Intermediate",

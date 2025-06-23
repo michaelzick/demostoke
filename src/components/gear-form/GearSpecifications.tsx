@@ -37,7 +37,6 @@ const GearSpecifications = ({
     snowboard: ["Beginner", "Intermediate", "Advanced", "Park Rider"],
     skis: ["Beginner", "Intermediate", "Advanced", "Park Rider"],
     surfboard: ["Beginner", "Intermediate", "Advanced", "All Levels"],
-    sup: ["Flat Water", "Surf", "Racing", "Yoga"],
     "mountain-bike": ["Beginner", "Intermediate", "Advanced", "Expert"],
     "e-bike": ["Beginner", "Intermediate", "Advanced", "Expert"],
   };
@@ -83,9 +82,9 @@ const GearSpecifications = ({
           <Label htmlFor="bikeSize" className="block text-lg font-medium mb-2">
             Size <span className="text-red-500">*</span>
           </Label>
-          <Select 
-            value={dimensions.length} 
-            onValueChange={(value) => setDimensions({ length: value, width: "", thickness: "" })} 
+          <Select
+            value={dimensions.length}
+            onValueChange={(value) => setDimensions({ length: value, width: "", thickness: "" })}
             required
           >
             <SelectTrigger id="bikeSize">
