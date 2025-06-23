@@ -1,4 +1,3 @@
-
 import { Equipment } from '@/types';
 import { categories, skillLevels, locations, descriptions, materials, ownerPersonas } from './constants';
 
@@ -78,7 +77,6 @@ const generateRandomEquipment = (count: number, showMockData: boolean = true): E
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       visible_on_map: true,
-      has_multiple_images: Math.random() > 0.7,
     };
     
     equipment.push(item);
