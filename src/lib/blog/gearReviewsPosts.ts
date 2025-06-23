@@ -1,7 +1,6 @@
-
 import { BlogPost } from './types';
 
-export const gearReviewsPosts: Omit<BlogPost, 'author' | 'authorId'>[] = [
+export const gearReviewsPosts: BlogPost[] = [
   {
     id: "mountain-bike-gear-review-2024",
     title: "Best Mountain Bike Gear of 2024: Complete Buying Guide",
@@ -201,7 +200,9 @@ Remember, expensive gear won't automatically make you a better rider, but the ri
     readTime: 15,
     tags: ["gear", "reviews", "2024", "buying guide", "mountain-bikes"],
     heroImage: "https://images.unsplash.com/photo-1506316940527-4d1c138978a0?auto=format&fit=crop&w=1200&q=80",
-    thumbnail: "https://images.unsplash.com/photo-1506316940527-4d1c138978a0?auto=format&fit=crop&w=800&q=80"
+    thumbnail: "https://images.unsplash.com/photo-1506316940527-4d1c138978a0?auto=format&fit=crop&w=800&q=80",
+    author: 'Michael Zick',
+    authorId: 'michael-zick',
   },
   {
     id: "never-summer-proto-type-two-review",
@@ -256,7 +257,9 @@ If you're an experienced rider looking for a daily driver that excels in carving
     readTime: 7,
     heroImage: "https://www.outdoorsports.com/cdn/shop/files/NEVERS_2_109a2da9-eae2-4d78-8617-ae3319d5ffe1.png?v=1724440627",
     thumbnail: "https://www.outdoorsports.com/cdn/shop/files/NEVERS_2_109a2da9-eae2-4d78-8617-ae3319d5ffe1.png?v=1724440627",
-    tags: ["gear reviews", "snowboards", "all-mountain", "never summer", "advanced"]
+    tags: ["gear reviews", "snowboards", "all-mountain", "never summer", "advanced"],
+    author: 'Michael Zick',
+    authorId: 'michael-zick',
   },
   {
     id: "firewire-seaside-surfboard-review",
@@ -327,6 +330,66 @@ If you find yourself struggling to have fun in typical beach break surf or want 
     readTime: 6,
     heroImage: "https://www.stokedfortravel.com/wp-content/uploads/2021/04/firewire-glazer-review-rob-machado-surfboards-6-1920x960.jpg",
     thumbnail: "https://www.stokedfortravel.com/wp-content/uploads/2021/04/firewire-glazer-review-rob-machado-surfboards-6-1920x960.jpg",
-    tags: ["gear reviews", "surfboards", "small waves", "firewire", "rob machado"]
+    tags: ["gear reviews", "surfboards", "small waves", "firewire", "rob machado"],
+    author: 'Michael Zick',
+    authorId: 'michael-zick',
+  },
+  {
+    id: "pyzel-gremlin-surfboard-review",
+    title: "Pyzel Gremlin Surfboard Review: Small Wave Powerhouse with Surprising Versatility",
+    excerpt: "We put the Pyzel Gremlin through its paces in a variety of conditions. Here’s why this board is a favorite for surfers looking for fun, speed, and performance in everyday waves.",
+    content: `
+The Pyzel Gremlin is designed to bring maximum fun to average and below-average surf. After several months of testing in everything from knee-high mush to overhead punchy beach breaks, here’s our full review.
+
+**Design and Construction**
+
+The Gremlin features a full outline, wide nose, and a low entry rocker, making it easy to paddle and catch waves early. The single to double concave bottom and a wide, curvy tail help generate speed and maintain control through turns. Pyzel’s construction is top-notch, with a lightweight yet durable feel that holds up well to regular use.
+
+**Performance in the Water**
+
+**Small Waves (1-3 feet)**
+
+The Gremlin excels in small, weak surf. It planes quickly, picks up speed with minimal effort, and makes even the most lackluster days fun. The board’s width and volume up front help you get into waves early, while the pulled-in tail keeps it lively and responsive.
+
+**Medium Waves (3-5 feet)**
+
+The Gremlin’s versatility shines as the surf picks up. It holds a line well, feels stable at speed, and transitions smoothly from rail to rail. The board is forgiving but still offers enough performance for aggressive turns and snaps.
+
+**Larger Waves (5+ feet)**
+
+While not a step-up board, the Gremlin can handle bigger surf than you’d expect. The extra volume helps with late drops, and the tail shape provides surprising hold in steeper sections. Advanced surfers will appreciate its ability to adapt, though it’s best in the waist-to-head-high range.
+
+**Who Should Ride It**
+
+- Intermediate to advanced surfers seeking a daily driver for average conditions
+- Surfers who want a board that paddles easily but doesn’t sacrifice performance
+- Anyone looking to maximize fun on small days without feeling limited as the waves improve
+
+**The Verdict**
+
+Pros:
+
+- Excellent paddling and wave-catching ability
+- Fast and lively in small surf
+- Versatile enough for a range of conditions
+- High-quality construction
+
+Cons:
+
+- Not a true groveler for the absolute smallest days
+- May feel too wide for surfers who prefer narrow, high-performance shortboards
+
+**Rating: 9/10**
+
+The Pyzel Gremlin is a standout choice for surfers who want one board that can handle the majority of their sessions. It’s fun, fast, and forgiving, with enough performance to keep things interesting as the waves improve. If you’re looking for a small wave board that won’t hold you back as conditions get better, the Gremlin is well worth a look.
+`,
+    category: "gear reviews",
+    publishedAt: "2025-06-23",
+    readTime: 7,
+    heroImage: "https://darkartssurf.com/cdn/shop/products/PyzelGremlin.Fern.1450_1080x.jpg?v=1597256723",
+    thumbnail: "https://darkartssurf.com/cdn/shop/products/PyzelGremlin.Fern.1450_1080x.jpg?v=1597256723",
+    tags: ["gear reviews", "surfboards", "pyzel", "gremlin", "small wave", "review"],
+    author: 'Michael Zick',
+    authorId: 'michael-zick',
   }
 ];
