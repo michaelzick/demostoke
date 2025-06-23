@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { useAuth } from "@/helpers";
@@ -20,7 +19,6 @@ const gearCategories = [
   { name: "Snowboards", category: "snowboards" },
   { name: "Skis", category: "skis" },
   { name: "Surfboards", category: "surfboards" },
-  { name: "SUPs", category: "sups" },
   { name: "Mountain Bikes", category: "mountain-bikes" },
 ];
 

@@ -37,7 +37,6 @@ const GearSpecifications = ({
     snowboard: ["Beginner", "Intermediate", "Advanced", "Park Rider"],
     skis: ["Beginner", "Intermediate", "Advanced", "Park Rider"],
     surfboard: ["Beginner", "Intermediate", "Advanced", "All Levels"],
-    sup: ["Flat Water", "Surf", "Racing", "Yoga"],
     "mountain-bike": ["Beginner", "Intermediate", "Advanced", "Expert"],
     "e-bike": ["Beginner", "Intermediate", "Advanced", "Expert"],
   };

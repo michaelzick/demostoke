@@ -1,4 +1,3 @@
-
 import mapboxgl from 'mapbox-gl';
 
 export const getCategoryColor = (category: string): string => {
@@ -9,11 +8,9 @@ export const getCategoryColor = (category: string): string => {
       return 'bg-lime-600';
     case 'surfboards':
       return 'bg-blue-600';
-    case 'sups':
-      return 'bg-violet-600';
     case 'mountain-bikes':
     case 'mountain-bike':  // Handle both variations
-      return 'bg-red-600';
+      return 'bg-violet-600';
     default:
       return 'bg-black';
   }

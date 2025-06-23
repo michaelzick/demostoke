@@ -60,7 +60,6 @@ const GearBasicInfo = ({
             <SelectItem value="snowboard">Snowboard</SelectItem>
             <SelectItem value="skis">Skis</SelectItem>
             <SelectItem value="surfboard">Surfboard</SelectItem>
-            <SelectItem value="sup">SUP</SelectItem>
             <SelectItem value="mountain-bike">Mountain Bike</SelectItem>
             <SelectItem value="e-bike">E-Bike</SelectItem>
           </SelectContent>
