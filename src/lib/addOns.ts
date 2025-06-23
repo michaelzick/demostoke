@@ -52,32 +52,6 @@ export const getAddOnsForCategory = (category: string): AddOn[] => {
           price_per_day: 1.99
         }
       ];
-    case "sups":
-      return [
-        {
-          name: "SUP Paddle",
-          imageUrl: "https://images.unsplash.com/photo-1628437539428-41ae898c3da6?auto=format&fit=crop&w=400&q=80",
-          price_per_day: 5.99
-        },
-        {
-          name: "SUP Leash",
-          imageUrl: "https://www.riverboundsports.com/wp-content/uploads/2022/06/red-paddle-coiled-sup-leash-1.webp",
-          price_per_day: 2.99
-        }
-      ];
-    case "skateboards":
-      return [
-        {
-          name: "Skateboard Trucks",
-          imageUrl: "https://images.unsplash.com/photo-1536318431364-5cc762cfc8ec?auto=format&fit=crop&w=400&q=80",
-          price_per_day: 3.99
-        },
-        {
-          name: "Skateboard Wheels",
-          imageUrl: "https://images.unsplash.com/photo-1631367095408-7293f0a85d85?auto=format&fit=crop&w=400&q=80",
-          price_per_day: 1.99
-        }
-      ];
     default:
       return [];
   }

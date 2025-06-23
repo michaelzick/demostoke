@@ -33,9 +33,9 @@ const MyEquipmentPage = () => {
   // Calculate master toggle state
   const masterToggleState = useMemo(() => {
     if (userEquipment.length === 0) return { checked: false, indeterminate: false };
-    
+
     const visibleCount = userEquipment.filter(item => item.visible_on_map).length;
-    
+
     if (visibleCount === 0) {
       return { checked: false, indeterminate: false };
     } else if (visibleCount === userEquipment.length) {
@@ -63,8 +63,6 @@ const MyEquipmentPage = () => {
         return <Snowflake className="h-5 w-5" weight="fill" />;
       case "surfboards":
         return <Waves className="h-5 w-5" weight="fill" />;
-      case "sups":
-        return <Waves className="h-5 w-5" weight="fill" />;
       case "mountain-bikes":
         return <Bicycle className="h-5 w-5" weight="fill" />;
       default:
@@ -81,8 +79,6 @@ const MyEquipmentPage = () => {
         return "Skis";
       case "surfboards":
         return "Surfboard";
-      case "sups":
-        return "SUP";
       case "mountain-bikes":
         return "Mountain Bike";
       default:
@@ -116,8 +112,8 @@ const MyEquipmentPage = () => {
         onSuccess: () => {
           toast({
             title: currentVisibility ? "Gear Hidden" : "Gear Shown",
-            description: currentVisibility 
-              ? "Your gear is now hidden from public view." 
+            description: currentVisibility
+              ? "Your gear is now hidden from public view."
               : "Your gear is now visible to others.",
           });
         },
@@ -135,7 +131,7 @@ const MyEquipmentPage = () => {
 
   const handleMasterToggle = () => {
     const shouldShowAll = !masterToggleState.checked;
-    
+
     // Update all equipment visibility
     userEquipment.forEach(item => {
       if (item.visible_on_map !== shouldShowAll) {
@@ -157,8 +153,8 @@ const MyEquipmentPage = () => {
 
     toast({
       title: shouldShowAll ? "All Gear Shown" : "All Gear Hidden",
-      description: shouldShowAll 
-        ? "All your gear is now visible to others." 
+      description: shouldShowAll
+        ? "All your gear is now visible to others."
         : "All your gear is now hidden from public view.",
     });
   };
@@ -255,7 +251,7 @@ const MyEquipmentPage = () => {
           <div className="mb-6 p-4 bg-muted/50 rounded-lg border">
             <div className="flex items-center space-x-2">
               <div className="relative flex items-center">
-                <Checkbox 
+                <Checkbox
                   id="master-visibility-toggle"
                   checked={masterToggleState.checked}
                   onCheckedChange={handleMasterToggle}
@@ -268,14 +264,14 @@ const MyEquipmentPage = () => {
                   </div>
                 )}
               </div>
-              <label 
+              <label
                 htmlFor="master-visibility-toggle"
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex-1"
               >
-                {masterToggleState.indeterminate 
-                  ? "Some gear visible - click to show all" 
-                  : masterToggleState.checked 
-                    ? "Hide all gear from map and search results" 
+                {masterToggleState.indeterminate
+                  ? "Some gear visible - click to show all"
+                  : masterToggleState.checked
+                    ? "Hide all gear from map and search results"
                     : "Show all gear on map and in search results"
                 }
               </label>
@@ -336,17 +332,17 @@ const MyEquipmentPage = () => {
                       <span className="font-medium">Skill Level:</span> {item.specifications?.suitable || 'N/A'}
                     </div>
                   </div>
-                  
+
                   {/* Visibility toggle */}
                   <div className="mt-4 pt-4 border-t">
                     <div className="flex items-center space-x-2">
-                      <Checkbox 
+                      <Checkbox
                         id={`visibility-${item.id}`}
                         checked={item.visible_on_map}
                         onCheckedChange={() => handleVisibilityToggle(item.id, item.visible_on_map)}
                         disabled={updateVisibilityMutation.isPending}
                       />
-                      <label 
+                      <label
                         htmlFor={`visibility-${item.id}`}
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                       >

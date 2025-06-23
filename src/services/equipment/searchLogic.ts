@@ -7,28 +7,25 @@ interface SearchMatch {
 }
 
 export const searchEquipment = (
-  equipment: Equipment[], 
+  equipment: Equipment[],
   searchQuery: string
 ): Equipment[] => {
   if (!searchQuery.trim()) return equipment;
 
   const query = searchQuery.toLowerCase().trim();
   const searchTerms = query.split(/\s+/);
-  
+
   // Check for bike-related terms to filter to mountain bikes only
   const bikeTerms = ['bike', 'bicycle', 'mountain', 'trail', 'enduro', 'downhill', 'cross-country', 'xc'];
   const hasBikeTerms = searchTerms.some(term => bikeTerms.includes(term));
-  
-  // Filter equipment first - exclude SUPs and apply bike filter if relevant
-  let filteredEquipment = equipment.filter(item => item.category !== 'sups');
-  
+
   if (hasBikeTerms) {
-    filteredEquipment = filteredEquipment.filter(item => item.category === 'mountain-bikes');
+    equipment = equipment.filter(item => item.category === 'mountain-bikes');
   }
 
   const matches: SearchMatch[] = [];
 
-  filteredEquipment.forEach(item => {
+  equipment.forEach(item => {
     let score = 0;
 
     // Check each search term

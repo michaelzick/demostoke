@@ -3,18 +3,14 @@ import { categories, skillLevels, locations, descriptions, materials, ownerPerso
 
 const generateRandomEquipment = (count: number, showMockData: boolean = true): Equipment[] => {
   if (!showMockData) return [];
-  
+
   const equipment: Equipment[] = [];
-  
-  // Filter out 'sups' from categories
-  const filteredCategories = categories.filter(cat => cat !== 'sups');
-  
+
   for (let i = 0; i < count; i++) {
-    const category = filteredCategories[Math.floor(Math.random() * filteredCategories.length)];
+    const category = categories[Math.floor(Math.random() * categories.length)];
     const location = locations[Math.floor(Math.random() * locations.length)];
     const ownerPersona = ownerPersonas[Math.floor(Math.random() * ownerPersonas.length)];
-    
-    // Generate subcategory based on category (excluding SUPs)
+
     let subcategory = "";
     switch (category) {
       case 'snowboards':
@@ -42,7 +38,7 @@ const generateRandomEquipment = (count: number, showMockData: boolean = true): E
       location: location.name,
       memberSince: '2020',
     };
-    
+
     const item: Equipment = {
       id: `mock-${i + 1}`,
       name: `${category.charAt(0).toUpperCase() + category.slice(1)} ${Math.floor(Math.random() * 1000)}`,
@@ -78,15 +74,15 @@ const generateRandomEquipment = (count: number, showMockData: boolean = true): E
       updated_at: new Date().toISOString(),
       visible_on_map: true,
     };
-    
+
     equipment.push(item);
   }
-  
+
   return equipment;
 };
 
 const getImageForCategory = (category: string): string => {
-  const imageMap: { [key: string]: string } = {
+  const imageMap: { [key: string]: string; } = {
     'snowboards': 'https://images.unsplash.com/photo-1551524164-687a55dd1126?auto=format&fit=crop&w=800&q=80',
     'skis': 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=80',
     'surfboards': 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=800&q=80',

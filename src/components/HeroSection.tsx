@@ -113,13 +113,6 @@ const HeroSection = () => {
               <span className="text-sm font-medium">Surfboards</span>
             </Link>
             <Link
-              to="/explore?category=sups"
-              className="flex items-center gap-2 transition-transform transform hover:scale-105"
-            >
-              <Fish className="h-6 w-6" weight="fill" />
-              <span className="text-sm font-medium">SUPs</span>
-            </Link>
-            <Link
               to="/explore?category=mountain-bikes"
               className="flex items-center gap-2 transition-transform transform hover:scale-105"
             >

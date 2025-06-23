@@ -19,8 +19,6 @@ export const getCategoryDisplayName = (category: string) => {
       return "Skis";
     case "surfboards":
       return "Surfboards";
-    case "sups":
-      return "SUPs";
     case "mountain-bikes":
       return "Mountain Bikes";
     default:
