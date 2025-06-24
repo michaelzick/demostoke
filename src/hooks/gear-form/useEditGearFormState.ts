@@ -24,6 +24,7 @@ export const useEditGearFormState = () => {
   ]);
   const [damageDeposit, setDamageDeposit] = useState("100");
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [selectedSkillLevels, setSelectedSkillLevels] = useState<string[]>([]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -68,6 +69,8 @@ export const useEditGearFormState = () => {
     setDamageDeposit,
     selectedSizes,
     setSelectedSizes,
+    selectedSkillLevels,
+    setSelectedSkillLevels,
     handleImageUpload,
     handleMultipleImageUpload,
   };

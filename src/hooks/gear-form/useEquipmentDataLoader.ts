@@ -17,6 +17,7 @@ interface UseEquipmentDataLoaderProps {
   setDamageDeposit?: (value: string) => void;
   setImageUrl?: (value: string) => void;
   setMeasurementUnit?: (value: string) => void;
+  setSelectedSkillLevels?: (skillLevels: string[]) => void;
 }
 
 export const useEquipmentDataLoader = ({
@@ -31,6 +32,7 @@ export const useEquipmentDataLoader = ({
   setDamageDeposit,
   setImageUrl,
   setMeasurementUnit,
+  setSelectedSkillLevels,
 }: UseEquipmentDataLoaderProps) => {
   const { data: pricingOptionsData = [] } = usePricingOptions(equipment?.id || "");
   const equipmentDataLoadedRef = useRef(false);
@@ -88,9 +90,21 @@ export const useEquipmentDataLoader = ({
         setDamageDeposit(damageDepositValue);
       }
 
-      // Map and set skill level
-      const mappedSkillLevel = mapSkillLevel(equipment.specifications?.suitable || "", mappedGearType);
-      setSkillLevel(mappedSkillLevel || "");
+      // Handle skill levels - parse multiple skill levels from the suitable field
+      if (equipment.specifications?.suitable) {
+        const skillLevels = equipment.specifications.suitable.split(", ").map(level => level.trim());
+        setSkillLevel(skillLevels.join(", "));
+        
+        // Set selected skill levels if the setter is provided
+        if (setSelectedSkillLevels) {
+          setSelectedSkillLevels(skillLevels);
+        }
+      } else {
+        setSkillLevel("");
+        if (setSelectedSkillLevels) {
+          setSelectedSkillLevels([]);
+        }
+      }
       
       // Mark equipment data as loaded
       equipmentDataLoadedRef.current = true;

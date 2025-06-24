@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -54,6 +55,16 @@ const EditGearForm = () => {
       }
     }
   }, [equipment, formState.setSelectedSizes]);
+
+  // Handle existing skill levels when equipment loads
+  useEffect(() => {
+    if (equipment && equipment.specifications?.suitable) {
+      const existingSkillLevels = equipment.specifications.suitable.split(", ") || [];
+      if (existingSkillLevels.length > 0) {
+        formState.setSelectedSkillLevels(existingSkillLevels);
+      }
+    }
+  }, [equipment, formState.setSelectedSkillLevels]);
 
   // Fetch current images when equipment is loaded
   useEffect(() => {
@@ -149,6 +160,8 @@ const EditGearForm = () => {
           gearType={formState.gearType}
           selectedSizes={formState.selectedSizes}
           setSelectedSizes={formState.setSelectedSizes}
+          selectedSkillLevels={formState.selectedSkillLevels}
+          setSelectedSkillLevels={formState.setSelectedSkillLevels}
         />
 
         <MultipleGearMedia

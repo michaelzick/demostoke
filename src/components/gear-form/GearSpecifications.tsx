@@ -25,6 +25,8 @@ interface GearSpecificationsProps {
   gearType: string;
   selectedSizes?: string[];
   setSelectedSizes?: (sizes: string[]) => void;
+  selectedSkillLevels?: string[];
+  setSelectedSkillLevels?: (skillLevels: string[]) => void;
 }
 
 const GearSpecifications = ({
@@ -36,28 +38,12 @@ const GearSpecifications = ({
   setSkillLevel,
   gearType,
   selectedSizes = [],
-  setSelectedSizes
+  setSelectedSizes,
+  selectedSkillLevels = [],
+  setSelectedSkillLevels
 }: GearSpecificationsProps) => {
-  const skillLevels = {
-    snowboard: ["Beginner", "Intermediate", "Advanced", "Park Rider"],
-    skis: ["Beginner", "Intermediate", "Advanced", "Park Rider"],
-    surfboard: ["Beginner", "Intermediate", "Advanced", "All Levels"],
-    "mountain-bike": ["Beginner", "Intermediate", "Advanced", "Expert"],
-    "e-bike": ["Beginner", "Intermediate", "Advanced", "Expert"],
-  };
-
-  // Reset skill level if it's not valid for the current gear type
-  useEffect(() => {
-    if (gearType && skillLevel) {
-      const validLevels = skillLevels[gearType as keyof typeof skillLevels] || [];
-      if (!validLevels.includes(skillLevel)) {
-        console.log('Resetting skill level - not valid for gear type:', gearType, skillLevel);
-        setSkillLevel("");
-      }
-    }
-  }, [gearType, skillLevel, setSkillLevel]);
-
-  console.log('GearSpecifications render - gearType:', gearType, 'skillLevel:', skillLevel);
+  // Universal skill levels for all gear types
+  const universalSkillLevels = ["Beginner", "Intermediate", "Advanced", "Expert"];
 
   const isBikeType = gearType === "mountain-bike" || gearType === "e-bike";
   const bikeSize = ["Small", "Medium", "Large", "XL", "XXL"];
@@ -72,6 +58,18 @@ const GearSpecifications = ({
     setSelectedSizes(newSizes);
     // Update dimensions.length for backward compatibility
     setDimensions({ length: newSizes.join(", "), width: "", thickness: "" });
+  };
+
+  const handleSkillLevelToggle = (level: string) => {
+    if (!setSelectedSkillLevels) return;
+    
+    const newSkillLevels = selectedSkillLevels.includes(level)
+      ? selectedSkillLevels.filter(l => l !== level)
+      : [...selectedSkillLevels, level];
+    
+    setSelectedSkillLevels(newSkillLevels);
+    // Update skillLevel for backward compatibility
+    setSkillLevel(newSkillLevels.join(", "));
   };
 
   return (
@@ -170,37 +168,35 @@ const GearSpecifications = ({
         </div>
       )}
 
-      {/* Skill Level */}
+      {/* Skill Level - Now using checkboxes for all gear types */}
       <div>
-        <Label htmlFor="skillLevel" className="block text-lg font-medium mb-2">
-          Skill Level <span className="text-red-500">*</span>
+        <Label className="block text-lg font-medium mb-2">
+          Suitable Skill Levels <span className="text-red-500">*</span>
         </Label>
-        <Select
-          key={`${gearType}-${skillLevel}`}
-          value={skillLevel}
-          onValueChange={(value) => {
-            console.log('Skill level changed:', value);
-            setSkillLevel(value);
-          }}
-          disabled={!gearType}
-          required
-        >
-          <SelectTrigger id="skillLevel">
-            <SelectValue placeholder={
-              gearType ? "Select Skill Level" : "Select Gear Type First"
-            } />
-          </SelectTrigger>
-          <SelectContent>
-            {gearType &&
-              skillLevels[gearType as keyof typeof skillLevels]?.map(
-                (level) => (
-                  <SelectItem key={level} value={level}>
-                    {level}
-                  </SelectItem>
-                )
-              )}
-          </SelectContent>
-        </Select>
+        <div className="grid grid-cols-2 gap-3">
+          {universalSkillLevels.map((level) => (
+            <div key={level} className="flex items-center space-x-2">
+              <Checkbox
+                id={`skill-${level}`}
+                checked={selectedSkillLevels.includes(level)}
+                onCheckedChange={() => handleSkillLevelToggle(level)}
+                disabled={!gearType}
+              />
+              <Label
+                htmlFor={`skill-${level}`}
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                {level}
+              </Label>
+            </div>
+          ))}
+        </div>
+        {selectedSkillLevels.length === 0 && gearType && (
+          <p className="text-sm text-red-500 mt-1">Please select at least one skill level</p>
+        )}
+        {!gearType && (
+          <p className="text-sm text-gray-500 mt-1">Select gear type first</p>
+        )}
       </div>
     </>
   );

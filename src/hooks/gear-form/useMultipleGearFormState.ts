@@ -18,6 +18,7 @@ export const useMultipleGearFormState = () => {
   ]);
   const [damageDeposit, setDamageDeposit] = useState("");
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [selectedSkillLevels, setSelectedSkillLevels] = useState<string[]>([]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -52,6 +53,8 @@ export const useMultipleGearFormState = () => {
     setDamageDeposit,
     selectedSizes,
     setSelectedSizes,
+    selectedSkillLevels,
+    setSelectedSkillLevels,
     handleImageUpload,
   };
 };
