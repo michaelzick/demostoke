@@ -61,8 +61,12 @@ export const useMultipleGearFormSubmission = ({
       return;
     }
 
+    // Check if this is a bike type and extract selected sizes from dimensions.length
+    const isBikeType = gearType === "mountain-bike" || gearType === "e-bike";
+    const selectedSizes = isBikeType ? dimensions.length.split(", ").filter(size => size.trim()) : [];
+
     // Use the validation hook to validate the form
-    const formData: FormData = {
+    const formData: FormData & { selectedSizes?: string[] } = {
       gearName,
       gearType,
       description,
@@ -79,6 +83,7 @@ export const useMultipleGearFormSubmission = ({
       imageUrl: useImageUrls ? imageUrls[0] : "",
       useImageUrl: useImageUrls,
       role,
+      selectedSizes,
     };
 
     if (!validateForm(formData)) {

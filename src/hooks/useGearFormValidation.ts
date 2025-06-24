@@ -5,7 +5,7 @@ import { PricingOption, FormData } from "@/hooks/gear-form/types";
 export const useGearFormValidation = () => {
   const { toast } = useToast();
 
-  const validateForm = (formData: FormData): boolean => {
+  const validateForm = (formData: FormData & { selectedSizes?: string[] }): boolean => {
     const {
       gearName,
       gearType,
@@ -19,6 +19,7 @@ export const useGearFormValidation = () => {
       pricingOptions,
       imageUrl,
       useImageUrl,
+      selectedSizes = [],
     } = formData;
 
     // Validate required fields
@@ -34,31 +35,21 @@ export const useGearFormValidation = () => {
       return false;
     }
 
+    // Validate bike size selection
+    if (isBikeType && selectedSizes.length === 0) {
+      toast({
+        title: "Missing Size",
+        description: "Please select at least one size for your bike.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
     // Additional validation for non-bike types
     if (!isBikeType && (!measurementUnit || !dimensions.length || !dimensions.width)) {
       toast({
         title: "Missing Dimensions",
         description: "Please provide all dimension measurements for your gear.",
-        variant: "destructive",
-      });
-      return false;
-    }
-
-    // Validate bike size
-    if (isBikeType && !dimensions.length) {
-      toast({
-        title: "Missing Size",
-        description: "Please select a size for your bike.",
-        variant: "destructive",
-      });
-      return false;
-    }
-
-    // Validate that bike size is valid
-    if (isBikeType && !['Small', 'Medium', 'Large', 'XL', 'XXL'].includes(dimensions.length)) {
-      toast({
-        title: "Invalid Size",
-        description: "Please select a valid size for your bike.",
         variant: "destructive",
       });
       return false;
