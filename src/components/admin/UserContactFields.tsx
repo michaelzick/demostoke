@@ -16,7 +16,7 @@ const UserContactFields = ({ formData, isCreating, onInputChange }: UserContactF
   return (
     <>
       <div className="space-y-2">
-        <Label htmlFor="phone">Phone Number</Label>
+        <Label htmlFor="phone">Phone Number (Not Working Here)</Label>
         <Input
           id="phone"
           type="tel"
@@ -28,7 +28,7 @@ const UserContactFields = ({ formData, isCreating, onInputChange }: UserContactF
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="address">Address</Label>
+        <Label htmlFor="address">Address (Not Working Here)</Label>
         <Textarea
           id="address"
           value={formData.address}
