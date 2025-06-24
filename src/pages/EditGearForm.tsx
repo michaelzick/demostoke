@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -49,8 +48,7 @@ const EditGearForm = () => {
   // Handle existing bike sizes when equipment loads
   useEffect(() => {
     if (equipment && (equipment.category === "mountain-bike" || equipment.category === "e-bike")) {
-      const existingSizes = equipment.specifications?.size?.split(", ") || 
-                           equipment.size?.split(", ") || [];
+      const existingSizes = equipment.specifications?.size?.split(", ") || [];
       if (existingSizes.length > 0) {
         formState.setSelectedSizes(existingSizes);
       }
