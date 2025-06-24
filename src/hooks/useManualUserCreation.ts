@@ -108,24 +108,27 @@ export const useManualUserCreation = () => {
         throw new Error('User creation failed - no user data returned');
       }
 
+      console.log('User created successfully:', authData.user.id);
+
       // Wait a moment for the user to be created and profile trigger to run
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
-      // Update the profile with all the additional information
-      const { error: profileError } = await supabase
+      // Check if profile exists
+      const { data: existingProfile, error: profileCheckError } = await supabase
         .from('profiles')
-        .update({
-          name: formData.name,
-          role: formData.role,
-          phone: formData.phone || null,
-          address: formData.address || null,
-        })
-        .eq('id', authData.user.id);
+        .select('id')
+        .eq('id', authData.user.id)
+        .single();
 
-      if (profileError) {
-        console.error('Profile update error:', profileError);
-        
-        // Try to insert the profile if update failed (in case trigger didn't run)
+      if (profileCheckError && profileCheckError.code !== 'PGRST116') {
+        console.error('Error checking profile:', profileCheckError);
+      }
+
+      let profileCreated = false;
+
+      if (!existingProfile) {
+        // Profile doesn't exist, create it
+        console.log('Profile not found, creating new profile');
         const { error: insertError } = await supabase
           .from('profiles')
           .insert({
@@ -138,21 +141,41 @@ export const useManualUserCreation = () => {
 
         if (insertError) {
           console.error('Profile insert error:', insertError);
-          toast({
-            title: "User Created with Warning",
-            description: `User account created successfully, but profile update failed. Please update the profile manually.`,
-            variant: "destructive"
-          });
-        } else {
-          toast({
-            title: "User Created Successfully",
-            description: `New user account created for ${formData.name} (${formData.email}). Profile created successfully. They will need to confirm their email address.`,
-          });
+          throw new Error('Failed to create user profile');
         }
+        profileCreated = true;
+        console.log('Profile created successfully');
       } else {
+        // Profile exists, update it with all the information
+        console.log('Profile found, updating with form data');
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            name: formData.name,
+            role: formData.role,
+            phone: formData.phone || null,
+            address: formData.address || null,
+          })
+          .eq('id', authData.user.id);
+
+        if (updateError) {
+          console.error('Profile update error:', updateError);
+          throw new Error('Failed to update user profile');
+        }
+        profileCreated = true;
+        console.log('Profile updated successfully');
+      }
+
+      if (profileCreated) {
         toast({
           title: "User Created Successfully",
-          description: `New user account created for ${formData.name} (${formData.email}). All profile information saved. They will need to confirm their email address.`,
+          description: `New user account created for ${formData.name} (${formData.email}). All profile information saved including role: ${formData.role}. They will need to confirm their email address.`,
+        });
+      } else {
+        toast({
+          title: "User Created with Warning",
+          description: `User account created successfully, but profile setup failed. Please update the profile manually.`,
+          variant: "destructive"
         });
       }
 
