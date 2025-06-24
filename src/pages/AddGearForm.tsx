@@ -79,6 +79,8 @@ const AddGearForm = () => {
           skillLevel={formState.skillLevel}
           setSkillLevel={formState.setSkillLevel}
           gearType={formState.gearType}
+          selectedSizes={formState.selectedSizes}
+          setSelectedSizes={formState.setSelectedSizes}
         />
 
         <MultipleGearMedia

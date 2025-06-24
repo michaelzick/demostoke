@@ -1,6 +1,7 @@
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -22,6 +23,8 @@ interface GearSpecificationsProps {
   skillLevel: string;
   setSkillLevel: (value: string) => void;
   gearType: string;
+  selectedSizes?: string[];
+  setSelectedSizes?: (sizes: string[]) => void;
 }
 
 const GearSpecifications = ({
@@ -31,7 +34,9 @@ const GearSpecifications = ({
   setDimensions,
   skillLevel,
   setSkillLevel,
-  gearType
+  gearType,
+  selectedSizes = [],
+  setSelectedSizes
 }: GearSpecificationsProps) => {
   const skillLevels = {
     snowboard: ["Beginner", "Intermediate", "Advanced", "Park Rider"],
@@ -55,6 +60,19 @@ const GearSpecifications = ({
   console.log('GearSpecifications render - gearType:', gearType, 'skillLevel:', skillLevel);
 
   const isBikeType = gearType === "mountain-bike" || gearType === "e-bike";
+  const bikeSize = ["Small", "Medium", "Large", "XL", "XXL"];
+
+  const handleSizeToggle = (size: string) => {
+    if (!setSelectedSizes) return;
+    
+    const newSizes = selectedSizes.includes(size)
+      ? selectedSizes.filter(s => s !== size)
+      : [...selectedSizes, size];
+    
+    setSelectedSizes(newSizes);
+    // Update dimensions.length for backward compatibility
+    setDimensions({ length: newSizes.join(", "), width: "", thickness: "" });
+  };
 
   return (
     <>
@@ -79,25 +97,29 @@ const GearSpecifications = ({
       {/* Dimensions or Size */}
       {isBikeType ? (
         <div>
-          <Label htmlFor="bikeSize" className="block text-lg font-medium mb-2">
-            Size <span className="text-red-500">*</span>
+          <Label className="block text-lg font-medium mb-2">
+            Available Sizes <span className="text-red-500">*</span>
           </Label>
-          <Select
-            value={dimensions.length}
-            onValueChange={(value) => setDimensions({ length: value, width: "", thickness: "" })}
-            required
-          >
-            <SelectTrigger id="bikeSize">
-              <SelectValue placeholder="Select Size" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="Small">Small</SelectItem>
-              <SelectItem value="Medium">Medium</SelectItem>
-              <SelectItem value="Large">Large</SelectItem>
-              <SelectItem value="XL">XL</SelectItem>
-              <SelectItem value="XXL">XXL</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="grid grid-cols-2 gap-3">
+            {bikeSize.map((size) => (
+              <div key={size} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`size-${size}`}
+                  checked={selectedSizes.includes(size)}
+                  onCheckedChange={() => handleSizeToggle(size)}
+                />
+                <Label
+                  htmlFor={`size-${size}`}
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  {size}
+                </Label>
+              </div>
+            ))}
+          </div>
+          {selectedSizes.length === 0 && (
+            <p className="text-sm text-red-500 mt-1">Please select at least one size</p>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-3 gap-4">

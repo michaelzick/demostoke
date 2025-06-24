@@ -23,6 +23,7 @@ export const useEditGearFormState = () => {
     { price: "", duration: "day" }
   ]);
   const [damageDeposit, setDamageDeposit] = useState("100");
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -65,6 +66,8 @@ export const useEditGearFormState = () => {
     setPricingOptions,
     damageDeposit,
     setDamageDeposit,
+    selectedSizes,
+    setSelectedSizes,
     handleImageUpload,
     handleMultipleImageUpload,
   };

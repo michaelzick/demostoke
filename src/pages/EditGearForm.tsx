@@ -46,6 +46,17 @@ const EditGearForm = () => {
     setMeasurementUnit: formState.setMeasurementUnit,
   });
 
+  // Handle existing bike sizes when equipment loads
+  useEffect(() => {
+    if (equipment && (equipment.category === "mountain-bike" || equipment.category === "e-bike")) {
+      const existingSizes = equipment.specifications?.size?.split(", ") || 
+                           equipment.size?.split(", ") || [];
+      if (existingSizes.length > 0) {
+        formState.setSelectedSizes(existingSizes);
+      }
+    }
+  }, [equipment, formState.setSelectedSizes]);
+
   // Fetch current images when equipment is loaded
   useEffect(() => {
     const loadCurrentImages = async () => {
@@ -138,6 +149,8 @@ const EditGearForm = () => {
           skillLevel={formState.skillLevel}
           setSkillLevel={formState.setSkillLevel}
           gearType={formState.gearType}
+          selectedSizes={formState.selectedSizes}
+          setSelectedSizes={formState.setSelectedSizes}
         />
 
         <MultipleGearMedia

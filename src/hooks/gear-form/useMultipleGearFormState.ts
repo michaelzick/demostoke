@@ -17,6 +17,7 @@ export const useMultipleGearFormState = () => {
     { price: "", duration: "day" }
   ]);
   const [damageDeposit, setDamageDeposit] = useState("");
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -49,6 +50,8 @@ export const useMultipleGearFormState = () => {
     setPricingOptions,
     damageDeposit,
     setDamageDeposit,
+    selectedSizes,
+    setSelectedSizes,
     handleImageUpload,
   };
 };
