@@ -167,10 +167,24 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
           throw new Error('Invalid token received');
         }
       } catch (err) {
-        console.error('❌ Exception while fetching token:', err);
-        console.log('📝 Showing token input form');
-        setShowTokenInput(true);
-        setIsLoadingToken(false);
+        console.error('❌ Exception while fetching token from Supabase:', err);
+        
+        // Fallback to environment variable
+        console.log('🔄 Trying fallback to environment variable...');
+        const envToken = import.meta.env.VITE_MAPBOX_TOKEN;
+        
+        if (envToken && envToken.startsWith('pk.')) {
+          console.log('✅ Valid token found in environment variable');
+          setToken(envToken);
+          localStorage.setItem('mapbox_token', envToken);
+          setIsLoadingToken(false);
+          return;
+        } else {
+          console.error('❌ No valid token found in environment variable either');
+          console.log('📝 Showing token input form');
+          setShowTokenInput(true);
+          setIsLoadingToken(false);
+        }
       }
     };
 
