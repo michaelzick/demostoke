@@ -2,10 +2,10 @@
 import { useAppSettings } from '@/hooks/useAppSettings';
 
 const gearLegendItems = [
-  { category: 'Snowboards', color: 'bg-fuchsia-600' },
-  { category: 'Skis', color: 'bg-lime-600' },
-  { category: 'Surfboards', color: 'bg-blue-600' },
-  { category: 'Mountain Bikes', color: 'bg-violet-600' },
+  { category: 'Snowboards', color: 'bg-fuchsia-500' },
+  { category: 'Skis', color: 'bg-green-400' },
+  { category: 'Surfboards', color: 'bg-sky-500' },
+  { category: 'Mountain Bikes', color: 'bg-red-600' },
 ];
 
 const profileLegendItems = [
