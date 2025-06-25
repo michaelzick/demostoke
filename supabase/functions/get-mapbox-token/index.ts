@@ -4,16 +4,20 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 };
 
 serve(async (req) => {
   console.log('🚀 Edge Function invoked with method:', req.method);
   console.log('🔍 Request URL:', req.url);
 
-  // Handle CORS preflight requests
+  // Handle CORS preflight requests IMMEDIATELY
   if (req.method === 'OPTIONS') {
     console.log('✅ Handling CORS preflight request');
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { 
+      status: 200,
+      headers: corsHeaders 
+    });
   }
 
   try {
@@ -23,7 +27,6 @@ serve(async (req) => {
     
     console.log('🔍 Environment check:');
     console.log('  - MAPBOX_TOKEN exists:', !!MAPBOX_TOKEN);
-    console.log('  - MAPBOX_TOKEN length:', MAPBOX_TOKEN?.length || 0);
     
     if (!MAPBOX_TOKEN) {
       console.error('❌ MAPBOX_TOKEN environment variable is not set');
@@ -39,11 +42,11 @@ serve(async (req) => {
       );
     }
 
+    console.log('  - MAPBOX_TOKEN length:', MAPBOX_TOKEN.length);
     console.log('  - MAPBOX_TOKEN starts with pk.:', MAPBOX_TOKEN.startsWith('pk.'));
     
     if (!MAPBOX_TOKEN.startsWith('pk.')) {
       console.error('❌ MAPBOX_TOKEN does not appear to be a valid public token');
-      console.error('❌ Token starts with:', MAPBOX_TOKEN.substring(0, 10) + '...');
       return new Response(
         JSON.stringify({ 
           error: 'Invalid Mapbox token format',
@@ -72,16 +75,11 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error('❌ Unexpected error in get-mapbox-token function:', error);
-    console.error('❌ Error details:', {
-      name: error.name,
-      message: error.message,
-      stack: error.stack
-    });
     
     return new Response(
       JSON.stringify({ 
         error: 'Internal server error',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Unknown error',
         timestamp: new Date().toISOString()
       }),
       {
