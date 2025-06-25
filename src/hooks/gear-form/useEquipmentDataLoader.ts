@@ -98,7 +98,7 @@ export const useEquipmentDataLoader = ({
         // Convert to string, handling 0 as a valid value
         const damageDepositValue = equipment.damage_deposit !== null && equipment.damage_deposit !== undefined 
           ? String(equipment.damage_deposit) 
-          : "100";
+          : "0";
         
         console.log('Final damage deposit value being set:', damageDepositValue);
         setDamageDeposit(damageDepositValue);
