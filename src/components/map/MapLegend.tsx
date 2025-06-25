@@ -5,7 +5,7 @@ const gearLegendItems = [
   { category: 'Snowboards', color: 'bg-fuchsia-500' },
   { category: 'Skis', color: 'bg-green-400' },
   { category: 'Surfboards', color: 'bg-sky-500' },
-  { category: 'Mountain Bikes', color: 'bg-red-500' },
+  { category: 'Mountain Bikes', color: 'bg-violet-400' },
 ];
 
 const profileLegendItems = [
