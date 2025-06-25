@@ -3,22 +3,28 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { StarIcon, StoreIcon, UsersIcon } from "lucide-react";
+import { StarIcon, StoreIcon, UsersIcon, EditIcon } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { getCategoryDisplayName } from "@/helpers";
 import { Equipment } from "@/types";
+import { useAuth } from "@/contexts/auth";
 
 interface EquipmentCardProps {
   equipment: Equipment;
 }
 
 const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
+  const { user } = useAuth();
+  
   // Debug logging
   console.log(`Equipment ${equipment.name} subcategory:`, equipment.subcategory);
 
   // Determine if this is from a shop or private party based on owner
   const isShop = equipment.owner.shopId;
   const isPrivateParty = equipment.owner.partyId;
+
+  // Check if the current user owns this equipment
+  const isOwner = user && equipment.owner.id === user.id;
 
   const ownerLinkPath = isShop
     ? `/shop/${equipment.owner.shopId}`
@@ -139,6 +145,14 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         <Button asChild size="sm">
           <Link to={`/equipment/${equipment.id}`}>View Details</Link>
         </Button>
+        {isOwner && (
+          <Button asChild size="sm" variant="outline">
+            <Link to={`/edit-gear/${equipment.id}`}>
+              <EditIcon className="h-4 w-4 mr-1" />
+              Update
+            </Link>
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );
