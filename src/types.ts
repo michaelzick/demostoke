@@ -48,6 +48,7 @@ export interface Owner {
   partyId?: string;
   bio?: string;
   personality?: string;
+  website?: string; // Add website field
 }
 
 export interface PricingOption {
@@ -84,4 +85,6 @@ export interface UserProfile {
 }
 
 // Add GearOwner interface (alias for Owner for backward compatibility)
-export interface GearOwner extends Owner {}
+export interface GearOwner extends Owner {
+  website?: string; // Explicitly include website property
+}
