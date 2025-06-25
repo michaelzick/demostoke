@@ -56,12 +56,14 @@ const RealUserProfilePage = () => {
     profile = {
       id: user.id,
       name: ownProfileData.name,
+      email: ownProfileData.email,
       avatar_url: ownProfileData.profileImage,
       hero_image_url: ownProfileData.heroImage,
       role: ownProfileData.role,
       about: ownProfileData.about,
       phone: ownProfileData.phone,
       address: ownProfileData.address,
+      website: ownProfileData.website, // Include website field
       member_since: new Date().toISOString(),
       created_at: new Date().toISOString(),
     } as UserProfile;

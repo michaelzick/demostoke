@@ -70,10 +70,10 @@ export interface User {
 export interface UserProfile {
   id: string;
   name: string;
-  email: string;
+  email?: string;
   avatar_url: string | null;
   role: string;
-  about?: string;
+  about?: string | null;
   phone?: string | null;
   address?: string | null;
   hero_image_url?: string | null;
