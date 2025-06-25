@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -43,27 +44,12 @@ const EditGearForm = () => {
     setDamageDeposit: formState.setDamageDeposit,
     setImageUrl: formState.setImageUrl,
     setMeasurementUnit: formState.setMeasurementUnit,
+    setSelectedSkillLevels: formState.setSelectedSkillLevels,
+    setSelectedSizes: formState.setSelectedSizes,
   });
 
-  // Handle existing bike sizes when equipment loads
-  useEffect(() => {
-    if (equipment && (equipment.category === "mountain-bike" || equipment.category === "e-bike")) {
-      const existingSizes = equipment.specifications?.size?.split(", ") || [];
-      if (existingSizes.length > 0) {
-        formState.setSelectedSizes(existingSizes);
-      }
-    }
-  }, [equipment, formState.setSelectedSizes]);
-
-  // Handle existing skill levels when equipment loads
-  useEffect(() => {
-    if (equipment && equipment.specifications?.suitable) {
-      const existingSkillLevels = equipment.specifications.suitable.split(", ") || [];
-      if (existingSkillLevels.length > 0) {
-        formState.setSelectedSkillLevels(existingSkillLevels);
-      }
-    }
-  }, [equipment, formState.setSelectedSkillLevels]);
+  // Remove the manual bike sizes loading effect since it's now handled in useEquipmentDataLoader
+  // Remove the manual skill levels loading effect since it's now handled in useEquipmentDataLoader
 
   // Fetch current images when equipment is loaded
   useEffect(() => {

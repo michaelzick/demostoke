@@ -18,6 +18,7 @@ interface UseEquipmentDataLoaderProps {
   setImageUrl?: (value: string) => void;
   setMeasurementUnit?: (value: string) => void;
   setSelectedSkillLevels?: (skillLevels: string[]) => void;
+  setSelectedSizes?: (sizes: string[]) => void;
 }
 
 export const useEquipmentDataLoader = ({
@@ -33,6 +34,7 @@ export const useEquipmentDataLoader = ({
   setImageUrl,
   setMeasurementUnit,
   setSelectedSkillLevels,
+  setSelectedSizes,
 }: UseEquipmentDataLoaderProps) => {
   const { data: pricingOptionsData = [] } = usePricingOptions(equipment?.id || "");
   const equipmentDataLoadedRef = useRef(false);
@@ -54,6 +56,14 @@ export const useEquipmentDataLoader = ({
       const parsedDimensions = parseSize(equipment.specifications?.size || "");
       setDimensions(parsedDimensions);
 
+      // For bike types, also populate selectedSizes from the size data
+      const isBikeType = mappedGearType === "mountain-bike" || mappedGearType === "e-bike";
+      if (isBikeType && setSelectedSizes && equipment.specifications?.size) {
+        const existingSizes = equipment.specifications.size.split(", ").map(size => size.trim()).filter(size => size !== "");
+        console.log('Loading existing bike sizes for checkboxes:', existingSizes);
+        setSelectedSizes(existingSizes);
+      }
+
       // Set image URL if available and setter provided
       if (setImageUrl && equipment.image_url) {
         setImageUrl(equipment.image_url);
@@ -61,8 +71,7 @@ export const useEquipmentDataLoader = ({
 
       // Set measurement unit for non-mountain bikes
       if (setMeasurementUnit) {
-        const isMountainBike = mappedGearType === "mountain-bike";
-        if (!isMountainBike) {
+        if (!isBikeType) {
           // Extract measurement unit from size string if available
           const sizeString = equipment.specifications?.size || "";
           if (sizeString.includes("inches") || sizeString.includes("in") || sizeString.includes('"')) {
