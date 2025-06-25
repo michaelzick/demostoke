@@ -12,6 +12,9 @@ export const useEquipmentById = (id: string) => {
         throw new Error('Equipment ID is required');
       }
 
+      console.log('=== FETCHING EQUIPMENT BY ID ===');
+      console.log('Equipment ID:', id);
+
       const { data, error } = await supabase
         .from('equipment')
         .select(`
@@ -37,10 +40,19 @@ export const useEquipmentById = (id: string) => {
       console.log('Raw equipment data from database:', data);
       console.log('Profile data:', data.profiles);
       console.log('Damage deposit from database:', data.damage_deposit);
+      console.log('Primary image URL:', data.image_url);
+      console.log('Has multiple images flag:', data.has_multiple_images);
 
       // Fetch additional images from equipment_images table
+      console.log('Fetching additional images for equipment ID:', data.id);
       const additionalImages = await fetchEquipmentImages(data.id);
+      console.log('Additional images fetched:', additionalImages);
+      console.log('Additional images count:', additionalImages.length);
+
+      // Create combined images array
       const allImages = additionalImages.length > 0 ? additionalImages : (data.image_url ? [data.image_url] : []);
+      console.log('Final combined images array:', allImages);
+      console.log('Final images array length:', allImages.length);
 
       // Convert to Equipment type with proper damage_deposit mapping and real owner name
       const equipment = {
@@ -90,6 +102,8 @@ export const useEquipmentById = (id: string) => {
       console.log('Mapped equipment object:', equipment);
       console.log('Mapped owner name:', equipment.owner.name);
       console.log('Mapped damage_deposit:', equipment.damage_deposit);
+      console.log('Mapped images array:', equipment.images);
+      console.log('=== END EQUIPMENT FETCH ===');
 
       return equipment;
     },

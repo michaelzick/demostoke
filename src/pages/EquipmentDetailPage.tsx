@@ -1,3 +1,4 @@
+
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState, useRef } from "react";
@@ -48,6 +49,13 @@ const EquipmentDetailPage = () => {
   // DB equipment mapping
   const equipmentForDisplayDb = useMemo(() => {
     if (equipment) {
+      console.log('=== EQUIPMENT IMAGE DEBUG ===');
+      console.log('Raw equipment data:', equipment);
+      console.log('Equipment image_url:', equipment.image_url);
+      console.log('Equipment images array:', equipment.images);
+      console.log('Images array length:', equipment.images?.length || 0);
+      console.log('=== END IMAGE DEBUG ===');
+
       return {
         id: equipment.id,
         name: equipment.name,
@@ -56,6 +64,7 @@ const EquipmentDetailPage = () => {
         description: equipment.description || "",
         price_per_day: Number(equipment.price_per_day),
         image_url: equipment.image_url || "",
+        images: equipment.images || [], // Make sure images array is passed through
         rating: Number(equipment.rating || 0),
         review_count: equipment.review_count || 0,
         owner: equipment.owner, // Use the actual owner data from the database
@@ -85,6 +94,13 @@ const EquipmentDetailPage = () => {
     if (id) {
       const mock = mockEquipment.find(e => e.id === id);
       if (mock) {
+        console.log('=== MOCK EQUIPMENT IMAGE DEBUG ===');
+        console.log('Mock equipment data:', mock);
+        console.log('Mock image_url:', mock.image_url);
+        console.log('Mock images array:', mock.images);
+        console.log('Mock images array length:', mock.images?.length || 0);
+        console.log('=== END MOCK IMAGE DEBUG ===');
+
         return {
           ...mock,
           pricingOptions: ensurePricingOptionsTuple(mock.pricing_options, mock.price_per_day),

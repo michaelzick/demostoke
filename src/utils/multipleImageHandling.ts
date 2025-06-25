@@ -1,89 +1,121 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { uploadGearImage } from "./imageUpload";
-
-export interface EquipmentImage {
-  id: string;
-  equipment_id: string;
-  image_url: string;
-  display_order: number;
-  is_primary: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export const uploadMultipleGearImages = async (
-  files: File[],
-  userId: string,
-  onProgress?: (message: string) => void
-): Promise<string[]> => {
-  const uploadPromises = files.map(async (file, index) => {
-    onProgress?.(`Uploading image ${index + 1} of ${files.length}...`);
-    return await uploadGearImage(file, userId);
-  });
-
-  return await Promise.all(uploadPromises);
-};
-
-export const saveEquipmentImages = async (
-  equipmentId: string,
-  imageUrls: string[]
-): Promise<void> => {
-  if (imageUrls.length === 0) return;
-
-  const imageData = imageUrls.map((url, index) => ({
-    equipment_id: equipmentId,
-    image_url: url,
-    display_order: index,
-    is_primary: index === 0, // First image is primary
-  }));
-
-  const { error } = await supabase
-    .from('equipment_images')
-    .insert(imageData);
-
-  if (error) {
-    console.error('Error saving equipment images:', error);
-    throw error;
-  }
-};
-
-export const updateEquipmentImages = async (
-  equipmentId: string,
-  imageUrls: string[]
-): Promise<void> => {
-  if (imageUrls.length === 0) return;
-
-  // First, delete existing images for this equipment
-  await deleteEquipmentImages(equipmentId);
-
-  // Then, save the new images
-  await saveEquipmentImages(equipmentId, imageUrls);
-};
 
 export const fetchEquipmentImages = async (equipmentId: string): Promise<string[]> => {
-  const { data, error } = await supabase
-    .from('equipment_images')
-    .select('image_url')
-    .eq('equipment_id', equipmentId)
-    .order('display_order');
+  console.log('=== FETCHING EQUIPMENT IMAGES ===');
+  console.log('Equipment ID for image fetch:', equipmentId);
 
-  if (error) {
-    console.error('Error fetching equipment images:', error);
+  try {
+    const { data, error } = await supabase
+      .from('equipment_images')
+      .select('image_url, display_order, is_primary')
+      .eq('equipment_id', equipmentId)
+      .order('display_order', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching equipment images:', error);
+      return [];
+    }
+
+    console.log('Raw equipment_images data:', data);
+    console.log('Number of images found:', data?.length || 0);
+
+    if (!data || data.length === 0) {
+      console.log('No additional images found in equipment_images table');
+      return [];
+    }
+
+    const imageUrls = data.map(img => img.image_url);
+    console.log('Extracted image URLs:', imageUrls);
+    console.log('=== END EQUIPMENT IMAGES FETCH ===');
+    
+    return imageUrls;
+  } catch (err) {
+    console.error('Exception while fetching equipment images:', err);
     return [];
   }
-
-  return data?.map(img => img.image_url) || [];
 };
 
-export const deleteEquipmentImages = async (equipmentId: string): Promise<void> => {
-  const { error } = await supabase
-    .from('equipment_images')
-    .delete()
-    .eq('equipment_id', equipmentId);
+export const uploadEquipmentImage = async (
+  equipmentId: string,
+  file: File,
+  displayOrder: number,
+  isPrimary: boolean = false
+): Promise<string | null> => {
+  try {
+    // Upload file to storage
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${equipmentId}-${displayOrder}.${fileExt}`;
+    const filePath = `equipment-images/${fileName}`;
 
-  if (error) {
-    console.error('Error deleting equipment images:', error);
-    throw error;
+    const { error: uploadError } = await supabase.storage
+      .from('equipment-images')
+      .upload(filePath, file);
+
+    if (uploadError) {
+      console.error('Error uploading image:', uploadError);
+      return null;
+    }
+
+    // Get public URL
+    const { data } = supabase.storage
+      .from('equipment-images')
+      .getPublicUrl(filePath);
+
+    const imageUrl = data.publicUrl;
+
+    // Save to database
+    const { error: dbError } = await supabase
+      .from('equipment_images')
+      .insert({
+        equipment_id: equipmentId,
+        image_url: imageUrl,
+        display_order: displayOrder,
+        is_primary: isPrimary
+      });
+
+    if (dbError) {
+      console.error('Error saving image to database:', dbError);
+      return null;
+    }
+
+    return imageUrl;
+  } catch (error) {
+    console.error('Exception uploading equipment image:', error);
+    return null;
+  }
+};
+
+export const deleteEquipmentImage = async (imageUrl: string): Promise<boolean> => {
+  try {
+    // Delete from database first
+    const { error: dbError } = await supabase
+      .from('equipment_images')
+      .delete()
+      .eq('image_url', imageUrl);
+
+    if (dbError) {
+      console.error('Error deleting image from database:', dbError);
+      return false;
+    }
+
+    // Extract file path from URL and delete from storage
+    const urlParts = imageUrl.split('/');
+    const fileName = urlParts[urlParts.length - 1];
+    const filePath = `equipment-images/${fileName}`;
+
+    const { error: storageError } = await supabase.storage
+      .from('equipment-images')
+      .remove([filePath]);
+
+    if (storageError) {
+      console.error('Error deleting image from storage:', storageError);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Exception deleting equipment image:', error);
+    return false;
   }
 };
