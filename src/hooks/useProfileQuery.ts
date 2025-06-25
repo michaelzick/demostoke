@@ -18,7 +18,7 @@ export const useProfileQuery = () => {
 
       const { data: profileData, error } = await supabase
         .from('profiles')
-        .select('name, role, avatar_url, hero_image_url, phone, address, about')
+        .select('name, role, avatar_url, hero_image_url, phone, address, about, website')
         .eq('id', user.id)
         .single();
 
@@ -31,6 +31,7 @@ export const useProfileQuery = () => {
           phone: "",
           address: "",
           about: null,
+          website: "",
           profileImage: generateDicebearAvatar(user.id),
           heroImage: null,
         };
@@ -47,6 +48,7 @@ export const useProfileQuery = () => {
         phone: profileData.phone || "",
         address: profileData.address || "",
         about: profileData.about,
+        website: profileData.website || "",
         profileImage: avatarUrl,
         heroImage: profileData.hero_image_url,
       };
@@ -63,6 +65,7 @@ export const useProfileQuery = () => {
         phone: "",
         address: "",
         about: null,
+        website: "",
         profileImage: generateDicebearAvatar(user.id),
         heroImage: null,
       };

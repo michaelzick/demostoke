@@ -11,12 +11,14 @@ interface ProfileFormProps {
   phone: string;
   address: string;
   about: string;
+  website?: string;
   onNameChange: (value: string) => void;
   onEmailChange: (value: string) => void;
   onRoleChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
   onAddressChange: (value: string) => void;
   onAboutChange: (value: string) => void;
+  onWebsiteChange?: (value: string) => void;
 }
 
 export const ProfileForm = ({
@@ -26,15 +28,32 @@ export const ProfileForm = ({
   phone,
   address,
   about,
+  website = "",
   onNameChange,
   onEmailChange,
   onRoleChange,
   onPhoneChange,
   onAddressChange,
   onAboutChange,
+  onWebsiteChange,
 }: ProfileFormProps) => {
+  const showWebsiteField = role === "retail-store" || role === "builder";
+
   return (
     <div className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="role">Your Role</Label>
+        <RoleSelect
+          id="role"
+          value={role}
+          onValueChange={onRoleChange}
+          placeholder="Select Your Role"
+        />
+        <p className="text-xs text-muted-foreground">
+          This role will be used for all gear you list on the platform.
+        </p>
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="name">Name</Label>
         <Input
@@ -43,6 +62,19 @@ export const ProfileForm = ({
           onChange={(e) => onNameChange(e.target.value)}
         />
       </div>
+
+      {showWebsiteField && onWebsiteChange && (
+        <div className="space-y-2">
+          <Label htmlFor="website">Website</Label>
+          <Input
+            id="website"
+            type="url"
+            value={website}
+            onChange={(e) => onWebsiteChange(e.target.value)}
+            placeholder="https://www.yourwebsite.com"
+          />
+        </div>
+      )}
 
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
@@ -87,19 +119,6 @@ export const ProfileForm = ({
           placeholder="Tell us about yourself..."
           className="min-h-[100px]"
         />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="role">Your Role</Label>
-        <RoleSelect
-          id="role"
-          value={role}
-          onValueChange={onRoleChange}
-          placeholder="Select Your Role"
-        />
-        <p className="text-xs text-muted-foreground">
-          This role will be used for all gear you list on the platform.
-        </p>
       </div>
     </div>
   );

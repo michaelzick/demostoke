@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +22,7 @@ export const useProfileUpdate = () => {
     phone: string;
     address: string;
     about: string;
+    website: string;
   }) => {
     if (!user) return;
 
@@ -61,6 +63,7 @@ export const useProfileUpdate = () => {
         phone: profileData.phone,
         address: profileData.address,
         about: profileData.about,
+        website: profileData.website,
       };
 
       // Handle address changes and geocoding
