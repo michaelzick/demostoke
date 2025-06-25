@@ -119,3 +119,92 @@ export const deleteEquipmentImage = async (imageUrl: string): Promise<boolean> =
     return false;
   }
 };
+
+export const uploadMultipleGearImages = async (
+  files: File[],
+  userId: string,
+  onProgress?: (message: string) => void
+): Promise<string[]> => {
+  const uploadedUrls: string[] = [];
+  
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    onProgress?.(`Uploading image ${i + 1} of ${files.length}...`);
+    
+    try {
+      // Upload file to storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}-${Date.now()}-${i}.${fileExt}`;
+      const filePath = `equipment-images/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('equipment-images')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error('Error uploading image:', uploadError);
+        throw new Error(`Failed to upload ${file.name}: ${uploadError.message}`);
+      }
+
+      // Get public URL
+      const { data } = supabase.storage
+        .from('equipment-images')
+        .getPublicUrl(filePath);
+
+      uploadedUrls.push(data.publicUrl);
+    } catch (error) {
+      console.error('Exception uploading image:', error);
+      throw error;
+    }
+  }
+
+  return uploadedUrls;
+};
+
+export const saveEquipmentImages = async (
+  equipmentId: string,
+  imageUrls: string[]
+): Promise<void> => {
+  try {
+    // Delete existing images for this equipment
+    const { error: deleteError } = await supabase
+      .from('equipment_images')
+      .delete()
+      .eq('equipment_id', equipmentId);
+
+    if (deleteError) {
+      console.error('Error deleting existing images:', deleteError);
+      throw new Error(`Failed to delete existing images: ${deleteError.message}`);
+    }
+
+    // Insert new images
+    if (imageUrls.length > 0) {
+      const imageRecords = imageUrls.map((url, index) => ({
+        equipment_id: equipmentId,
+        image_url: url,
+        display_order: index,
+        is_primary: index === 0
+      }));
+
+      const { error: insertError } = await supabase
+        .from('equipment_images')
+        .insert(imageRecords);
+
+      if (insertError) {
+        console.error('Error inserting new images:', insertError);
+        throw new Error(`Failed to save images: ${insertError.message}`);
+      }
+    }
+  } catch (error) {
+    console.error('Exception saving equipment images:', error);
+    throw error;
+  }
+};
+
+export const updateEquipmentImages = async (
+  equipmentId: string,
+  imageUrls: string[]
+): Promise<void> => {
+  // This is the same as saveEquipmentImages for now
+  await saveEquipmentImages(equipmentId, imageUrls);
+};
