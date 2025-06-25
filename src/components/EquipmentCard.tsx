@@ -34,15 +34,6 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
   const hasMultipleImages = images.length > 1;
   const hasImages = images.length > 0;
 
-  // Parse comma-separated sizes and show appropriate display
-  const getDisplaySize = (sizeString: string) => {
-    if (!sizeString) return '';
-    const sizes = sizeString.split(',').map(size => size.trim()).filter(Boolean);
-    return sizes.length > 1 ? `${sizes[0]} (+${sizes.length - 1} more)` : sizes[0] || '';
-  };
-
-  const displaySize = getDisplaySize(equipment.specifications?.size || '');
-
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
       <div className="relative w-full overflow-hidden h-[290px]">
@@ -93,6 +84,15 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         </Badge>
 
         {/* Shop or Private Party indicator */}
+        {/* {isShop && (
+          <Badge
+            className="absolute top-12 left-2 bg-shop text-shop-foreground hover:bg-shop/90 z-10"
+            variant="default"
+          >
+            <StoreIcon className="h-3 w-3 mr-1" />
+            Shop
+          </Badge>
+        )} */}
         {isPrivateParty && (
           <Badge
             className="absolute top-12 left-2 bg-green-600 hover:bg-green-700 z-10"
@@ -112,16 +112,6 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
             <span>{equipment.rating}</span>
           </div>
         </div>
-        
-        {/* Size display */}
-        {displaySize && (
-          <div className="mb-2">
-            <Badge variant="outline" className="text-xs">
-              {displaySize}
-            </Badge>
-          </div>
-        )}
-        
         <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{equipment.description}</p>
         <div className="flex items-center justify-between mb-2">
           <div>

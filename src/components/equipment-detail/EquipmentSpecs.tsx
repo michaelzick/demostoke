@@ -1,69 +1,30 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-
-interface Specifications {
-  size: string;
-  weight: string;
-  material: string;
-  suitable: string;
-}
+import { Equipment } from "@/types";
 
 interface EquipmentSpecsProps {
-  specifications: Specifications;
+  specifications: Equipment["specifications"];
 }
 
 const EquipmentSpecs = ({ specifications }: EquipmentSpecsProps) => {
-  // Parse comma-separated sizes into individual badges
-  const parseSize = (sizeString: string) => {
-    if (!sizeString) return [];
-    // Split by comma and clean up each size
-    return sizeString.split(',').map(size => size.trim()).filter(Boolean);
-  };
-
-  const sizes = parseSize(specifications.size);
-
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Specifications</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {sizes.length > 0 && (
-          <div>
-            <h4 className="font-medium mb-2">Available Sizes</h4>
-            <div className="flex flex-wrap gap-2">
-              {sizes.map((size, index) => (
-                <Badge key={index} variant="outline">
-                  {size}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
-        
-        {specifications.weight && (
-          <div>
-            <h4 className="font-medium mb-1">Weight</h4>
-            <p className="text-muted-foreground">{specifications.weight}</p>
-          </div>
-        )}
-        
-        {specifications.material && (
-          <div>
-            <h4 className="font-medium mb-1">Material</h4>
-            <p className="text-muted-foreground">{specifications.material}</p>
-          </div>
-        )}
-        
-        {specifications.suitable && (
-          <div>
-            <h4 className="font-medium mb-1">Suitable For</h4>
-            <p className="text-muted-foreground">{specifications.suitable}</p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+      <div className="p-4 bg-muted rounded-lg">
+        <div className="text-sm text-muted-foreground">Size</div>
+        <div className="font-medium">{specifications.size}</div>
+      </div>
+      <div className="p-4 bg-muted rounded-lg">
+        <div className="text-sm text-muted-foreground">Weight</div>
+        <div className="font-medium">{specifications.weight}</div>
+      </div>
+      <div className="p-4 bg-muted rounded-lg">
+        <div className="text-sm text-muted-foreground">Material</div>
+        <div className="font-medium">{specifications.material}</div>
+      </div>
+      <div className="p-4 bg-muted rounded-lg">
+        <div className="text-sm text-muted-foreground">Suitable For</div>
+        <div className="font-medium">{specifications.suitable}</div>
+      </div>
+    </div>
   );
 };
 
