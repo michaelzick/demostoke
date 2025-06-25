@@ -83,7 +83,7 @@ export const useDuplicatedGearDataForMultiple = ({
         // Set damage deposit from equipment or use default
         const damageDepositValue = duplicatedEquipment.damage_deposit !== undefined && duplicatedEquipment.damage_deposit !== null 
           ? String(duplicatedEquipment.damage_deposit) 
-          : "100";
+          : "0";
         setDamageDeposit(damageDepositValue);
 
         // Handle image URL for multiple gear form

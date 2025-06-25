@@ -22,7 +22,7 @@ export const useEditGearFormState = () => {
   const [pricingOptions, setPricingOptions] = useState<PricingOption[]>([
     { price: "", duration: "day" }
   ]);
-  const [damageDeposit, setDamageDeposit] = useState("100");
+  const [damageDeposit, setDamageDeposit] = useState("0");
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedSkillLevels, setSelectedSkillLevels] = useState<string[]>([]);
 
