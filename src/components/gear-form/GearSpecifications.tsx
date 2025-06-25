@@ -78,9 +78,9 @@ const GearSpecifications = ({
       {!isBikeType && (
         <div>
           <Label htmlFor="measurementUnit" className="block text-lg font-medium mb-2">
-            Measurement Unit <span className="text-red-500">*</span>
+            Measurement Unit
           </Label>
-          <Select value={measurementUnit} onValueChange={(value) => setMeasurementUnit(value)} required>
+          <Select value={measurementUnit} onValueChange={(value) => setMeasurementUnit(value)}>
             <SelectTrigger id="measurementUnit">
               <SelectValue placeholder="Select Measurement Unit" />
             </SelectTrigger>
@@ -123,32 +123,30 @@ const GearSpecifications = ({
         <div className="grid grid-cols-3 gap-4">
           <div>
             <Label htmlFor="length" className="block text-lg font-medium mb-2">
-              Length <span className="text-red-500">*</span>
+              Length
             </Label>
             <Input
               id="length"
-              type="number"
-              placeholder="Numbers only"
+              type="text"
+              placeholder="e.g. 5'4&quot; or 162cm"
               value={dimensions.length}
               onChange={(e) =>
                 setDimensions({ ...dimensions, length: e.target.value })
               }
-              required
             />
           </div>
           <div>
             <Label htmlFor="width" className="block text-lg font-medium mb-2">
-              Width <span className="text-red-500">*</span>
+              Width
             </Label>
             <Input
               id="width"
-              type="number"
-              placeholder="Numbers only"
+              type="text"
+              placeholder="e.g. 20&quot; or 51cm"
               value={dimensions.width}
               onChange={(e) =>
                 setDimensions({ ...dimensions, width: e.target.value })
               }
-              required
             />
           </div>
           <div>
@@ -157,8 +155,8 @@ const GearSpecifications = ({
             </Label>
             <Input
               id="thickness"
-              type="number"
-              placeholder="Numbers only"
+              type="text"
+              placeholder="e.g. 3&quot; or 7.6cm"
               value={dimensions.thickness || ""}
               onChange={(e) =>
                 setDimensions({ ...dimensions, thickness: e.target.value })

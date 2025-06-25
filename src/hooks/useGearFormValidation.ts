@@ -45,16 +45,6 @@ export const useGearFormValidation = () => {
       return false;
     }
 
-    // Additional validation for non-bike types
-    if (!isBikeType && (!measurementUnit || !dimensions.length || !dimensions.width)) {
-      toast({
-        title: "Missing Dimensions",
-        description: "Please provide all dimension measurements for your gear.",
-        variant: "destructive",
-      });
-      return false;
-    }
-
     // Validate that at least one pricing option exists and is filled
     if (pricingOptions.length === 0 || pricingOptions.every(option => !option.price)) {
       toast({
