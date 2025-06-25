@@ -282,6 +282,7 @@ export type Database = {
           name: string | null
           phone: string | null
           role: string
+          website: string | null
         }
         Insert: {
           about?: string | null
@@ -296,6 +297,7 @@ export type Database = {
           name?: string | null
           phone?: string | null
           role?: string
+          website?: string | null
         }
         Update: {
           about?: string | null
@@ -310,6 +312,7 @@ export type Database = {
           name?: string | null
           phone?: string | null
           role?: string
+          website?: string | null
         }
         Relationships: []
       }

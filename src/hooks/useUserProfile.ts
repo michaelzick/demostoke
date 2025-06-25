@@ -14,6 +14,7 @@ interface UserProfile {
   location_lng: number | null;
   member_since: string;
   created_at: string;
+  website: string | null;
 }
 
 export const useUserProfile = (userId: string) => {
