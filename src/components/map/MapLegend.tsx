@@ -5,13 +5,13 @@ const gearLegendItems = [
   { category: 'Snowboards', color: 'bg-fuchsia-500' },
   { category: 'Skis', color: 'bg-green-400' },
   { category: 'Surfboards', color: 'bg-sky-500' },
-  { category: 'Mountain Bikes', color: 'bg-red-600' },
+  { category: 'Mountain Bikes', color: 'bg-red-500' },
 ];
 
 const profileLegendItems = [
   { category: 'Retail Store', color: 'bg-lime-300' },
-  { category: 'Builder', color: 'bg-orange-500' },
-  { category: 'Private Party', color: 'bg-rose-600' },
+  { category: 'Builder', color: 'bg-orange-400' },
+  { category: 'Private Party', color: 'bg-rose-500' },
 ];
 
 interface MapLegendProps {

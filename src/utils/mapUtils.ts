@@ -11,7 +11,7 @@ export const getCategoryColor = (category: string): string => {
       return 'bg-sky-500';
     case 'mountain-bikes':
     case 'mountain-bike':  // Handle both variations
-      return 'bg-red-600';
+      return 'bg-red-500';
     default:
       return 'bg-black';
   }
@@ -22,9 +22,9 @@ export const getUserRoleColor = (role: string): string => {
     case 'retail-store':
       return 'bg-lime-300';
     case 'builder':
-      return 'bg-orange-500';
+      return 'bg-orange-400';
     case 'private-party':
-      return 'bg-rose-600';
+      return 'bg-rose-500';
     default:
       return 'bg-gray-600';
   }
