@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -37,9 +38,15 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
   handleBookNowClick,
   bookingCardRef,
 }) => {
-  // Handle both single image_url and multiple images array
-  const images = equipment.images || (equipment.image_url ? [equipment.image_url] : []);
+  // Handle both single image_url and multiple images array - ensure we always have an array
+  const images = equipment.images && equipment.images.length > 0
+    ? equipment.images
+    : equipment.image_url
+      ? [equipment.image_url]
+      : [];
+
   const hasMultipleImages = images.length > 1;
+  const hasImages = images.length > 0;
 
   return (
     <div className="container px-4 md:px-6 py-8">
@@ -76,28 +83,34 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
         <div className="lg:col-span-2 space-y-8">
           {/* Image Gallery */}
           <div className="overflow-hidden rounded-lg">
-            {hasMultipleImages ? (
-              <Carousel className="w-full" opts={{ loop: true }}>
-                <CarouselContent>
-                  {images.map((imageUrl, index) => (
-                    <CarouselItem key={index}>
-                      <img
-                        src={imageUrl}
-                        alt={`${equipment.name} - Image ${index + 1}`}
-                        className="w-full h-96 object-cover"
-                      />
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="left-2" />
-                <CarouselNext className="right-2" />
-              </Carousel>
+            {hasImages ? (
+              hasMultipleImages ? (
+                <Carousel className="w-full" opts={{ loop: true }}>
+                  <CarouselContent>
+                    {images.map((imageUrl, index) => (
+                      <CarouselItem key={index}>
+                        <img
+                          src={imageUrl}
+                          alt={`${equipment.name} - Image ${index + 1}`}
+                          className="w-full h-96 object-cover"
+                        />
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="left-2" />
+                  <CarouselNext className="right-2" />
+                </Carousel>
+              ) : (
+                <img
+                  src={images[0]}
+                  alt={equipment.name}
+                  className="w-full h-96 object-cover"
+                />
+              )
             ) : (
-              <img
-                src={images[0] || equipment.image_url || "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=800&q=80"}
-                alt={equipment.name}
-                className="w-full h-96 object-cover"
-              />
+              <div className="w-full h-96 bg-gray-200 flex items-center justify-center">
+                <span className="text-gray-500">No image available</span>
+              </div>
             )}
           </div>
           {/* Equipment Info */}
@@ -144,11 +157,6 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
         <div className="space-y-6">
           {/* Booking Card */}
           <Card className="p-6" ref={bookingCardRef}>
-            {/* <BookingCard
-              equipment={equipment}
-              waiverCompleted={waiverCompleted}
-              onWaiverClick={() => setShowWaiver(true)}
-            /> */}
             <h3 className="text-lg font-semibold mb-4">The ability to book here is coming soon.
               Please contact <a href={`/user-profile/${equipment.owner.id}`} className="text-primary underline underline-offset-4 hover:underline hover:text-primary/80 transition-colors">{equipment.owner.name}</a> to book.</h3>
           </Card>
