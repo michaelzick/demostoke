@@ -72,8 +72,6 @@ const AddGearForm = () => {
         />
 
         <GearSpecifications
-          measurementUnit={formState.measurementUnit}
-          setMeasurementUnit={formState.setMeasurementUnit}
           dimensions={formState.dimensions}
           setDimensions={formState.setDimensions}
           skillLevel={formState.skillLevel}

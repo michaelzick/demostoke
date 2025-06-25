@@ -2,18 +2,9 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useEffect } from "react";
 
 interface GearSpecificationsProps {
-  measurementUnit: string;
-  setMeasurementUnit: (value: string) => void;
   dimensions: {
     length: string;
     width: string;
@@ -30,8 +21,6 @@ interface GearSpecificationsProps {
 }
 
 const GearSpecifications = ({
-  measurementUnit,
-  setMeasurementUnit,
   dimensions,
   setDimensions,
   skillLevel,
@@ -74,24 +63,6 @@ const GearSpecifications = ({
 
   return (
     <>
-      {/* Measurement Unit - Only show for non-bike types */}
-      {!isBikeType && (
-        <div>
-          <Label htmlFor="measurementUnit" className="block text-lg font-medium mb-2">
-            Measurement Unit
-          </Label>
-          <Select value={measurementUnit} onValueChange={(value) => setMeasurementUnit(value)}>
-            <SelectTrigger id="measurementUnit">
-              <SelectValue placeholder="Select Measurement Unit" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="inches">Inches</SelectItem>
-              <SelectItem value="centimeters">Centimeters</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      )}
-
       {/* Dimensions or Size */}
       {isBikeType ? (
         <div>
