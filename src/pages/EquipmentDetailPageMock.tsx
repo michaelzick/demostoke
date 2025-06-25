@@ -102,7 +102,7 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
                 </Carousel>
               ) : (
                 <img
-                  src={imageUrl}
+                  src={images[0]}
                   alt={equipment.name}
                   className="w-full h-96 object-cover"
                 />
