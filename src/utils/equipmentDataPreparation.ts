@@ -67,11 +67,12 @@ export function prepareEquipmentData(
     } = paramsOrGearName;
 
     const isMountainBike = gearType === "mountain-bike";
+    // Remove the automatic size formatting - just use the dimensions as provided
     const sizeString = isMountainBike
       ? dimensions.length // For mountain bikes, just use the size (S/M/L/XL/XXL)
       : dimensions.thickness
-        ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness} ${measurementUnit}`
-        : `${dimensions.length} x ${dimensions.width} ${measurementUnit}`;
+        ? `${dimensions.length} x ${dimensions.width} x ${dimensions.thickness}`
+        : `${dimensions.length} x ${dimensions.width}`;
 
     const result: any = {
       name: gearName,
@@ -104,11 +105,12 @@ export function prepareEquipmentData(
   // Handle individual parameters (old way for backwards compatibility)
   const gearNameParam = paramsOrGearName;
   const isMountainBike = gearType === "mountain-bike";
+  // Remove the automatic size formatting - just use the dimensions as provided
   const sizeString = isMountainBike
     ? dimensions!.length // For mountain bikes, just use the size (S/M/L/XL/XXL)
     : dimensions!.thickness
-      ? `${dimensions!.length} x ${dimensions!.width} x ${dimensions!.thickness} ${measurementUnit}`
-      : `${dimensions!.length} x ${dimensions!.width} ${measurementUnit}`;
+      ? `${dimensions!.length} x ${dimensions!.width} x ${dimensions!.thickness}`
+      : `${dimensions!.length} x ${dimensions!.width}`;
 
   return {
     name: gearNameParam,
