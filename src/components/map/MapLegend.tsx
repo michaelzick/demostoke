@@ -9,9 +9,9 @@ const gearLegendItems = [
 ];
 
 const profileLegendItems = [
-  { category: 'Retail Store', color: 'bg-[#d3ff00]' },
-  { category: 'Builder', color: 'bg-[#ffa700]' },
-  { category: 'Private Party', color: 'bg-[#fe0065]' },
+  { category: 'Retail Store', color: 'bg-lime-300' },
+  { category: 'Builder', color: 'bg-orange-500' },
+  { category: 'Private Party', color: 'bg-rose-600' },
 ];
 
 interface MapLegendProps {

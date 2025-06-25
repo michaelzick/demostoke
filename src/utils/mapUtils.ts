@@ -4,14 +4,14 @@ import mapboxgl from 'mapbox-gl';
 export const getCategoryColor = (category: string): string => {
   switch (category.toLowerCase()) {
     case 'snowboards':
-      return 'bg-fuchsia-600';
+      return 'bg-fuchsia-500';
     case 'skis':
-      return 'bg-lime-600';
+      return 'bg-green-400';
     case 'surfboards':
-      return 'bg-blue-600';
+      return 'bg-sky-500';
     case 'mountain-bikes':
     case 'mountain-bike':  // Handle both variations
-      return 'bg-violet-600';
+      return 'bg-red-600';
     default:
       return 'bg-black';
   }
@@ -20,11 +20,11 @@ export const getCategoryColor = (category: string): string => {
 export const getUserRoleColor = (role: string): string => {
   switch (role.toLowerCase()) {
     case 'retail-store':
-      return 'bg-[#d3ff00]';
+      return 'bg-lime-300';
     case 'builder':
-      return 'bg-[#ffa700]';
+      return 'bg-orange-500';
     case 'private-party':
-      return 'bg-[#fe0065]';
+      return 'bg-rose-600';
     default:
       return 'bg-gray-600';
   }
