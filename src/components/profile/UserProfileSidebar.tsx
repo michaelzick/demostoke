@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { MessageCircleIcon, StarIcon, MapPinIcon, PhoneIcon } from "lucide-react";
+import { MessageCircleIcon, StarIcon, MapPinIcon, PhoneIcon, GlobeIcon } from "lucide-react";
 
 interface UserProfileSidebarProps {
   profile: {
@@ -11,6 +11,7 @@ interface UserProfileSidebarProps {
     role: string;
     phone?: string | null;
     address?: string | null;
+    website?: string | null;
   };
   stats?: {
     averageRating: number;
@@ -38,7 +39,7 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
         </div>
         
         {/* Contact Information Section */}
-        {(profile.address || profile.phone) && (
+        {(profile.address || profile.phone || profile.website) && (
           <>
             <Separator />
             <div className="space-y-3">
@@ -56,6 +57,21 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
                   <PhoneIcon className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-sm text-muted-foreground">{profile.phone}</p>
+                  </div>
+                </div>
+              )}
+              {profile.website && (
+                <div className="flex items-start gap-3">
+                  <GlobeIcon className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
+                  <div>
+                    <a 
+                      href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm text-muted-foreground hover:text-primary underline"
+                    >
+                      {profile.website}
+                    </a>
                   </div>
                 </div>
               )}
@@ -102,7 +118,7 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
                 <span className="font-medium">Member Since</span>
                 <span>{memberSinceDate}</span>
               </div>
-              {!profile.address && !profile.phone && (
+              {!profile.address && !profile.phone && !profile.website && (
                 <div className="text-sm text-muted-foreground">
                   Contact information not available. To add contact details, please update your profile settings.
                 </div>
