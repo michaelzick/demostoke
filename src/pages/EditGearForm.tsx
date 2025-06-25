@@ -48,9 +48,6 @@ const EditGearForm = () => {
     setSelectedSizes: formState.setSelectedSizes,
   });
 
-  // Remove the manual bike sizes loading effect since it's now handled in useEquipmentDataLoader
-  // Remove the manual skill levels loading effect since it's now handled in useEquipmentDataLoader
-
   // Fetch current images when equipment is loaded
   useEffect(() => {
     const loadCurrentImages = async () => {
@@ -89,6 +86,7 @@ const EditGearForm = () => {
     damageDeposit: formState.damageDeposit,
     imageUrls: formState.imageUrls,
     useImageUrls: formState.useImageUrls,
+    selectedSizes: formState.selectedSizes, // Pass selectedSizes to submission hook
   });
 
   // Handle error navigation

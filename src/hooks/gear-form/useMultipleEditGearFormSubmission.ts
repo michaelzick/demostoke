@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -24,6 +25,7 @@ interface UseMultipleEditGearFormSubmissionProps {
   damageDeposit: string;
   imageUrls: string[];
   useImageUrls: boolean;
+  selectedSizes?: string[];
 }
 
 export const useMultipleEditGearFormSubmission = ({
@@ -40,6 +42,7 @@ export const useMultipleEditGearFormSubmission = ({
   damageDeposit,
   imageUrls,
   useImageUrls,
+  selectedSizes = [],
 }: UseMultipleEditGearFormSubmissionProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -55,17 +58,16 @@ export const useMultipleEditGearFormSubmission = ({
 
     console.log('=== FORM SUBMISSION START ===');
     console.log('Damage deposit value at submission start:', damageDeposit);
+    console.log('Selected sizes at submission:', selectedSizes);
+    console.log('Dimensions at submission:', dimensions);
 
     // Initial validation
     if (!validateSubmission({ user, equipment, pricingOptions, damageDeposit })) {
       return;
     }
 
-    // For bike types, convert dimensions.length back to selectedSizes array for validation
+    // For bike types, use selectedSizes directly from form state for validation
     const isBikeType = gearType === "mountain-bike" || gearType === "e-bike";
-    const selectedSizes = isBikeType && dimensions.length 
-      ? dimensions.length.split(", ").filter(size => size.trim() !== "")
-      : [];
 
     // Use the validation hook to validate the form
     const formData: FormData & { selectedSizes: string[] } = {
@@ -85,7 +87,7 @@ export const useMultipleEditGearFormSubmission = ({
       imageUrl: useImageUrls ? imageUrls[0] : "",
       useImageUrl: useImageUrls,
       role: user!.role || "private-party",
-      selectedSizes, // Pass the converted selectedSizes for validation
+      selectedSizes: isBikeType ? selectedSizes : [], // Use the actual selectedSizes state
     };
 
     if (!validateForm(formData)) {

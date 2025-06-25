@@ -62,6 +62,12 @@ export const useEquipmentDataLoader = ({
         const existingSizes = equipment.specifications.size.split(", ").map(size => size.trim()).filter(size => size !== "");
         console.log('Loading existing bike sizes for checkboxes:', existingSizes);
         setSelectedSizes(existingSizes);
+        // Also ensure dimensions.length reflects the selected sizes for validation
+        setDimensions({
+          length: existingSizes.join(", "),
+          width: "",
+          thickness: ""
+        });
       }
 
       // Set image URL if available and setter provided
@@ -84,18 +90,17 @@ export const useEquipmentDataLoader = ({
         }
       }
 
-      // Set damage deposit with the actual value from database
+      // Set damage deposit - handle all numeric values including 0
       if (setDamageDeposit) {
-        console.log('Raw equipment object:', equipment);
-        console.log('Damage deposit value from equipment:', equipment.damage_deposit);
+        console.log('Setting damage deposit from equipment:', equipment.damage_deposit);
         console.log('Type of damage deposit:', typeof equipment.damage_deposit);
         
-        // Use the actual value from the database, or default to "100" only if it's null/undefined
-        const damageDepositValue = equipment.damage_deposit !== undefined && equipment.damage_deposit !== null 
+        // Convert to string, handling 0 as a valid value
+        const damageDepositValue = equipment.damage_deposit !== null && equipment.damage_deposit !== undefined 
           ? String(equipment.damage_deposit) 
           : "100";
         
-        console.log('Final damage deposit value to set:', damageDepositValue);
+        console.log('Final damage deposit value being set:', damageDepositValue);
         setDamageDeposit(damageDepositValue);
       }
 

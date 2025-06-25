@@ -40,6 +40,13 @@ export const useGearFormValidation = () => {
       const hasSelectedSizes = selectedSizes.length > 0;
       const hasDimensionSizes = dimensions.length && dimensions.length.trim() !== "";
       
+      console.log('Bike size validation:', {
+        hasSelectedSizes,
+        selectedSizes,
+        hasDimensionSizes,
+        dimensionsLength: dimensions.length
+      });
+      
       if (!hasSelectedSizes && !hasDimensionSizes) {
         toast({
           title: "Missing Size",
