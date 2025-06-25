@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/helpers";
+import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 
 interface UserEquipment {
   id: string;
@@ -10,6 +11,7 @@ interface UserEquipment {
   description: string;
   price_per_day: number;
   image_url: string | null;
+  images: string[]; // Add images array
   rating: number;
   review_count: number;
   status: 'available' | 'booked' | 'unavailable';
@@ -80,34 +82,54 @@ export const useUserEquipment = (userId?: string, visibleOnly: boolean = false) 
         throw error;
       }
 
-      return (data || []).map(item => ({
-        id: item.id,
-        name: item.name,
-        category: item.category,
-        description: item.description || '',
-        price_per_day: item.price_per_day,
-        image_url: item.image_url,
-        rating: item.rating || 0,
-        review_count: item.review_count || 0,
-        status: item.status as 'available' | 'booked' | 'unavailable',
-        created_at: item.created_at,
-        updated_at: item.updated_at,
-        visible_on_map: item.visible_on_map,
-        location: {
-          lat: item.location_lat || 0,
-          lng: item.location_lng || 0,
-          zip: item.location_zip || ''
-        },
-        specifications: {
-          size: item.size || '',
-          weight: item.weight || '',
-          material: item.material || '',
-          suitable: item.suitable_skill_level || ''
-        },
-        availability: {
-          available: item.status === 'available'
-        }
-      }));
+      // Fetch additional images for each equipment item
+      const equipmentWithImages = await Promise.all(
+        (data || []).map(async (item) => {
+          console.log(`=== FETCHING IMAGES FOR USER EQUIPMENT ${item.name} ===`);
+          console.log('Equipment ID:', item.id);
+          
+          // Fetch additional images from equipment_images table
+          const additionalImages = await fetchEquipmentImages(item.id);
+          console.log('Additional images fetched:', additionalImages);
+          
+          // Create combined images array
+          const allImages = additionalImages.length > 0 ? additionalImages : (item.image_url ? [item.image_url] : []);
+          console.log('Final combined images array:', allImages);
+          console.log('=== END USER EQUIPMENT IMAGES FETCH ===');
+
+          return {
+            id: item.id,
+            name: item.name,
+            category: item.category,
+            description: item.description || '',
+            price_per_day: item.price_per_day,
+            image_url: item.image_url,
+            images: allImages, // Include all images
+            rating: item.rating || 0,
+            review_count: item.review_count || 0,
+            status: item.status as 'available' | 'booked' | 'unavailable',
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+            visible_on_map: item.visible_on_map,
+            location: {
+              lat: item.location_lat || 0,
+              lng: item.location_lng || 0,
+              zip: item.location_zip || ''
+            },
+            specifications: {
+              size: item.size || '',
+              weight: item.weight || '',
+              material: item.material || '',
+              suitable: item.suitable_skill_level || ''
+            },
+            availability: {
+              available: item.status === 'available'
+            }
+          };
+        })
+      );
+
+      return equipmentWithImages;
     },
     enabled: !!effectiveUserId,
   });
