@@ -23,17 +23,21 @@ serve(async (req) => {
   try {
     console.log('🔑 Processing get-mapbox-token request');
     
-    const MAPBOX_TOKEN = Deno.env.get('MAPBOX_TOKEN');
+    // Try multiple environment variable names
+    const MAPBOX_TOKEN = Deno.env.get('MAPBOX_TOKEN') || 
+                        Deno.env.get('VITE_MAPBOX_TOKEN') || 
+                        Deno.env.get('REACT_APP_MAPBOX_TOKEN');
     
     console.log('🔍 Environment check:');
     console.log('  - MAPBOX_TOKEN exists:', !!MAPBOX_TOKEN);
     
     if (!MAPBOX_TOKEN) {
-      console.error('❌ MAPBOX_TOKEN environment variable is not set');
+      console.error('❌ No Mapbox token found in environment variables');
       return new Response(
         JSON.stringify({ 
           error: 'Mapbox token not configured',
-          details: 'MAPBOX_TOKEN environment variable is not set'
+          details: 'No MAPBOX_TOKEN environment variable found. Please set MAPBOX_TOKEN in your Supabase Edge Function secrets.',
+          timestamp: new Date().toISOString()
         }),
         {
           status: 500,
@@ -50,7 +54,8 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ 
           error: 'Invalid Mapbox token format',
-          details: 'Token should start with "pk."'
+          details: 'Token should be a public token starting with "pk."',
+          timestamp: new Date().toISOString()
         }),
         {
           status: 500,
@@ -76,10 +81,11 @@ serve(async (req) => {
   } catch (error) {
     console.error('❌ Unexpected error in get-mapbox-token function:', error);
     
+    // Always return CORS headers, even in error cases
     return new Response(
       JSON.stringify({ 
         error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error',
+        details: error instanceof Error ? error.message : 'Unknown error occurred',
         timestamp: new Date().toISOString()
       }),
       {
