@@ -35,14 +35,19 @@ export const useGearFormValidation = () => {
       return false;
     }
 
-    // Validate bike size selection
-    if (isBikeType && selectedSizes.length === 0) {
-      toast({
-        title: "Missing Size",
-        description: "Please select at least one size for your bike.",
-        variant: "destructive",
-      });
-      return false;
+    // Validate bike size selection - check both selectedSizes array and dimensions.length
+    if (isBikeType) {
+      const hasSelectedSizes = selectedSizes.length > 0;
+      const hasDimensionSizes = dimensions.length && dimensions.length.trim() !== "";
+      
+      if (!hasSelectedSizes && !hasDimensionSizes) {
+        toast({
+          title: "Missing Size",
+          description: "Please select at least one size for your bike.",
+          variant: "destructive",
+        });
+        return false;
+      }
     }
 
     // Validate that at least one pricing option exists and is filled

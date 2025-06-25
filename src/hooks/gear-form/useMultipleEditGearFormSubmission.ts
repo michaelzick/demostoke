@@ -61,8 +61,14 @@ export const useMultipleEditGearFormSubmission = ({
       return;
     }
 
+    // For bike types, convert dimensions.length back to selectedSizes array for validation
+    const isBikeType = gearType === "mountain-bike" || gearType === "e-bike";
+    const selectedSizes = isBikeType && dimensions.length 
+      ? dimensions.length.split(", ").filter(size => size.trim() !== "")
+      : [];
+
     // Use the validation hook to validate the form
-    const formData: FormData = {
+    const formData: FormData & { selectedSizes: string[] } = {
       gearName,
       gearType,
       description,
@@ -79,6 +85,7 @@ export const useMultipleEditGearFormSubmission = ({
       imageUrl: useImageUrls ? imageUrls[0] : "",
       useImageUrl: useImageUrls,
       role: user!.role || "private-party",
+      selectedSizes, // Pass the converted selectedSizes for validation
     };
 
     if (!validateForm(formData)) {
