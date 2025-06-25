@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { mockEquipment, ownerPersonas } from "@/lib/mockData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { StarIcon, MapPinIcon, CalendarIcon, UsersIcon } from "lucide-react";
+import { StarIcon, MapPinIcon, CalendarIcon, UsersIcon, GlobeIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 
