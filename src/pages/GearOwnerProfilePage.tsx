@@ -81,6 +81,19 @@ const GearOwnerProfilePage = () => {
                       <span>Member since {owner.memberSince}</span>
                     </div>
                   )}
+                  {owner.website && (
+                    <div className="flex items-center">
+                      <GlobeIcon className="h-4 w-4 text-slate-500 mr-2 flex-shrink-0" />
+                      <a 
+                        href={owner.website.startsWith('http') ? owner.website : `https://${owner.website}`}
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-sm hover:text-primary underline truncate"
+                      >
+                        {owner.website}
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
