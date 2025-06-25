@@ -1,9 +1,9 @@
 
 import { useAuth } from "@/helpers";
 import UserManagementSection from "@/components/admin/UserManagementSection";
+import ManualUserCreationSection from "@/components/admin/ManualUserCreationSection";
 import VideoUploadSection from "@/components/admin/VideoUploadSection";
 import DataDisplaySettings from "@/components/admin/DataDisplaySettings";
-import TestImageGeneration from "@/components/admin/TestImageGeneration";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -35,23 +35,19 @@ const AdminPage = () => {
       </div>
 
       <Tabs defaultValue="users" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="users">User Management</TabsTrigger>
           <TabsTrigger value="content">Content</TabsTrigger>
-          <TabsTrigger value="images">AI Images</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="users" className="space-y-6">
           <UserManagementSection />
+          <ManualUserCreationSection />
         </TabsContent>
 
         <TabsContent value="content" className="space-y-6">
           <VideoUploadSection />
-        </TabsContent>
-
-        <TabsContent value="images" className="space-y-6">
-          <TestImageGeneration />
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-6">
