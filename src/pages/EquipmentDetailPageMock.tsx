@@ -12,10 +12,11 @@ import ReviewsTab from "@/components/equipment-detail/ReviewsTab";
 import PolicyTab from "@/components/equipment-detail/PolicyTab";
 import OwnerCard from "@/components/equipment-detail/OwnerCard";
 import SimilarEquipment from "@/components/equipment-detail/SimilarEquipment";
+import GearImageModal from "@/components/equipment-detail/GearImageModal";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { getCategoryDisplayName } from "@/helpers";
 import { Equipment } from "@/types";
-import React from "react";
+import React, { useState } from "react";
 
 interface EquipmentDetailPageMockProps {
   equipment: Equipment;
@@ -38,6 +39,9 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
   handleBookNowClick,
   bookingCardRef,
 }) => {
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
   // Handle both single image_url and multiple images array - ensure we always have an array
   const images = equipment.images && equipment.images.length > 0
     ? equipment.images
@@ -48,6 +52,11 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
   const hasMultipleImages = images.length > 1;
   const hasImages = images.length > 0;
 
+  const handleImageClick = (index: number = 0) => {
+    setSelectedImageIndex(index);
+    setShowImageModal(true);
+  };
+
   return (
     <div className="container px-4 md:px-6 py-8">
       <Breadcrumbs
@@ -57,6 +66,16 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
           { label: equipment.name, path: `/equipment/${equipment.id}` },
         ]}
       />
+
+      {/* Image Modal */}
+      <GearImageModal
+        isOpen={showImageModal}
+        onClose={() => setShowImageModal(false)}
+        images={images}
+        initialIndex={selectedImageIndex}
+        equipmentName={equipment.name}
+      />
+
       {/* Waiver Form Modal */}
       {showWaiver && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
@@ -89,11 +108,16 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
                   <CarouselContent>
                     {images.map((imageUrl, index) => (
                       <CarouselItem key={index}>
-                        <img
-                          src={imageUrl}
-                          alt={`${equipment.name} - Image ${index + 1}`}
-                          className="w-full h-96 object-cover"
-                        />
+                        <div 
+                          className="cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => handleImageClick(index)}
+                        >
+                          <img
+                            src={imageUrl}
+                            alt={`${equipment.name} - Image ${index + 1}`}
+                            className="w-full h-96 object-cover"
+                          />
+                        </div>
                       </CarouselItem>
                     ))}
                   </CarouselContent>
@@ -101,11 +125,16 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
                   <CarouselNext className="right-2" />
                 </Carousel>
               ) : (
-                <img
-                  src={images[0]}
-                  alt={equipment.name}
-                  className="w-full h-96 object-cover"
-                />
+                <div 
+                  className="cursor-pointer hover:opacity-90 transition-opacity"
+                  onClick={() => handleImageClick(0)}
+                >
+                  <img
+                    src={images[0]}
+                    alt={equipment.name}
+                    className="w-full h-96 object-cover"
+                  />
+                </div>
               )
             ) : (
               <div className="w-full h-96 bg-gray-200 flex items-center justify-center">
