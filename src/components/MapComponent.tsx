@@ -1,3 +1,4 @@
+
 import { useRef, useEffect, useState } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useToast } from '@/hooks/use-toast';
@@ -126,42 +127,61 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
   // Load token on component mount
   useEffect(() => {
     const loadToken = async () => {
-      console.log('Starting token loading process...');
+      console.log('🔄 Starting token loading process...');
       setIsLoadingToken(true);
 
-      // First, check localStorage
+      // First, check localStorage for a valid token
       const localToken = localStorage.getItem('mapbox_token');
-      if (localToken) {
-        console.log('Token found in localStorage');
+      if (localToken && localToken.startsWith('pk.')) {
+        console.log('✅ Valid token found in localStorage');
         setToken(localToken);
         setIsLoadingToken(false);
         return;
       }
 
-      // If no local token, try to fetch from Supabase
-      console.log('No local token found, fetching from Supabase...');
+      // If no valid local token, try to fetch from Supabase
+      console.log('🌐 No valid local token found, fetching from Supabase Edge Function...');
       try {
+        console.log('📡 Invoking get-mapbox-token function...');
+        
         const { data, error } = await supabase.functions.invoke('get-mapbox-token');
-
+        
+        console.log('📡 Function invocation completed');
+        console.log('📊 Response data:', data);
+        
         if (error) {
-          console.error('Error fetching token from Supabase:', error);
+          console.error('❌ Error from Edge Function:', error);
           setShowTokenInput(true);
           setIsLoadingToken(false);
           return;
         }
 
-        if (data?.token) {
-          console.log('Token fetched successfully from Supabase');
-          setToken(data.token);
-          setIsLoadingToken(false);
-          return;
+        // Check if we have a valid token in the response
+        if (data && typeof data === 'object' && data.token) {
+          const fetchedToken = data.token;
+          console.log('🔍 Token received:', fetchedToken.substring(0, 10) + '...');
+          
+          if (fetchedToken.startsWith('pk.')) {
+            console.log('✅ Valid token fetched from Supabase');
+            setToken(fetchedToken);
+            localStorage.setItem('mapbox_token', fetchedToken);
+            setIsLoadingToken(false);
+            return;
+          } else {
+            console.error('❌ Invalid token format received from Supabase');
+          }
+        } else {
+          console.error('❌ No token in response from Supabase');
         }
       } catch (err) {
-        console.error('Failed to fetch token from Supabase:', err);
+        console.error('❌ Exception while fetching token:', err);
+        if (err.name === 'FunctionsFetchError') {
+          console.error('❌ This is a FunctionsFetchError - edge function may not be deployed or accessible');
+        }
       }
 
       // If all else fails, show token input
-      console.log('No token available, showing input form');
+      console.log('📝 No valid token found, showing input form');
       setShowTokenInput(true);
       setIsLoadingToken(false);
     };
@@ -228,7 +248,7 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
   }, [mapLoaded, displayEquipment, displayUserLocations, isSingleView, isUserLocationMode]);
 
   const handleTokenSubmit = (tokenInput: string) => {
-    console.log('Token submitted by user');
+    console.log('📝 Token submitted by user');
     localStorage.setItem('mapbox_token', tokenInput);
     setToken(tokenInput);
     setShowTokenInput(false);

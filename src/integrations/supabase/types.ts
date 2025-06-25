@@ -51,6 +51,8 @@ export type Database = {
           material: string | null
           name: string
           price_per_day: number
+          price_per_hour: number | null
+          price_per_week: number | null
           rating: number | null
           review_count: number | null
           size: string | null
@@ -77,6 +79,8 @@ export type Database = {
           material?: string | null
           name: string
           price_per_day: number
+          price_per_hour?: number | null
+          price_per_week?: number | null
           rating?: number | null
           review_count?: number | null
           size?: string | null
@@ -103,6 +107,8 @@ export type Database = {
           material?: string | null
           name?: string
           price_per_day?: number
+          price_per_hour?: number | null
+          price_per_week?: number | null
           rating?: number | null
           review_count?: number | null
           size?: string | null
