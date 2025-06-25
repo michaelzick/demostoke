@@ -269,10 +269,10 @@ const MyEquipmentPage = () => {
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex-1"
               >
                 {masterToggleState.indeterminate
-                  ? "Some gear visible - click to show all"
+                  ? "Some gear visible — click to show all"
                   : masterToggleState.checked
-                    ? "Hide all gear from map and search results"
-                    : "Show all gear on map and in search results"
+                    ? "Uncheck to hide all gear from map and search results"
+                    : "Check to show all gear on map and in search results"
                 }
               </label>
             </div>
