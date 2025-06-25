@@ -84,13 +84,13 @@ export const useEquipmentDataLoader = ({
         }
       }
 
-      // Set damage deposit with improved handling
+      // Set damage deposit with the actual value from database
       if (setDamageDeposit) {
         console.log('Raw equipment object:', equipment);
         console.log('Damage deposit value from equipment:', equipment.damage_deposit);
         console.log('Type of damage deposit:', typeof equipment.damage_deposit);
         
-        // Use a more straightforward approach
+        // Use the actual value from the database, or default to "100" only if it's null/undefined
         const damageDepositValue = equipment.damage_deposit !== undefined && equipment.damage_deposit !== null 
           ? String(equipment.damage_deposit) 
           : "100";
