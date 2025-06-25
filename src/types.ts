@@ -80,6 +80,7 @@ export interface UserProfile {
   location_lng?: number | null;
   created_at?: string;
   member_since?: string;
+  website?: string | null; // Add website field
 }
 
 // Add GearOwner interface (alias for Owner for backward compatibility)
