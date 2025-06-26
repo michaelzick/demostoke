@@ -19,7 +19,9 @@ interface UseGearFormSubmissionProps {
   dimensions: { length: string; width: string; thickness?: string };
   skillLevel: string;
   images: File[];
-  pricingOptions: PricingOption[];
+  pricePerDay: string;
+  pricePerHour: string;
+  pricePerWeek: string;
   damageDeposit: string;
   role: string;
   duplicatedImageUrl?: string;
@@ -36,7 +38,9 @@ export const useGearFormSubmission = ({
   dimensions,
   skillLevel,
   images,
-  pricingOptions,
+  pricePerDay,
+  pricePerHour,
+  pricePerWeek,
   damageDeposit,
   role,
   duplicatedImageUrl,
@@ -59,6 +63,17 @@ export const useGearFormSubmission = ({
         variant: "destructive",
       });
       return;
+    }
+
+    // Create pricingOptions array for validation
+    const pricingOptions: PricingOption[] = [
+      { price: pricePerDay, duration: "day" }
+    ];
+    if (pricePerHour.trim()) {
+      pricingOptions.push({ price: pricePerHour, duration: "hour" });
+    }
+    if (pricePerWeek.trim()) {
+      pricingOptions.push({ price: pricePerWeek, duration: "week" });
     }
 
     // Use the validation hook to validate the form
@@ -124,9 +139,9 @@ export const useGearFormSubmission = ({
         dimensions,
         measurementUnit,
         skillLevel,
-        pricePerDay: pricingOptions[0].price,
-        pricePerHour: pricingOptions.find(p => p.duration === 'hour')?.price,
-        pricePerWeek: pricingOptions.find(p => p.duration === 'week')?.price,
+        pricePerDay: pricePerDay,
+        pricePerHour: pricePerHour.trim() || undefined,
+        pricePerWeek: pricePerWeek.trim() || undefined,
         finalImageUrl,
         damageDeposit,
       });

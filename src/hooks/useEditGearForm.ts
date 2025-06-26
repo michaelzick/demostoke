@@ -57,7 +57,7 @@ export const useEditGearForm = () => {
     skillLevel: formState.skillLevel,
     images: formState.images,
     pricePerDay: formState.pricePerDay,
-    pricePerHour: formState.setPricePerHour,
+    pricePerHour: formState.pricePerHour,
     pricePerWeek: formState.pricePerWeek,
     damageDeposit: formState.damageDeposit,
     imageUrl: formState.imageUrl,

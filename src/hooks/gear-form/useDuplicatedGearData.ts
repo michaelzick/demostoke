@@ -1,7 +1,6 @@
 
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { PricingOption } from "./types";
 import { UserEquipment } from "@/types/equipment";
 import { mapCategoryToGearType, mapSkillLevel, parseSize } from "@/utils/gearDataMapping";
 
@@ -14,7 +13,9 @@ interface UseDuplicatedGearDataProps {
   setDimensions: (value: { length: string; width: string; thickness?: string }) => void;
   setRole: (value: string) => void;
   setSkillLevel: (value: string) => void;
-  setPricingOptions: (value: PricingOption[]) => void;
+  setPricePerDay: (value: string) => void;
+  setPricePerHour: (value: string) => void;
+  setPricePerWeek: (value: string) => void;
   setDamageDeposit: (value: string) => void;
 }
 
@@ -27,7 +28,9 @@ export const useDuplicatedGearData = ({
   setDimensions,
   setRole,
   setSkillLevel,
-  setPricingOptions,
+  setPricePerDay,
+  setPricePerHour,
+  setPricePerWeek,
   setDamageDeposit,
 }: UseDuplicatedGearDataProps) => {
   const { toast } = useToast();
@@ -76,10 +79,10 @@ export const useDuplicatedGearData = ({
           setSkillLevel(mappedSkillLevel || "");
         }, 100);
 
-        // Set pricing options from duplicated data
-        setPricingOptions([
-          { price: duplicatedEquipment.price_per_day.toString(), duration: "day" }
-        ]);
+        // Set individual pricing fields from duplicated data
+        setPricePerDay(duplicatedEquipment.price_per_day.toString());
+        setPricePerHour(duplicatedEquipment.price_per_hour?.toString() || "");
+        setPricePerWeek(duplicatedEquipment.price_per_week?.toString() || "");
 
         // Set damage deposit from equipment or use default
         const damageDepositValue = duplicatedEquipment.damage_deposit !== undefined && duplicatedEquipment.damage_deposit !== null 
@@ -105,7 +108,7 @@ export const useDuplicatedGearData = ({
         console.error("Error parsing duplicated equipment data:", error);
       }
     }
-  }, [toast, setGearName, setGearType, setDescription, setZipCode, setMeasurementUnit, setDimensions, setRole, setSkillLevel, setPricingOptions, setDamageDeposit]);
+  }, [toast, setGearName, setGearType, setDescription, setZipCode, setMeasurementUnit, setDimensions, setRole, setSkillLevel, setPricePerDay, setPricePerHour, setPricePerWeek, setDamageDeposit]);
 
   // Return the duplicated equipment data so it can be used by the form
   const getDuplicatedGearData = () => {
