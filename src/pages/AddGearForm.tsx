@@ -94,8 +94,42 @@ const AddGearForm = () => {
         />
 
         <GearPricing
-          pricingOptions={formState.pricingOptions}
-          setPricingOptions={formState.setPricingOptions}
+          pricePerDay={formState.pricingOptions.find(p => p.duration === 'day')?.price || ''}
+          setPricePerDay={(value) => {
+            const updatedOptions = formState.pricingOptions.filter(p => p.duration !== 'day');
+            if (value.trim()) {
+              updatedOptions.push({ id: 'day', price: value, duration: 'day' });
+            }
+            formState.setPricingOptions(updatedOptions);
+          }}
+          pricePerHour={formState.pricingOptions.find(p => p.duration === 'hour')?.price || ''}
+          setPricePerHour={(value) => {
+            const updatedOptions = formState.pricingOptions.filter(p => p.duration !== 'hour');
+            if (value.trim()) {
+              updatedOptions.push({ id: 'hour', price: value, duration: 'hour' });
+            }
+            formState.setPricingOptions(updatedOptions);
+          }}
+          pricePerWeek={formState.pricingOptions.find(p => p.duration === 'week')?.price || ''}
+          setPricePerWeek={(value) => {
+            const updatedOptions = formState.pricingOptions.filter(p => p.duration !== 'week');
+            if (value.trim()) {
+              updatedOptions.push({ id: 'week', price: value, duration: 'week' });
+            }
+            formState.setPricingOptions(updatedOptions);
+          }}
+          enableHourlyPricing={!!formState.pricingOptions.find(p => p.duration === 'hour')}
+          setEnableHourlyPricing={(enabled) => {
+            if (!enabled) {
+              formState.setPricingOptions(formState.pricingOptions.filter(p => p.duration !== 'hour'));
+            }
+          }}
+          enableWeeklyPricing={!!formState.pricingOptions.find(p => p.duration === 'week')}
+          setEnableWeeklyPricing={(enabled) => {
+            if (!enabled) {
+              formState.setPricingOptions(formState.pricingOptions.filter(p => p.duration !== 'week'));
+            }
+          }}
           damageDeposit={formState.damageDeposit}
           setDamageDeposit={formState.setDamageDeposit}
         />

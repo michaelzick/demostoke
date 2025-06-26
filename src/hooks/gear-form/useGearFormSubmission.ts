@@ -113,7 +113,7 @@ export const useGearFormSubmission = ({
         // Continue without coordinates if geocoding fails
       }
 
-      // Prepare equipment data
+      // Prepare equipment data with individual price fields
       const equipmentData = prepareEquipmentData({
         userId: user.id,
         gearName,
@@ -124,8 +124,11 @@ export const useGearFormSubmission = ({
         dimensions,
         measurementUnit,
         skillLevel,
-        firstPricingOptionPrice: pricingOptions[0].price,
+        pricePerDay: pricingOptions[0].price,
+        pricePerHour: pricingOptions.find(p => p.duration === 'hour')?.price,
+        pricePerWeek: pricingOptions.find(p => p.duration === 'week')?.price,
         finalImageUrl,
+        damageDeposit,
       });
 
       // Create equipment in database

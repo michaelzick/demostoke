@@ -134,7 +134,7 @@ export const useMultipleGearFormSubmission = ({
         console.error('Geocoding failed:', error);
       }
 
-      // Prepare equipment data with primary image
+      // Prepare equipment data with primary image and individual price fields
       const equipmentData = prepareEquipmentData({
         userId: user.id,
         gearName,
@@ -145,8 +145,11 @@ export const useMultipleGearFormSubmission = ({
         dimensions,
         measurementUnit,
         skillLevel,
-        firstPricingOptionPrice: pricingOptions[0].price,
+        pricePerDay: pricingOptions[0].price,
+        pricePerHour: pricingOptions.find(p => p.duration === 'hour')?.price,
+        pricePerWeek: pricingOptions.find(p => p.duration === 'week')?.price,
         finalImageUrl: finalImageUrls[0], // Primary image
+        damageDeposit,
       });
 
       // Create equipment in database

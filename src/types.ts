@@ -6,6 +6,8 @@ export interface Equipment {
   subcategory?: string; // Add optional subcategory field
   description: string;
   price_per_day: number;
+  price_per_hour?: number; // Add price_per_hour
+  price_per_week?: number; // Add price_per_week
   image_url: string;
   images?: string[]; // Add support for multiple images
   rating: number;

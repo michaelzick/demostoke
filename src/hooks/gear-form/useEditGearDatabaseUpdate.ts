@@ -39,11 +39,15 @@ export const useEditGearDatabaseUpdate = () => {
       finalImageUrl
     } = params;
 
-    // Prepare equipment data for update - using the first pricing option for the main price
-    const firstPricingPrice = pricingOptions.length > 0 ? pricingOptions[0].price : equipment.price_per_day.toString();
+    // Prepare equipment data for update - extract individual price values from pricing options
+    const pricePerDay = pricingOptions.find(p => p.duration === 'day')?.price || equipment.price_per_day.toString();
+    const pricePerHour = pricingOptions.find(p => p.duration === 'hour')?.price;
+    const pricePerWeek = pricingOptions.find(p => p.duration === 'week')?.price;
     
     console.log('Preparing equipment data with:', {
-      firstPricingPrice,
+      pricePerDay,
+      pricePerHour,
+      pricePerWeek,
       damageDeposit,
       finalImageUrl
     });
@@ -57,7 +61,9 @@ export const useEditGearDatabaseUpdate = () => {
       dimensions,
       measurementUnit,
       skillLevel,
-      firstPricingOptionPrice: firstPricingPrice,
+      pricePerDay,
+      pricePerHour,
+      pricePerWeek,
       finalImageUrl,
       damageDeposit,
     });
