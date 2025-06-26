@@ -1,7 +1,7 @@
 
 import { useRef, useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
-import { initializeMap, fitMapBounds } from '@/utils/mapUtils';
+import { initializeMap } from '@/utils/mapUtils';
 import { useToast } from '@/hooks/use-toast';
 
 interface UseMapInitializationProps {
@@ -18,15 +18,19 @@ export const useMapInitialization = ({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [initializedToken, setInitializedToken] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Initialize map when token is available
+  // Initialize map when token is available and hasn't been initialized yet
   useEffect(() => {
     if (!mapContainer.current || !token || isLoadingToken) return;
+    
+    // Don't reinitialize if we already have a map with the same token
+    if (map.current && initializedToken === token) return;
 
     console.log('Initializing map with token...');
 
-    // Only remove existing map if we have a new token
+    // Clean up existing map if we have a different token
     if (map.current) {
       map.current.remove();
       map.current = null;
@@ -35,6 +39,7 @@ export const useMapInitialization = ({
 
     try {
       map.current = initializeMap(mapContainer.current, token);
+      setInitializedToken(token);
 
       map.current.on('load', () => {
         console.log('Map loaded successfully');
@@ -56,7 +61,7 @@ export const useMapInitialization = ({
         variant: "destructive"
       });
     }
-  }, [token, isLoadingToken, onTokenError, toast]);
+  }, [token, isLoadingToken, initializedToken]); // Removed onTokenError and toast from dependencies
 
   // Cleanup on unmount only
   useEffect(() => {
