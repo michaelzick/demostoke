@@ -1,4 +1,6 @@
 
+import { mapGearTypeToCategory } from "@/utils/gearTypeMapping";
+
 interface PrepareEquipmentDataParams {
   userId?: string;
   gearName: string;
@@ -34,7 +36,7 @@ export const prepareEquipmentData = ({
 }: PrepareEquipmentDataParams) => {
   const equipmentData: any = {
     name: gearName,
-    category: gearType,
+    category: mapGearTypeToCategory(gearType),
     description,
     image_url: finalImageUrl,
     price_per_day: parseFloat(pricePerDay),
