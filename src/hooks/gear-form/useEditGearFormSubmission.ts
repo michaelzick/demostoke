@@ -17,7 +17,7 @@ interface UseEditGearFormSubmissionProps {
   description: string;
   zipCode: string;
   measurementUnit: string;
-  dimensions: { length: string; width: string; thickness?: string };
+  size: string;
   skillLevel: string;
   images: File[];
   pricePerDay: string;
@@ -35,7 +35,7 @@ export const useEditGearFormSubmission = ({
   description,
   zipCode,
   measurementUnit,
-  dimensions,
+  size,
   skillLevel,
   images,
   pricePerDay,
@@ -80,11 +80,7 @@ export const useEditGearFormSubmission = ({
       description,
       zipCode,
       measurementUnit,
-      dimensions: {
-        length: dimensions.length,
-        width: dimensions.width,
-        thickness: dimensions.thickness || ""
-      },
+      size,
       skillLevel,
       pricingOptions,
       damageDeposit,
@@ -123,8 +119,7 @@ export const useEditGearFormSubmission = ({
         description,
         zipCode,
         coordinates,
-        dimensions,
-        measurementUnit,
+        size,
         skillLevel,
         pricePerDay,
         pricePerHour: pricePerHour, // Don't filter empty - let prepareEquipmentData handle it

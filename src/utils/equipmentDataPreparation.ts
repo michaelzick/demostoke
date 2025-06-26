@@ -8,8 +8,7 @@ interface PrepareEquipmentDataParams {
   description: string;
   zipCode: string;
   coordinates: { lat: number; lng: number } | null;
-  dimensions: { length: string; width: string; thickness?: string };
-  measurementUnit: string;
+  size: string;
   skillLevel: string;
   pricePerDay: string;
   pricePerHour?: string;
@@ -25,8 +24,7 @@ export const prepareEquipmentData = ({
   description,
   zipCode,
   coordinates,
-  dimensions,
-  measurementUnit,
+  size,
   skillLevel,
   pricePerDay,
   pricePerHour,
@@ -34,21 +32,6 @@ export const prepareEquipmentData = ({
   finalImageUrl,
   damageDeposit,
 }: PrepareEquipmentDataParams) => {
-  const buildSizeString = () => {
-    let size = dimensions.length;
-    if (dimensions.width && dimensions.width.trim()) {
-      size += ` x ${dimensions.width}`;
-    }
-    if (dimensions.thickness && dimensions.thickness.trim()) {
-      size += ` x ${dimensions.thickness}`;
-    }
-    // Only add measurementUnit if width or thickness is present
-    if ((dimensions.width && dimensions.width.trim()) || (dimensions.thickness && dimensions.thickness.trim())) {
-      size += ` ${measurementUnit}`;
-    }
-    return size;
-  };
-
   const equipmentData: any = {
     name: gearName,
     category: mapGearTypeToCategory(gearType),
@@ -56,7 +39,7 @@ export const prepareEquipmentData = ({
     image_url: finalImageUrl,
     price_per_day: parseFloat(pricePerDay),
     location_zip: zipCode,
-    size: buildSizeString(),
+    size: size,
     suitable_skill_level: skillLevel,
     status: 'available',
     visible_on_map: true,
@@ -79,9 +62,13 @@ export const prepareEquipmentData = ({
     }
   }
 
-  // Add damage deposit if provided
-  if (damageDeposit && damageDeposit.trim()) {
-    equipmentData.damage_deposit = parseFloat(damageDeposit);
+  // Add damage deposit - set to null if empty string to clear the database value
+  if (damageDeposit !== undefined) {
+    if (damageDeposit.trim() === '') {
+      equipmentData.damage_deposit = null;
+    } else {
+      equipmentData.damage_deposit = parseFloat(damageDeposit);
+    }
   }
 
   // Add coordinates if available

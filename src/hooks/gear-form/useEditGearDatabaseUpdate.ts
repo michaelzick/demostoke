@@ -11,8 +11,7 @@ interface DatabaseUpdateParams {
   description: string;
   zipCode: string;
   coordinates: { lat: number; lng: number } | null;
-  dimensions: { length: string; width: string; thickness?: string };
-  measurementUnit: string;
+  size: string;
   skillLevel: string;
   pricePerDay: string;
   pricePerHour?: string;
@@ -31,8 +30,7 @@ export const useEditGearDatabaseUpdate = () => {
       description,
       zipCode,
       coordinates,
-      dimensions,
-      measurementUnit,
+      size,
       skillLevel,
       pricePerDay,
       pricePerHour,
@@ -55,8 +53,7 @@ export const useEditGearDatabaseUpdate = () => {
       description,
       zipCode,
       coordinates,
-      dimensions,
-      measurementUnit,
+      size,
       skillLevel,
       pricePerDay,
       pricePerHour,

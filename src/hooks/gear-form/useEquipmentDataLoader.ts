@@ -1,7 +1,7 @@
 
 import { useEffect, useRef } from "react";
 import { UserEquipment } from "@/types/equipment";
-import { mapCategoryToGearType, parseSize } from "@/utils/gearDataMapping";
+import { mapCategoryToGearType } from "@/utils/gearDataMapping";
 
 interface UseEquipmentDataLoaderProps {
   equipment: UserEquipment | null | undefined;
@@ -9,7 +9,7 @@ interface UseEquipmentDataLoaderProps {
   setGearType: (value: string) => void;
   setDescription: (value: string) => void;
   setZipCode: (value: string) => void;
-  setDimensions: (value: { length: string; width: string; thickness?: string }) => void;
+  setSize: (value: string) => void;
   setSkillLevel: (value: string) => void;
   setPricePerDay: (value: string) => void;
   setPricePerHour?: (value: string) => void;
@@ -27,7 +27,7 @@ export const useEquipmentDataLoader = ({
   setGearType,
   setDescription,
   setZipCode,
-  setDimensions,
+  setSize,
   setSkillLevel,
   setPricePerDay,
   setPricePerHour,
@@ -52,22 +52,16 @@ export const useEquipmentDataLoader = ({
       setDescription(equipment.description || "");
       setZipCode(equipment.location?.zip || "");
       
-      // Parse and set dimensions
-      const parsedDimensions = parseSize(equipment.specifications?.size || "");
-      setDimensions(parsedDimensions);
+      // Set size directly from the database
+      const equipmentSize = equipment.specifications?.size || "";
+      setSize(equipmentSize);
 
       // For bike types, also populate selectedSizes from the size data
       const isBikeType = mappedGearType === "mountain-bike" || mappedGearType === "e-bike";
-      if (isBikeType && setSelectedSizes && equipment.specifications?.size) {
-        const existingSizes = equipment.specifications.size.split(", ").map(size => size.trim()).filter(size => size !== "");
+      if (isBikeType && setSelectedSizes && equipmentSize) {
+        const existingSizes = equipmentSize.split(", ").map(size => size.trim()).filter(size => size !== "");
         console.log('Loading existing bike sizes for checkboxes:', existingSizes);
         setSelectedSizes(existingSizes);
-        // Also ensure dimensions.length reflects the selected sizes for validation
-        setDimensions({
-          length: existingSizes.join(", "),
-          width: "",
-          thickness: ""
-        });
       }
 
       // Set individual price fields
@@ -84,18 +78,16 @@ export const useEquipmentDataLoader = ({
         setImageUrl(equipment.image_url);
       }
 
-      // Set measurement unit for non-mountain bikes
-      if (setMeasurementUnit) {
-        if (!isBikeType) {
-          // Extract measurement unit from size string if available
-          const sizeString = equipment.specifications?.size || "";
-          if (sizeString.includes("inches") || sizeString.includes("in") || sizeString.includes('"')) {
-            setMeasurementUnit("inches");
-          } else if (sizeString.includes("cm") || sizeString.includes("centimeters")) {
-            setMeasurementUnit("centimeters");
-          } else {
-            setMeasurementUnit("inches"); // default
-          }
+      // Set measurement unit for non-mountain bikes (legacy support)
+      if (setMeasurementUnit && !isBikeType) {
+        // Extract measurement unit from size string if available
+        const sizeString = equipment.specifications?.size || "";
+        if (sizeString.includes("inches") || sizeString.includes("in") || sizeString.includes('"')) {
+          setMeasurementUnit("inches");
+        } else if (sizeString.includes("cm") || sizeString.includes("centimeters")) {
+          setMeasurementUnit("centimeters");
+        } else {
+          setMeasurementUnit("inches"); // default
         }
       }
 
@@ -107,7 +99,7 @@ export const useEquipmentDataLoader = ({
         // Convert to string, handling 0 as a valid value
         const damageDepositValue = equipment.damage_deposit !== null && equipment.damage_deposit !== undefined 
           ? String(equipment.damage_deposit) 
-          : "0";
+          : "";
         
         console.log('Final damage deposit value being set:', damageDepositValue);
         setDamageDeposit(damageDepositValue);

@@ -11,7 +11,7 @@ export const useGearFormValidation = () => {
       gearType,
       description,
       zipCode,
-      dimensions,
+      size,
       skillLevel,
       damageDeposit,
       pricingOptions,
@@ -68,15 +68,15 @@ export const useGearFormValidation = () => {
       return false;
     }
 
-    // Check if gear type requires dimensions or sizes
+    // Check if gear type requires size
     const isBikeType = gearType === "mountain-bike" || gearType === "e-bike";
 
     if (!isBikeType) {
-      // For non-bike types, validate dimensions
-      if (!dimensions.length.trim()) {
+      // For non-bike types, validate size
+      if (!size.trim()) {
         toast({
           title: "Validation Error",
-          description: "Length is required.",
+          description: "Size is required.",
           variant: "destructive",
         });
         return false;

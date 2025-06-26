@@ -16,7 +16,7 @@ interface UseMultipleEditGearFormSubmissionProps {
   description: string;
   zipCode: string;
   measurementUnit: string;
-  dimensions: { length: string; width: string; thickness?: string };
+  size: string;
   skillLevel: string;
   images: File[];
   pricePerDay: string;
@@ -35,7 +35,7 @@ export const useMultipleEditGearFormSubmission = ({
   description,
   zipCode,
   measurementUnit,
-  dimensions,
+  size,
   skillLevel,
   images,
   pricePerDay,
@@ -61,7 +61,7 @@ export const useMultipleEditGearFormSubmission = ({
     console.log('=== FORM SUBMISSION START ===');
     console.log('Damage deposit value at submission start:', damageDeposit);
     console.log('Selected sizes at submission:', selectedSizes);
-    console.log('Dimensions at submission:', dimensions);
+    console.log('Size at submission:', size);
 
     // Create pricingOptions array for validation - include empty values to allow clearing
     const pricingOptions = [
@@ -86,11 +86,7 @@ export const useMultipleEditGearFormSubmission = ({
       description,
       zipCode,
       measurementUnit,
-      dimensions: {
-        length: dimensions.length,
-        width: dimensions.width,
-        thickness: dimensions.thickness || ""
-      },
+      size: isBikeType ? selectedSizes.join(", ") : size,
       skillLevel,
       pricingOptions,
       damageDeposit,
@@ -153,8 +149,7 @@ export const useMultipleEditGearFormSubmission = ({
         description,
         zipCode,
         coordinates,
-        dimensions,
-        measurementUnit,
+        size: isBikeType ? selectedSizes.join(", ") : size,
         skillLevel,
         pricePerDay,
         pricePerHour: pricePerHour, // Don't filter empty - let prepareEquipmentData handle it

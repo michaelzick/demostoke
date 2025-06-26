@@ -1,15 +1,11 @@
 
 import BikeSpecifications from "./BikeSpecifications";
-import DimensionSpecifications from "./DimensionSpecifications";
+import SizeSpecifications from "./SizeSpecifications";
 import SkillLevelSpecifications from "./SkillLevelSpecifications";
 
 interface GearSpecificationsProps {
-  dimensions: {
-    length: string;
-    width: string;
-    thickness?: string;
-  };
-  setDimensions: (value: { length: string; width: string; thickness?: string }) => void;
+  size: string;
+  setSize: (size: string) => void;
   skillLevel: string;
   setSkillLevel: (value: string) => void;
   gearType: string;
@@ -20,8 +16,8 @@ interface GearSpecificationsProps {
 }
 
 const GearSpecifications = ({
-  dimensions,
-  setDimensions,
+  size,
+  setSize,
   skillLevel,
   setSkillLevel,
   gearType,
@@ -34,17 +30,20 @@ const GearSpecifications = ({
 
   return (
     <>
-      {/* Dimensions or Size */}
+      {/* Size or Bike Sizes */}
       {isBikeType ? (
         <BikeSpecifications
           selectedSizes={selectedSizes}
           setSelectedSizes={setSelectedSizes!}
-          setDimensions={setDimensions}
+          setDimensions={(value) => {
+            // Update size for backward compatibility
+            setSize(value.length);
+          }}
         />
       ) : (
-        <DimensionSpecifications
-          dimensions={dimensions}
-          setDimensions={setDimensions}
+        <SizeSpecifications
+          size={size}
+          setSize={setSize}
         />
       )}
 
