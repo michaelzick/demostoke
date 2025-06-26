@@ -38,17 +38,17 @@ const PriceDisplay = ({ equipment, equipmentHeader }: PriceDisplayProps) => {
 
   // Create pricing options from equipment table columns with improved truthiness checks
   const pricingOptions = [];
-  
+
   // Check for day price (should always exist)
   if (equipment.price_per_day !== null && equipment.price_per_day !== undefined && equipment.price_per_day > 0) {
     pricingOptions.push({ price: equipment.price_per_day, duration: 'day' });
   }
-  
+
   // Check for hour price with proper type handling
   if (equipment.price_per_hour !== null && equipment.price_per_hour !== undefined && Number(equipment.price_per_hour) > 0) {
     pricingOptions.push({ price: Number(equipment.price_per_hour), duration: 'hour' });
   }
-  
+
   // Check for week price with proper type handling
   if (equipment.price_per_week !== null && equipment.price_per_week !== undefined && Number(equipment.price_per_week) > 0) {
     pricingOptions.push({ price: Number(equipment.price_per_week), duration: 'week' });
@@ -72,9 +72,9 @@ const PriceDisplay = ({ equipment, equipmentHeader }: PriceDisplayProps) => {
           <div className="space-y-1">
             {orderedPricingOptions.map((option, index) => (
               <p key={option.duration} className={
-                index === 0 
-                  ? "text-2xl font-bold text-primary" 
-                  : "text-sm text-muted-foreground"
+                index === 0
+                  ? "text-2xl font-bold text-primary"
+                  : "text-m text-white"
               }>
                 ${option.price} <span className="text-sm font-normal">/ {formatDuration(option.duration)}</span>
               </p>

@@ -63,6 +63,8 @@ const EquipmentDetailPage = () => {
         subcategory: equipment.subcategory,
         description: equipment.description || "",
         price_per_day: Number(equipment.price_per_day),
+        price_per_hour: Number(equipment.price_per_hour),
+        price_per_week: Number(equipment.price_per_week),
         image_url: equipment.image_url || "",
         images: equipment.images || [], // Make sure images array is passed through
         rating: Number(equipment.rating || 0),
