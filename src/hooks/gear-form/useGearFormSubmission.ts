@@ -16,7 +16,7 @@ interface UseGearFormSubmissionProps {
   description: string;
   zipCode: string;
   measurementUnit: string;
-  dimensions: { length: string; width: string; thickness?: string };
+  size: string;
   skillLevel: string;
   images: File[];
   pricePerDay: string;
@@ -35,7 +35,7 @@ export const useGearFormSubmission = ({
   description,
   zipCode,
   measurementUnit,
-  dimensions,
+  size,
   skillLevel,
   images,
   pricePerDay,
@@ -83,11 +83,7 @@ export const useGearFormSubmission = ({
       description,
       zipCode,
       measurementUnit,
-      dimensions: {
-        length: dimensions.length,
-        width: dimensions.width,
-        thickness: dimensions.thickness || ""
-      },
+      size,
       skillLevel,
       damageDeposit,
       pricingOptions,
@@ -136,8 +132,7 @@ export const useGearFormSubmission = ({
         description,
         zipCode,
         coordinates,
-        dimensions,
-        measurementUnit,
+        size,
         skillLevel,
         pricePerDay: pricePerDay,
         pricePerHour: pricePerHour.trim() || undefined,

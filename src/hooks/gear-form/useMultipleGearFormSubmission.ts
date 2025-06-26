@@ -15,7 +15,7 @@ interface UseMultipleGearFormSubmissionProps {
   description: string;
   zipCode: string;
   measurementUnit: string;
-  dimensions: { length: string; width: string; thickness?: string };
+  size: string;
   skillLevel: string;
   role: string;
   damageDeposit: string;
@@ -34,7 +34,7 @@ export const useMultipleGearFormSubmission = ({
   description,
   zipCode,
   measurementUnit,
-  dimensions,
+  size,
   skillLevel,
   images,
   pricePerDay,
@@ -75,9 +75,9 @@ export const useMultipleGearFormSubmission = ({
       pricingOptions.push({ price: pricePerWeek, duration: "week" });
     }
 
-    // Check if this is a bike type and extract selected sizes from dimensions.length
+    // Check if this is a bike type and extract selected sizes from size field
     const isBikeType = gearType === "mountain-bike" || gearType === "e-bike";
-    const selectedSizes = isBikeType ? dimensions.length.split(", ").filter(size => size.trim()) : [];
+    const selectedSizes = isBikeType ? size.split(", ").filter(s => s.trim()) : [];
 
     // Use the validation hook to validate the form
     const formData: any = {
@@ -86,11 +86,7 @@ export const useMultipleGearFormSubmission = ({
       description,
       zipCode,
       measurementUnit,
-      dimensions: {
-        length: dimensions.length,
-        width: dimensions.width,
-        thickness: dimensions.thickness || ""
-      },
+      size,
       skillLevel,
       damageDeposit,
       pricingOptions,
@@ -156,8 +152,7 @@ export const useMultipleGearFormSubmission = ({
         description,
         zipCode,
         coordinates,
-        dimensions,
-        measurementUnit,
+        size,
         skillLevel,
         pricePerDay,
         pricePerHour: pricePerHour.trim() || undefined,

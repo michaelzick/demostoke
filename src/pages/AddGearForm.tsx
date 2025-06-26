@@ -27,7 +27,7 @@ const AddGearForm = () => {
     setDescription: formState.setDescription,
     setZipCode: formState.setZipCode,
     setMeasurementUnit: formState.setMeasurementUnit,
-    setDimensions: formState.setDimensions,
+    setSize: formState.setSize,
     setSkillLevel: formState.setSkillLevel,
     setPricePerDay: formState.setPricePerDay,
     setPricePerHour: formState.setPricePerHour,
@@ -43,7 +43,7 @@ const AddGearForm = () => {
     description: formState.description,
     zipCode: formState.zipCode,
     measurementUnit: formState.measurementUnit,
-    dimensions: formState.dimensions,
+    size: formState.size,
     skillLevel: formState.skillLevel,
     images: formState.images,
     pricePerDay: formState.pricePerDay,
@@ -76,8 +76,8 @@ const AddGearForm = () => {
         />
 
         <GearSpecifications
-          dimensions={formState.dimensions}
-          setDimensions={formState.setDimensions}
+          size={formState.size}
+          setSize={formState.setSize}
           skillLevel={formState.skillLevel}
           setSkillLevel={formState.setSkillLevel}
           gearType={formState.gearType}
