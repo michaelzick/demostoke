@@ -120,10 +120,6 @@ export const createUserLocationPopupContent = (user: { id: string; name: string;
 };
 
 export const initializeMap = (container: HTMLDivElement, token: string): mapboxgl.Map => {
-  if (!token || !token.startsWith('pk.')) {
-    throw new Error('Invalid Mapbox token');
-  }
-
   mapboxgl.accessToken = token;
 
   const map = new mapboxgl.Map({
@@ -145,11 +141,9 @@ export const initializeMap = (container: HTMLDivElement, token: string): mapboxg
 };
 
 export const fitMapBounds = (map: mapboxgl.Map, locations: Array<{ location: { lat: number; lng: number; }; }>, isSingleView: boolean = false): void => {
-  if (!map || locations.length === 0) {
-    if (map) {
-      map.setCenter([-118.2437, 34.0522]);
-      map.setZoom(11);
-    }
+  if (locations.length === 0) {
+    map.setCenter([-118.2437, 34.0522]);
+    map.setZoom(11);
     return;
   }
 
