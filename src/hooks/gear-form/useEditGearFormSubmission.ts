@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
 import { useGearFormValidation } from "@/hooks/useGearFormValidation";
 import { UserEquipment } from "@/types/equipment";
-import { PricingOption, FormData } from "./types";
+import { FormData } from "./types";
 import { useEditGearFormValidation } from "./useEditGearFormValidation";
 import { useEditGearImageHandling } from "./useEditGearImageHandling";
 import { useEditGearLocationHandling } from "./useEditGearLocationHandling";
@@ -21,7 +21,9 @@ interface UseEditGearFormSubmissionProps {
   dimensions: { length: string; width: string; thickness?: string };
   skillLevel: string;
   images: File[];
-  pricingOptions: PricingOption[];
+  pricePerDay: string;
+  pricePerHour: string;
+  pricePerWeek: string;
   damageDeposit: string;
   imageUrl: string;
   useImageUrl: boolean;
@@ -37,7 +39,9 @@ export const useEditGearFormSubmission = ({
   dimensions,
   skillLevel,
   images,
-  pricingOptions,
+  pricePerDay,
+  pricePerHour,
+  pricePerWeek,
   damageDeposit,
   imageUrl,
   useImageUrl,
@@ -56,6 +60,17 @@ export const useEditGearFormSubmission = ({
     e.preventDefault();
 
     console.log('=== FORM SUBMISSION START ===');
+
+    // Create pricingOptions array for validation
+    const pricingOptions = [
+      { price: pricePerDay, duration: "day" }
+    ];
+    if (pricePerHour.trim()) {
+      pricingOptions.push({ price: pricePerHour, duration: "hour" });
+    }
+    if (pricePerWeek.trim()) {
+      pricingOptions.push({ price: pricePerWeek, duration: "week" });
+    }
 
     // Initial validation
     if (!validateSubmission({ user, equipment, pricingOptions, damageDeposit })) {
@@ -103,7 +118,7 @@ export const useEditGearFormSubmission = ({
       const currentZip = equipment!.location?.zip || '';
       const coordinates = await handleLocationUpdate({ zipCode, currentZip });
 
-      // Update database
+      // Update database with individual price fields
       await updateGearInDatabase({
         equipment: equipment!,
         userId: user!.id,
@@ -115,7 +130,9 @@ export const useEditGearFormSubmission = ({
         dimensions,
         measurementUnit,
         skillLevel,
-        pricingOptions,
+        pricePerDay,
+        pricePerHour: pricePerHour.trim() || undefined,
+        pricePerWeek: pricePerWeek.trim() || undefined,
         damageDeposit,
         finalImageUrl
       });

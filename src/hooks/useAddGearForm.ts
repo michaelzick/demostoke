@@ -42,7 +42,9 @@ export const useAddGearForm = () => {
     setDimensions: formState.setDimensions,
     setRole: formState.setRole,
     setSkillLevel: formState.setSkillLevel,
-    setPricingOptions: formState.setPricingOptions,
+    setPricePerDay: formState.setPricePerDay,
+    setPricePerHour: formState.setPricePerHour,
+    setPricePerWeek: formState.setPricePerWeek,
     setDamageDeposit: formState.setDamageDeposit,
   });
 
@@ -54,7 +56,7 @@ export const useAddGearForm = () => {
     }
   }, [getDuplicatedGearData]);
 
-  // Handle form submission
+  // Handle form submission with individual price fields
   const { handleSubmit, isSubmitting } = useGearFormSubmission({
     gearName: formState.gearName,
     gearType: formState.gearType,
@@ -64,7 +66,9 @@ export const useAddGearForm = () => {
     dimensions: formState.dimensions,
     skillLevel: formState.skillLevel,
     images: formState.images,
-    pricingOptions: formState.pricingOptions,
+    pricePerDay: formState.pricePerDay,
+    pricePerHour: formState.pricePerHour,
+    pricePerWeek: formState.pricePerWeek,
     damageDeposit: formState.damageDeposit,
     role: formState.role,
     duplicatedImageUrl,
