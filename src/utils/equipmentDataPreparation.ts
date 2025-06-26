@@ -1,4 +1,3 @@
-
 import { mapGearTypeToCategory } from "@/utils/gearTypeMapping";
 
 interface PrepareEquipmentDataParams {
@@ -34,6 +33,21 @@ export const prepareEquipmentData = ({
   finalImageUrl,
   damageDeposit,
 }: PrepareEquipmentDataParams) => {
+  const buildSizeString = () => {
+    let size = dimensions.length;
+    if (dimensions.width && dimensions.width.trim()) {
+      size += ` x ${dimensions.width}`;
+    }
+    if (dimensions.thickness && dimensions.thickness.trim()) {
+      size += ` x ${dimensions.thickness}`;
+    }
+    // Only add measurementUnit if width or thickness is present
+    if ((dimensions.width && dimensions.width.trim()) || (dimensions.thickness && dimensions.thickness.trim())) {
+      size += ` ${measurementUnit}`;
+    }
+    return size;
+  };
+
   const equipmentData: any = {
     name: gearName,
     category: mapGearTypeToCategory(gearType),
@@ -41,7 +55,7 @@ export const prepareEquipmentData = ({
     image_url: finalImageUrl,
     price_per_day: parseFloat(pricePerDay),
     location_zip: zipCode,
-    size: `${dimensions.length} x ${dimensions.width}${dimensions.thickness ? ` x ${dimensions.thickness}` : ''} ${measurementUnit}`,
+    size: buildSizeString(),
     suitable_skill_level: skillLevel,
     status: 'available',
     visible_on_map: true,
@@ -51,7 +65,7 @@ export const prepareEquipmentData = ({
   if (pricePerHour && pricePerHour.trim()) {
     equipmentData.price_per_hour = parseFloat(pricePerHour);
   }
-  
+
   if (pricePerWeek && pricePerWeek.trim()) {
     equipmentData.price_per_week = parseFloat(pricePerWeek);
   }
