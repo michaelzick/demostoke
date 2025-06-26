@@ -1,7 +1,6 @@
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 
 interface GearPricingProps {
   pricePerDay: string;
@@ -10,10 +9,6 @@ interface GearPricingProps {
   setPricePerHour: (value: string) => void;
   pricePerWeek: string;
   setPricePerWeek: (value: string) => void;
-  enableHourlyPricing: boolean;
-  setEnableHourlyPricing: (value: boolean) => void;
-  enableWeeklyPricing: boolean;
-  setEnableWeeklyPricing: (value: boolean) => void;
   damageDeposit: string;
   setDamageDeposit: (value: string) => void;
 }
@@ -25,10 +20,6 @@ const GearPricing = ({
   setPricePerHour,
   pricePerWeek,
   setPricePerWeek,
-  enableHourlyPricing,
-  setEnableHourlyPricing,
-  enableWeeklyPricing,
-  setEnableWeeklyPricing,
   damageDeposit,
   setDamageDeposit
 }: GearPricingProps) => {
@@ -52,52 +43,34 @@ const GearPricing = ({
 
       {/* Hourly Pricing (Optional) */}
       <div>
-        <div className="flex items-center space-x-2 mb-2">
-          <Checkbox
-            id="enableHourlyPricing"
-            checked={enableHourlyPricing}
-            onCheckedChange={setEnableHourlyPricing}
-          />
-          <Label htmlFor="enableHourlyPricing" className="text-lg font-medium">
-            Enable Hourly Pricing
-          </Label>
-        </div>
-        {enableHourlyPricing && (
-          <Input
-            id="pricePerHour"
-            type="number"
-            value={pricePerHour}
-            onChange={(e) => setPricePerHour(e.target.value)}
-            placeholder="Price per hour"
-            min="0"
-            step="0.01"
-          />
-        )}
+        <Label htmlFor="pricePerHour" className="block text-lg font-medium mb-2">
+          Price per Hour (Optional)
+        </Label>
+        <Input
+          id="pricePerHour"
+          type="number"
+          value={pricePerHour}
+          onChange={(e) => setPricePerHour(e.target.value)}
+          placeholder="Enter hourly price (optional)"
+          min="0"
+          step="0.01"
+        />
       </div>
 
       {/* Weekly Pricing (Optional) */}
       <div>
-        <div className="flex items-center space-x-2 mb-2">
-          <Checkbox
-            id="enableWeeklyPricing"
-            checked={enableWeeklyPricing}
-            onCheckedChange={setEnableWeeklyPricing}
-          />
-          <Label htmlFor="enableWeeklyPricing" className="text-lg font-medium">
-            Enable Weekly Pricing
-          </Label>
-        </div>
-        {enableWeeklyPricing && (
-          <Input
-            id="pricePerWeek"
-            type="number"
-            value={pricePerWeek}
-            onChange={(e) => setPricePerWeek(e.target.value)}
-            placeholder="Price per week"
-            min="0"
-            step="0.01"
-          />
-        )}
+        <Label htmlFor="pricePerWeek" className="block text-lg font-medium mb-2">
+          Price per Week (Optional)
+        </Label>
+        <Input
+          id="pricePerWeek"
+          type="number"
+          value={pricePerWeek}
+          onChange={(e) => setPricePerWeek(e.target.value)}
+          placeholder="Enter weekly price (optional)"
+          min="0"
+          step="0.01"
+        />
       </div>
 
       {/* Refundable Damage Deposit */}
