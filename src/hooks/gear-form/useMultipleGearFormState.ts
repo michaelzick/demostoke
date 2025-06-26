@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
 
 export const useMultipleGearFormState = () => {
   const [gearName, setGearName] = useState("");
@@ -7,7 +7,7 @@ export const useMultipleGearFormState = () => {
   const [description, setDescription] = useState("");
   const [zipCode, setZipCode] = useState("");
   const [measurementUnit, setMeasurementUnit] = useState("");
-  const [dimensions, setDimensions] = useState<{ length: string; width: string; thickness?: string }>({ length: "", width: "", thickness: "" });
+  const [size, setSize] = useState("");
   const [skillLevel, setSkillLevel] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([""]);
@@ -16,10 +16,12 @@ export const useMultipleGearFormState = () => {
   const [pricePerHour, setPricePerHour] = useState("");
   const [pricePerWeek, setPricePerWeek] = useState("");
   const [damageDeposit, setDamageDeposit] = useState("");
+  
+  // New fields for multiple sizes and skill levels
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedSkillLevels, setSelectedSkillLevels] = useState<string[]>([]);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setImages(Array.from(e.target.files));
     }
@@ -36,8 +38,8 @@ export const useMultipleGearFormState = () => {
     setZipCode,
     measurementUnit,
     setMeasurementUnit,
-    dimensions,
-    setDimensions,
+    size,
+    setSize,
     skillLevel,
     setSkillLevel,
     images,

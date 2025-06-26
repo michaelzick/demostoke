@@ -7,7 +7,7 @@ interface UseDuplicatedGearDataForMultipleProps {
   setDescription: (value: string) => void;
   setZipCode: (value: string) => void;
   setMeasurementUnit: (value: string) => void;
-  setDimensions: (value: { length: string; width: string; thickness?: string }) => void;
+  setSize: (value: string) => void;
   setSkillLevel: (value: string) => void;
   setPricePerDay: (value: string) => void;
   setPricePerHour: (value: string) => void;
@@ -23,7 +23,7 @@ export const useDuplicatedGearDataForMultiple = ({
   setDescription,
   setZipCode,
   setMeasurementUnit,
-  setDimensions,
+  setSize,
   setSkillLevel,
   setPricePerDay,
   setPricePerHour,
@@ -47,24 +47,17 @@ export const useDuplicatedGearDataForMultiple = ({
         setDescription(duplicatedData.description || "");
         setZipCode(duplicatedData.location?.zip || "");
         
-        // Set dimensions and measurement unit
-        if (duplicatedData.specifications?.size) {
-          const sizeString = duplicatedData.specifications.size;
-          // Parse dimensions from size string
-          const dimensionMatch = sizeString.match(/(\d+(?:\.\d+)?)\s*x\s*(\d+(?:\.\d+)?)(?:\s*x\s*(\d+(?:\.\d+)?))?\s*(inches|in|cm|centimeters)?/i);
-          if (dimensionMatch) {
-            setDimensions({
-              length: dimensionMatch[1] || "",
-              width: dimensionMatch[2] || "",
-              thickness: dimensionMatch[3] || ""
-            });
-            const unit = dimensionMatch[4];
-            if (unit && (unit.includes('cm') || unit.includes('centimeter'))) {
-              setMeasurementUnit('centimeters');
-            } else {
-              setMeasurementUnit('inches');
-            }
-          }
+        // Set size directly from duplicated data
+        setSize(duplicatedData.specifications?.size || "");
+        
+        // Extract measurement unit from size string if available
+        const sizeString = duplicatedData.specifications?.size || "";
+        if (sizeString.includes("inches") || sizeString.includes("in") || sizeString.includes('"')) {
+          setMeasurementUnit("inches");
+        } else if (sizeString.includes("cm") || sizeString.includes("centimeters")) {
+          setMeasurementUnit("centimeters");
+        } else {
+          setMeasurementUnit("inches"); // default
         }
         
         // Set skill level

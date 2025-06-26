@@ -10,7 +10,7 @@ interface UseDuplicatedGearDataProps {
   setDescription: (value: string) => void;
   setZipCode: (value: string) => void;
   setMeasurementUnit: (value: string) => void;
-  setDimensions: (value: { length: string; width: string; thickness?: string }) => void;
+  setSize: (value: string) => void;
   setRole: (value: string) => void;
   setSkillLevel: (value: string) => void;
   setPricePerDay: (value: string) => void;
@@ -25,7 +25,7 @@ export const useDuplicatedGearData = ({
   setDescription,
   setZipCode,
   setMeasurementUnit,
-  setDimensions,
+  setSize,
   setRole,
   setSkillLevel,
   setPricePerDay,
@@ -52,9 +52,8 @@ export const useDuplicatedGearData = ({
         setDescription(duplicatedEquipment.description || "");
         setZipCode(duplicatedEquipment.location?.zip || "");
 
-        // Parse and set dimensions
-        const parsedDimensions = parseSize(duplicatedEquipment.specifications?.size || "");
-        setDimensions(parsedDimensions);
+        // Set size directly from the equipment size field
+        setSize(duplicatedEquipment.specifications?.size || "");
 
         // Set measurement unit for non-mountain bikes
         const isMountainBike = mappedGearType === "mountain-bike";
@@ -108,7 +107,7 @@ export const useDuplicatedGearData = ({
         console.error("Error parsing duplicated equipment data:", error);
       }
     }
-  }, [toast, setGearName, setGearType, setDescription, setZipCode, setMeasurementUnit, setDimensions, setRole, setSkillLevel, setPricePerDay, setPricePerHour, setPricePerWeek, setDamageDeposit]);
+  }, [toast, setGearName, setGearType, setDescription, setZipCode, setMeasurementUnit, setSize, setRole, setSkillLevel, setPricePerDay, setPricePerHour, setPricePerWeek, setDamageDeposit]);
 
   // Return the duplicated equipment data so it can be used by the form
   const getDuplicatedGearData = () => {
