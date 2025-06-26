@@ -4,47 +4,16 @@ import mapboxgl from 'mapbox-gl';
 import { initializeMap, fitMapBounds } from '@/utils/mapUtils';
 import { useToast } from '@/hooks/use-toast';
 
-interface MapEquipment {
-  id: string;
-  name: string;
-  category: string;
-  price_per_day: number;
-  location: {
-    lat: number;
-    lng: number;
-  };
-}
-
-interface UserLocation {
-  id: string;
-  name: string;
-  role: string;
-  address: string;
-  location: {
-    lat: number;
-    lng: number;
-  };
-  equipment_categories: string[];
-}
-
 interface UseMapInitializationProps {
   token: string | null;
   isLoadingToken: boolean;
   onTokenError: () => void;
-  displayEquipment: MapEquipment[];
-  displayUserLocations: UserLocation[];
-  isSingleView: boolean;
-  isUserLocationMode: boolean;
 }
 
 export const useMapInitialization = ({
   token,
   isLoadingToken,
-  onTokenError,
-  displayEquipment,
-  displayUserLocations,
-  isSingleView,
-  isUserLocationMode
+  onTokenError
 }: UseMapInitializationProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -60,6 +29,7 @@ export const useMapInitialization = ({
     if (map.current) {
       map.current.remove();
       map.current = null;
+      setMapLoaded(false);
     }
 
     try {
@@ -82,6 +52,7 @@ export const useMapInitialization = ({
           map.current.remove();
           map.current = null;
         }
+        setMapLoaded(false);
       };
     } catch (error) {
       console.error('Error initializing map:', error);
@@ -92,14 +63,6 @@ export const useMapInitialization = ({
       });
     }
   }, [token, isLoadingToken, onTokenError, toast]);
-
-  // Fit bounds when data changes
-  useEffect(() => {
-    if (!mapLoaded || !map.current) return;
-
-    const locations = isUserLocationMode ? displayUserLocations : displayEquipment;
-    fitMapBounds(map.current, locations, isSingleView);
-  }, [mapLoaded, displayEquipment, displayUserLocations, isSingleView, isUserLocationMode]);
 
   return {
     mapContainer,

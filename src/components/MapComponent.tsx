@@ -54,6 +54,16 @@ const MapComponent = ({
   } = useMapboxToken();
 
   const {
+    mapContainer,
+    map,
+    mapLoaded
+  } = useMapInitialization({
+    token,
+    isLoadingToken,
+    onTokenError: handleTokenError
+  });
+
+  const {
     isUserLocationMode,
     displayEquipment,
     displayUserLocations,
@@ -64,21 +74,7 @@ const MapComponent = ({
     userLocations: propUserLocations,
     isSingleView,
     searchQuery,
-    mapLoaded: true // We'll pass the actual mapLoaded state in the next step
-  });
-
-  const {
-    mapContainer,
-    map,
     mapLoaded
-  } = useMapInitialization({
-    token,
-    isLoadingToken,
-    onTokenError: handleTokenError,
-    displayEquipment,
-    displayUserLocations,
-    isSingleView,
-    isUserLocationMode
   });
 
   // Use the custom hook for managing markers
@@ -94,7 +90,7 @@ const MapComponent = ({
   return (
     <div className="relative w-full h-full rounded-lg overflow-hidden">
       {showTokenInput ? (
-        <MapboxTokenForm onTokenSubmit={handleTokenSubmit} isLoading={false} />
+        <MapboxTokenForm onTokenSubmit={handleTokenSubmit} isLoading={isLoadingToken} />
       ) : (
         <>
           <MapLegend activeCategory={activeCategory} />

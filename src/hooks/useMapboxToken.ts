@@ -78,6 +78,15 @@ export const useMapboxToken = () => {
 
   const handleTokenSubmit = (tokenInput: string) => {
     console.log('📝 Token submitted by user');
+    if (!tokenInput || !tokenInput.startsWith('pk.')) {
+      toast({
+        title: "Invalid Token",
+        description: "Please enter a valid Mapbox token starting with 'pk.'",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     localStorage.setItem('mapbox_token', tokenInput);
     setToken(tokenInput);
     setShowTokenInput(false);
