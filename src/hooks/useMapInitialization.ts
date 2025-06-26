@@ -26,6 +26,7 @@ export const useMapInitialization = ({
 
     console.log('Initializing map with token...');
 
+    // Only remove existing map if we have a new token
     if (map.current) {
       map.current.remove();
       map.current = null;
@@ -47,13 +48,6 @@ export const useMapInitialization = ({
         }
       });
 
-      return () => {
-        if (map.current) {
-          map.current.remove();
-          map.current = null;
-        }
-        setMapLoaded(false);
-      };
     } catch (error) {
       console.error('Error initializing map:', error);
       toast({
@@ -63,6 +57,16 @@ export const useMapInitialization = ({
       });
     }
   }, [token, isLoadingToken, onTokenError, toast]);
+
+  // Cleanup on unmount only
+  useEffect(() => {
+    return () => {
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
+    };
+  }, []);
 
   return {
     mapContainer,

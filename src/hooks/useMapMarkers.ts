@@ -1,7 +1,7 @@
 
 import { useRef, useEffect } from 'react';
 import mapboxgl from 'mapbox-gl';
-import { createMarkerElement, createPopupContent, createUserLocationMarkerElement, createUserLocationPopupContent } from '@/utils/mapUtils';
+import { createMarkerElement, createPopupContent, createUserLocationMarkerElement, createUserLocationPopupContent, fitMapBounds } from '@/utils/mapUtils';
 
 interface MapEquipment {
   id: string;
@@ -107,6 +107,16 @@ export const useMapMarkers = ({ map, mapLoaded, equipment = [], userLocations = 
         console.error(`Error creating marker for user ${user.id}:`, err);
       }
     });
+
+    // Fit bounds to show all markers
+    const allLocations = [
+      ...equipment.map(item => ({ location: item.location })),
+      ...userLocations.map(user => ({ location: user.location }))
+    ];
+    
+    if (allLocations.length > 0) {
+      fitMapBounds(map, allLocations, isSingleView);
+    }
 
     // Cleanup function
     return () => {
