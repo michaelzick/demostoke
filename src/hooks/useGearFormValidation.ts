@@ -118,9 +118,12 @@ export const useGearFormValidation = () => {
       if (option.price.trim() !== '') { // Only validate non-empty values
         const price = parseFloat(option.price);
         if (isNaN(price) || price <= 0) {
+          // Provide specific error message based on duration
+          const durationLabel = option.duration === "day" ? "Daily" : 
+                               option.duration === "hour" ? "Hourly" : "Weekly";
           toast({
             title: "Validation Error",
-            description: `${option.duration.charAt(0).toUpperCase() + option.duration.slice(1)} price must be a positive number.`,
+            description: `${durationLabel} price must be a positive number.`,
             variant: "destructive",
           });
           return false;
@@ -128,7 +131,7 @@ export const useGearFormValidation = () => {
       }
     }
 
-    // Validate damage deposit if provided
+    // Validate damage deposit - allow empty strings (will be handled as optional)
     if (damageDeposit.trim()) {
       const deposit = parseFloat(damageDeposit);
       if (isNaN(deposit) || deposit < 0) {
