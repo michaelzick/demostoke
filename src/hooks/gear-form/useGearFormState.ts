@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { PricingOption } from "./types";
 
 export const useGearFormState = () => {
   const [gearName, setGearName] = useState("");
@@ -13,9 +12,9 @@ export const useGearFormState = () => {
   const [images, setImages] = useState<File[]>([]);
   const [imageUrl, setImageUrl] = useState("");
   const [useImageUrl, setUseImageUrl] = useState(false);
-  const [pricingOptions, setPricingOptions] = useState<PricingOption[]>([
-    { price: "", duration: "day" }
-  ]);
+  const [pricePerDay, setPricePerDay] = useState("");
+  const [pricePerHour, setPricePerHour] = useState("");
+  const [pricePerWeek, setPricePerWeek] = useState("");
   const [damageDeposit, setDamageDeposit] = useState("");
   const [role, setRole] = useState("");
 
@@ -40,8 +39,12 @@ export const useGearFormState = () => {
     setImageUrl,
     useImageUrl,
     setUseImageUrl,
-    pricingOptions,
-    setPricingOptions,
+    pricePerDay,
+    setPricePerDay,
+    pricePerHour,
+    setPricePerHour,
+    pricePerWeek,
+    setPricePerWeek,
     damageDeposit,
     setDamageDeposit,
     role,

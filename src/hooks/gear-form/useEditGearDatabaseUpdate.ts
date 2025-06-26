@@ -1,9 +1,7 @@
 
 import { prepareEquipmentData } from "@/utils/equipmentDataPreparation";
 import { updateEquipmentInDatabase } from "@/services/equipmentUpdateService";
-import { updatePricingOptions } from "@/services/pricingOptionsService";
 import { UserEquipment } from "@/types/equipment";
-import { PricingOption } from "./types";
 
 interface DatabaseUpdateParams {
   equipment: UserEquipment;
@@ -16,7 +14,9 @@ interface DatabaseUpdateParams {
   dimensions: { length: string; width: string; thickness?: string };
   measurementUnit: string;
   skillLevel: string;
-  pricingOptions: PricingOption[];
+  pricePerDay: string;
+  pricePerHour?: string;
+  pricePerWeek?: string;
   damageDeposit: string;
   finalImageUrl: string;
 }
@@ -34,17 +34,14 @@ export const useEditGearDatabaseUpdate = () => {
       dimensions,
       measurementUnit,
       skillLevel,
-      pricingOptions,
+      pricePerDay,
+      pricePerHour,
+      pricePerWeek,
       damageDeposit,
       finalImageUrl
     } = params;
 
-    // Prepare equipment data for update - extract individual price values from pricing options
-    const pricePerDay = pricingOptions.find(p => p.duration === 'day')?.price || equipment.price_per_day.toString();
-    const pricePerHour = pricingOptions.find(p => p.duration === 'hour')?.price;
-    const pricePerWeek = pricingOptions.find(p => p.duration === 'week')?.price;
-    
-    console.log('Preparing equipment data with:', {
+    console.log('Preparing equipment data with individual price fields:', {
       pricePerDay,
       pricePerHour,
       pricePerWeek,
@@ -74,17 +71,6 @@ export const useEditGearDatabaseUpdate = () => {
     console.log('=== UPDATING EQUIPMENT ===');
     const updatedEquipment = await updateEquipmentInDatabase(equipment, equipmentData, userId);
     console.log('Equipment update completed:', updatedEquipment);
-
-    // Update pricing options - ensure we have valid pricing options
-    console.log('=== UPDATING PRICING OPTIONS ===');
-    console.log('Pricing options to save:', pricingOptions);
-    
-    if (pricingOptions.length > 0) {
-      const pricingResult = await updatePricingOptions(equipment.id, pricingOptions);
-      console.log('Pricing options update completed:', pricingResult);
-    } else {
-      console.warn('No pricing options to update');
-    }
 
     return updatedEquipment;
   };

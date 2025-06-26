@@ -7,8 +7,7 @@ import { useGearFormValidation } from "@/hooks/useGearFormValidation";
 import { geocodeZipCode } from "@/utils/geocoding";
 import { uploadMultipleGearImages, saveEquipmentImages } from "@/utils/multipleImageHandling";
 import { prepareEquipmentData } from "@/utils/equipmentDataPreparation";
-import { createEquipmentInDatabase, createPricingOptionsInDatabase } from "@/utils/gearDatabaseOperations";
-import { PricingOption, FormData } from "./types";
+import { createEquipmentInDatabase } from "@/utils/gearDatabaseOperations";
 
 interface UseMultipleGearFormSubmissionProps {
   gearName: string;
@@ -20,7 +19,9 @@ interface UseMultipleGearFormSubmissionProps {
   skillLevel: string;
   role: string;
   damageDeposit: string;
-  pricingOptions: PricingOption[];
+  pricePerDay: string;
+  pricePerHour: string;
+  pricePerWeek: string;
   imageUrls: string[];
   useImageUrls: boolean;
   images: File[];
@@ -36,7 +37,9 @@ export const useMultipleGearFormSubmission = ({
   dimensions,
   skillLevel,
   images,
-  pricingOptions,
+  pricePerDay,
+  pricePerHour,
+  pricePerWeek,
   damageDeposit,
   role,
   duplicatedImageUrls,
@@ -61,12 +64,23 @@ export const useMultipleGearFormSubmission = ({
       return;
     }
 
+    // Create pricingOptions array for validation
+    const pricingOptions = [
+      { price: pricePerDay, duration: "day" }
+    ];
+    if (pricePerHour.trim()) {
+      pricingOptions.push({ price: pricePerHour, duration: "hour" });
+    }
+    if (pricePerWeek.trim()) {
+      pricingOptions.push({ price: pricePerWeek, duration: "week" });
+    }
+
     // Check if this is a bike type and extract selected sizes from dimensions.length
     const isBikeType = gearType === "mountain-bike" || gearType === "e-bike";
     const selectedSizes = isBikeType ? dimensions.length.split(", ").filter(size => size.trim()) : [];
 
     // Use the validation hook to validate the form
-    const formData: FormData & { selectedSizes?: string[] } = {
+    const formData: any = {
       gearName,
       gearType,
       description,
@@ -145,9 +159,9 @@ export const useMultipleGearFormSubmission = ({
         dimensions,
         measurementUnit,
         skillLevel,
-        pricePerDay: pricingOptions[0].price,
-        pricePerHour: pricingOptions.find(p => p.duration === 'hour')?.price,
-        pricePerWeek: pricingOptions.find(p => p.duration === 'week')?.price,
+        pricePerDay,
+        pricePerHour: pricePerHour.trim() || undefined,
+        pricePerWeek: pricePerWeek.trim() || undefined,
         finalImageUrl: finalImageUrls[0], // Primary image
         damageDeposit,
       });
@@ -157,9 +171,6 @@ export const useMultipleGearFormSubmission = ({
 
       // Save all images to equipment_images table
       await saveEquipmentImages(equipmentResult.id, finalImageUrls);
-
-      // Create pricing options in database
-      await createPricingOptionsInDatabase(equipmentResult.id, pricingOptions);
 
       toast({
         title: "Equipment Added",

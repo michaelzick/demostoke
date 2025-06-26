@@ -1,9 +1,5 @@
 
 import { useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { PricingOption } from "./types";
-import { UserEquipment } from "@/types/equipment";
-import { mapCategoryToGearType, mapSkillLevel, parseSize } from "@/utils/gearDataMapping";
 
 interface UseDuplicatedGearDataForMultipleProps {
   setGearName: (value: string) => void;
@@ -13,7 +9,9 @@ interface UseDuplicatedGearDataForMultipleProps {
   setMeasurementUnit: (value: string) => void;
   setDimensions: (value: { length: string; width: string; thickness?: string }) => void;
   setSkillLevel: (value: string) => void;
-  setPricingOptions: (value: PricingOption[]) => void;
+  setPricePerDay: (value: string) => void;
+  setPricePerHour: (value: string) => void;
+  setPricePerWeek: (value: string) => void;
   setDamageDeposit: (value: string) => void;
   setImageUrls: (value: string[]) => void;
   setUseImageUrls: (value: boolean) => void;
@@ -27,88 +25,70 @@ export const useDuplicatedGearDataForMultiple = ({
   setMeasurementUnit,
   setDimensions,
   setSkillLevel,
-  setPricingOptions,
+  setPricePerDay,
+  setPricePerHour,
+  setPricePerWeek,
   setDamageDeposit,
   setImageUrls,
   setUseImageUrls,
 }: UseDuplicatedGearDataForMultipleProps) => {
-  const { toast } = useToast();
-
   useEffect(() => {
-    const duplicatedEquipmentJSON = sessionStorage.getItem('duplicatedEquipment');
-    if (duplicatedEquipmentJSON) {
+    const params = new URLSearchParams(window.location.search);
+    const duplicateFrom = params.get('duplicateFrom');
+    
+    if (duplicateFrom) {
       try {
-        const duplicatedEquipment: UserEquipment = JSON.parse(duplicatedEquipmentJSON);
-
-        console.log('Loading duplicated equipment data for multiple form:', duplicatedEquipment);
-
-        // Map category to gear type (e.g., "snowboards" -> "snowboard")
-        const mappedGearType = mapCategoryToGearType(duplicatedEquipment.category);
-
-        // Pre-populate form fields with duplicated equipment data
-        setGearName(duplicatedEquipment.name);
-        setGearType(mappedGearType || "");
-        setDescription(duplicatedEquipment.description || "");
-        setZipCode(duplicatedEquipment.location?.zip || "");
-
-        // Parse and set dimensions
-        const parsedDimensions = parseSize(duplicatedEquipment.specifications?.size || "");
-        setDimensions(parsedDimensions);
-
-        // Set measurement unit for non-mountain bikes
-        const isMountainBike = mappedGearType === "mountain-bike";
-        if (!isMountainBike) {
-          // Extract measurement unit from size string if available
-          const sizeString = duplicatedEquipment.specifications?.size || "";
-          if (sizeString.includes("inches") || sizeString.includes("in") || sizeString.includes('"')) {
-            setMeasurementUnit("inches");
-          } else if (sizeString.includes("cm") || sizeString.includes("centimeters")) {
-            setMeasurementUnit("centimeters");
-          } else {
-            setMeasurementUnit("inches"); // default
+        const duplicatedData = JSON.parse(decodeURIComponent(duplicateFrom));
+        console.log('Loading duplicated gear data:', duplicatedData);
+        
+        // Set basic info
+        setGearName(duplicatedData.name || "");
+        setGearType(duplicatedData.category || "");
+        setDescription(duplicatedData.description || "");
+        setZipCode(duplicatedData.location?.zip || "");
+        
+        // Set dimensions and measurement unit
+        if (duplicatedData.specifications?.size) {
+          const sizeString = duplicatedData.specifications.size;
+          // Parse dimensions from size string
+          const dimensionMatch = sizeString.match(/(\d+(?:\.\d+)?)\s*x\s*(\d+(?:\.\d+)?)(?:\s*x\s*(\d+(?:\.\d+)?))?\s*(inches|in|cm|centimeters)?/i);
+          if (dimensionMatch) {
+            setDimensions({
+              length: dimensionMatch[1] || "",
+              width: dimensionMatch[2] || "",
+              thickness: dimensionMatch[3] || ""
+            });
+            const unit = dimensionMatch[4];
+            if (unit && (unit.includes('cm') || unit.includes('centimeter'))) {
+              setMeasurementUnit('centimeters');
+            } else {
+              setMeasurementUnit('inches');
+            }
           }
         }
-
-        // Map and set skill level with proper timing
-        const mappedSkillLevel = mapSkillLevel(duplicatedEquipment.specifications?.suitable || "", mappedGearType);
-        setTimeout(() => {
-          setSkillLevel(mappedSkillLevel || "");
-        }, 100);
-
-        // Set pricing options from duplicated data
-        setPricingOptions([
-          { price: duplicatedEquipment.price_per_day.toString(), duration: "day" }
-        ]);
-
-        // Set damage deposit from equipment or use default
-        const damageDepositValue = duplicatedEquipment.damage_deposit !== undefined && duplicatedEquipment.damage_deposit !== null 
-          ? String(duplicatedEquipment.damage_deposit) 
-          : "0";
-        setDamageDeposit(damageDepositValue);
-
-        // Handle image URL for multiple gear form
-        if (duplicatedEquipment.image_url) {
-          setImageUrls([duplicatedEquipment.image_url]);
+        
+        // Set skill level
+        setSkillLevel(duplicatedData.specifications?.suitable || "");
+        
+        // Set individual price fields
+        setPricePerDay(duplicatedData.price_per_day?.toString() || "");
+        setPricePerHour(duplicatedData.price_per_hour?.toString() || "");
+        setPricePerWeek(duplicatedData.price_per_week?.toString() || "");
+        setDamageDeposit(duplicatedData.damage_deposit?.toString() || "0");
+        
+        // Set image URLs
+        if (duplicatedData.images && duplicatedData.images.length > 0) {
+          setImageUrls(duplicatedData.images);
+          setUseImageUrls(true);
+        } else if (duplicatedData.image_url) {
+          setImageUrls([duplicatedData.image_url]);
           setUseImageUrls(true);
         }
-
-        // Clear the sessionStorage after using it
-        sessionStorage.removeItem('duplicatedEquipment');
-
-        let toastDescription = "The form has been pre-filled with the duplicated gear's information. You can now edit and submit it as a new listing.";
-
-        // If there's an image URL, add it to the toast message
-        if (duplicatedEquipment.image_url) {
-          toastDescription += " The original image will be used unless you upload a new one.";
-        }
-
-        toast({
-          title: "Duplicated Gear Data Loaded",
-          description: toastDescription,
-        });
+        
+        console.log('Duplicated data loaded successfully');
       } catch (error) {
-        console.error("Error parsing duplicated equipment data:", error);
+        console.error('Error parsing duplicated gear data:', error);
       }
     }
-  }, [toast, setGearName, setGearType, setDescription, setZipCode, setMeasurementUnit, setDimensions, setSkillLevel, setPricingOptions, setDamageDeposit, setImageUrls, setUseImageUrls]);
+  }, []); // Run once on component mount
 };

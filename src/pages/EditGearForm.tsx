@@ -40,7 +40,9 @@ const EditGearForm = () => {
     setZipCode: formState.setZipCode,
     setDimensions: formState.setDimensions,
     setSkillLevel: formState.setSkillLevel,
-    setPricingOptions: formState.setPricingOptions,
+    setPricePerDay: formState.setPricePerDay,
+    setPricePerHour: formState.setPricePerHour,
+    setPricePerWeek: formState.setPricePerWeek,
     setDamageDeposit: formState.setDamageDeposit,
     setImageUrl: formState.setImageUrl,
     setMeasurementUnit: formState.setMeasurementUnit,
@@ -82,11 +84,13 @@ const EditGearForm = () => {
     dimensions: formState.dimensions,
     skillLevel: formState.skillLevel,
     images: formState.images,
-    pricingOptions: formState.pricingOptions,
+    pricePerDay: formState.pricePerDay,
+    pricePerHour: formState.pricePerHour,
+    pricePerWeek: formState.pricePerWeek,
     damageDeposit: formState.damageDeposit,
     imageUrls: formState.imageUrls,
     useImageUrls: formState.useImageUrls,
-    selectedSizes: formState.selectedSizes, // Pass selectedSizes to submission hook
+    selectedSizes: formState.selectedSizes,
   });
 
   // Handle error navigation
@@ -157,12 +161,12 @@ const EditGearForm = () => {
         />
 
         <GearPricing
-          pricePerDay={equipment?.price_per_day?.toString() || ''}
-          setPricePerDay={() => {}} // Read-only for now, will be handled by form state
-          pricePerHour={equipment?.price_per_hour?.toString() || ''}
-          setPricePerHour={() => {}} // Read-only for now, will be handled by form state
-          pricePerWeek={equipment?.price_per_week?.toString() || ''}
-          setPricePerWeek={() => {}} // Read-only for now, will be handled by form state
+          pricePerDay={formState.pricePerDay}
+          setPricePerDay={formState.setPricePerDay}
+          pricePerHour={formState.pricePerHour}
+          setPricePerHour={formState.setPricePerHour}
+          pricePerWeek={formState.pricePerWeek}
+          setPricePerWeek={formState.setPricePerWeek}
           damageDeposit={formState.damageDeposit}
           setDamageDeposit={formState.setDamageDeposit}
         />

@@ -29,7 +29,9 @@ const AddGearForm = () => {
     setMeasurementUnit: formState.setMeasurementUnit,
     setDimensions: formState.setDimensions,
     setSkillLevel: formState.setSkillLevel,
-    setPricingOptions: formState.setPricingOptions,
+    setPricePerDay: formState.setPricePerDay,
+    setPricePerHour: formState.setPricePerHour,
+    setPricePerWeek: formState.setPricePerWeek,
     setDamageDeposit: formState.setDamageDeposit,
     setImageUrls: formState.setImageUrls,
     setUseImageUrls: formState.setUseImageUrls,
@@ -44,7 +46,9 @@ const AddGearForm = () => {
     dimensions: formState.dimensions,
     skillLevel: formState.skillLevel,
     images: formState.images,
-    pricingOptions: formState.pricingOptions,
+    pricePerDay: formState.pricePerDay,
+    pricePerHour: formState.pricePerHour,
+    pricePerWeek: formState.pricePerWeek,
     damageDeposit: formState.damageDeposit,
     role: user?.role || "private-party",
     imageUrls: formState.imageUrls,
@@ -94,30 +98,12 @@ const AddGearForm = () => {
         />
 
         <GearPricing
-          pricePerDay={formState.pricingOptions.find(p => p.duration === 'day')?.price || ''}
-          setPricePerDay={(value) => {
-            const updatedOptions = formState.pricingOptions.filter(p => p.duration !== 'day');
-            if (value.trim()) {
-              updatedOptions.push({ id: 'day', price: value, duration: 'day' });
-            }
-            formState.setPricingOptions(updatedOptions);
-          }}
-          pricePerHour={formState.pricingOptions.find(p => p.duration === 'hour')?.price || ''}
-          setPricePerHour={(value) => {
-            const updatedOptions = formState.pricingOptions.filter(p => p.duration !== 'hour');
-            if (value.trim()) {
-              updatedOptions.push({ id: 'hour', price: value, duration: 'hour' });
-            }
-            formState.setPricingOptions(updatedOptions);
-          }}
-          pricePerWeek={formState.pricingOptions.find(p => p.duration === 'week')?.price || ''}
-          setPricePerWeek={(value) => {
-            const updatedOptions = formState.pricingOptions.filter(p => p.duration !== 'week');
-            if (value.trim()) {
-              updatedOptions.push({ id: 'week', price: value, duration: 'week' });
-            }
-            formState.setPricingOptions(updatedOptions);
-          }}
+          pricePerDay={formState.pricePerDay}
+          setPricePerDay={formState.setPricePerDay}
+          pricePerHour={formState.pricePerHour}
+          setPricePerHour={formState.setPricePerHour}
+          pricePerWeek={formState.pricePerWeek}
+          setPricePerWeek={formState.setPricePerWeek}
           damageDeposit={formState.damageDeposit}
           setDamageDeposit={formState.setDamageDeposit}
         />

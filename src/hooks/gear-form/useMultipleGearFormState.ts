@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-import { PricingOption } from "./types";
 
 export const useMultipleGearFormState = () => {
   const [gearName, setGearName] = useState("");
@@ -13,9 +12,9 @@ export const useMultipleGearFormState = () => {
   const [images, setImages] = useState<File[]>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([""]);
   const [useImageUrls, setUseImageUrls] = useState(false);
-  const [pricingOptions, setPricingOptions] = useState<PricingOption[]>([
-    { price: "", duration: "day" }
-  ]);
+  const [pricePerDay, setPricePerDay] = useState("");
+  const [pricePerHour, setPricePerHour] = useState("");
+  const [pricePerWeek, setPricePerWeek] = useState("");
   const [damageDeposit, setDamageDeposit] = useState("");
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedSkillLevels, setSelectedSkillLevels] = useState<string[]>([]);
@@ -47,8 +46,12 @@ export const useMultipleGearFormState = () => {
     setImageUrls,
     useImageUrls,
     setUseImageUrls,
-    pricingOptions,
-    setPricingOptions,
+    pricePerDay,
+    setPricePerDay,
+    pricePerHour,
+    setPricePerHour,
+    pricePerWeek,
+    setPricePerWeek,
     damageDeposit,
     setDamageDeposit,
     selectedSizes,

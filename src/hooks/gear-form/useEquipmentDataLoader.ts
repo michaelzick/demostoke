@@ -1,9 +1,7 @@
 
 import { useEffect, useRef } from "react";
 import { UserEquipment } from "@/types/equipment";
-import { mapCategoryToGearType, mapSkillLevel, parseSize } from "@/utils/gearDataMapping";
-import { PricingOption } from "./types";
-import { usePricingOptions } from "@/hooks/usePricingOptions";
+import { mapCategoryToGearType, parseSize } from "@/utils/gearDataMapping";
 
 interface UseEquipmentDataLoaderProps {
   equipment: UserEquipment | null | undefined;
@@ -13,7 +11,9 @@ interface UseEquipmentDataLoaderProps {
   setZipCode: (value: string) => void;
   setDimensions: (value: { length: string; width: string; thickness?: string }) => void;
   setSkillLevel: (value: string) => void;
-  setPricingOptions: (value: PricingOption[]) => void;
+  setPricePerDay: (value: string) => void;
+  setPricePerHour?: (value: string) => void;
+  setPricePerWeek?: (value: string) => void;
   setDamageDeposit?: (value: string) => void;
   setImageUrl?: (value: string) => void;
   setMeasurementUnit?: (value: string) => void;
@@ -29,16 +29,16 @@ export const useEquipmentDataLoader = ({
   setZipCode,
   setDimensions,
   setSkillLevel,
-  setPricingOptions,
+  setPricePerDay,
+  setPricePerHour,
+  setPricePerWeek,
   setDamageDeposit,
   setImageUrl,
   setMeasurementUnit,
   setSelectedSkillLevels,
   setSelectedSizes,
 }: UseEquipmentDataLoaderProps) => {
-  const { data: pricingOptionsData = [] } = usePricingOptions(equipment?.id || "");
   const equipmentDataLoadedRef = useRef(false);
-  const pricingDataLoadedRef = useRef(false);
 
   // Load equipment basic data
   useEffect(() => {
@@ -68,6 +68,15 @@ export const useEquipmentDataLoader = ({
           width: "",
           thickness: ""
         });
+      }
+
+      // Set individual price fields
+      setPricePerDay(equipment.price_per_day?.toString() || "");
+      if (setPricePerHour) {
+        setPricePerHour(equipment.price_per_hour?.toString() || "");
+      }
+      if (setPricePerWeek) {
+        setPricePerWeek(equipment.price_per_week?.toString() || "");
       }
 
       // Set image URL if available and setter provided
@@ -125,26 +134,4 @@ export const useEquipmentDataLoader = ({
       console.log('Equipment basic data loaded successfully for editing - form is now editable');
     }
   }, [equipment]); // Depend on the entire equipment object to catch any changes
-
-  // Load pricing options data separately
-  useEffect(() => {
-    if (equipment && !pricingDataLoadedRef.current) {
-      if (pricingOptionsData.length > 0) {
-        console.log('Loading pricing options from database:', pricingOptionsData);
-        const formattedOptions = pricingOptionsData.map(option => ({
-          price: option.price.toString(),
-          duration: option.duration
-        }));
-        setPricingOptions(formattedOptions);
-      } else {
-        console.log('No pricing options found, using default from equipment price_per_day');
-        // Fallback to default pricing if no options exist
-        setPricingOptions([
-          { price: equipment.price_per_day.toString(), duration: "day" }
-        ]);
-      }
-      pricingDataLoadedRef.current = true;
-      console.log('Pricing options loaded successfully');
-    }
-  }, [pricingOptionsData, equipment?.price_per_day, equipment?.id]);
 };

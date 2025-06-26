@@ -5,11 +5,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
 import { useGearFormValidation } from "@/hooks/useGearFormValidation";
 import { UserEquipment } from "@/types/equipment";
-import { PricingOption, FormData } from "./types";
 import { useEditGearFormValidation } from "./useEditGearFormValidation";
 import { useEditGearLocationHandling } from "./useEditGearLocationHandling";
 import { useEditGearDatabaseUpdate } from "./useEditGearDatabaseUpdate";
-import { uploadMultipleGearImages, saveEquipmentImages, updateEquipmentImages } from "@/utils/multipleImageHandling";
+import { uploadMultipleGearImages, updateEquipmentImages } from "@/utils/multipleImageHandling";
 
 interface UseMultipleEditGearFormSubmissionProps {
   equipment: UserEquipment | null | undefined;
@@ -21,7 +20,9 @@ interface UseMultipleEditGearFormSubmissionProps {
   dimensions: { length: string; width: string; thickness?: string };
   skillLevel: string;
   images: File[];
-  pricingOptions: PricingOption[];
+  pricePerDay: string;
+  pricePerHour: string;
+  pricePerWeek: string;
   damageDeposit: string;
   imageUrls: string[];
   useImageUrls: boolean;
@@ -38,7 +39,9 @@ export const useMultipleEditGearFormSubmission = ({
   dimensions,
   skillLevel,
   images,
-  pricingOptions,
+  pricePerDay,
+  pricePerHour,
+  pricePerWeek,
   damageDeposit,
   imageUrls,
   useImageUrls,
@@ -61,6 +64,17 @@ export const useMultipleEditGearFormSubmission = ({
     console.log('Selected sizes at submission:', selectedSizes);
     console.log('Dimensions at submission:', dimensions);
 
+    // Create pricingOptions array for validation
+    const pricingOptions = [
+      { price: pricePerDay, duration: "day" }
+    ];
+    if (pricePerHour.trim()) {
+      pricingOptions.push({ price: pricePerHour, duration: "hour" });
+    }
+    if (pricePerWeek.trim()) {
+      pricingOptions.push({ price: pricePerWeek, duration: "week" });
+    }
+
     // Initial validation
     if (!validateSubmission({ user, equipment, pricingOptions, damageDeposit })) {
       return;
@@ -70,7 +84,7 @@ export const useMultipleEditGearFormSubmission = ({
     const isBikeType = gearType === "mountain-bike" || gearType === "e-bike";
 
     // Use the validation hook to validate the form
-    const formData: FormData & { selectedSizes: string[] } = {
+    const formData: any = {
       gearName,
       gearType,
       description,
@@ -134,7 +148,7 @@ export const useMultipleEditGearFormSubmission = ({
       const currentZip = equipment!.location?.zip || '';
       const coordinates = await handleLocationUpdate({ zipCode, currentZip });
 
-      // Update database with proper damage deposit handling
+      // Update database with individual price fields
       await updateGearInDatabase({
         equipment: equipment!,
         userId: user!.id,
@@ -146,8 +160,10 @@ export const useMultipleEditGearFormSubmission = ({
         dimensions,
         measurementUnit,
         skillLevel,
-        pricingOptions,
-        damageDeposit, // Pass the damage deposit value properly
+        pricePerDay,
+        pricePerHour: pricePerHour.trim() || undefined,
+        pricePerWeek: pricePerWeek.trim() || undefined,
+        damageDeposit,
         finalImageUrl: finalImageUrls[0] || equipment!.image_url
       });
 
