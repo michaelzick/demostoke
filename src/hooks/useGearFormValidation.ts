@@ -1,93 +1,154 @@
 
 import { useToast } from "@/hooks/use-toast";
-import { PricingOption, FormData } from "@/hooks/gear-form/types";
+import { FormData, PricingOption } from "@/hooks/gear-form/types";
 
 export const useGearFormValidation = () => {
   const { toast } = useToast();
 
-  const validateForm = (formData: FormData & { selectedSizes?: string[] }): boolean => {
+  const validateForm = (formData: FormData): boolean => {
     const {
       gearName,
       gearType,
       description,
       zipCode,
-      measurementUnit,
       dimensions,
       skillLevel,
-      role,
       damageDeposit,
       pricingOptions,
       imageUrl,
       useImageUrl,
-      selectedSizes = [],
+      role
     } = formData;
 
     // Validate required fields
+    if (!gearName.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Gear name is required.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!gearType) {
+      toast({
+        title: "Validation Error",
+        description: "Gear type is required.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!description.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Description is required.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!zipCode.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Zip code is required.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Validate zip code format (5 digits)
+    const zipCodeRegex = /^\d{5}$/;
+    if (!zipCodeRegex.test(zipCode.trim())) {
+      toast({
+        title: "Validation Error",
+        description: "Please enter a valid 5-digit zip code.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Check if gear type requires dimensions or sizes
     const isBikeType = gearType === "mountain-bike" || gearType === "e-bike";
-    
-    // Base validation for all gear types
-    if (!gearName || !gearType || !description || !zipCode || !skillLevel || !damageDeposit) {
+
+    if (!isBikeType) {
+      // For non-bike types, validate dimensions
+      if (!dimensions.length.trim()) {
+        toast({
+          title: "Validation Error",
+          description: "Length is required.",
+          variant: "destructive",
+        });
+        return false;
+      }
+    }
+
+    if (!skillLevel) {
       toast({
-        title: "Missing Required Fields",
-        description: "Please fill in all required fields before submitting.",
+        title: "Validation Error",
+        description: "Skill level is required.",
         variant: "destructive",
       });
       return false;
     }
 
-    // Validate bike size selection - check both selectedSizes array and dimensions.length
-    if (isBikeType) {
-      const hasSelectedSizes = selectedSizes.length > 0;
-      const hasDimensionSizes = dimensions.length && dimensions.length.trim() !== "";
-      
-      console.log('Bike size validation:', {
-        hasSelectedSizes,
-        selectedSizes,
-        hasDimensionSizes,
-        dimensionsLength: dimensions.length
-      });
-      
-      if (!hasSelectedSizes && !hasDimensionSizes) {
-        toast({
-          title: "Missing Size",
-          description: "Please select at least one size for your bike.",
-          variant: "destructive",
-        });
-        return false;
-      }
-    }
-
-    // Validate that at least one pricing option exists and is filled
-    if (pricingOptions.length === 0 || pricingOptions.every(option => !option.price)) {
+    // Validate pricing options (only check non-empty values)
+    if (!pricingOptions || pricingOptions.length === 0) {
       toast({
-        title: "Missing Pricing",
-        description: "Please add at least one pricing option.",
+        title: "Validation Error",
+        description: "At least one pricing option is required.",
         variant: "destructive",
       });
       return false;
     }
 
-    // Validate image URL if using it
-    if (useImageUrl) {
-      if (!imageUrl?.trim()) {
-        toast({
-          title: "Missing Image URL",
-          description: "Please provide an image URL or uncheck 'Use image URL'.",
-          variant: "destructive",
-        });
-        return false;
-      }
+    // Find the daily pricing option
+    const dailyPricing = pricingOptions.find(option => option.duration === "day");
+    if (!dailyPricing || !dailyPricing.price.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Daily price is required.",
+        variant: "destructive",
+      });
+      return false;
+    }
 
-      try {
-        new URL(imageUrl);
-      } catch (e) {
+    // Validate that non-empty pricing options have valid positive values
+    for (const option of pricingOptions) {
+      if (option.price.trim() !== '') { // Only validate non-empty values
+        const price = parseFloat(option.price);
+        if (isNaN(price) || price <= 0) {
+          toast({
+            title: "Validation Error",
+            description: `${option.duration.charAt(0).toUpperCase() + option.duration.slice(1)} price must be a positive number.`,
+            variant: "destructive",
+          });
+          return false;
+        }
+      }
+    }
+
+    // Validate damage deposit if provided
+    if (damageDeposit.trim()) {
+      const deposit = parseFloat(damageDeposit);
+      if (isNaN(deposit) || deposit < 0) {
         toast({
-          title: "Invalid Image URL",
-          description: "Please enter a valid URL for the image.",
+          title: "Validation Error",
+          description: "Damage deposit must be a valid positive number or zero.",
           variant: "destructive",
         });
         return false;
       }
+    }
+
+    // Validate image URL if using URL option
+    if (useImageUrl && !imageUrl.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Image URL is required when using URL option.",
+        variant: "destructive",
+      });
+      return false;
     }
 
     return true;

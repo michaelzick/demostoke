@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -64,16 +63,13 @@ export const useMultipleEditGearFormSubmission = ({
     console.log('Selected sizes at submission:', selectedSizes);
     console.log('Dimensions at submission:', dimensions);
 
-    // Create pricingOptions array for validation
+    // Create pricingOptions array for validation - include empty values to allow clearing
     const pricingOptions = [
       { price: pricePerDay, duration: "day" }
     ];
-    if (pricePerHour.trim()) {
-      pricingOptions.push({ price: pricePerHour, duration: "hour" });
-    }
-    if (pricePerWeek.trim()) {
-      pricingOptions.push({ price: pricePerWeek, duration: "week" });
-    }
+    // Include hour/week pricing even if empty (for validation to allow clearing)
+    pricingOptions.push({ price: pricePerHour, duration: "hour" });
+    pricingOptions.push({ price: pricePerWeek, duration: "week" });
 
     // Initial validation
     if (!validateSubmission({ user, equipment, pricingOptions, damageDeposit })) {
@@ -148,7 +144,7 @@ export const useMultipleEditGearFormSubmission = ({
       const currentZip = equipment!.location?.zip || '';
       const coordinates = await handleLocationUpdate({ zipCode, currentZip });
 
-      // Update database with individual price fields
+      // Update database with individual price fields - pass empty strings to allow clearing
       await updateGearInDatabase({
         equipment: equipment!,
         userId: user!.id,
@@ -161,8 +157,8 @@ export const useMultipleEditGearFormSubmission = ({
         measurementUnit,
         skillLevel,
         pricePerDay,
-        pricePerHour: pricePerHour.trim() || undefined,
-        pricePerWeek: pricePerWeek.trim() || undefined,
+        pricePerHour: pricePerHour, // Don't filter empty - let prepareEquipmentData handle it
+        pricePerWeek: pricePerWeek, // Don't filter empty - let prepareEquipmentData handle it
         damageDeposit,
         finalImageUrl: finalImageUrls[0] || equipment!.image_url
       });

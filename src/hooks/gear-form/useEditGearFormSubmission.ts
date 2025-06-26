@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -61,16 +60,13 @@ export const useEditGearFormSubmission = ({
 
     console.log('=== FORM SUBMISSION START ===');
 
-    // Create pricingOptions array for validation
+    // Create pricingOptions array for validation - include empty values to allow clearing
     const pricingOptions = [
       { price: pricePerDay, duration: "day" }
     ];
-    if (pricePerHour.trim()) {
-      pricingOptions.push({ price: pricePerHour, duration: "hour" });
-    }
-    if (pricePerWeek.trim()) {
-      pricingOptions.push({ price: pricePerWeek, duration: "week" });
-    }
+    // Include hour/week pricing even if empty (for validation to allow clearing)
+    pricingOptions.push({ price: pricePerHour, duration: "hour" });
+    pricingOptions.push({ price: pricePerWeek, duration: "week" });
 
     // Initial validation
     if (!validateSubmission({ user, equipment, pricingOptions, damageDeposit })) {
@@ -118,7 +114,7 @@ export const useEditGearFormSubmission = ({
       const currentZip = equipment!.location?.zip || '';
       const coordinates = await handleLocationUpdate({ zipCode, currentZip });
 
-      // Update database with individual price fields
+      // Update database with individual price fields - pass empty strings to allow clearing
       await updateGearInDatabase({
         equipment: equipment!,
         userId: user!.id,
@@ -131,8 +127,8 @@ export const useEditGearFormSubmission = ({
         measurementUnit,
         skillLevel,
         pricePerDay,
-        pricePerHour: pricePerHour.trim() || undefined,
-        pricePerWeek: pricePerWeek.trim() || undefined,
+        pricePerHour: pricePerHour, // Don't filter empty - let prepareEquipmentData handle it
+        pricePerWeek: pricePerWeek, // Don't filter empty - let prepareEquipmentData handle it
         damageDeposit,
         finalImageUrl
       });

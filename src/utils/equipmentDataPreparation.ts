@@ -1,3 +1,4 @@
+
 import { mapGearTypeToCategory } from "@/utils/gearTypeMapping";
 
 interface PrepareEquipmentDataParams {
@@ -61,13 +62,21 @@ export const prepareEquipmentData = ({
     visible_on_map: true,
   };
 
-  // Add optional price columns
-  if (pricePerHour && pricePerHour.trim()) {
-    equipmentData.price_per_hour = parseFloat(pricePerHour);
+  // Handle optional price columns - set to null if empty string to clear the database value
+  if (pricePerHour !== undefined) {
+    if (pricePerHour.trim() === '') {
+      equipmentData.price_per_hour = null;
+    } else {
+      equipmentData.price_per_hour = parseFloat(pricePerHour);
+    }
   }
 
-  if (pricePerWeek && pricePerWeek.trim()) {
-    equipmentData.price_per_week = parseFloat(pricePerWeek);
+  if (pricePerWeek !== undefined) {
+    if (pricePerWeek.trim() === '') {
+      equipmentData.price_per_week = null;
+    } else {
+      equipmentData.price_per_week = parseFloat(pricePerWeek);
+    }
   }
 
   // Add damage deposit if provided
