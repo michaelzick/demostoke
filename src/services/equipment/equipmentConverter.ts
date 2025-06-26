@@ -19,6 +19,8 @@ export const convertSupabaseToEquipment = async (item: any): Promise<Equipment> 
     image_url: item.image_url || '',
     images: allImages, // Include the fetched images
     price_per_day: Number(item.price_per_day),
+    price_per_hour: item.price_per_hour ? Number(item.price_per_hour) : undefined,
+    price_per_week: item.price_per_week ? Number(item.price_per_week) : undefined,
     rating: Number(item.rating || 0),
     review_count: item.review_count || 0,
     owner: {
@@ -44,9 +46,9 @@ export const convertSupabaseToEquipment = async (item: any): Promise<Equipment> 
     availability: {
       available: item.status === 'available',
     },
-    pricing_options: [
-      { id: '1', price: Number(item.price_per_day), duration: 'day' }
-    ],
+    // Remove pricing_options dependency - we'll use the price columns directly
+    pricing_options: [],
     status: item.status || 'available',
+    damage_deposit: item.damage_deposit ? Number(item.damage_deposit) : undefined,
   };
 };

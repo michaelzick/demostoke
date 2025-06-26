@@ -1,121 +1,75 @@
 
-import { mapGearTypeToCategory } from "./gearTypeMapping";
-
-interface Dimensions {
-  length: string;
-  width: string;
-  thickness?: string;
-}
-
 interface PrepareEquipmentDataParams {
   userId?: string;
   gearName: string;
   gearType: string;
   description: string;
   zipCode: string;
-  coordinates?: { lat: number; lng: number };
-  dimensions: Dimensions;
+  coordinates: { lat: number; lng: number } | null;
+  dimensions: { length: string; width: string; thickness?: string };
   measurementUnit: string;
   skillLevel: string;
-  firstPricingOptionPrice: string;
+  pricePerDay: string;
+  pricePerHour?: string;
+  pricePerWeek?: string;
   finalImageUrl: string;
   damageDeposit?: string;
 }
 
-// Overloaded function to handle both creation (with userId) and update (without userId) scenarios
-export function prepareEquipmentData(params: PrepareEquipmentDataParams): any;
-export function prepareEquipmentData(
-  gearName: string,
-  gearType: string,
-  description: string,
-  zipCode: string,
-  measurementUnit: string,
-  dimensions: Dimensions,
-  skillLevel: string,
-  price: number,
-  imageUrl: string,
-  coordinates?: { lat: number; lng: number }
-): any;
+export const prepareEquipmentData = ({
+  userId,
+  gearName,
+  gearType,
+  description,
+  zipCode,
+  coordinates,
+  dimensions,
+  measurementUnit,
+  skillLevel,
+  pricePerDay,
+  pricePerHour,
+  pricePerWeek,
+  finalImageUrl,
+  damageDeposit,
+}: PrepareEquipmentDataParams) => {
+  const equipmentData: any = {
+    name: gearName,
+    category: gearType,
+    description,
+    image_url: finalImageUrl,
+    price_per_day: parseFloat(pricePerDay),
+    location_zip: zipCode,
+    size: `${dimensions.length} x ${dimensions.width}${dimensions.thickness ? ` x ${dimensions.thickness}` : ''} ${measurementUnit}`,
+    suitable_skill_level: skillLevel,
+    status: 'available',
+    visible_on_map: true,
+  };
 
-export function prepareEquipmentData(
-  paramsOrGearName: PrepareEquipmentDataParams | string,
-  gearType?: string,
-  description?: string,
-  zipCode?: string,
-  measurementUnit?: string,
-  dimensions?: Dimensions,
-  skillLevel?: string,
-  price?: number,
-  imageUrl?: string,
-  coordinates?: { lat: number; lng: number }
-) {
-  // Handle object parameter (new way)
-  if (typeof paramsOrGearName === 'object') {
-    const {
-      userId,
-      gearName,
-      gearType,
-      description,
-      zipCode,
-      coordinates,
-      dimensions,
-      measurementUnit,
-      skillLevel,
-      firstPricingOptionPrice,
-      finalImageUrl,
-      damageDeposit
-    } = paramsOrGearName;
-
-    const isMountainBike = gearType === "mountain-bike";
-    // Use dimensions.length directly as the size - no formatting
-    const sizeString = dimensions.length;
-
-    const result: any = {
-      name: gearName,
-      category: mapGearTypeToCategory(gearType),
-      description: description,
-      location_zip: zipCode,
-      ...(coordinates && {
-        location_lat: coordinates.lat,
-        location_lng: coordinates.lng,
-      }),
-      size: sizeString,
-      suitable_skill_level: skillLevel,
-      price_per_day: parseFloat(firstPricingOptionPrice),
-      image_url: finalImageUrl,
-    };
-
-    // Add damage deposit if provided
-    if (damageDeposit) {
-      result.damage_deposit = parseFloat(damageDeposit);
-    }
-
-    // Only add user_id if it's provided (for creation)
-    if (userId) {
-      result.user_id = userId;
-    }
-
-    return result;
+  // Add optional price columns
+  if (pricePerHour && pricePerHour.trim()) {
+    equipmentData.price_per_hour = parseFloat(pricePerHour);
+  }
+  
+  if (pricePerWeek && pricePerWeek.trim()) {
+    equipmentData.price_per_week = parseFloat(pricePerWeek);
   }
 
-  // Handle individual parameters (old way for backwards compatibility)
-  const gearNameParam = paramsOrGearName;
-  const isMountainBike = gearType === "mountain-bike";
-  // Use dimensions.length directly as the size - no formatting
-  const sizeString = dimensions!.length;
+  // Add damage deposit if provided
+  if (damageDeposit && damageDeposit.trim()) {
+    equipmentData.damage_deposit = parseFloat(damageDeposit);
+  }
 
-  return {
-    name: gearNameParam,
-    category: mapGearTypeToCategory(gearType!),
-    description: description,
-    location_zip: zipCode,
-    ...(coordinates && {
-      location_lat: coordinates.lat,
-      location_lng: coordinates.lng,
-    }),
-    size: sizeString,
-    suitable_skill_level: skillLevel,
-    price_per_day: price,
-    image_url: imageUrl,
-  };
-}
+  // Add coordinates if available
+  if (coordinates) {
+    equipmentData.location_lat = coordinates.lat;
+    equipmentData.location_lng = coordinates.lng;
+  }
+
+  // Add user_id if provided (for new equipment)
+  if (userId) {
+    equipmentData.user_id = userId;
+  }
+
+  console.log('Prepared equipment data:', equipmentData);
+  return equipmentData;
+};

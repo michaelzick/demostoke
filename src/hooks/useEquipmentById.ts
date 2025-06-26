@@ -41,20 +41,20 @@ export const useEquipmentById = (id: string) => {
       console.log('Profile data:', data.profiles);
       console.log('Damage deposit from database:', data.damage_deposit);
       console.log('Primary image URL:', data.image_url);
-      console.log('Has multiple images flag:', data.has_multiple_images);
+      console.log('Price per day:', data.price_per_day);
+      console.log('Price per hour:', data.price_per_hour);
+      console.log('Price per week:', data.price_per_week);
 
       // Fetch additional images from equipment_images table
       console.log('Fetching additional images for equipment ID:', data.id);
       const additionalImages = await fetchEquipmentImages(data.id);
       console.log('Additional images fetched:', additionalImages);
-      console.log('Additional images count:', additionalImages.length);
 
       // Create combined images array
       const allImages = additionalImages.length > 0 ? additionalImages : (data.image_url ? [data.image_url] : []);
       console.log('Final combined images array:', allImages);
-      console.log('Final images array length:', allImages.length);
 
-      // Convert to Equipment type with proper damage_deposit mapping and real owner name
+      // Convert to Equipment type with proper price column mapping
       const equipment = {
         id: data.id,
         name: data.name,
@@ -62,14 +62,16 @@ export const useEquipmentById = (id: string) => {
         subcategory: data.subcategory,
         description: data.description || '',
         image_url: data.image_url || '',
-        images: allImages, // Include all images
+        images: allImages,
         price_per_day: Number(data.price_per_day),
+        price_per_hour: data.price_per_hour ? Number(data.price_per_hour) : undefined,
+        price_per_week: data.price_per_week ? Number(data.price_per_week) : undefined,
         rating: Number(data.rating || 0),
         review_count: data.review_count || 0,
-        damage_deposit: data.damage_deposit ? Number(data.damage_deposit) : undefined, // Add damage_deposit mapping
+        damage_deposit: data.damage_deposit ? Number(data.damage_deposit) : undefined,
         owner: {
           id: data.user_id,
-          name: data.profiles?.name || 'Owner', // Use the joined profile name or fallback to 'Owner'
+          name: data.profiles?.name || 'Owner',
           imageUrl: data.profiles?.avatar_url || 'https://api.dicebear.com/6.x/avataaars/svg?seed=' + data.user_id,
           rating: 4.8,
           reviewCount: 15,
@@ -90,9 +92,8 @@ export const useEquipmentById = (id: string) => {
         availability: {
           available: data.status === 'available',
         },
-        pricing_options: [
-          { id: '1', price: Number(data.price_per_day), duration: 'day' }
-        ],
+        // Remove pricing_options dependency
+        pricing_options: [],
         status: data.status || 'available',
         created_at: data.created_at,
         updated_at: data.updated_at,
@@ -100,9 +101,6 @@ export const useEquipmentById = (id: string) => {
       };
 
       console.log('Mapped equipment object:', equipment);
-      console.log('Mapped owner name:', equipment.owner.name);
-      console.log('Mapped damage_deposit:', equipment.damage_deposit);
-      console.log('Mapped images array:', equipment.images);
       console.log('=== END EQUIPMENT FETCH ===');
 
       return equipment;

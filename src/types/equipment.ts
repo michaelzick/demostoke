@@ -7,6 +7,8 @@ export interface UserEquipment {
   image_url: string;
   images?: string[]; // Add support for multiple images
   price_per_day: number;
+  price_per_hour?: number; // Add price_per_hour
+  price_per_week?: number; // Add price_per_week
   rating: number;
   review_count: number;
   status: 'available' | 'booked' | 'unavailable';

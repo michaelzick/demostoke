@@ -1,7 +1,6 @@
 
-import React, { useMemo } from "react";
+import React from "react";
 import { Equipment } from "@/types";
-import { usePricingOptions } from "@/hooks/usePricingOptions";
 
 interface PriceDisplayProps {
   equipment: Equipment;
@@ -9,42 +8,13 @@ interface PriceDisplayProps {
 }
 
 const PriceDisplay = ({ equipment, equipmentHeader }: PriceDisplayProps) => {
-  // Get pricing options from the database
-  const { data: dbPricingOptions = [], isLoading } = usePricingOptions(equipment.id);
-
-  // Memoize the pricing options decision and transformation
-  const pricingOptions = useMemo(() => {
-    // First check if we have DB pricing options
-    if (dbPricingOptions.length > 0) {
-      return dbPricingOptions;
+  const formatDuration = (duration: string) => {
+    switch (duration) {
+      case 'hour': return 'hr';
+      case 'day': return 'day';
+      case 'week': return 'week';
+      default: return duration;
     }
-
-    // If no DB data, try to get mock pricing options
-    if (equipment && typeof equipment === 'object' && 'pricingOptions' in equipment) {
-      const eq = equipment as { pricingOptions?: { id: string; price: number; duration: string; }[]; };
-      if (Array.isArray(eq.pricingOptions)) {
-        return eq.pricingOptions;
-      }
-    }
-
-    // Return empty array if no pricing options found
-    return [];
-  }, [dbPricingOptions, equipment]);
-
-  // Group and order pricing options
-  const getOrderedPricingOptions = (options: Array<{ id: string; price: number; duration: string; }>) => {
-    // Group options by duration
-    const grouped = options.reduce((acc, option) => ({
-      ...acc,
-      [option.duration]: option
-    }), {} as Record<string, { id: string; price: number; duration: string; }>);
-
-    // Return array in desired order, filtering out undefined values
-    return [
-      grouped['day'],
-      grouped['week'],
-      grouped['hour']
-    ].filter(Boolean);
   };
 
   const getAvailabilityStatusText = () => {
@@ -57,34 +27,33 @@ const PriceDisplay = ({ equipment, equipmentHeader }: PriceDisplayProps) => {
     }
   };
 
-  const formatDuration = (duration: string) => {
-    switch (duration) {
-      case 'hour': return 'hr';
-      case 'day': return 'day';
-      case 'week': return 'week';
-      default: return duration;
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-between items-center">
-        <div>
-          <div className="animate-pulse bg-gray-200 h-8 w-24 rounded mb-2"></div>
-          <div className="animate-pulse bg-gray-200 h-4 w-32 rounded"></div>
-        </div>
-        <div className="animate-pulse bg-gray-200 h-6 w-20 rounded"></div>
-      </div>
-    );
+  // Create pricing options from equipment table columns
+  const pricingOptions = [];
+  
+  if (equipment.price_per_day) {
+    pricingOptions.push({ price: equipment.price_per_day, duration: 'day' });
   }
+  if (equipment.price_per_hour) {
+    pricingOptions.push({ price: equipment.price_per_hour, duration: 'hour' });
+  }
+  if (equipment.price_per_week) {
+    pricingOptions.push({ price: equipment.price_per_week, duration: 'week' });
+  }
+
+  // Order: day, week, hour
+  const orderedPricingOptions = [
+    pricingOptions.find(p => p.duration === 'day'),
+    pricingOptions.find(p => p.duration === 'week'),
+    pricingOptions.find(p => p.duration === 'hour')
+  ].filter(Boolean);
 
   return (
     <div className="flex justify-between items-center">
       <div>
-        {pricingOptions.length > 0 ? (
+        {orderedPricingOptions.length > 0 ? (
           <div className="space-y-1">
-            {getOrderedPricingOptions(pricingOptions).map((option, index) => (
-              <p key={option.id} className={index === 0 ? "text-2xl font-bold text-primary" : "text-lg"}>
+            {orderedPricingOptions.map((option, index) => (
+              <p key={option.duration} className={index === 0 ? "text-2xl font-bold text-primary" : "text-lg"}>
                 ${option.price} <span className="text-sm font-normal">/ {formatDuration(option.duration)}</span>
               </p>
             ))}

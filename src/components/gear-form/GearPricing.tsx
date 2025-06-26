@@ -1,135 +1,108 @@
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Plus, Trash2 } from "lucide-react";
-
-interface PricingOption {
-  price: string;
-  duration: string;
-}
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface GearPricingProps {
-  pricingOptions: PricingOption[];
-  setPricingOptions: (options: PricingOption[]) => void;
+  pricePerDay: string;
+  setPricePerDay: (value: string) => void;
+  pricePerHour: string;
+  setPricePerHour: (value: string) => void;
+  pricePerWeek: string;
+  setPricePerWeek: (value: string) => void;
+  enableHourlyPricing: boolean;
+  setEnableHourlyPricing: (value: boolean) => void;
+  enableWeeklyPricing: boolean;
+  setEnableWeeklyPricing: (value: boolean) => void;
   damageDeposit: string;
   setDamageDeposit: (value: string) => void;
 }
 
 const GearPricing = ({
-  pricingOptions,
-  setPricingOptions,
+  pricePerDay,
+  setPricePerDay,
+  pricePerHour,
+  setPricePerHour,
+  pricePerWeek,
+  setPricePerWeek,
+  enableHourlyPricing,
+  setEnableHourlyPricing,
+  enableWeeklyPricing,
+  setEnableWeeklyPricing,
   damageDeposit,
   setDamageDeposit
 }: GearPricingProps) => {
-  const addPricingOption = () => {
-    const newOption: PricingOption = {
-      price: "",
-      duration: "day"
-    };
-    setPricingOptions([...pricingOptions, newOption]);
-  };
-
-  const removePricingOption = (index: number) => {
-    setPricingOptions(pricingOptions.filter((_, i) => i !== index));
-  };
-
-  const updatePricingOption = (index: number, field: keyof PricingOption, value: string) => {
-    setPricingOptions(pricingOptions.map((option, i) =>
-      i === index ? { ...option, [field]: value } : option
-    ));
-  };
-
   return (
     <>
-      {/* Pricing Options */}
+      {/* Daily Pricing (Required) */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <Label className="block text-lg font-medium">
-            Pricing Options <span className="text-red-500">*</span>
+        <Label htmlFor="pricePerDay" className="block text-lg font-medium mb-2">
+          Price per Day <span className="text-red-500">*</span>
+        </Label>
+        <Input
+          id="pricePerDay"
+          type="number"
+          value={pricePerDay}
+          onChange={(e) => setPricePerDay(e.target.value)}
+          required
+          min="0"
+          step="0.01"
+        />
+      </div>
+
+      {/* Hourly Pricing (Optional) */}
+      <div>
+        <div className="flex items-center space-x-2 mb-2">
+          <Checkbox
+            id="enableHourlyPricing"
+            checked={enableHourlyPricing}
+            onCheckedChange={setEnableHourlyPricing}
+          />
+          <Label htmlFor="enableHourlyPricing" className="text-lg font-medium">
+            Enable Hourly Pricing
           </Label>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={addPricingOption}
-            className="flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Add Price
-          </Button>
         </div>
-
-        {pricingOptions.length === 0 && (
-          <div className="text-gray-500 text-sm mb-4">
-            No pricing options added. Click "Add Price" to add your first pricing option.
-          </div>
+        {enableHourlyPricing && (
+          <Input
+            id="pricePerHour"
+            type="number"
+            value={pricePerHour}
+            onChange={(e) => setPricePerHour(e.target.value)}
+            placeholder="Price per hour"
+            min="0"
+            step="0.01"
+          />
         )}
+      </div>
 
-        <div className="space-y-3">
-          {pricingOptions.map((option, index) => (
-            <div key={index} className="grid grid-cols-2 gap-4 p-4 border border-gray-200 rounded-lg">
-              <div>
-                <Label htmlFor={`price-${index}`} className="block text-sm font-medium mb-1">
-                  Price <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id={`price-${index}`}
-                  type="number"
-                  value={option.price}
-                  onChange={(e) => updatePricingOption(index, 'price', e.target.value)}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor={`duration-${index}`} className="block text-sm font-medium mb-1">
-                  Duration <span className="text-red-500">*</span>
-                </Label>
-                <div className="flex gap-2">
-                  <Select
-                    value={option.duration}
-                    onValueChange={(value) => updatePricingOption(index, 'duration', value)}
-                  >
-                    <SelectTrigger id={`duration-${index}`}>
-                      <SelectValue placeholder="Select Duration" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="hour">Hour</SelectItem>
-                      <SelectItem value="day">Day</SelectItem>
-                      <SelectItem value="week">Week</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {pricingOptions.length > 1 && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => removePricingOption(index)}
-                      className="flex items-center gap-1"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+      {/* Weekly Pricing (Optional) */}
+      <div>
+        <div className="flex items-center space-x-2 mb-2">
+          <Checkbox
+            id="enableWeeklyPricing"
+            checked={enableWeeklyPricing}
+            onCheckedChange={setEnableWeeklyPricing}
+          />
+          <Label htmlFor="enableWeeklyPricing" className="text-lg font-medium">
+            Enable Weekly Pricing
+          </Label>
         </div>
+        {enableWeeklyPricing && (
+          <Input
+            id="pricePerWeek"
+            type="number"
+            value={pricePerWeek}
+            onChange={(e) => setPricePerWeek(e.target.value)}
+            placeholder="Price per week"
+            min="0"
+            step="0.01"
+          />
+        )}
       </div>
 
       {/* Refundable Damage Deposit */}
       <div>
-        <Label
-          htmlFor="damageDeposit"
-          className="block text-lg font-medium mb-2"
-        >
+        <Label htmlFor="damageDeposit" className="block text-lg font-medium mb-2">
           Refundable Damage Deposit <span className="text-red-500">*</span>
         </Label>
         <Input
@@ -138,6 +111,8 @@ const GearPricing = ({
           value={damageDeposit}
           onChange={(e) => setDamageDeposit(e.target.value)}
           required
+          min="0"
+          step="0.01"
         />
       </div>
     </>
