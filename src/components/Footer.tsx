@@ -15,7 +15,9 @@ const Footer = () => {
               </Link>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs mb-4">
-              Connecting outdoor enthusiasts with local adventure equipment for demos.
+              Find it. Ride it. Love it? Buy it.
+              <br />
+              Ride what makes you feel alive.
             </p>
             <Button asChild>
               <Link to="/contact-us">Contact Us</Link>
