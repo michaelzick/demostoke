@@ -118,18 +118,6 @@ const AddGearForm = () => {
             }
             formState.setPricingOptions(updatedOptions);
           }}
-          enableHourlyPricing={!!formState.pricingOptions.find(p => p.duration === 'hour')}
-          setEnableHourlyPricing={(enabled) => {
-            if (!enabled) {
-              formState.setPricingOptions(formState.pricingOptions.filter(p => p.duration !== 'hour'));
-            }
-          }}
-          enableWeeklyPricing={!!formState.pricingOptions.find(p => p.duration === 'week')}
-          setEnableWeeklyPricing={(enabled) => {
-            if (!enabled) {
-              formState.setPricingOptions(formState.pricingOptions.filter(p => p.duration !== 'week'));
-            }
-          }}
           damageDeposit={formState.damageDeposit}
           setDamageDeposit={formState.setDamageDeposit}
         />
