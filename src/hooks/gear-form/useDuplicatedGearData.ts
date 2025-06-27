@@ -57,14 +57,16 @@ export const useDuplicatedGearData = ({
         setDescription(duplicatedEquipment.description || "");
         setZipCode(duplicatedEquipment.location?.zip || "");
 
-        // Set size directly from the equipment size field
-        setSize(duplicatedEquipment.specifications?.size || duplicatedEquipment.size || "");
+        // Set size from specifications.size
+        const equipmentSize = duplicatedEquipment.specifications?.size || "";
+        console.log('Equipment size found:', equipmentSize);
+        setSize(equipmentSize);
 
         // Set measurement unit for non-mountain bikes
         const isMountainBike = mappedGearType === "mountain-bike";
         if (!isMountainBike) {
           // Extract measurement unit from size string if available
-          const sizeString = duplicatedEquipment.specifications?.size || duplicatedEquipment.size || "";
+          const sizeString = duplicatedEquipment.specifications?.size || "";
           if (sizeString.includes("inches") || sizeString.includes("in") || sizeString.includes('"')) {
             setMeasurementUnit("inches");
           } else if (sizeString.includes("cm") || sizeString.includes("centimeters")) {
@@ -77,15 +79,10 @@ export const useDuplicatedGearData = ({
         // Set role (default for duplicated gear)
         setRole("private-party");
 
-        // Map and set skill level - check multiple possible fields
-        const rawSkillLevel = duplicatedEquipment.specifications?.suitable || 
-                             duplicatedEquipment.suitable_skill_level || 
-                             "";
-        console.log('Raw skill level from duplicated equipment:', rawSkillLevel);
-        console.log('Available skill level fields:', {
-          'specifications.suitable': duplicatedEquipment.specifications?.suitable,
-          'suitable_skill_level': duplicatedEquipment.suitable_skill_level
-        });
+        // Map and set skill level - check specifications.suitable
+        const rawSkillLevel = duplicatedEquipment.specifications?.suitable || "";
+        console.log('Raw skill level from duplicated equipment specifications.suitable:', rawSkillLevel);
+        console.log('Equipment specifications:', duplicatedEquipment.specifications);
         console.log('Mapped gear type:', mappedGearType);
         
         const mappedSkillLevel = mapSkillLevel(rawSkillLevel, mappedGearType);
@@ -121,15 +118,10 @@ export const useDuplicatedGearData = ({
         if (setImageUrls && setUseImageUrls) {
           let imageUrlsToSet: string[] = [];
           
-          // Check for multiple images first (both 'images' array and 'image_urls' array)
+          // Check for multiple images first (images array)
           if (duplicatedEquipment.images && Array.isArray(duplicatedEquipment.images) && duplicatedEquipment.images.length > 0) {
             imageUrlsToSet = duplicatedEquipment.images;
             console.log('Setting multiple duplicated image URLs from images array:', imageUrlsToSet);
-          }
-          // Check for image_urls array
-          else if (duplicatedEquipment.image_urls && Array.isArray(duplicatedEquipment.image_urls) && duplicatedEquipment.image_urls.length > 0) {
-            imageUrlsToSet = duplicatedEquipment.image_urls;
-            console.log('Setting multiple duplicated image URLs from image_urls array:', imageUrlsToSet);
           }
           // Fallback to single image_url
           else if (duplicatedEquipment.image_url) {
