@@ -24,7 +24,8 @@ const BlogPage = () => {
     { label: "Snowboards", value: "snowboards" },
     { label: "Skis", value: "skis" },
     { label: "Surfboards", value: "surfboards" },
-    { label: "Mountain Bikes", value: "mountain-bikes" }
+    { label: "Mountain Bikes", value: "mountain-bikes" },
+    { label: "Stories That Stoke", value: "stories that stoke" }
   ];
 
   const handleSearch = async () => {
@@ -88,7 +89,8 @@ const BlogPage = () => {
       skis: "bg-purple-100 text-purple-800",
       surfboards: "bg-cyan-100 text-cyan-800",
       "gear reviews": "bg-yellow-100 text-yellow-800",
-      "mountain-bikes": "bg-red-100 text-red-800"
+      "mountain-bikes": "bg-red-100 text-red-800",
+      "stories that stoke": "bg-green-100 text-green-800"
     };
     return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800";
   };
