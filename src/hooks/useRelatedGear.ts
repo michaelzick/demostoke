@@ -27,11 +27,18 @@ export const useRelatedGear = (blogTitle: string) => {
           description: result.description,
           price_per_day: result.price_per_day,
           rating: result.rating,
+          review_count: result.review_count || 0,
           image_url: result.image_url,
           images: result.images,
           owner: result.owner,
           location: result.location,
-          specifications: result.specifications
+          distance: 0, // Default distance for related gear
+          specifications: result.specifications,
+          availability: {
+            available: true, // Default to available for related gear display
+            nextAvailableDate: undefined
+          },
+          pricing_options: [] // Default empty array for pricing options
         })).slice(0, 2);
         
         console.log(`✅ Found ${equipment.length} related gear items`);
