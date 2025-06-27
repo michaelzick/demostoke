@@ -76,31 +76,58 @@ export const useDuplicatedGearData = ({
         // Set role (default for duplicated gear)
         setRole("private-party");
 
-        // Map and set skill level immediately without timeout
-        const mappedSkillLevel = mapSkillLevel(duplicatedEquipment.specifications?.suitable || "", mappedGearType);
-        console.log('Setting skill level:', mappedSkillLevel);
-        setSkillLevel(mappedSkillLevel || "");
+        // Map and set skill level - try different field names and log for debugging
+        const rawSkillLevel = duplicatedEquipment.specifications?.suitable || 
+                             duplicatedEquipment.specifications?.skill_level || 
+                             "";
+        console.log('Raw skill level from duplicated equipment:', rawSkillLevel);
+        console.log('Mapped gear type:', mappedGearType);
+        
+        const mappedSkillLevel = mapSkillLevel(rawSkillLevel, mappedGearType);
+        console.log('Mapped skill level result:', mappedSkillLevel);
+        setSkillLevel(mappedSkillLevel || rawSkillLevel || "");
 
         // Set individual pricing fields from duplicated data
-        setPricePerDay(duplicatedEquipment.price_per_day.toString());
+        setPricePerDay(duplicatedEquipment.price_per_day?.toString() || "");
         
-        // Handle price_per_hour - include 0 values
-        const hourlyPrice = duplicatedEquipment.price_per_hour;
+        // Handle price_per_hour - check multiple possible field names and include 0 values
+        const hourlyPrice = duplicatedEquipment.price_per_hour ?? 
+                           duplicatedEquipment.hourly_price ?? 
+                           duplicatedEquipment.pricePerHour;
+        console.log('Hourly price from duplicated equipment:', hourlyPrice);
         setPricePerHour(hourlyPrice !== undefined && hourlyPrice !== null ? hourlyPrice.toString() : "");
         
         // Handle price_per_week - include 0 values  
-        const weeklyPrice = duplicatedEquipment.price_per_week;
+        const weeklyPrice = duplicatedEquipment.price_per_week ?? 
+                           duplicatedEquipment.weekly_price ?? 
+                           duplicatedEquipment.pricePerWeek;
         setPricePerWeek(weeklyPrice !== undefined && weeklyPrice !== null ? weeklyPrice.toString() : "");
 
-        // Set damage deposit - include 0 values
-        const damageDepositValue = duplicatedEquipment.damage_deposit;
-        setDamageDeposit(damageDepositValue !== undefined && damageDepositValue !== null ? damageDepositValue.toString() : "0");
+        // Set damage deposit - leave empty if null/undefined, don't default to "0"
+        const damageDepositValue = duplicatedEquipment.damage_deposit ?? 
+                                  duplicatedEquipment.damageDeposit;
+        console.log('Damage deposit from duplicated equipment:', damageDepositValue);
+        setDamageDeposit(damageDepositValue !== undefined && damageDepositValue !== null && damageDepositValue !== "" ? damageDepositValue.toString() : "");
 
-        // Handle image URL if available and setters are provided
-        if (duplicatedEquipment.image_url && setImageUrls && setUseImageUrls) {
-          console.log('Setting duplicated image URL:', duplicatedEquipment.image_url);
-          setImageUrls([duplicatedEquipment.image_url]);
-          setUseImageUrls(true);
+        // Handle image URLs - check for both single image_url and multiple images array
+        if (setImageUrls && setUseImageUrls) {
+          let imageUrlsToSet: string[] = [];
+          
+          // Check for multiple images first
+          if (duplicatedEquipment.images && Array.isArray(duplicatedEquipment.images) && duplicatedEquipment.images.length > 0) {
+            imageUrlsToSet = duplicatedEquipment.images;
+            console.log('Setting multiple duplicated image URLs:', imageUrlsToSet);
+          }
+          // Fallback to single image_url
+          else if (duplicatedEquipment.image_url) {
+            imageUrlsToSet = [duplicatedEquipment.image_url];
+            console.log('Setting single duplicated image URL:', duplicatedEquipment.image_url);
+          }
+          
+          if (imageUrlsToSet.length > 0) {
+            setImageUrls(imageUrlsToSet);
+            setUseImageUrls(true);
+          }
         }
 
         // Clear the sessionStorage after using it
@@ -108,9 +135,9 @@ export const useDuplicatedGearData = ({
 
         let toastDescription = "The form has been pre-filled with the duplicated gear's information. You can now edit and submit it as a new listing.";
 
-        // If there's an image URL, add it to the toast message
-        if (duplicatedEquipment.image_url) {
-          toastDescription += " The original image will be used unless you upload a new one.";
+        // If there are image URLs, add it to the toast message
+        if (duplicatedEquipment.image_url || (duplicatedEquipment.images && duplicatedEquipment.images.length > 0)) {
+          toastDescription += " The original images will be used unless you upload new ones.";
         }
 
         toast({
