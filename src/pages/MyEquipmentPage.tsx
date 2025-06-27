@@ -168,6 +168,15 @@ const MyEquipmentPage = () => {
   };
 
   const handleDuplicate = (item: UserEquipment) => {
+    // Add detailed logging to see what data we're storing
+    console.log('Full equipment item being duplicated:', item);
+    console.log('Equipment specifications:', item.specifications);
+    console.log('Equipment suitable_skill_level:', item.suitable_skill_level);
+    console.log('Equipment price_per_hour:', item.price_per_hour);
+    console.log('Equipment damage_deposit:', item.damage_deposit);
+    console.log('Equipment images array:', item.images);
+    console.log('Equipment single image_url:', item.image_url);
+
     // Store the complete equipment data in sessionStorage for duplication
     sessionStorage.setItem('duplicatedEquipment', JSON.stringify(item));
 

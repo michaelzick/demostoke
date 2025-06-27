@@ -46,6 +46,7 @@ export const useDuplicatedGearData = ({
         const duplicatedEquipment: UserEquipment = JSON.parse(duplicatedEquipmentJSON);
 
         console.log('Loading duplicated equipment data:', duplicatedEquipment);
+        console.log('Full duplicated equipment object:', JSON.stringify(duplicatedEquipment, null, 2));
 
         // Map category to gear type (e.g., "snowboards" -> "snowboard")
         const mappedGearType = mapCategoryToGearType(duplicatedEquipment.category);
@@ -57,13 +58,13 @@ export const useDuplicatedGearData = ({
         setZipCode(duplicatedEquipment.location?.zip || "");
 
         // Set size directly from the equipment size field
-        setSize(duplicatedEquipment.specifications?.size || "");
+        setSize(duplicatedEquipment.specifications?.size || duplicatedEquipment.size || "");
 
         // Set measurement unit for non-mountain bikes
         const isMountainBike = mappedGearType === "mountain-bike";
         if (!isMountainBike) {
           // Extract measurement unit from size string if available
-          const sizeString = duplicatedEquipment.specifications?.size || "";
+          const sizeString = duplicatedEquipment.specifications?.size || duplicatedEquipment.size || "";
           if (sizeString.includes("inches") || sizeString.includes("in") || sizeString.includes('"')) {
             setMeasurementUnit("inches");
           } else if (sizeString.includes("cm") || sizeString.includes("centimeters")) {
@@ -76,9 +77,15 @@ export const useDuplicatedGearData = ({
         // Set role (default for duplicated gear)
         setRole("private-party");
 
-        // Map and set skill level - use the 'suitable' field from specifications
-        const rawSkillLevel = duplicatedEquipment.specifications?.suitable || "";
+        // Map and set skill level - check multiple possible fields
+        const rawSkillLevel = duplicatedEquipment.specifications?.suitable || 
+                             duplicatedEquipment.suitable_skill_level || 
+                             "";
         console.log('Raw skill level from duplicated equipment:', rawSkillLevel);
+        console.log('Available skill level fields:', {
+          'specifications.suitable': duplicatedEquipment.specifications?.suitable,
+          'suitable_skill_level': duplicatedEquipment.suitable_skill_level
+        });
         console.log('Mapped gear type:', mappedGearType);
         
         const mappedSkillLevel = mapSkillLevel(rawSkillLevel, mappedGearType);
@@ -88,28 +95,41 @@ export const useDuplicatedGearData = ({
         // Set individual pricing fields from duplicated data
         setPricePerDay(duplicatedEquipment.price_per_day?.toString() || "");
         
-        // Handle price_per_hour - only use the correct property name
+        // Handle price_per_hour - check the actual field and log what we find
         const hourlyPrice = duplicatedEquipment.price_per_hour;
         console.log('Hourly price from duplicated equipment:', hourlyPrice);
+        console.log('Hourly price type:', typeof hourlyPrice);
         setPricePerHour(hourlyPrice !== undefined && hourlyPrice !== null ? hourlyPrice.toString() : "");
         
-        // Handle price_per_week - only use the correct property name
+        // Handle price_per_week
         const weeklyPrice = duplicatedEquipment.price_per_week;
+        console.log('Weekly price from duplicated equipment:', weeklyPrice);
         setPricePerWeek(weeklyPrice !== undefined && weeklyPrice !== null ? weeklyPrice.toString() : "");
 
-        // Set damage deposit - only use the correct property name and leave empty if null/undefined
+        // Set damage deposit - leave empty if null, undefined, or 0
         const damageDepositValue = duplicatedEquipment.damage_deposit;
         console.log('Damage deposit from duplicated equipment:', damageDepositValue);
-        setDamageDeposit(damageDepositValue !== undefined && damageDepositValue !== null && damageDepositValue !== 0 ? damageDepositValue.toString() : "");
+        console.log('Damage deposit type:', typeof damageDepositValue);
+        // Only set if it has a meaningful value (not null, undefined, 0, or empty string)
+        const shouldSetDamageDeposit = damageDepositValue !== undefined && 
+                                      damageDepositValue !== null && 
+                                      damageDepositValue !== 0 && 
+                                      damageDepositValue !== "";
+        setDamageDeposit(shouldSetDamageDeposit ? damageDepositValue.toString() : "");
 
-        // Handle image URLs - check for both single image_url and multiple images array
+        // Handle image URLs - check for multiple images first, then single image
         if (setImageUrls && setUseImageUrls) {
           let imageUrlsToSet: string[] = [];
           
-          // Check for multiple images first
+          // Check for multiple images first (both 'images' array and 'image_urls' array)
           if (duplicatedEquipment.images && Array.isArray(duplicatedEquipment.images) && duplicatedEquipment.images.length > 0) {
             imageUrlsToSet = duplicatedEquipment.images;
-            console.log('Setting multiple duplicated image URLs:', imageUrlsToSet);
+            console.log('Setting multiple duplicated image URLs from images array:', imageUrlsToSet);
+          }
+          // Check for image_urls array
+          else if (duplicatedEquipment.image_urls && Array.isArray(duplicatedEquipment.image_urls) && duplicatedEquipment.image_urls.length > 0) {
+            imageUrlsToSet = duplicatedEquipment.image_urls;
+            console.log('Setting multiple duplicated image URLs from image_urls array:', imageUrlsToSet);
           }
           // Fallback to single image_url
           else if (duplicatedEquipment.image_url) {
@@ -120,6 +140,7 @@ export const useDuplicatedGearData = ({
           if (imageUrlsToSet.length > 0) {
             setImageUrls(imageUrlsToSet);
             setUseImageUrls(true);
+            console.log('Final image URLs set:', imageUrlsToSet);
           }
         }
 
@@ -139,6 +160,11 @@ export const useDuplicatedGearData = ({
         });
       } catch (error) {
         console.error("Error parsing duplicated equipment data:", error);
+        toast({
+          title: "Error Loading Duplicated Data",
+          description: "There was an issue loading the duplicated gear data. Please try again.",
+          variant: "destructive",
+        });
       }
     }
   }, [toast, setGearName, setGearType, setDescription, setZipCode, setMeasurementUnit, setSize, setRole, setSkillLevel, setPricePerDay, setPricePerHour, setPricePerWeek, setDamageDeposit, setImageUrls, setUseImageUrls]);
