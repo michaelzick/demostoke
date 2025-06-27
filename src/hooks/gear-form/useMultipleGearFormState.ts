@@ -9,6 +9,7 @@ export const useMultipleGearFormState = () => {
   const [measurementUnit, setMeasurementUnit] = useState("");
   const [size, setSize] = useState("");
   const [skillLevel, setSkillLevel] = useState("");
+  const [role, setRole] = useState("private-party");
   const [images, setImages] = useState<File[]>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([""]);
   const [useImageUrls, setUseImageUrls] = useState(false);
@@ -42,6 +43,8 @@ export const useMultipleGearFormState = () => {
     setSize,
     skillLevel,
     setSkillLevel,
+    role,
+    setRole,
     images,
     setImages,
     imageUrls,

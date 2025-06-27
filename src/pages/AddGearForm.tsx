@@ -8,7 +8,7 @@ import GearPricing from "@/components/gear-form/GearPricing";
 import FormActions from "@/components/gear-form/FormActions";
 import { useMultipleGearFormState } from "@/hooks/gear-form/useMultipleGearFormState";
 import { useMultipleGearFormSubmission } from "@/hooks/gear-form/useMultipleGearFormSubmission";
-import { useDuplicatedGearDataForMultiple } from "@/hooks/gear-form/useDuplicatedGearDataForMultiple";
+import { useDuplicatedGearData } from "@/hooks/gear-form/useDuplicatedGearData";
 import { useAuth } from "@/helpers";
 
 const AddGearForm = () => {
@@ -20,21 +20,20 @@ const AddGearForm = () => {
   const { user } = useAuth();
   const formState = useMultipleGearFormState();
 
-  // Handle duplicated gear data
-  useDuplicatedGearDataForMultiple({
+  // Handle duplicated gear data using the correct hook that reads from sessionStorage
+  useDuplicatedGearData({
     setGearName: formState.setGearName,
     setGearType: formState.setGearType,
     setDescription: formState.setDescription,
     setZipCode: formState.setZipCode,
     setMeasurementUnit: formState.setMeasurementUnit,
     setSize: formState.setSize,
+    setRole: formState.setRole,
     setSkillLevel: formState.setSkillLevel,
     setPricePerDay: formState.setPricePerDay,
     setPricePerHour: formState.setPricePerHour,
     setPricePerWeek: formState.setPricePerWeek,
     setDamageDeposit: formState.setDamageDeposit,
-    setImageUrls: formState.setImageUrls,
-    setUseImageUrls: formState.setUseImageUrls,
   });
 
   const { handleSubmit, isSubmitting } = useMultipleGearFormSubmission({
@@ -50,7 +49,7 @@ const AddGearForm = () => {
     pricePerHour: formState.pricePerHour,
     pricePerWeek: formState.pricePerWeek,
     damageDeposit: formState.damageDeposit,
-    role: user?.role || "private-party",
+    role: formState.role,
     imageUrls: formState.imageUrls,
     useImageUrls: formState.useImageUrls,
   });
