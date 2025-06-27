@@ -8,17 +8,17 @@ export const useRelatedGear = (blogTitle: string) => {
     queryKey: ['relatedGear', blogTitle],
     queryFn: async (): Promise<Equipment[]> => {
       if (!blogTitle) return [];
-      
+
       console.log(`🔍 Searching for gear related to blog post: "${blogTitle}"`);
-      
+
       // Extract key terms from the blog title for better search
       const searchQuery = extractSearchTerms(blogTitle);
       console.log(`🔍 Extracted search terms: "${searchQuery}"`);
-      
+
       try {
         // Use the existing AI-enhanced search
         const results = await searchEquipmentWithNLP(searchQuery);
-        
+
         // Convert AISearchResult[] to Equipment[] and limit to 2 items
         const equipment = results.map(result => ({
           id: result.id,
@@ -39,8 +39,8 @@ export const useRelatedGear = (blogTitle: string) => {
             nextAvailableDate: undefined
           },
           pricing_options: [] // Default empty array for pricing options
-        })).slice(0, 2);
-        
+        })).slice(0, 4);
+
         console.log(`✅ Found ${equipment.length} related gear items`);
         return equipment;
       } catch (error) {
@@ -61,13 +61,13 @@ const extractSearchTerms = (title: string): string => {
     'review', 'guide', 'tips', 'how', 'best', 'top', 'ultimate', 'complete', 'beginner',
     'advanced', 'pro', 'vs', 'versus', '2024', '2023', 'new', 'latest'
   ];
-  
+
   // Split title into words and filter out common words
   const words = title.toLowerCase()
     .replace(/[^\w\s]/g, ' ') // Replace punctuation with spaces
     .split(/\s+/)
     .filter(word => word.length > 2 && !commonWords.includes(word));
-  
+
   // Join the meaningful words back together
   return words.slice(0, 5).join(' '); // Limit to first 5 meaningful words
 };
