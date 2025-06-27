@@ -17,6 +17,8 @@ interface UseDuplicatedGearDataProps {
   setPricePerHour: (value: string) => void;
   setPricePerWeek: (value: string) => void;
   setDamageDeposit: (value: string) => void;
+  setImageUrls?: (urls: string[]) => void;
+  setUseImageUrls?: (value: boolean) => void;
 }
 
 export const useDuplicatedGearData = ({
@@ -32,6 +34,8 @@ export const useDuplicatedGearData = ({
   setPricePerHour,
   setPricePerWeek,
   setDamageDeposit,
+  setImageUrls,
+  setUseImageUrls,
 }: UseDuplicatedGearDataProps) => {
   const { toast } = useToast();
 
@@ -72,22 +76,32 @@ export const useDuplicatedGearData = ({
         // Set role (default for duplicated gear)
         setRole("private-party");
 
-        // Map and set skill level with proper timing
+        // Map and set skill level immediately without timeout
         const mappedSkillLevel = mapSkillLevel(duplicatedEquipment.specifications?.suitable || "", mappedGearType);
-        setTimeout(() => {
-          setSkillLevel(mappedSkillLevel || "");
-        }, 100);
+        console.log('Setting skill level:', mappedSkillLevel);
+        setSkillLevel(mappedSkillLevel || "");
 
         // Set individual pricing fields from duplicated data
         setPricePerDay(duplicatedEquipment.price_per_day.toString());
-        setPricePerHour(duplicatedEquipment.price_per_hour?.toString() || "");
-        setPricePerWeek(duplicatedEquipment.price_per_week?.toString() || "");
+        
+        // Handle price_per_hour - include 0 values
+        const hourlyPrice = duplicatedEquipment.price_per_hour;
+        setPricePerHour(hourlyPrice !== undefined && hourlyPrice !== null ? hourlyPrice.toString() : "");
+        
+        // Handle price_per_week - include 0 values  
+        const weeklyPrice = duplicatedEquipment.price_per_week;
+        setPricePerWeek(weeklyPrice !== undefined && weeklyPrice !== null ? weeklyPrice.toString() : "");
 
-        // Set damage deposit from equipment or use default
-        const damageDepositValue = duplicatedEquipment.damage_deposit !== undefined && duplicatedEquipment.damage_deposit !== null 
-          ? String(duplicatedEquipment.damage_deposit) 
-          : "0";
-        setDamageDeposit(damageDepositValue);
+        // Set damage deposit - include 0 values
+        const damageDepositValue = duplicatedEquipment.damage_deposit;
+        setDamageDeposit(damageDepositValue !== undefined && damageDepositValue !== null ? damageDepositValue.toString() : "0");
+
+        // Handle image URL if available and setters are provided
+        if (duplicatedEquipment.image_url && setImageUrls && setUseImageUrls) {
+          console.log('Setting duplicated image URL:', duplicatedEquipment.image_url);
+          setImageUrls([duplicatedEquipment.image_url]);
+          setUseImageUrls(true);
+        }
 
         // Clear the sessionStorage after using it
         sessionStorage.removeItem('duplicatedEquipment');
@@ -107,7 +121,7 @@ export const useDuplicatedGearData = ({
         console.error("Error parsing duplicated equipment data:", error);
       }
     }
-  }, [toast, setGearName, setGearType, setDescription, setZipCode, setMeasurementUnit, setSize, setRole, setSkillLevel, setPricePerDay, setPricePerHour, setPricePerWeek, setDamageDeposit]);
+  }, [toast, setGearName, setGearType, setDescription, setZipCode, setMeasurementUnit, setSize, setRole, setSkillLevel, setPricePerDay, setPricePerHour, setPricePerWeek, setDamageDeposit, setImageUrls, setUseImageUrls]);
 
   // Return the duplicated equipment data so it can be used by the form
   const getDuplicatedGearData = () => {

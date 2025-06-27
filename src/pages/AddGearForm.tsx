@@ -34,6 +34,8 @@ const AddGearForm = () => {
     setPricePerHour: formState.setPricePerHour,
     setPricePerWeek: formState.setPricePerWeek,
     setDamageDeposit: formState.setDamageDeposit,
+    setImageUrls: formState.setImageUrls,
+    setUseImageUrls: formState.setUseImageUrls,
   });
 
   const { handleSubmit, isSubmitting } = useMultipleGearFormSubmission({
