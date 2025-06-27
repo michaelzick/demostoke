@@ -76,10 +76,8 @@ export const useDuplicatedGearData = ({
         // Set role (default for duplicated gear)
         setRole("private-party");
 
-        // Map and set skill level - try different field names and log for debugging
-        const rawSkillLevel = duplicatedEquipment.specifications?.suitable || 
-                             duplicatedEquipment.specifications?.skill_level || 
-                             "";
+        // Map and set skill level - use the 'suitable' field from specifications
+        const rawSkillLevel = duplicatedEquipment.specifications?.suitable || "";
         console.log('Raw skill level from duplicated equipment:', rawSkillLevel);
         console.log('Mapped gear type:', mappedGearType);
         
@@ -90,24 +88,19 @@ export const useDuplicatedGearData = ({
         // Set individual pricing fields from duplicated data
         setPricePerDay(duplicatedEquipment.price_per_day?.toString() || "");
         
-        // Handle price_per_hour - check multiple possible field names and include 0 values
-        const hourlyPrice = duplicatedEquipment.price_per_hour ?? 
-                           duplicatedEquipment.hourly_price ?? 
-                           duplicatedEquipment.pricePerHour;
+        // Handle price_per_hour - only use the correct property name
+        const hourlyPrice = duplicatedEquipment.price_per_hour;
         console.log('Hourly price from duplicated equipment:', hourlyPrice);
         setPricePerHour(hourlyPrice !== undefined && hourlyPrice !== null ? hourlyPrice.toString() : "");
         
-        // Handle price_per_week - include 0 values  
-        const weeklyPrice = duplicatedEquipment.price_per_week ?? 
-                           duplicatedEquipment.weekly_price ?? 
-                           duplicatedEquipment.pricePerWeek;
+        // Handle price_per_week - only use the correct property name
+        const weeklyPrice = duplicatedEquipment.price_per_week;
         setPricePerWeek(weeklyPrice !== undefined && weeklyPrice !== null ? weeklyPrice.toString() : "");
 
-        // Set damage deposit - leave empty if null/undefined, don't default to "0"
-        const damageDepositValue = duplicatedEquipment.damage_deposit ?? 
-                                  duplicatedEquipment.damageDeposit;
+        // Set damage deposit - only use the correct property name and leave empty if null/undefined
+        const damageDepositValue = duplicatedEquipment.damage_deposit;
         console.log('Damage deposit from duplicated equipment:', damageDepositValue);
-        setDamageDeposit(damageDepositValue !== undefined && damageDepositValue !== null && damageDepositValue !== "" ? damageDepositValue.toString() : "");
+        setDamageDeposit(damageDepositValue !== undefined && damageDepositValue !== null && damageDepositValue !== 0 ? damageDepositValue.toString() : "");
 
         // Handle image URLs - check for both single image_url and multiple images array
         if (setImageUrls && setUseImageUrls) {
