@@ -4,11 +4,17 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Clock, User, Calendar, Share2, ArrowUp } from "lucide-react";
 import { blogPosts } from "@/lib/blog";
 import { useEffect, useState } from "react";
+import { useRelatedGear } from "@/hooks/useRelatedGear";
+import RelatedGear from "@/components/equipment-detail/RelatedGear";
 
 const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string; }>();
   const post = blogPosts.find(p => p.id === slug);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  
+  // Fetch related gear based on the blog post title
+  const { data: relatedGear, isLoading: isLoadingRelatedGear } = useRelatedGear(post?.title || "");
+  
   console.log("Post ID:", slug);
 
   useEffect(() => {
@@ -196,6 +202,11 @@ const BlogPostPage = () => {
                   ))}
               </div>
             </div>
+
+            {/* Related Gear Section */}
+            {!isLoadingRelatedGear && relatedGear && relatedGear.length > 0 && (
+              <RelatedGear relatedGear={relatedGear} />
+            )}
           </article>
         </div>
       </div>
