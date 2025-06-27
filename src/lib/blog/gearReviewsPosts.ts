@@ -391,5 +391,70 @@ The Pyzel Gremlin is a standout choice for surfers who want one board that can h
     tags: ["gear reviews", "surfboards", "pyzel", "gremlin", "small wave", "review"],
     author: 'Michael Zick',
     authorId: 'michael-zick',
+  },
+  {
+    id: "firewire-sci-fi-2-surfboard-review",
+    title: "Firewire Sci-Fi 2.0 Surfboard Review: Space-Age Performance for Modern Surfers",
+    excerpt: "We put the Firewire Sci-Fi 2.0 through its paces in a range of conditions. Here’s why this futuristic board is a favorite for progressive surfers seeking speed, versatility, and innovation.",
+    content: `
+The Firewire Sci-Fi 2.0, designed by Daniel "Tomo" Thomson in collaboration with Kelly Slater, is the evolution of the original Sci-Fi. With its futuristic outline and advanced construction, the Sci-Fi 2.0 promises a blend of speed, maneuverability, and all-around fun for surfers looking to push their limits.
+
+**Design and Construction**
+
+The Sci-Fi 2.0 features Tomo’s signature squared-off nose and tail, giving it a unique look and maximizing surface area for added lift and speed. The board uses Firewire’s Helium construction, which combines lightweight EPS foam with parabolic carbon rails for a lively, responsive feel. The quad inside single concave bottom channels water efficiently, providing both drive and control.
+
+**Dimensions and Setup**
+
+We tested the 5'8" x 19.5" x 2.5" (29.5L) model, which is ideal for surfers in the 150-175 lb range. The Sci-Fi 2.0 comes with a five-fin setup, allowing you to ride it as a thruster or quad. We found the board excelled as a quad in smaller surf and as a thruster when the waves had more punch.
+
+**Performance in the Water**
+
+**Small Waves (2-4 feet)**
+
+The Sci-Fi 2.0 paddles easily and catches waves early thanks to its generous width and flat rocker. The board feels fast right off the takeoff, generating speed even in weaker surf. The wide tail and quad setup make it easy to skate through flat sections and maintain momentum.
+
+**Medium Waves (4-6 feet)**
+
+As the surf picks up, the Sci-Fi 2.0 really comes alive. The board’s unique bottom contours provide excellent hold and drive down the line, while the sharp rails allow for crisp, controlled turns. The thruster setup adds extra bite and control, making it a great choice for steeper faces and more powerful conditions.
+
+**Larger Waves (6+ feet)**
+
+While not a dedicated step-up, the Sci-Fi 2.0 holds its own in overhead surf. The board remains stable at speed and handles late drops with confidence. Advanced surfers will appreciate its ability to transition from rail to rail and maintain control in critical sections.
+
+**Who Should Ride It**
+
+- Intermediate to advanced surfers looking for a high-performance shortboard with a modern twist
+- Surfers who want one board that works in a wide range of conditions
+- Fans of Tomo’s innovative designs and Firewire’s Helium construction
+- Anyone seeking speed, maneuverability, and versatility in their quiver
+
+**The Verdict**
+
+**Pros:**
+
+- Fast and lively in all conditions
+- Versatile five-fin setup
+- Lightweight, durable Helium construction
+- Excellent paddling and wave-catching ability
+- Modern design encourages progressive surfing
+
+**Cons:**
+
+- Unconventional outline may not appeal to traditionalists
+- Wide tail can feel skatey in very steep waves
+- Premium price point
+
+**Rating: 9/10**
+
+The Firewire Sci-Fi 2.0 is a standout for surfers who want to blend futuristic design with real-world performance. It’s fast, fun, and forgiving, with enough versatility to handle everything from summer mush to overhead punchy surf. If you’re looking to add a modern, high-performance board to your quiver, the Sci-Fi 2.0 is well worth a look.
+`,
+    category: "gear reviews",
+    publishedAt: "2025-06-27",
+    readTime: 7,
+    heroImage: "https://surfd.com/wp-content/uploads/2017/01/sci-fi-black-white.jpg",
+    thumbnail: "https://images.squarespace-cdn.com/content/v1/5cab83fed7819e643e146c9b/1699999900037-NP11JSF8T78LRTJQEHF1/_KAI5089.JPG?format=1000w",
+    tags: ["gear reviews", "surfboards", "firewire", "sci-fi 2.0", "tomo", "kelly slater", "review"],
+    author: 'Michael Zick',
+    authorId: 'michael-zick',
   }
 ];
