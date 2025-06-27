@@ -171,37 +171,39 @@ const BlogPostPage = () => {
             </div>
 
             {/* Related Posts */}
-            <div className="border-t pt-8">
-              <h4 className="text-lg font-semibold mb-4">More from this category</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {blogPosts
-                  .filter(p => p.category === post.category && p.id !== post.id)
-                  .slice(0, 2)
-                  .map((relatedPost) => (
-                    <Link
-                      key={relatedPost.id}
-                      to={`/blog/${relatedPost.id}`}
-                      className="block p-4 border rounded-lg hover:shadow-md transition-shadow"
-                    >
-                      <div className="flex gap-4">
-                        <img
-                          src={relatedPost.thumbnail}
-                          alt={relatedPost.title}
-                          className="w-20 h-20 object-cover rounded"
-                        />
-                        <div>
-                          <h5 className="font-medium line-clamp-2 mb-1">
-                            {relatedPost.title}
-                          </h5>
-                          <p className="text-sm text-muted-foreground">
-                            {relatedPost.readTime} min read
-                          </p>
+            {blogPosts.filter(p => p.category === post.category && p.id !== post.id).length > 0 && (
+              <div className="border-t pt-8">
+                <h4 className="text-lg font-semibold mb-4">More from this category</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {blogPosts
+                    .filter(p => p.category === post.category && p.id !== post.id)
+                    .slice(0, 2)
+                    .map((relatedPost) => (
+                      <Link
+                        key={relatedPost.id}
+                        to={`/blog/${relatedPost.id}`}
+                        className="block p-4 border rounded-lg hover:shadow-md transition-shadow"
+                      >
+                        <div className="flex gap-4">
+                          <img
+                            src={relatedPost.thumbnail}
+                            alt={relatedPost.title}
+                            className="w-20 h-20 object-cover rounded"
+                          />
+                          <div>
+                            <h5 className="font-medium line-clamp-2 mb-1">
+                              {relatedPost.title}
+                            </h5>
+                            <p className="text-sm text-muted-foreground">
+                              {relatedPost.readTime} min read
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </Link>
-                  ))}
+                      </Link>
+                    ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Related Gear Section */}
             {!isLoadingRelatedGear && relatedGear && relatedGear.length > 0 && (
