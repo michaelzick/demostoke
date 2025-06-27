@@ -79,15 +79,15 @@ export const useDuplicatedGearData = ({
         // Set role (default for duplicated gear)
         setRole("private-party");
 
-        // Map and set skill level - check specifications.suitable
-        const rawSkillLevel = duplicatedEquipment.specifications?.suitable || "";
-        console.log('Raw skill level from duplicated equipment specifications.suitable:', rawSkillLevel);
+        // Map and set skill level - check multiple fields for skill level data
+        const rawSkillLevelFromSpecs = duplicatedEquipment.specifications?.suitable || "";
+        console.log('Raw skill level from duplicated equipment specifications.suitable:', rawSkillLevelFromSpecs);
         console.log('Equipment specifications:', duplicatedEquipment.specifications);
         console.log('Mapped gear type:', mappedGearType);
         
-        const mappedSkillLevel = mapSkillLevel(rawSkillLevel, mappedGearType);
+        const mappedSkillLevel = mapSkillLevel(rawSkillLevelFromSpecs, mappedGearType);
         console.log('Mapped skill level result:', mappedSkillLevel);
-        setSkillLevel(mappedSkillLevel || rawSkillLevel || "");
+        setSkillLevel(mappedSkillLevel || rawSkillLevelFromSpecs || "");
 
         // Set individual pricing fields from duplicated data
         setPricePerDay(duplicatedEquipment.price_per_day?.toString() || "");
@@ -107,11 +107,10 @@ export const useDuplicatedGearData = ({
         const damageDepositValue = duplicatedEquipment.damage_deposit;
         console.log('Damage deposit from duplicated equipment:', damageDepositValue);
         console.log('Damage deposit type:', typeof damageDepositValue);
-        // Only set if it has a meaningful value (not null, undefined, 0, or empty string)
+        // Only set if it has a meaningful value (not null, undefined, or 0)
         const shouldSetDamageDeposit = damageDepositValue !== undefined && 
                                       damageDepositValue !== null && 
-                                      damageDepositValue !== 0 && 
-                                      damageDepositValue !== "";
+                                      damageDepositValue !== 0;
         setDamageDeposit(shouldSetDamageDeposit ? damageDepositValue.toString() : "");
 
         // Handle image URLs - check for multiple images first, then single image
