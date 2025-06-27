@@ -104,7 +104,7 @@ export const UserEquipmentGrid = ({ userEquipment, stats, isLoading, isMockUser 
                 ) : (
                   <div className="text-xs text-muted-foreground">No reviews yet</div>
                 )}
-                <Button variant="outline" size="sm" asChild className="text-xs h-8">
+                <Button size="sm" asChild className="text-xs h-8">
                   <Link to={`/equipment/${item.id}`}>View Details</Link>
                 </Button>
               </div>

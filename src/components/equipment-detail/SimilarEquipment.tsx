@@ -63,7 +63,7 @@ const SimilarEquipment = ({ similarEquipment }: SimilarEquipmentProps) => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground">${item.price_per_day}/day</span>
-                    <Button variant="outline" size="sm" asChild className="text-xs h-auto">
+                    <Button size="sm" asChild className="text-xs h-6">
                       <Link to={`/equipment/${item.id}`}>View</Link>
                     </Button>
                   </div>
