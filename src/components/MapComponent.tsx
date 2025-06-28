@@ -1,4 +1,5 @@
-import { useRef, useEffect, useState } from 'react';
+
+import { useRef, useEffect, useState, useMemo } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useToast } from '@/hooks/use-toast';
@@ -70,6 +71,24 @@ const MapComponent = ({
 
   const userLocations = propUserLocations || fetchedUserLocations;
 
+  // Memoize filtered user locations to prevent unnecessary re-renders
+  const filteredUserLocations = useMemo(() => {
+    return isUserLocationMode && activeCategory 
+      ? userLocations.filter(user => 
+          user.equipment_categories.includes(activeCategory)
+        )
+      : userLocations;
+  }, [isUserLocationMode, activeCategory, userLocations]);
+
+  // Memoize display data to prevent unnecessary re-renders
+  const displayEquipment = useMemo(() => {
+    return isUserLocationMode ? [] : (initialEquipment || []);
+  }, [isUserLocationMode, initialEquipment]);
+
+  const displayUserLocations = useMemo(() => {
+    return isUserLocationMode ? filteredUserLocations : [];
+  }, [isUserLocationMode, filteredUserLocations]);
+
   useEffect(() => {
     console.log('🔍 Map display mode:', appSettings?.map_display_mode);
     console.log('👥 Is user location mode:', isUserLocationMode);
@@ -78,15 +97,6 @@ const MapComponent = ({
     console.log('🏷️ Active category:', activeCategory);
     console.log('🌍 User location from URL:', userLocation);
   }, [appSettings, isUserLocationMode, userLocations.length, initialEquipment?.length, activeCategory, userLocation]);
-
-  const filteredUserLocations = isUserLocationMode && activeCategory 
-    ? userLocations.filter(user => 
-        user.equipment_categories.includes(activeCategory)
-      )
-    : userLocations;
-
-  const displayEquipment = isUserLocationMode ? [] : (initialEquipment || []);
-  const displayUserLocations = isUserLocationMode ? filteredUserLocations : [];
 
   useMapMarkers({ 
     map: map.current, 
@@ -97,11 +107,9 @@ const MapComponent = ({
     activeCategory 
   });
 
-  // Show toast when no data is found - Fixed logic
+  // Show toast when no data is found - Fixed dependencies to prevent infinite loop
   useEffect(() => {
-    if (!mapLoaded || isSingleView) return;
-
-    if (isUserLocationMode && userLocationsLoading) return;
+    if (!mapLoaded || isSingleView || userLocationsLoading) return;
 
     const hasDataToShow = isUserLocationMode 
       ? displayUserLocations.length > 0 
@@ -142,9 +150,9 @@ const MapComponent = ({
     isSingleView, 
     searchQuery, 
     activeCategory, 
-    toast, 
-    hasShownNoGearToast, 
-    isUserLocationMode
+    isUserLocationMode,
+    hasShownNoGearToast
+    // Removed toast from dependencies to prevent infinite loop
   ]);
 
   useEffect(() => {
@@ -264,7 +272,7 @@ const MapComponent = ({
         variant: "destructive"
       });
     }
-  }, [token, toast, isLoadingToken, userLocation]);
+  }, [token, isLoadingToken, userLocation]);
 
   // Enhanced bounds fitting for user location scenarios
   useEffect(() => {
