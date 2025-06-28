@@ -1,19 +1,14 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
-import { Snowflake, Mountains, Waves, Fish, Bicycle, MapPin } from "@phosphor-icons/react";
+import { Snowflake, Mountains, Waves, Fish, Bicycle } from "@phosphor-icons/react";
 import { useAuth } from "@/helpers";
 import { getVideoUrl } from "@/utils/videoUpload";
-import { useGeolocation } from "@/hooks/useGeolocation";
-import { useToast } from "@/hooks/use-toast";
 
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { latitude, longitude, loading, error, permissionDenied, getCurrentLocation } = useGeolocation();
-  const [isNavigating, setIsNavigating] = useState(false);
 
   // const backgrounds = [
   //   { type: 'video', url: getVideoUrl('surfers_compressed.mp4') },
@@ -43,57 +38,6 @@ const HeroSection = () => {
     } else {
       navigate("/auth/signin");
     }
-  };
-
-  const handleFindGearNearMe = async () => {
-    setIsNavigating(true);
-    
-    // If we already have location data, use it immediately
-    if (latitude && longitude) {
-      navigate(`/explore?lat=${latitude}&lng=${longitude}`);
-      setIsNavigating(false);
-      return;
-    }
-
-    // If permission was denied, use Los Angeles coordinates
-    if (permissionDenied) {
-      navigate('/explore?lat=34.0522&lng=-118.2437');
-      setIsNavigating(false);
-      return;
-    }
-
-    // If there's an error or no location, fallback to LA
-    if (error || (!loading && !latitude && !longitude)) {
-      navigate('/explore?lat=34.0522&lng=-118.2437');
-      setIsNavigating(false);
-      return;
-    }
-
-    // If still loading, wait a bit more or fallback
-    if (loading) {
-      // Give it a moment to resolve
-      setTimeout(() => {
-        if (latitude && longitude) {
-          navigate(`/explore?lat=${latitude}&lng=${longitude}`);
-        } else {
-          // Fallback to Los Angeles
-          navigate('/explore?lat=34.0522&lng=-118.2437');
-          toast({
-            title: "Using default location",
-            description: "Unable to get your location. Showing gear near Los Angeles.",
-          });
-        }
-        setIsNavigating(false);
-      }, 2000);
-    }
-  };
-
-  const getButtonText = () => {
-    if (isNavigating) {
-      if (loading) return "Getting Location...";
-      return "Finding Gear...";
-    }
-    return "Find Gear Near Me";
   };
 
   return (
@@ -133,14 +77,8 @@ const HeroSection = () => {
             Ride what makes you feel alive.
           </h2>
           <div className="flex flex-wrap gap-4 justify-center mb-8">
-            <Button 
-              size="lg" 
-              className='bg-primary flex items-center gap-2'
-              onClick={handleFindGearNearMe}
-              disabled={isNavigating}
-            >
-              <MapPin className="h-5 w-5" />
-              {getButtonText()}
+            <Button size="lg" asChild className='bg-primary'>
+              <Link to="/explore">Find Gear Near Me</Link>
             </Button>
             <Button
               size="lg"

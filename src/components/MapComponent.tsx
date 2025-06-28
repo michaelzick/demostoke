@@ -1,5 +1,5 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
-import mapboxgl from 'mapbox-gl';
+
+import { useRef, useEffect, useState } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useToast } from '@/hooks/use-toast';
 import { initializeMap, fitMapBounds } from '@/utils/mapUtils';
@@ -41,17 +41,9 @@ interface MapComponentProps {
   userLocations?: UserLocation[];
   isSingleView?: boolean;
   searchQuery?: string;
-  userLocation?: { lat: number; lng: number } | null;
 }
 
-const MapComponent = ({ 
-  activeCategory, 
-  initialEquipment, 
-  userLocations: propUserLocations, 
-  isSingleView = false, 
-  searchQuery,
-  userLocation 
-}: MapComponentProps) => {
+const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUserLocations, isSingleView = false, searchQuery }: MapComponentProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -60,94 +52,108 @@ const MapComponent = ({
   const [token, setToken] = useState<string | null>(null);
   const [showTokenInput, setShowTokenInput] = useState(false);
   const [isLoadingToken, setIsLoadingToken] = useState(true);
-
-  // Use refs to store stable references that don't trigger re-renders
-  const currentEquipmentRef = useRef<MapEquipment[]>([]);
-  const currentUserLocationsRef = useRef<UserLocation[]>([]);
-  const hasShownToastRef = useRef(false);
+  const [hasShownNoGearToast, setHasShownNoGearToast] = useState(false);
 
   // Get app settings to determine display mode
   const { data: appSettings } = useAppSettings();
   const isUserLocationMode = appSettings?.map_display_mode === 'user_locations';
 
+  // Fetch user locations when in user location mode and no specific user locations are provided
   const { data: fetchedUserLocations = [], isLoading: userLocationsLoading } = useUserLocations();
 
-  // Process equipment data and store in ref
-  useEffect(() => {
-    if (!isUserLocationMode) {
-      currentEquipmentRef.current = initialEquipment || [];
-      currentUserLocationsRef.current = [];
-    }
-  }, [isUserLocationMode, initialEquipment]);
+  // Use provided user locations or fetched ones
+  const userLocations = propUserLocations || fetchedUserLocations;
 
-  // Process user locations data and store in ref
-  useEffect(() => {
-    if (isUserLocationMode) {
-      const userLocations = propUserLocations || fetchedUserLocations;
-      const filteredUsers = activeCategory 
-        ? userLocations.filter(user => user.equipment_categories.includes(activeCategory))
-        : userLocations;
-      
-      currentEquipmentRef.current = [];
-      currentUserLocationsRef.current = filteredUsers;
-    }
-  }, [isUserLocationMode, activeCategory, propUserLocations, fetchedUserLocations]);
-
-  // Check for data and show toast - using primitive values to prevent loops
-  const currentDataCount = isUserLocationMode 
-    ? currentUserLocationsRef.current.length 
-    : currentEquipmentRef.current.length;
-
-  useEffect(() => {
-    if (!mapLoaded || isSingleView || userLocationsLoading) return;
-
-    const hasData = currentDataCount > 0;
-
-    if (!hasData && !hasShownToastRef.current) {
-      const message = isUserLocationMode
-        ? activeCategory
-          ? `No users found with ${activeCategory} in their inventory. Try selecting a different category or clearing filters.`
-          : "No user locations found. Users need to add addresses to their profiles to appear on the map."
-        : searchQuery
-        ? `No equipment found matching "${searchQuery}". Try adjusting your search or filters.`
-        : activeCategory
-        ? `No equipment found in the ${activeCategory} category. Try a different category or clear filters.`
-        : "No equipment found in this area. Try expanding your search area or adjusting filters.";
-
-      toast({
-        title: isUserLocationMode ? "No user locations found" : "No gear found",
-        description: message,
-        variant: "default",
-      });
-      hasShownToastRef.current = true;
-    } else if (hasData) {
-      hasShownToastRef.current = false;
-    }
-  }, [mapLoaded, currentDataCount, userLocationsLoading, isSingleView, searchQuery, activeCategory, isUserLocationMode, toast]);
-
+  // Debug logging for display mode
   useEffect(() => {
     console.log('🔍 Map display mode:', appSettings?.map_display_mode);
     console.log('👥 Is user location mode:', isUserLocationMode);
-    console.log('📍 Current data count:', currentDataCount);
+    console.log('📍 User locations count:', userLocations.length);
+    console.log('⚙️ Equipment count:', initialEquipment?.length || 0);
     console.log('🏷️ Active category:', activeCategory);
-    console.log('🌍 User location from URL:', userLocation);
-  }, [appSettings?.map_display_mode, isUserLocationMode, currentDataCount, activeCategory, userLocation]);
+  }, [appSettings, isUserLocationMode, userLocations.length, initialEquipment?.length, activeCategory]);
 
-  // Use map markers with stable refs
+  // Filter user locations based on active category
+  const filteredUserLocations = isUserLocationMode && activeCategory 
+    ? userLocations.filter(user => 
+        user.equipment_categories.includes(activeCategory)
+      )
+    : userLocations;
+
+  // Determine what to display based on mode
+  const displayEquipment = isUserLocationMode ? [] : (initialEquipment || []);
+  const displayUserLocations = isUserLocationMode ? filteredUserLocations : [];
+
+  // Use the custom hook for managing markers
   useMapMarkers({ 
     map: map.current, 
     mapLoaded, 
-    equipment: currentEquipmentRef.current, 
-    userLocations: currentUserLocationsRef.current,
+    equipment: displayEquipment, 
+    userLocations: displayUserLocations,
     isSingleView,
     activeCategory 
   });
 
+  // Show toast when no data is found - Fixed logic
+  useEffect(() => {
+    if (!mapLoaded || isSingleView) return;
+
+    // Don't show toast while still loading user locations
+    if (isUserLocationMode && userLocationsLoading) return;
+
+    // Check if we have data to display based on the current mode
+    const hasDataToShow = isUserLocationMode 
+      ? displayUserLocations.length > 0 
+      : displayEquipment.length > 0;
+
+    console.log('🔍 Toast check - isUserLocationMode:', isUserLocationMode);
+    console.log('🔍 Toast check - hasDataToShow:', hasDataToShow); 
+    console.log('🔍 Toast check - userLocationsLoading:', userLocationsLoading);
+    console.log('🔍 Toast check - hasShownNoGearToast:', hasShownNoGearToast);
+
+    if (!hasDataToShow) {
+      if (!hasShownNoGearToast) {
+        const message = isUserLocationMode
+          ? activeCategory
+            ? `No users found with ${activeCategory} in their inventory. Try selecting a different category or clearing filters.`
+            : "No user locations found. Users need to add addresses to their profiles to appear on the map."
+          : searchQuery
+          ? `No equipment found matching "${searchQuery}". Try adjusting your search or filters.`
+          : activeCategory
+          ? `No equipment found in the ${activeCategory} category. Try a different category or clear filters.`
+          : "No equipment found in this area. Try expanding your search area or adjusting filters.";
+
+        toast({
+          title: isUserLocationMode ? "No user locations found" : "No gear found",
+          description: message,
+          variant: "default",
+        });
+        setHasShownNoGearToast(true);
+      }
+    } else {
+      // Reset the flag when we have data
+      setHasShownNoGearToast(false);
+    }
+  }, [
+    mapLoaded, 
+    displayEquipment.length, 
+    displayUserLocations.length, 
+    userLocationsLoading, 
+    isSingleView, 
+    searchQuery, 
+    activeCategory, 
+    toast, 
+    hasShownNoGearToast, 
+    isUserLocationMode
+  ]);
+
+  // Load token on component mount
   useEffect(() => {
     const loadToken = async () => {
       console.log('🔄 Starting token loading process...');
       setIsLoadingToken(true);
 
+      // First, check localStorage for a valid token
       const localToken = localStorage.getItem('mapbox_token');
       if (localToken && localToken.startsWith('pk.')) {
         console.log('✅ Valid token found in localStorage');
@@ -156,6 +162,7 @@ const MapComponent = ({
         return;
       }
 
+      // If no valid local token, try to fetch from Supabase
       console.log('🌐 Fetching token from Supabase Edge Function...');
       try {
         console.log('📡 Calling get-mapbox-token function...');
@@ -186,6 +193,7 @@ const MapComponent = ({
       } catch (err) {
         console.error('❌ Exception while fetching token from Supabase:', err);
         
+        // Fallback to environment variable
         console.log('🔄 Trying fallback to environment variable...');
         const envToken = import.meta.env.VITE_MAPBOX_TOKEN;
         
@@ -207,7 +215,7 @@ const MapComponent = ({
     loadToken();
   }, []);
 
-  // Initialize map with user location or fallback to Los Angeles
+  // Initialize map when token is available
   useEffect(() => {
     if (!mapContainer.current || !token || isLoadingToken) return;
 
@@ -219,12 +227,7 @@ const MapComponent = ({
     }
 
     try {
-      // Use user location if available, otherwise default to Los Angeles
-      const centerCoords = userLocation ? [userLocation.lng, userLocation.lat] : [-118.2437, 34.0522];
-      // Use wider zoom (10) when user location is provided to show more area
-      const zoomLevel = userLocation ? 10 : 11;
-
-      map.current = initializeMap(mapContainer.current, token, centerCoords as [number, number], zoomLevel);
+      map.current = initializeMap(mapContainer.current, token);
 
       map.current.on('load', () => {
         console.log('Map loaded successfully');
@@ -260,41 +263,17 @@ const MapComponent = ({
         variant: "destructive"
       });
     }
-  }, [token, isLoadingToken, userLocation, toast]);
+  }, [token, toast, isLoadingToken]);
 
-  // Enhanced bounds fitting for user location scenarios
+  // Fit bounds when data changes
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
 
-    const locations = isUserLocationMode ? currentUserLocationsRef.current : currentEquipmentRef.current;
-    
-    // When user location is provided, include it in bounds calculation
-    if (userLocation && locations.length > 0) {
-      const bounds = new mapboxgl.LngLatBounds();
-      
-      // Add user location to bounds
-      bounds.extend([userLocation.lng, userLocation.lat]);
-      
-      // Add all equipment/user locations to bounds
-      locations.forEach(item => {
-        if (item.location?.lat && item.location?.lng) {
-          bounds.extend([item.location.lng, item.location.lat]);
-        }
-      });
-      
-      // Fit bounds with appropriate padding and max zoom
-      map.current.fitBounds(bounds, { 
-        padding: { top: 50, bottom: 50, left: 50, right: 50 },
-        maxZoom: 12 // Prevent zooming in too close
-      });
-    } else if (!userLocation) {
-      // Use original bounds fitting when no user location
-      fitMapBounds(map.current, locations, isSingleView);
-    }
-  }, [mapLoaded, currentDataCount, isSingleView, isUserLocationMode, userLocation]);
+    const locations = isUserLocationMode ? displayUserLocations : displayEquipment;
+    fitMapBounds(map.current, locations, isSingleView);
+  }, [mapLoaded, displayEquipment, displayUserLocations, isSingleView, isUserLocationMode]);
 
-  // Memoize the token submit handler to prevent unnecessary re-renders
-  const handleTokenSubmit = useCallback((tokenInput: string) => {
+  const handleTokenSubmit = (tokenInput: string) => {
     console.log('📝 Token submitted by user');
     localStorage.setItem('mapbox_token', tokenInput);
     setToken(tokenInput);
@@ -303,7 +282,7 @@ const MapComponent = ({
       title: "Token Applied",
       description: "Your Mapbox token has been saved. The map will now load.",
     });
-  }, [toast]);
+  };
 
   return (
     <div className="relative w-full h-full rounded-lg overflow-hidden">
