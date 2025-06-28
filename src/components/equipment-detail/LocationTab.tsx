@@ -40,7 +40,9 @@ const LocationTab = ({ equipment }: LocationTabProps) => {
             location: {
               lat: equipment.location.lat,
               lng: equipment.location.lng
-            }
+            },
+            ownerId: equipment.owner.id,
+            ownerName: equipment.owner.name
           }]}
           userLocations={ownerUserLocation}
           activeCategory={null}

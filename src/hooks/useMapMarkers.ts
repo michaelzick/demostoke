@@ -12,6 +12,8 @@ interface MapEquipment {
     lat: number;
     lng: number;
   };
+  ownerId: string;
+  ownerName: string;
 }
 
 interface UserLocation {

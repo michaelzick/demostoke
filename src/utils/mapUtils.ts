@@ -86,14 +86,24 @@ export const createUserLocationMarkerElement = (role: string, activeCategory?: s
   return el;
 };
 
-export const createPopupContent = (item: { id: string; name: string; category: string; price_per_day: number; }): string => {
+export const createPopupContent = (item: {
+  id: string;
+  name: string;
+  category: string;
+  price_per_day: number;
+  ownerId: string;
+  ownerName: string;
+}): string => {
   return `
     <div>
-      <h3 class="text-sm font-medium">${item.name}</h3>
-      <p class="text-xs text-gray-500">${item.category}</p>
-      <p class="text-xs mt-1">$${item.price_per_day}/day</p>
+      <h3 class="text-base font-medium">${item.name}</h3>
+      <p class="text-sm text-gray-500">
+        <a href="/user-profile/${item.ownerId}" class="underline underline-offset-2 hover:text-blue-600">${item.ownerName}</a>
+      </p>
+      <p class="text-sm text-gray-500">${item.category}</p>
+      <p class="text-sm mt-1">$${item.price_per_day}/day</p>
       <button
-        class="mt-2 px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+        class="mt-2 px-2 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
         onclick="window.location.href='/equipment/${item.id}'"
       >
         View Details
@@ -106,11 +116,11 @@ export const createUserLocationPopupContent = (user: { id: string; name: string;
   const roleDisplay = getRoleDisplayName(user.role);
   return `
     <div>
-      <h3 class="text-sm font-medium">${user.name}</h3>
-      <p class="text-xs text-gray-500">${roleDisplay}</p>
-      <p class="text-xs mt-1">${user.address}</p>
+      <h3 class="text-base font-medium">${user.name}</h3>
+      <p class="text-sm text-gray-500">${roleDisplay}</p>
+      <p class="text-sm mt-1">${user.address}</p>
       <button
-        class="mt-2 px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+        class="mt-2 px-2 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
         onclick="window.location.href='/user-profile/${user.id}'"
       >
         View Profile
