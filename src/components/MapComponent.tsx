@@ -94,40 +94,58 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
     activeCategory 
   });
 
-  // Show toast when no data is found (only once per search/filter change)
+  // Show toast when no data is found - Fixed logic
   useEffect(() => {
-    if (mapLoaded && !isSingleView) {
-      // Fix the logic: check if we have data to display based on the current mode
-      const hasEquipmentData = !isUserLocationMode && displayEquipment.length > 0;
-      const hasUserLocationData = isUserLocationMode && displayUserLocations.length > 0;
-      const hasAnyData = hasEquipmentData || hasUserLocationData;
+    if (!mapLoaded || isSingleView) return;
 
-      console.log('🔍 Toast check - hasEquipmentData:', hasEquipmentData, 'hasUserLocationData:', hasUserLocationData, 'hasAnyData:', hasAnyData);
+    // Don't show toast while still loading user locations
+    if (isUserLocationMode && userLocationsLoading) return;
 
-      if (!hasAnyData && !userLocationsLoading) {
-        if (!hasShownNoGearToast) {
-          const message = isUserLocationMode
-            ? activeCategory
-              ? `No users found with ${activeCategory} in their inventory. Try selecting a different category or clearing filters.`
-              : "No user locations found. Users need to add addresses to their profiles to appear on the map."
-            : searchQuery
-            ? `No equipment found matching "${searchQuery}". Try adjusting your search or filters.`
-            : activeCategory
-            ? `No equipment found in the ${activeCategory} category. Try a different category or clear filters.`
-            : "No equipment found in this area. Try expanding your search area or adjusting filters.";
+    // Check if we have data to display based on the current mode
+    const hasDataToShow = isUserLocationMode 
+      ? displayUserLocations.length > 0 
+      : displayEquipment.length > 0;
 
-          toast({
-            title: isUserLocationMode ? "No user locations found" : "No gear found",
-            description: message,
-            variant: "default",
-          });
-          setHasShownNoGearToast(true);
-        }
-      } else {
-        setHasShownNoGearToast(false);
+    console.log('🔍 Toast check - isUserLocationMode:', isUserLocationMode);
+    console.log('🔍 Toast check - hasDataToShow:', hasDataToShow); 
+    console.log('🔍 Toast check - userLocationsLoading:', userLocationsLoading);
+    console.log('🔍 Toast check - hasShownNoGearToast:', hasShownNoGearToast);
+
+    if (!hasDataToShow) {
+      if (!hasShownNoGearToast) {
+        const message = isUserLocationMode
+          ? activeCategory
+            ? `No users found with ${activeCategory} in their inventory. Try selecting a different category or clearing filters.`
+            : "No user locations found. Users need to add addresses to their profiles to appear on the map."
+          : searchQuery
+          ? `No equipment found matching "${searchQuery}". Try adjusting your search or filters.`
+          : activeCategory
+          ? `No equipment found in the ${activeCategory} category. Try a different category or clear filters.`
+          : "No equipment found in this area. Try expanding your search area or adjusting filters.";
+
+        toast({
+          title: isUserLocationMode ? "No user locations found" : "No gear found",
+          description: message,
+          variant: "default",
+        });
+        setHasShownNoGearToast(true);
       }
+    } else {
+      // Reset the flag when we have data
+      setHasShownNoGearToast(false);
     }
-  }, [mapLoaded, displayEquipment.length, displayUserLocations.length, userLocationsLoading, isSingleView, searchQuery, activeCategory, toast, hasShownNoGearToast, isUserLocationMode]);
+  }, [
+    mapLoaded, 
+    displayEquipment.length, 
+    displayUserLocations.length, 
+    userLocationsLoading, 
+    isSingleView, 
+    searchQuery, 
+    activeCategory, 
+    toast, 
+    hasShownNoGearToast, 
+    isUserLocationMode
+  ]);
 
   // Load token on component mount
   useEffect(() => {
