@@ -1,5 +1,5 @@
 
-import { useRef, useEffect, useState, useMemo } from 'react';
+import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useToast } from '@/hooks/use-toast';
@@ -69,58 +69,65 @@ const MapComponent = ({
 
   const { data: fetchedUserLocations = [], isLoading: userLocationsLoading } = useUserLocations();
 
-  const userLocations = propUserLocations || fetchedUserLocations;
+  // Stabilize userLocations reference to prevent infinite re-renders
+  const stableUserLocations = useMemo(() => {
+    const locations = propUserLocations || fetchedUserLocations;
+    console.log('🔄 Stable user locations recalculated:', locations.length);
+    return locations;
+  }, [propUserLocations, fetchedUserLocations]);
 
-  // Memoize filtered user locations to prevent unnecessary re-renders
-  const filteredUserLocations = useMemo(() => {
-    return isUserLocationMode && activeCategory 
-      ? userLocations.filter(user => 
-          user.equipment_categories.includes(activeCategory)
-        )
-      : userLocations;
-  }, [isUserLocationMode, activeCategory, userLocations]);
-
-  // Memoize display data to prevent unnecessary re-renders
-  const displayEquipment = useMemo(() => {
-    return isUserLocationMode ? [] : (initialEquipment || []);
-  }, [isUserLocationMode, initialEquipment]);
-
-  const displayUserLocations = useMemo(() => {
-    return isUserLocationMode ? filteredUserLocations : [];
-  }, [isUserLocationMode, filteredUserLocations]);
+  // Consolidate all display logic into a single memoized object
+  const displayData = useMemo(() => {
+    console.log('🔄 Display data recalculated');
+    
+    if (isUserLocationMode) {
+      const filteredUsers = activeCategory 
+        ? stableUserLocations.filter(user => 
+            user.equipment_categories.includes(activeCategory)
+          )
+        : stableUserLocations;
+      
+      return {
+        equipment: [],
+        userLocations: filteredUsers,
+        hasData: filteredUsers.length > 0
+      };
+    } else {
+      const equipment = initialEquipment || [];
+      return {
+        equipment,
+        userLocations: [],
+        hasData: equipment.length > 0
+      };
+    }
+  }, [isUserLocationMode, activeCategory, stableUserLocations, initialEquipment]);
 
   useEffect(() => {
     console.log('🔍 Map display mode:', appSettings?.map_display_mode);
     console.log('👥 Is user location mode:', isUserLocationMode);
-    console.log('📍 User locations count:', userLocations.length);
+    console.log('📍 User locations count:', stableUserLocations.length);
     console.log('⚙️ Equipment count:', initialEquipment?.length || 0);
     console.log('🏷️ Active category:', activeCategory);
     console.log('🌍 User location from URL:', userLocation);
-  }, [appSettings, isUserLocationMode, userLocations.length, initialEquipment?.length, activeCategory, userLocation]);
+  }, [appSettings?.map_display_mode, isUserLocationMode, stableUserLocations.length, initialEquipment?.length, activeCategory, userLocation]);
 
   useMapMarkers({ 
     map: map.current, 
     mapLoaded, 
-    equipment: displayEquipment, 
-    userLocations: displayUserLocations,
+    equipment: displayData.equipment, 
+    userLocations: displayData.userLocations,
     isSingleView,
     activeCategory 
   });
 
-  // Show toast when no data is found - Fixed dependencies to prevent infinite loop
+  // Show toast when no data is found - Use primitive values to prevent infinite loop
   useEffect(() => {
     if (!mapLoaded || isSingleView || userLocationsLoading) return;
 
-    const hasDataToShow = isUserLocationMode 
-      ? displayUserLocations.length > 0 
-      : displayEquipment.length > 0;
-
-    console.log('🔍 Toast check - isUserLocationMode:', isUserLocationMode);
-    console.log('🔍 Toast check - hasDataToShow:', hasDataToShow); 
-    console.log('🔍 Toast check - userLocationsLoading:', userLocationsLoading);
+    console.log('🔍 Toast check - hasData:', displayData.hasData);
     console.log('🔍 Toast check - hasShownNoGearToast:', hasShownNoGearToast);
 
-    if (!hasDataToShow) {
+    if (!displayData.hasData) {
       if (!hasShownNoGearToast) {
         const message = isUserLocationMode
           ? activeCategory
@@ -144,15 +151,14 @@ const MapComponent = ({
     }
   }, [
     mapLoaded, 
-    displayEquipment.length, 
-    displayUserLocations.length, 
+    displayData.hasData, 
     userLocationsLoading, 
     isSingleView, 
     searchQuery, 
     activeCategory, 
     isUserLocationMode,
-    hasShownNoGearToast
-    // Removed toast from dependencies to prevent infinite loop
+    hasShownNoGearToast,
+    toast
   ]);
 
   useEffect(() => {
@@ -272,13 +278,13 @@ const MapComponent = ({
         variant: "destructive"
       });
     }
-  }, [token, isLoadingToken, userLocation]);
+  }, [token, isLoadingToken, userLocation, toast]);
 
   // Enhanced bounds fitting for user location scenarios
   useEffect(() => {
     if (!mapLoaded || !map.current) return;
 
-    const locations = isUserLocationMode ? displayUserLocations : displayEquipment;
+    const locations = isUserLocationMode ? displayData.userLocations : displayData.equipment;
     
     // When user location is provided, include it in bounds calculation
     if (userLocation && locations.length > 0) {
@@ -303,9 +309,10 @@ const MapComponent = ({
       // Use original bounds fitting when no user location
       fitMapBounds(map.current, locations, isSingleView);
     }
-  }, [mapLoaded, displayEquipment, displayUserLocations, isSingleView, isUserLocationMode, userLocation]);
+  }, [mapLoaded, displayData.equipment, displayData.userLocations, isSingleView, isUserLocationMode, userLocation]);
 
-  const handleTokenSubmit = (tokenInput: string) => {
+  // Memoize the token submit handler to prevent unnecessary re-renders
+  const handleTokenSubmit = useCallback((tokenInput: string) => {
     console.log('📝 Token submitted by user');
     localStorage.setItem('mapbox_token', tokenInput);
     setToken(tokenInput);
@@ -314,7 +321,7 @@ const MapComponent = ({
       title: "Token Applied",
       description: "Your Mapbox token has been saved. The map will now load.",
     });
-  };
+  }, [toast]);
 
   return (
     <div className="relative w-full h-full rounded-lg overflow-hidden">
