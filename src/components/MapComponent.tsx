@@ -98,6 +98,77 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
     activeCategory 
   });
 
+  // Function to handle geolocation manually
+  const triggerManualGeolocation = () => {
+    if (!map.current) return;
+
+    setIsLocating(true);
+    console.log('🌍 Manually triggering geolocation...');
+
+    if (!navigator.geolocation) {
+      setIsLocating(false);
+      toast({
+        title: "Geolocation Not Supported",
+        description: "Your browser doesn't support geolocation.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        console.log('✅ Geolocation successful:', position);
+        const { latitude, longitude } = position.coords;
+        
+        // Center the map on user's location
+        map.current?.flyTo({
+          center: [longitude, latitude],
+          zoom: 14,
+          duration: 2000
+        });
+
+        // Add a marker for user's location
+        new mapboxgl.Marker({ color: '#3b82f6' })
+          .setLngLat([longitude, latitude])
+          .setPopup(
+            new mapboxgl.Popup({ offset: 25 })
+              .setHTML('<div><h3 class="text-base font-medium">Your Location</h3></div>')
+          )
+          .addTo(map.current!);
+
+        setIsLocating(false);
+        toast({
+          title: "Location Found",
+          description: "Showing gear near your location",
+        });
+      },
+      (error) => {
+        console.error('❌ Geolocation error:', error);
+        setIsLocating(false);
+        
+        let errorMessage = "Unable to get your location. Please check your browser permissions.";
+        if (error.code === error.PERMISSION_DENIED) {
+          errorMessage = "Location access denied. Please enable location permissions and try again.";
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          errorMessage = "Location information is unavailable.";
+        } else if (error.code === error.TIMEOUT) {
+          errorMessage = "Location request timed out.";
+        }
+
+        toast({
+          title: "Location Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      }
+    );
+  };
+
   // Show toast when no data is found - Fixed logic
   useEffect(() => {
     if (!mapLoaded || isSingleView) return;
@@ -302,14 +373,13 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
 
   // Trigger geolocation when requested
   useEffect(() => {
-    if (triggerGeolocation && mapLoaded && geolocateControl.current) {
-      console.log('Auto-triggering geolocation...');
-      setIsLocating(true);
+    if (triggerGeolocation && mapLoaded) {
+      console.log('🎯 Auto-triggering geolocation...');
       
       // Small delay to ensure everything is ready
       setTimeout(() => {
-        geolocateControl.current?.trigger();
-      }, 500);
+        triggerManualGeolocation();
+      }, 1000);
     }
   }, [triggerGeolocation, mapLoaded]);
 
