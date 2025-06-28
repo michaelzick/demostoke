@@ -7,6 +7,7 @@ import EquipmentCard from "@/components/EquipmentCard";
 import FilterBar from "@/components/FilterBar";
 import { Equipment } from "@/types";
 import { useToast } from "@/hooks/use-toast";
+import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
 
 const ExplorePage = () => {
   const location = useLocation();
@@ -42,9 +43,12 @@ const ExplorePage = () => {
     setActiveCategory(categoryFromUrl);
   }, [location.search]);
 
+  // Get equipment with dynamic distances
+  const { equipment: equipmentWithDynamicDistances, isLocationBased } = useEquipmentWithDynamicDistance(allEquipment);
+
   // Apply filters, sorting, and search
   useEffect(() => {
-    let results = [...allEquipment];
+    let results = [...equipmentWithDynamicDistances];
     const searchQuery = searchParams.get("q")?.toLowerCase();
 
     // Apply search filter first
@@ -76,8 +80,15 @@ const ExplorePage = () => {
         break;
     }
 
+    console.log('Sorting by:', sortBy);
+    console.log('First 3 items after sorting:', results.slice(0, 3).map(item => ({ 
+      name: item.name, 
+      distance: item.distance,
+      category: item.category 
+    })));
+
     setFilteredEquipment(results);
-  }, [activeCategory, sortBy, searchParams, viewMode, allEquipment]);
+  }, [activeCategory, sortBy, searchParams, viewMode, equipmentWithDynamicDistances]);
 
   // Handle reset
   const handleReset = () => {
@@ -132,6 +143,11 @@ const ExplorePage = () => {
         </div>
       ) : (
         <div className="container px-4 md:px-6 py-8">
+          {isLocationBased && (
+            <div className="mb-4 text-sm text-muted-foreground">
+              Distances calculated from your location
+            </div>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEquipment.map((equipment) => (
               <EquipmentCard key={equipment.id} equipment={equipment} />

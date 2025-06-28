@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { searchEquipmentWithNLP, getEquipmentData } from "@/services/searchService";
@@ -10,6 +11,7 @@ import { Loader2, Search, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useMockData } from "@/hooks/useMockData";
+import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
 
 const SearchResultsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -61,10 +63,13 @@ const SearchResultsPage = () => {
     fetchResults();
   }, [query, toast]);
 
+  // Get equipment with dynamic distances
+  const { equipment: equipmentWithDynamicDistances, isLocationBased } = useEquipmentWithDynamicDistance(results);
+
   // Filter results by category if selected
   const filteredResults = activeCategory
-    ? results.filter(item => item.category === activeCategory)
-    : results;
+    ? equipmentWithDynamicDistances.filter(item => item.category === activeCategory)
+    : equipmentWithDynamicDistances;
 
   // Sort results based on selected option
   const sortedResults = [...filteredResults].sort((a, b) => {
@@ -84,6 +89,19 @@ const SearchResultsPage = () => {
         return 0;
     }
   });
+
+  // Add debug logging for distance sorting
+  useEffect(() => {
+    if (sortBy === "distance") {
+      console.log('Sorting by distance. First 5 items:', 
+        sortedResults.slice(0, 5).map(item => ({ 
+          name: item.name, 
+          distance: item.distance,
+          category: item.category 
+        }))
+      );
+    }
+  }, [sortBy, sortedResults]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -213,6 +231,11 @@ const SearchResultsPage = () => {
         </div>
       ) : (
         <div className="container px-4 md:px-6 py-8">
+          {isLocationBased && sortBy === "distance" && (
+            <div className="mb-4 text-sm text-muted-foreground">
+              Distances calculated from your location
+            </div>
+          )}
           {sortedResults.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {sortedResults.map((equipment) => (
