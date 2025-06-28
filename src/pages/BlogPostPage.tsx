@@ -11,10 +11,10 @@ const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string; }>();
   const post = blogPosts.find(p => p.id === slug);
   const [showBackToTop, setShowBackToTop] = useState(false);
-  
+
   // Fetch related gear based on the blog post title
-  const { data: relatedGear, isLoading: isLoadingRelatedGear } = useRelatedGear(post?.title || "");
-  
+  const { data: relatedGear, isLoading: isLoadingRelatedGear } = useRelatedGear(post?.tags || []);
+
   console.log("Post ID:", slug);
 
   useEffect(() => {

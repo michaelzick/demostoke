@@ -1,18 +1,17 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { Equipment } from "@/types";
 import { searchEquipmentWithNLP } from "@/services/searchService";
 
-export const useRelatedGear = (blogTitle: string) => {
+export const useRelatedGear = (tags: Array<string>) => {
   return useQuery({
-    queryKey: ['relatedGear', blogTitle],
+    queryKey: ['relatedGear', tags],
     queryFn: async (): Promise<Equipment[]> => {
-      if (!blogTitle) return [];
+      if (!tags) return [];
 
-      console.log(`🔍 Searching for gear related to blog post: "${blogTitle}"`);
+      console.log(`🔍 Searching for gear related to blog post: "${tags}"`);
 
       // Extract key terms from the blog title for better search
-      const searchQuery = extractSearchTerms(blogTitle);
+      const searchQuery = extractSearchTerms(tags.join(" "));
       console.log(`🔍 Extracted search terms: "${searchQuery}"`);
 
       try {
@@ -48,13 +47,13 @@ export const useRelatedGear = (blogTitle: string) => {
         return [];
       }
     },
-    enabled: !!blogTitle,
+    enabled: !!tags,
     staleTime: 1000 * 60 * 10, // Cache for 10 minutes
   });
 };
 
-// Extract meaningful search terms from blog title
-const extractSearchTerms = (title: string): string => {
+// Extract meaningful search terms from tags
+const extractSearchTerms = (tag: string): string => {
   // Convert to lowercase and remove common words
   const commonWords = [
     'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by',
@@ -63,11 +62,11 @@ const extractSearchTerms = (title: string): string => {
   ];
 
   // Split title into words and filter out common words
-  const words = title.toLowerCase()
-    .replace(/[^\w\s]/g, ' ') // Replace punctuation with spaces
+  const words = tag.toLowerCase()
+    .replace(/[^\w\s-]/g, ' ') // Replace punctuation except hyphens with spaces
     .split(/\s+/)
     .filter(word => word.length > 2 && !commonWords.includes(word));
 
   // Join the meaningful words back together
-  return words.slice(0, 5).join(' '); // Limit to first 5 meaningful words
+  return words.join(' '); // Limit to first 5 meaningful words
 };
