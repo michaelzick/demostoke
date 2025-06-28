@@ -9,10 +9,10 @@ interface LocationHandlingParams {
 interface LocationHandlingResult {
   lat: number;
   lng: number;
-} | null;
+}
 
 export const useEditGearLocationHandling = () => {
-  const handleLocationUpdate = async ({ zipCode, currentZip }: LocationHandlingParams): Promise<LocationHandlingResult> => {
+  const handleLocationUpdate = async ({ zipCode, currentZip }: LocationHandlingParams): Promise<LocationHandlingResult | null> => {
     // Get coordinates from zip code (only if zip code changed)
     let coordinates = null;
     if (zipCode !== currentZip) {
