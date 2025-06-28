@@ -1,4 +1,3 @@
-
 import { useRef, useEffect, useState } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useToast } from '@/hooks/use-toast';
@@ -225,7 +224,8 @@ const MapComponent = ({
     try {
       // Use user location if available, otherwise default to Los Angeles
       const centerCoords = userLocation ? [userLocation.lng, userLocation.lat] : [-118.2437, 34.0522];
-      const zoomLevel = userLocation ? 13 : 11;
+      // Use wider zoom (10) when user location is provided to show more area
+      const zoomLevel = userLocation ? 10 : 11;
 
       map.current = initializeMap(mapContainer.current, token, centerCoords as [number, number], zoomLevel);
 
@@ -265,12 +265,35 @@ const MapComponent = ({
     }
   }, [token, toast, isLoadingToken, userLocation]);
 
-  // Fit bounds when data changes, but skip if we have user location (already centered)
+  // Enhanced bounds fitting for user location scenarios
   useEffect(() => {
-    if (!mapLoaded || !map.current || userLocation) return;
+    if (!mapLoaded || !map.current) return;
 
     const locations = isUserLocationMode ? displayUserLocations : displayEquipment;
-    fitMapBounds(map.current, locations, isSingleView);
+    
+    // When user location is provided, include it in bounds calculation
+    if (userLocation && locations.length > 0) {
+      const bounds = new mapboxgl.LngLatBounds();
+      
+      // Add user location to bounds
+      bounds.extend([userLocation.lng, userLocation.lat]);
+      
+      // Add all equipment/user locations to bounds
+      locations.forEach(item => {
+        if (item.location?.lat && item.location?.lng) {
+          bounds.extend([item.location.lng, item.location.lat]);
+        }
+      });
+      
+      // Fit bounds with appropriate padding and max zoom
+      map.current.fitBounds(bounds, { 
+        padding: { top: 50, bottom: 50, left: 50, right: 50 },
+        maxZoom: 12 // Prevent zooming in too close
+      });
+    } else if (!userLocation) {
+      // Use original bounds fitting when no user location
+      fitMapBounds(map.current, locations, isSingleView);
+    }
   }, [mapLoaded, displayEquipment, displayUserLocations, isSingleView, isUserLocationMode, userLocation]);
 
   const handleTokenSubmit = (tokenInput: string) => {

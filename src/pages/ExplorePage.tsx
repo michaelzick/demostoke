@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useLocation, useSearchParams, useMatch } from "react-router-dom";
 import { getEquipmentData } from "@/services/searchService";
@@ -6,6 +7,7 @@ import EquipmentCard from "@/components/EquipmentCard";
 import FilterBar from "@/components/FilterBar";
 import { Equipment } from "@/types";
 import { useToast } from "@/hooks/use-toast";
+import { calculateDistance, isValidCoordinate } from "@/utils/distanceCalculation";
 
 const ExplorePage = () => {
   const location = useLocation();
@@ -33,6 +35,9 @@ const ExplorePage = () => {
     return null;
   })();
 
+  // Configure search radius based on user location (50 miles for location-based searches)
+  const SEARCH_RADIUS_MILES = 50;
+
   // Load equipment data using global app settings
   useEffect(() => {
     const loadEquipment = async () => {
@@ -55,12 +60,44 @@ const ExplorePage = () => {
     setActiveCategory(categoryFromUrl);
   }, [location.search]);
 
-  // Apply filters, sorting, and search
+  // Apply filters, sorting, and search with radius-based filtering
   useEffect(() => {
     let results = [...allEquipment];
     const searchQuery = searchParams.get("q")?.toLowerCase();
 
-    // Apply search filter first
+    // Apply radius-based filtering when user location is available
+    if (userLocationFromUrl && isValidCoordinate(userLocationFromUrl.lat, userLocationFromUrl.lng)) {
+      results = results.filter(item => {
+        if (!isValidCoordinate(item.location?.lat, item.location?.lng)) {
+          return false;
+        }
+        
+        const distance = calculateDistance(
+          userLocationFromUrl.lat,
+          userLocationFromUrl.lng,
+          item.location!.lat!,
+          item.location!.lng!
+        );
+        
+        return distance <= SEARCH_RADIUS_MILES;
+      });
+
+      // Calculate and update distances for equipment within radius
+      results = results.map(item => {
+        if (isValidCoordinate(item.location?.lat, item.location?.lng)) {
+          const distance = calculateDistance(
+            userLocationFromUrl.lat,
+            userLocationFromUrl.lng,
+            item.location!.lat!,
+            item.location!.lng!
+          );
+          return { ...item, distance };
+        }
+        return item;
+      });
+    }
+
+    // Apply search filter
     if (searchQuery) {
       results = results.filter(item =>
         item.name.toLowerCase().includes(searchQuery) ||
@@ -74,10 +111,16 @@ const ExplorePage = () => {
       results = results.filter(item => item.category === activeCategory);
     }
 
-    // Apply sorting
+    // Apply sorting with priority for user location
     switch (sortBy) {
       case "distance":
-        results.sort((a, b) => a.distance - b.distance);
+        if (userLocationFromUrl) {
+          // Sort by calculated distance when user location is available
+          results.sort((a, b) => (a.distance || 0) - (b.distance || 0));
+        } else {
+          // Fall back to original distance sorting
+          results.sort((a, b) => a.distance - b.distance);
+        }
         break;
       case "price_asc":
         results.sort((a, b) => a.price_per_day - b.price_per_day);
@@ -90,7 +133,7 @@ const ExplorePage = () => {
     }
 
     setFilteredEquipment(results);
-  }, [activeCategory, sortBy, searchParams, viewMode, allEquipment]);
+  }, [activeCategory, sortBy, searchParams, viewMode, allEquipment, userLocationFromUrl]);
 
   // Handle reset
   const handleReset = () => {
@@ -155,7 +198,10 @@ const ExplorePage = () => {
             <div className="text-center py-12">
               <h3 className="text-xl font-medium mb-2">No equipment found</h3>
               <p className="text-muted-foreground">
-                Try changing your filters or explore a different category.
+                {userLocationFromUrl 
+                  ? `No equipment found within ${SEARCH_RADIUS_MILES} miles of your location. Try expanding your search or changing filters.`
+                  : "Try changing your filters or explore a different category."
+                }
               </p>
             </div>
           )}

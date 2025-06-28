@@ -1,3 +1,4 @@
+
 import mapboxgl from 'mapbox-gl';
 
 export const getCategoryColor = (category: string): string => {
@@ -166,7 +167,20 @@ export const fitMapBounds = (map: mapboxgl.Map, locations: Array<{ location: { l
         bounds.extend([item.location.lng, item.location.lat]);
       }
     });
-    map.fitBounds(bounds, { padding: 50, maxZoom: isSingleView ? 15 : 12 });
+    
+    // Enhanced bounds fitting with better padding and zoom controls
+    const padding = isSingleView ? 50 : 80;
+    const maxZoom = isSingleView ? 15 : 13;
+    
+    map.fitBounds(bounds, { 
+      padding: {
+        top: padding,
+        bottom: padding,
+        left: padding,
+        right: padding
+      },
+      maxZoom
+    });
   } catch (err) {
     console.error('Error fitting bounds:', err);
   }
