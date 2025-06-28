@@ -1,59 +1,43 @@
 
 import { BlogPost } from './types';
 
-export const storiesThatStokePosts: BlogPost[] = [
+export const storiesThatStokePosts: Omit<BlogPost, 'author' | 'authorId'>[] = [
   {
-    id: "my-surfboard-evolution",
-    title: "My Surfboard Evolution: From Foamie to Fish to Forever Stoke",
-    excerpt: "A personal journey through the surfboards that shaped my surfing—from 12-foot foamies to nimble fish shapes—and why the stoke still runs deeper than ever.",
-    content: `I'll never forget the first time I caught a wave. It was at Little Dume in Malibu, and my coworker started offering surf lessons. On a 12-foot Wavestorm, I felt like I was flying over jagged rocks decorated with kelp and barnacles that looked like artwork. I knew that if I fell there'd be hell to pay, but I didn't. Instead, I got addicted. I knew then that this would be a feeling I would chase again and again.
+    id: "from-foamie-to-fresh-powder",
+    title: "From Foamie To Fresh Powder: How I Became Demo-Obsessed",
+    excerpt: "A personal journey from Wavestorm wipeouts to dialed-in snowboards—and why I won't buy without trying ever again.",
+    content: `If I was bitten by the surfing bug, it was by a 12-foot monster from Costco. The classic beginner special—a blue and white Wavestorm foamie. But my first session wasn't in Venice or Santa Monica. It was Little Dume, north of Malibu, over jagged rocks so shallow that wiping out meant stitches.
 
-**Starting on the Giant Foamie**
+Little Dume is just north of Malibu, the mellower sibling to Point Dume's notorious crowds and punchy swell. Thankfully for me, it was small that day.
 
-Like most new surfers, I started with the big blue Costco special. The 12-foot Wavestorm was ridiculously buoyant, almost like cheating for wave-catching. But you know what? I loved it. It let me focus on the fundamentals: paddling with purpose, popping up cleanly, trimming down the line.  
+After a few more Wavestorm sessions, I was ready for my own board. I found a cheap epoxy 9'0 online. Knowing nothing, I took it to Dockweiler and immediately dinged it. I rode a crappy little calf slapper straight into shore and slammed it onto some rocks. A garbage ding repair later, I was back in the water.
 
-It was humbling and goofy in equal measure. There was no pretending you were Kelly Slater on that thing—but you *could* learn how to read a wave, move with it, and respect its power.
+That's how it went. From an epoxy longboard to a 7'6 "funboard, I bought cheap boards that I didn't mind thrashing. The same goes for the 6'0 fish I picked up later, built with regular PU and ultra-thin glassing. The kind that cracks if you even look at it wrong.
 
-**Buying My First Epoxy Longboard**
+From then on, PU was my jam. Epoxy's fine if it's done right—Firewire nails it—but I just like the feel of polyurethane more.
 
-Eventually I felt ready for my own board. I picked up an epoxy longboard—a classic shape, light and durable (in theory). I was so damn proud of that thing.  
+Over the years, the boards got shorter. I picked up some good ones—Channel Islands, for example—but I also grabbed boards way too small for how I surf or the waves I ride.
 
-I still remember the day I dinged it. The surf was tiny. Like, *ankle slappers*. I got overeager trying to squeeze turns where none existed, and ran it straight into a rock near shore. I was crushed for about 10 minutes, then laughed. Because that's surfing: you're always one bad decision away from humility.
+I landed some keepers like the CI Neckbeard 1.0 and the Chilli Churro. I've heard it, lived it, and now I'll say it: there's no substitute for trying before buying. Demo days are clutch, and some brands do tours or partner with shops, so you can actually test the thing before dropping cash.
 
-That board was perfect for learning cross-steps, nose rides, and gaining confidence in crowded lineups. It taught me patience—waiting for the right wave, timing takeoffs, accepting wipeouts without ego.
+Demo gear is still way too hard to find. That's part of why I started this site. I want people to feel that certainty—the board is right, not because someone sold it to you, but because you knew it under your feet.
 
-**Down to a Fish Shape**
+Too many people buy gear because someone told them it would work, they read about it online, or worse—because of the name on it. I've done it plenty, which is why my own success ratio is about 50% when buying gear I didn't demo beforehand.
 
-After some time on the longboard, I wanted something looser. Enter the fish. Wide, thick, with that split tail that looked so weird and cool at the same time.  
+Now that I've started snowboarding, the same lessons apply. I chose my first board after riding it at Palisades Tahoe in spring 2024: the Capita DOA. It felt right immediately. Easy enough for my abilities but with room to grow. Not perfect for every condition—deep powder needs something else—but it's excellent for all-mountain riding.
 
-Riding a fish felt like unlocking cheat codes. Suddenly I could glide through mushy sections, generate speed with barely a pump, and cut tighter lines on small days. It had just enough volume to forgive my mistakes, but it demanded better footwork and reading the wave face.
+You ride powder boards on deep days, stiff boards on ice, something else for the park. The Capita DOA is a killer for most circumstances, but not everything. Of course, I'm still new to snowboarding, and there are ways I could tweak my bindings, but having the right board for the right conditions is the way to go.
 
-It was the board that made me fall in love with *playing* on a wave rather than just riding it.
+When I'm ready for my next snowboard, surfboard, mountain bike—whatever—I'll always try to demo it first.
 
-**Shortboards and Grovelers**
+From that first pop-up on a Wavestorm to taking waves all the way to the sand at Pipeline, the boards I've ridden have shaped my experience immensely. Choosing the right gear matters and is often the difference between a stoked session and one where you wonder where your abilities went.
 
-Of course, it didn't stop there. Once the fish felt comfortable, I started looking at shortboards and grovelers.  
-
-Shortboards punished bad technique immediately, but they also opened up new maneuvers: sharper turns, snaps under the lip, floaters. Grovelers let me surf gutless summer slop without feeling like I was paddling a door.
-
-Each new shape forced me to refine something. Paddling efficiency. Pop-up speed. Weight distribution. Reading the lineup. Understanding when to commit and when to bail.
-
-**Why the Stoke Never Left**
-
-Even as I've added snowboarding to my list of main activities—chasing powder lines and carving steeps—the feeling of surfing remains unmatched. It's my most-loved activity for good reason.  
-
-Surfing gives me mental clarity like nothing else. You can't think about your inbox, your rent, or your anxieties when you're paddling for your life or gliding down a glassy face.  
-
-Physically, it's humbling and rewarding: cardio, strength, balance, timing. Emotionally, it's a reset button. Even the worst session reminds me that I'm part of something bigger and older than myself.
-
-And that first wave at Little Dume? I'm still chasing it. Every board, every session, every wipeout and triumph is part of that same lifelong pursuit: feeling connected, alive, and endlessly stoked.`,
-    category: "stories that stoke",
+When you get that gear that feels like it was made for you, the whole experience changes. That's what it means to ride what makes you feel alive.`,
+    category: "stories-that-stoke",
     publishedAt: "2025-06-27",
-    readTime: 7,
+    readTime: 2.5,
     heroImage: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
     thumbnail: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80",
-    tags: ["surfing", "personal story", "surfboards", "progression", "stoke"],
-    author: 'Michael Zick',
-    authorId: 'michael-zick',
+    tags: ["surfing", "snowboarding", "demo gear", "personal story", "stories that stoke"],
   }
 ];
