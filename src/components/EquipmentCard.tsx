@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +7,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { getCategoryDisplayName } from "@/helpers";
 import { Equipment } from "@/types";
 import { useAuth } from "@/contexts/auth";
+import DistanceDisplay from "./DistanceDisplay";
 
 interface EquipmentCardProps {
   equipment: Equipment;
@@ -89,16 +89,6 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
           {getCategoryDisplayName(equipment.category)}
         </Badge>
 
-        {/* Shop or Private Party indicator */}
-        {/* {isShop && (
-          <Badge
-            className="absolute top-12 left-2 bg-shop text-shop-foreground hover:bg-shop/90 z-10"
-            variant="default"
-          >
-            <StoreIcon className="h-3 w-3 mr-1" />
-            Shop
-          </Badge>
-        )} */}
         {isPrivateParty && (
           <Badge
             className="absolute top-12 left-2 bg-green-600 hover:bg-green-700 z-10"
@@ -125,7 +115,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
             <p className="text-xs text-muted-foreground">{equipment.location.zip}</p>
           </div>
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <span>{equipment.distance}mi away</span>
+            <DistanceDisplay equipment={equipment} showUnit={false} />
           </div>
         </div>
         {/* Owner info with link */}

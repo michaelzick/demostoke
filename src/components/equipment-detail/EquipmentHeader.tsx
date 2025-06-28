@@ -6,6 +6,7 @@ import { Equipment } from "@/types";
 import PriceDisplay from "./PriceDisplay";
 import { useAuth } from "@/helpers";
 import { useNavigate } from "react-router-dom";
+import DistanceDisplay from "@/components/DistanceDisplay";
 
 interface EquipmentHeaderProps {
   equipment: Equipment;
@@ -58,7 +59,7 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
           <MapPin className="h-4 w-4 mr-1" />
           <span>{equipment.location.zip}</span>
           <span className="mx-2">•</span>
-          <span>{equipment.distance} miles away</span>
+          <DistanceDisplay equipment={equipment} />
         </div>
       </div>
       <PriceDisplay equipment={equipment} equipmentHeader />
