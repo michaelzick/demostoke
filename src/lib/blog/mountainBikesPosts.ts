@@ -93,7 +93,7 @@ Remember, mountain biking is about having fun and enjoying the outdoors. Take yo
     publishedAt: '2024-01-15',
     readTime: 8,
     category: 'mountain-bikes',
-    tags: ['beginner', 'guide', 'technique', 'safety'],
+    tags: ['beginner', 'guide', 'technique', 'safety', 'mountain bikes'],
     heroImage: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1200&q=80',
     thumbnail: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=800&q=80'
   },
@@ -218,7 +218,7 @@ A well-maintained mountain bike is a reliable companion for countless adventures
     publishedAt: '2024-01-10',
     readTime: 10,
     category: 'mountain-bikes',
-    tags: ['maintenance', 'repair', 'tools', 'care'],
+    tags: ['maintenance', 'repair', 'tools', 'care', 'mountain bikes'],
     heroImage: 'https://images.unsplash.com/photo-1534150034764-046bf225d3fa?auto=format&fit=crop&w=1200&q=80',
     thumbnail: 'https://images.unsplash.com/photo-1534150034764-046bf225d3fa?auto=format&fit=crop&w=800&q=80'
   },
@@ -343,7 +343,7 @@ Los Angeles mountain biking offers something for every rider. From beginner-frie
     publishedAt: '2024-01-05',
     readTime: 12,
     category: 'mountain-bikes',
-    tags: ['trails', 'los angeles', 'guide', 'locations'],
+    tags: ['trails', 'los angeles', 'guide', 'locations', 'mountain bikes'],
     heroImage: 'https://images.unsplash.com/photo-1615729947596-a598e5de0ab3?auto=format&fit=crop&w=1200&q=80',
     thumbnail: 'https://images.unsplash.com/photo-1615729947596-a598e5de0ab3?auto=format&fit=crop&w=800&q=80'
   }

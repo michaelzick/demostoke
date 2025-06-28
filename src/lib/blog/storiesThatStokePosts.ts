@@ -38,6 +38,6 @@ When you get that gear that feels like it was made for you, the whole experience
     readTime: 2.5,
     heroImage: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
     thumbnail: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80",
-    tags: ["surfing", "snowboarding", "demo gear", "personal story", "stories that stoke"],
+    tags: ["surfing", "snowboarding", "demo gear", "stories that stoke", "soft-top"],
   }
 ];
