@@ -23,7 +23,9 @@ const MapLegend = ({ activeCategory }: MapLegendProps) => {
   const isUserLocationMode = appSettings?.map_display_mode === 'user_locations';
 
   // Show gear legend when a specific category is selected, profile legend otherwise
-  const showGearLegend = isUserLocationMode && activeCategory;
+  // If not in user location mode, always show gear legend.
+  // When in user location mode, show gear legend only when a category filter is active.
+  const showGearLegend = !isUserLocationMode || !!activeCategory;
   const legendItems = showGearLegend ? gearLegendItems : profileLegendItems;
 
   return (

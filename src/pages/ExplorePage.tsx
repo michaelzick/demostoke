@@ -122,6 +122,8 @@ const ExplorePage = () => {
                         lat: item.location.lat,
                         lng: item.location.lng,
                       },
+                      ownerId: item.owner.id,
+                      ownerName: item.owner.name,
                     }))
                 : undefined
             }
