@@ -176,8 +176,8 @@ Start with a shape that's forgiving and appropriate for your level, then experim
     category: "surfboards",
     publishedAt: "2025-01-16",
     readTime: 11,
-    heroImage: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=1200&q=80",
-    thumbnail: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=400&q=80",
+    heroImage: "https://lushpalm.com/wp-content/uploads/2018/07/beginner-surfboards-13.jpg",
+    thumbnail: "https://lushpalm.com/wp-content/uploads/2018/07/beginner-surfboards-13.jpg",
     tags: ["surfboards", "shapes", "buying guide", "design", "performance"]
   },
   {

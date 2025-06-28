@@ -17,7 +17,7 @@ const RelatedGear = ({ relatedGear }: RelatedGearProps) => {
   }
 
   return (
-    <div className="border-t pt-8">
+    <div className="pt-8">
       <h4 className="text-lg font-semibold mb-4">Related Gear</h4>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {relatedGear.map((item) => {
