@@ -78,7 +78,7 @@ const HeroSection = () => {
           </h2>
           <div className="flex flex-wrap gap-4 justify-center mb-8">
             <Button size="lg" asChild className='bg-primary'>
-              <Link to="/explore">Find Gear Near Me</Link>
+              <Link to="/explore">Show Me The Gear</Link>
             </Button>
             <Button
               size="lg"

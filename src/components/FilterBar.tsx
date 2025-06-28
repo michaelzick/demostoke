@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -106,7 +105,7 @@ const FilterBar = ({
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" disabled={viewMode === "map"}>
                   Sort: {sortBy === "distance" ? "Nearest" : sortBy === "price_asc" ? "Price: Low to High" : "Price: High to Low"}
                 </Button>
               </DropdownMenuTrigger>
