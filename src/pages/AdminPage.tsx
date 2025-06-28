@@ -4,6 +4,7 @@ import UserManagementSection from "@/components/admin/UserManagementSection";
 import ManualUserCreationSection from "@/components/admin/ManualUserCreationSection";
 import VideoUploadSection from "@/components/admin/VideoUploadSection";
 import DataDisplaySettings from "@/components/admin/DataDisplaySettings";
+import GeocodingRecoverySection from "@/components/admin/GeocodingRecoverySection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -35,10 +36,11 @@ const AdminPage = () => {
       </div>
 
       <Tabs defaultValue="users" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="users">User Management</TabsTrigger>
           <TabsTrigger value="content">Content</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="tools">Tools</TabsTrigger>
         </TabsList>
 
         <TabsContent value="users" className="space-y-6">
@@ -52,6 +54,10 @@ const AdminPage = () => {
 
         <TabsContent value="settings" className="space-y-6">
           <DataDisplaySettings />
+        </TabsContent>
+
+        <TabsContent value="tools" className="space-y-6">
+          <GeocodingRecoverySection />
         </TabsContent>
       </Tabs>
     </div>

@@ -1,3 +1,4 @@
+
 import { useRef, useEffect, useState } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useToast } from '@/hooks/use-toast';
@@ -96,11 +97,14 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
   // Show toast when no data is found (only once per search/filter change)
   useEffect(() => {
     if (mapLoaded && !isSingleView) {
-      const hasData = isUserLocationMode 
-        ? displayUserLocations.length > 0 
-        : displayEquipment.length > 0;
+      // Fix the logic: check if we have data to display based on the current mode
+      const hasEquipmentData = !isUserLocationMode && displayEquipment.length > 0;
+      const hasUserLocationData = isUserLocationMode && displayUserLocations.length > 0;
+      const hasAnyData = hasEquipmentData || hasUserLocationData;
 
-      if (!hasData && !userLocationsLoading) {
+      console.log('🔍 Toast check - hasEquipmentData:', hasEquipmentData, 'hasUserLocationData:', hasUserLocationData, 'hasAnyData:', hasAnyData);
+
+      if (!hasAnyData && !userLocationsLoading) {
         if (!hasShownNoGearToast) {
           const message = isUserLocationMode
             ? activeCategory
