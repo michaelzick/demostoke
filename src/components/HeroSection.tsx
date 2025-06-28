@@ -40,10 +40,6 @@ const HeroSection = () => {
     }
   };
 
-  const handleFindGearNearMe = () => {
-    navigate("/explore?autoLocate=true");
-  };
-
   return (
     <section className="relative h-[80vh] overflow-hidden">
       {backgrounds.map((bg, index) => (
@@ -81,8 +77,8 @@ const HeroSection = () => {
             Ride what makes you feel alive.
           </h2>
           <div className="flex flex-wrap gap-4 justify-center mb-8">
-            <Button size="lg" className='bg-primary' onClick={handleFindGearNearMe}>
-              Find Gear Near Me
+            <Button size="lg" asChild className='bg-primary'>
+              <Link to="/explore">Find Gear Near Me</Link>
             </Button>
             <Button
               size="lg"

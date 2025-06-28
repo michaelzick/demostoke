@@ -140,6 +140,12 @@ export const initializeMap = (container: HTMLDivElement, token: string): mapboxg
   });
 
   map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+  map.addControl(new mapboxgl.GeolocateControl({
+    positionOptions: {
+      enableHighAccuracy: true
+    },
+    trackUserLocation: true
+  }));
 
   return map;
 };
