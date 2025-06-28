@@ -6,9 +6,9 @@ export const storiesThatStokePosts: Omit<BlogPost, 'author' | 'authorId'>[] = [
     id: "from-foamie-to-fresh-powder",
     title: "From Foamie To Fresh Powder: How I Became Demo-Obsessed",
     excerpt: "A personal journey from Wavestorm wipeouts to dialed-in snowboards—and why I won't buy without trying ever again.",
-    content: `If I was bitten by the surfing bug, it was by a 12-foot monster from Costco. The classic beginner special—a blue and white Wavestorm foamie. But my first session wasn't in Venice or Santa Monica. It was Little Dume, north of Malibu, over jagged rocks so shallow that wiping out meant stitches.
+    content: `If I was bitten by the surfing bug, it was by a 12-foot monster from Costco. The classic beginner special—a blue and white Wavestorm foamie. But my first session wasn't in Venice or Santa Monica. It was at Little Dume, north of Malibu, over jagged rocks so shallow that wiping out meant stitches.
 
-Little Dume is just north of Malibu, the mellower sibling to Point Dume's notorious crowds and punchy swell. Thankfully for me, it was small that day.
+Little Dume is the mellower sibling of Point Dume, with its notorious crowds and punchy swell. Thankfully for me, it was small that day.
 
 After a few more Wavestorm sessions, I was ready for my own board. I found a cheap epoxy 9'0 online. Knowing nothing, I took it to Dockweiler and immediately dinged it. I rode a crappy little calf slapper straight into shore and slammed it onto some rocks. A garbage ding repair later, I was back in the water.
 
