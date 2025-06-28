@@ -11,7 +11,7 @@ import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamic
 
 const ExplorePage = () => {
   const location = useLocation();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
   const isSearchRoute = !!useMatch("/search");
 
@@ -20,6 +20,9 @@ const ExplorePage = () => {
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
   const [filteredEquipment, setFilteredEquipment] = useState<Equipment[]>([]);
   const [allEquipment, setAllEquipment] = useState<Equipment[]>([]);
+
+  // Check for auto-locate parameter
+  const autoLocate = searchParams.get("autoLocate") === "true";
 
   // Load equipment data using global app settings
   useEffect(() => {
@@ -35,6 +38,17 @@ const ExplorePage = () => {
 
     loadEquipment();
   }, []);
+
+  // Handle auto-locate parameter
+  useEffect(() => {
+    if (autoLocate) {
+      setViewMode("map");
+      // Clean up the URL parameter after processing
+      const newSearchParams = new URLSearchParams(searchParams);
+      newSearchParams.delete("autoLocate");
+      setSearchParams(newSearchParams, { replace: true });
+    }
+  }, [autoLocate, searchParams, setSearchParams]);
 
   // Update active category when URL changes
   useEffect(() => {
@@ -120,6 +134,7 @@ const ExplorePage = () => {
         <div className="h-[calc(100vh-12rem)]">
           <MapComponent
             activeCategory={activeCategory}
+            triggerGeolocation={autoLocate}
             initialEquipment={
               filteredEquipment.length > 0
                 ? filteredEquipment

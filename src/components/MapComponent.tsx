@@ -9,6 +9,7 @@ import { useUserLocations } from '@/hooks/useUserLocations';
 import MapboxTokenForm from './map/MapboxTokenForm';
 import MapLegend from './map/MapLegend';
 import { supabase } from '@/integrations/supabase/client';
+import mapboxgl from 'mapbox-gl';
 
 interface MapEquipment {
   id: string;
@@ -41,12 +42,15 @@ interface MapComponentProps {
   userLocations?: UserLocation[];
   isSingleView?: boolean;
   searchQuery?: string;
+  triggerGeolocation?: boolean;
 }
 
-const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUserLocations, isSingleView = false, searchQuery }: MapComponentProps) => {
+const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUserLocations, isSingleView = false, searchQuery, triggerGeolocation = false }: MapComponentProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
+  const geolocateControl = useRef<mapboxgl.GeolocateControl | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
   const { toast } = useToast();
 
   const [token, setToken] = useState<string | null>(null);
@@ -229,6 +233,37 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
     try {
       map.current = initializeMap(mapContainer.current, token);
 
+      // Create and add geolocation control
+      geolocateControl.current = new mapboxgl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true
+        },
+        trackUserLocation: true,
+        showAccuracyCircle: false
+      });
+
+      map.current.addControl(geolocateControl.current);
+
+      // Set up geolocation event handlers
+      geolocateControl.current.on('geolocate', (e) => {
+        console.log('Geolocation successful:', e);
+        setIsLocating(false);
+        toast({
+          title: "Location Found",
+          description: "Showing gear near your location",
+        });
+      });
+
+      geolocateControl.current.on('error', (e) => {
+        console.error('Geolocation error:', e);
+        setIsLocating(false);
+        toast({
+          title: "Location Error",
+          description: "Unable to get your location. Please check your browser permissions.",
+          variant: "destructive",
+        });
+      });
+
       map.current.on('load', () => {
         console.log('Map loaded successfully');
         setMapLoaded(true);
@@ -264,6 +299,19 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
       });
     }
   }, [token, toast, isLoadingToken]);
+
+  // Trigger geolocation when requested
+  useEffect(() => {
+    if (triggerGeolocation && mapLoaded && geolocateControl.current) {
+      console.log('Auto-triggering geolocation...');
+      setIsLocating(true);
+      
+      // Small delay to ensure everything is ready
+      setTimeout(() => {
+        geolocateControl.current?.trigger();
+      }, 500);
+    }
+  }, [triggerGeolocation, mapLoaded]);
 
   // Fit bounds when data changes
   useEffect(() => {
@@ -303,6 +351,14 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
               <div className="flex items-center gap-2 text-sm">
                 <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-400" />
                 Loading user locations...
+              </div>
+            </div>
+          )}
+          {isLocating && (
+            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-md">
+              <div className="flex items-center gap-2 text-sm">
+                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-primary" />
+                Finding your location...
               </div>
             </div>
           )}
