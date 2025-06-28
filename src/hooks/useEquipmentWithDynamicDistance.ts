@@ -3,8 +3,12 @@ import { useMemo } from 'react';
 import { useGeolocation } from './useGeolocation';
 import { calculateDistance, isValidCoordinate } from '@/utils/distanceCalculation';
 import { Equipment } from '@/types';
+import { AISearchResult } from '@/services/equipment/aiSearchService';
 
-export const useEquipmentWithDynamicDistance = (equipment: Equipment[]) => {
+// Create a union type that can handle both Equipment and AISearchResult
+type ProcessableEquipment = Equipment | AISearchResult;
+
+export const useEquipmentWithDynamicDistance = <T extends ProcessableEquipment>(equipment: T[]) => {
   const { latitude, longitude, loading, permissionDenied } = useGeolocation();
 
   const equipmentWithUpdatedDistances = useMemo(() => {

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { searchEquipmentWithNLP, getEquipmentData } from "@/services/searchService";
@@ -33,7 +32,13 @@ const SearchResultsPage = () => {
         // If no query, get all equipment based on global app setting
         try {
           const equipmentResults = await getEquipmentData();
-          setResults(equipmentResults);
+          // Convert Equipment[] to AISearchResult[] for consistency
+          const aiSearchResults: AISearchResult[] = equipmentResults.map(item => ({
+            ...item,
+            ai_relevance_score: undefined,
+            ai_reasoning: undefined
+          }));
+          setResults(aiSearchResults);
           setIsAISearch(false);
         } catch (error) {
           console.error("Failed to load equipment:", error);
@@ -133,7 +138,7 @@ const SearchResultsPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Convert Equipment[] to MapEquipment[] for the map component
+  // Convert AISearchResult[] to MapEquipment[] for the map component
   const mapEquipment = sortedResults
     .filter(item => item.location && typeof item.location.lat === 'number' && typeof item.location.lng === 'number')
     .map(item => ({
