@@ -1,4 +1,3 @@
-
 import mapboxgl from 'mapbox-gl';
 
 export const getCategoryColor = (category: string): string => {
@@ -10,7 +9,7 @@ export const getCategoryColor = (category: string): string => {
     case 'surfboards':
       return 'bg-sky-500';
     case 'mountain-bikes':
-    case 'mountain-bike':  // Handle both variations
+    case 'mountain-bike':
       return 'bg-violet-400';
     default:
       return 'bg-black';
@@ -66,14 +65,12 @@ export const createUserLocationMarkerElement = (role: string, activeCategory?: s
 
   const markerIcon = document.createElement('div');
 
-  // Use category color if active category is selected, otherwise use role color
   const backgroundColor = activeCategory ? getCategoryColor(activeCategory) : getUserRoleColor(role);
   markerIcon.className = `p-1 rounded-full ${backgroundColor}`;
 
   const icon = document.createElement('div');
   icon.className = role.toLowerCase() === 'private-party' ? 'text-white' : 'text-black';
 
-  // Different icons for shops vs private parties
   if (role === 'private-party') {
     icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
   } else {
@@ -129,14 +126,19 @@ export const createUserLocationPopupContent = (user: { id: string; name: string;
   `;
 };
 
-export const initializeMap = (container: HTMLDivElement, token: string): mapboxgl.Map => {
+export const initializeMap = (
+  container: HTMLDivElement, 
+  token: string, 
+  center: [number, number] = [-118.2437, 34.0522], 
+  zoom: number = 11
+): mapboxgl.Map => {
   mapboxgl.accessToken = token;
 
   const map = new mapboxgl.Map({
     container,
     style: 'mapbox://styles/mapbox/streets-v12',
-    center: [-118.2437, 34.0522], // Los Angeles coordinates
-    zoom: 11
+    center,
+    zoom
   });
 
   map.addControl(new mapboxgl.NavigationControl(), 'top-right');

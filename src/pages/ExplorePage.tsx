@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useLocation, useSearchParams, useMatch } from "react-router-dom";
 import { getEquipmentData } from "@/services/searchService";
@@ -19,6 +18,20 @@ const ExplorePage = () => {
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
   const [filteredEquipment, setFilteredEquipment] = useState<Equipment[]>([]);
   const [allEquipment, setAllEquipment] = useState<Equipment[]>([]);
+
+  // Extract user location from URL parameters
+  const userLocationFromUrl = (() => {
+    const lat = searchParams.get("lat");
+    const lng = searchParams.get("lng");
+    if (lat && lng) {
+      const latitude = parseFloat(lat);
+      const longitude = parseFloat(lng);
+      if (!isNaN(latitude) && !isNaN(longitude)) {
+        return { lat: latitude, lng: longitude };
+      }
+    }
+    return null;
+  })();
 
   // Load equipment data using global app settings
   useEffect(() => {
@@ -128,6 +141,7 @@ const ExplorePage = () => {
                 : undefined
             }
             searchQuery={searchParams.get("q")?.toLowerCase()}
+            userLocation={userLocationFromUrl}
           />
         </div>
       ) : (

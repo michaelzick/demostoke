@@ -41,9 +41,17 @@ interface MapComponentProps {
   userLocations?: UserLocation[];
   isSingleView?: boolean;
   searchQuery?: string;
+  userLocation?: { lat: number; lng: number } | null;
 }
 
-const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUserLocations, isSingleView = false, searchQuery }: MapComponentProps) => {
+const MapComponent = ({ 
+  activeCategory, 
+  initialEquipment, 
+  userLocations: propUserLocations, 
+  isSingleView = false, 
+  searchQuery,
+  userLocation 
+}: MapComponentProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -58,33 +66,28 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
   const { data: appSettings } = useAppSettings();
   const isUserLocationMode = appSettings?.map_display_mode === 'user_locations';
 
-  // Fetch user locations when in user location mode and no specific user locations are provided
   const { data: fetchedUserLocations = [], isLoading: userLocationsLoading } = useUserLocations();
 
-  // Use provided user locations or fetched ones
   const userLocations = propUserLocations || fetchedUserLocations;
 
-  // Debug logging for display mode
   useEffect(() => {
     console.log('🔍 Map display mode:', appSettings?.map_display_mode);
     console.log('👥 Is user location mode:', isUserLocationMode);
     console.log('📍 User locations count:', userLocations.length);
     console.log('⚙️ Equipment count:', initialEquipment?.length || 0);
     console.log('🏷️ Active category:', activeCategory);
-  }, [appSettings, isUserLocationMode, userLocations.length, initialEquipment?.length, activeCategory]);
+    console.log('🌍 User location from URL:', userLocation);
+  }, [appSettings, isUserLocationMode, userLocations.length, initialEquipment?.length, activeCategory, userLocation]);
 
-  // Filter user locations based on active category
   const filteredUserLocations = isUserLocationMode && activeCategory 
     ? userLocations.filter(user => 
         user.equipment_categories.includes(activeCategory)
       )
     : userLocations;
 
-  // Determine what to display based on mode
   const displayEquipment = isUserLocationMode ? [] : (initialEquipment || []);
   const displayUserLocations = isUserLocationMode ? filteredUserLocations : [];
 
-  // Use the custom hook for managing markers
   useMapMarkers({ 
     map: map.current, 
     mapLoaded, 
@@ -98,10 +101,8 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
   useEffect(() => {
     if (!mapLoaded || isSingleView) return;
 
-    // Don't show toast while still loading user locations
     if (isUserLocationMode && userLocationsLoading) return;
 
-    // Check if we have data to display based on the current mode
     const hasDataToShow = isUserLocationMode 
       ? displayUserLocations.length > 0 
       : displayEquipment.length > 0;
@@ -131,7 +132,6 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
         setHasShownNoGearToast(true);
       }
     } else {
-      // Reset the flag when we have data
       setHasShownNoGearToast(false);
     }
   }, [
@@ -147,13 +147,11 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
     isUserLocationMode
   ]);
 
-  // Load token on component mount
   useEffect(() => {
     const loadToken = async () => {
       console.log('🔄 Starting token loading process...');
       setIsLoadingToken(true);
 
-      // First, check localStorage for a valid token
       const localToken = localStorage.getItem('mapbox_token');
       if (localToken && localToken.startsWith('pk.')) {
         console.log('✅ Valid token found in localStorage');
@@ -162,7 +160,6 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
         return;
       }
 
-      // If no valid local token, try to fetch from Supabase
       console.log('🌐 Fetching token from Supabase Edge Function...');
       try {
         console.log('📡 Calling get-mapbox-token function...');
@@ -193,7 +190,6 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
       } catch (err) {
         console.error('❌ Exception while fetching token from Supabase:', err);
         
-        // Fallback to environment variable
         console.log('🔄 Trying fallback to environment variable...');
         const envToken = import.meta.env.VITE_MAPBOX_TOKEN;
         
@@ -215,7 +211,7 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
     loadToken();
   }, []);
 
-  // Initialize map when token is available
+  // Initialize map with user location or fallback to Los Angeles
   useEffect(() => {
     if (!mapContainer.current || !token || isLoadingToken) return;
 
@@ -227,7 +223,11 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
     }
 
     try {
-      map.current = initializeMap(mapContainer.current, token);
+      // Use user location if available, otherwise default to Los Angeles
+      const centerCoords = userLocation ? [userLocation.lng, userLocation.lat] : [-118.2437, 34.0522];
+      const zoomLevel = userLocation ? 13 : 11;
+
+      map.current = initializeMap(mapContainer.current, token, centerCoords as [number, number], zoomLevel);
 
       map.current.on('load', () => {
         console.log('Map loaded successfully');
@@ -263,15 +263,15 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
         variant: "destructive"
       });
     }
-  }, [token, toast, isLoadingToken]);
+  }, [token, toast, isLoadingToken, userLocation]);
 
-  // Fit bounds when data changes
+  // Fit bounds when data changes, but skip if we have user location (already centered)
   useEffect(() => {
-    if (!mapLoaded || !map.current) return;
+    if (!mapLoaded || !map.current || userLocation) return;
 
     const locations = isUserLocationMode ? displayUserLocations : displayEquipment;
     fitMapBounds(map.current, locations, isSingleView);
-  }, [mapLoaded, displayEquipment, displayUserLocations, isSingleView, isUserLocationMode]);
+  }, [mapLoaded, displayEquipment, displayUserLocations, isSingleView, isUserLocationMode, userLocation]);
 
   const handleTokenSubmit = (tokenInput: string) => {
     console.log('📝 Token submitted by user');
