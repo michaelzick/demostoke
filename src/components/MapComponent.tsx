@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from 'react';
+import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { useToast } from '@/hooks/use-toast';
 import { initializeMap, fitMapBounds } from '@/utils/mapUtils';
