@@ -135,8 +135,9 @@ export const initializeMap = (container: HTMLDivElement, token: string): mapboxg
   const map = new mapboxgl.Map({
     container,
     style: 'mapbox://styles/mapbox/streets-v12',
-    center: [-118.2437, 34.0522], // Los Angeles coordinates
-    zoom: 11
+    // Start with a neutral world view rather than Los Angeles
+    center: [0, 0],
+    zoom: 1
   });
 
   map.addControl(new mapboxgl.NavigationControl(), 'top-right');
@@ -150,10 +151,14 @@ export const initializeMap = (container: HTMLDivElement, token: string): mapboxg
   return map;
 };
 
-export const fitMapBounds = (map: mapboxgl.Map, locations: Array<{ location: { lat: number; lng: number; }; }>, isSingleView: boolean = false): void => {
+export const fitMapBounds = (
+  map: mapboxgl.Map,
+  locations: Array<{ location: { lat: number; lng: number } }>,
+  isSingleView: boolean = false
+): void => {
+  // If no locations are provided, keep the current view instead of
+  // resetting to Los Angeles.
   if (locations.length === 0) {
-    map.setCenter([-118.2437, 34.0522]);
-    map.setZoom(11);
     return;
   }
 
