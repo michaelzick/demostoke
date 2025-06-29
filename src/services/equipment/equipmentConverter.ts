@@ -32,9 +32,9 @@ export const convertSupabaseToEquipment = async (item: any): Promise<Equipment> 
       responseRate: 95,
     },
     location: {
-      lat: Number(item.location_lat || 34.0522),
-      lng: Number(item.location_lng || -118.2437),
-      zip: item.location_zip || 'Los Angeles, CA',
+      lat: Number(item.location_lat || 0),
+      lng: Number(item.location_lng || 0),
+      zip: item.location_zip || '',
     },
     distance: 2.5, // Default distance
     specifications: {
