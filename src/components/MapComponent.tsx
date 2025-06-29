@@ -52,7 +52,7 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
   const [token, setToken] = useState<string | null>(null);
   const [showTokenInput, setShowTokenInput] = useState(false);
   const [isLoadingToken, setIsLoadingToken] = useState(true);
-  const [dataLoadingState, setDataLoadingState] = useState<'loading' | 'ready' | 'empty'>('loading');
+  const [hasShownInitialToast, setHasShownInitialToast] = useState(false);
 
   // Get app settings to determine display mode
   const { data: appSettings, isLoading: appSettingsLoading } = useAppSettings();
@@ -94,41 +94,38 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
     activeCategory 
   });
 
-  // Determine overall loading state and data availability
+  // Determine if we're still in the initial loading phase
+  const isInitialLoading = appSettingsLoading || (isUserLocationMode && userLocationsLoading);
+  
+  // Determine if we have data to show
+  const hasDataToShow = isUserLocationMode 
+    ? displayUserLocations.length > 0 
+    : displayEquipment.length > 0;
+
+  // Show toast only after initial loading is complete, map is loaded, and we have no data
   useEffect(() => {
-    // Don't update state if we're in single view mode
+    // Don't show toast in single view mode
     if (isSingleView) {
-      setDataLoadingState('ready');
       return;
     }
 
-    // Check if we're still loading critical data
-    const isStillLoading = appSettingsLoading || (isUserLocationMode && userLocationsLoading);
-    
-    if (isStillLoading) {
-      setDataLoadingState('loading');
+    // Don't show toast if we're still in initial loading phase
+    if (isInitialLoading) {
       return;
     }
 
-    // Check if we have data to display based on the current mode
-    const hasDataToShow = isUserLocationMode 
-      ? displayUserLocations.length > 0 
-      : displayEquipment.length > 0;
+    // Don't show toast if map isn't loaded yet
+    if (!mapLoaded) {
+      return;
+    }
 
-    setDataLoadingState(hasDataToShow ? 'ready' : 'empty');
-  }, [
-    appSettingsLoading,
-    userLocationsLoading,
-    isUserLocationMode,
-    displayEquipment.length,
-    displayUserLocations.length,
-    isSingleView
-  ]);
+    // Don't show toast if we have data
+    if (hasDataToShow) {
+      return;
+    }
 
-  // Show toast only when data loading is complete and we have no data
-  useEffect(() => {
-    // Only show toast when map is loaded, data loading is complete, and we have no data
-    if (!mapLoaded || dataLoadingState !== 'empty') {
+    // Don't show toast if we've already shown the initial toast for this session
+    if (hasShownInitialToast && !activeCategory && !searchQuery) {
       return;
     }
 
@@ -150,14 +147,29 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
       description: message,
       variant: "default",
     });
+
+    // Mark that we've shown the initial toast
+    if (!activeCategory && !searchQuery) {
+      setHasShownInitialToast(true);
+    }
   }, [
     mapLoaded,
-    dataLoadingState,
+    isInitialLoading,
+    hasDataToShow,
     isUserLocationMode,
     searchQuery,
     activeCategory,
-    toast
+    toast,
+    isSingleView,
+    hasShownInitialToast
   ]);
+
+  // Reset toast flag when filters change
+  useEffect(() => {
+    if (activeCategory || searchQuery) {
+      setHasShownInitialToast(false);
+    }
+  }, [activeCategory, searchQuery]);
 
   // Load token on component mount
   useEffect(() => {
@@ -310,7 +322,7 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
         <>
           <MapLegend activeCategory={activeCategory} />
           <div ref={mapContainer} className="w-full h-full" />
-          {dataLoadingState === 'loading' && (
+          {isInitialLoading && (
             <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-md">
               <div className="flex items-center gap-2 text-sm">
                 <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-400" />
