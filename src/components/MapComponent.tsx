@@ -52,10 +52,10 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
   const [token, setToken] = useState<string | null>(null);
   const [showTokenInput, setShowTokenInput] = useState(false);
   const [isLoadingToken, setIsLoadingToken] = useState(true);
-  const [hasShownNoGearToast, setHasShownNoGearToast] = useState(false);
+  const [dataLoadingState, setDataLoadingState] = useState<'loading' | 'ready' | 'empty'>('loading');
 
   // Get app settings to determine display mode
-  const { data: appSettings } = useAppSettings();
+  const { data: appSettings, isLoading: appSettingsLoading } = useAppSettings();
   const isUserLocationMode = appSettings?.map_display_mode === 'user_locations';
 
   // Fetch user locations when in user location mode and no specific user locations are provided
@@ -94,57 +94,69 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
     activeCategory 
   });
 
-  // Show toast when no data is found - Fixed logic
+  // Determine overall loading state and data availability
   useEffect(() => {
-    if (!mapLoaded || isSingleView) return;
+    // Don't update state if we're in single view mode
+    if (isSingleView) {
+      setDataLoadingState('ready');
+      return;
+    }
 
-    // Don't show toast while still loading user locations
-    if (isUserLocationMode && userLocationsLoading) return;
+    // Check if we're still loading critical data
+    const isStillLoading = appSettingsLoading || (isUserLocationMode && userLocationsLoading);
+    
+    if (isStillLoading) {
+      setDataLoadingState('loading');
+      return;
+    }
 
     // Check if we have data to display based on the current mode
     const hasDataToShow = isUserLocationMode 
       ? displayUserLocations.length > 0 
       : displayEquipment.length > 0;
 
-    console.log('🔍 Toast check - isUserLocationMode:', isUserLocationMode);
-    console.log('🔍 Toast check - hasDataToShow:', hasDataToShow); 
-    console.log('🔍 Toast check - userLocationsLoading:', userLocationsLoading);
-    console.log('🔍 Toast check - hasShownNoGearToast:', hasShownNoGearToast);
-
-    if (!hasDataToShow) {
-      if (!hasShownNoGearToast) {
-        const message = isUserLocationMode
-          ? activeCategory
-            ? `No users found with ${activeCategory} in their inventory. Try selecting a different category or clearing filters.`
-            : "No user locations found. Users need to add addresses to their profiles to appear on the map."
-          : searchQuery
-          ? `No equipment found matching "${searchQuery}". Try adjusting your search or filters.`
-          : activeCategory
-          ? `No equipment found in the ${activeCategory} category. Try a different category or clear filters.`
-          : "No equipment found in this area. Try expanding your search area or adjusting filters.";
-
-        toast({
-          title: isUserLocationMode ? "No user locations found" : "No gear found",
-          description: message,
-          variant: "default",
-        });
-        setHasShownNoGearToast(true);
-      }
-    } else {
-      // Reset the flag when we have data
-      setHasShownNoGearToast(false);
-    }
+    setDataLoadingState(hasDataToShow ? 'ready' : 'empty');
   }, [
-    mapLoaded, 
-    displayEquipment.length, 
-    displayUserLocations.length, 
-    userLocationsLoading, 
-    isSingleView, 
-    searchQuery, 
-    activeCategory, 
-    toast, 
-    hasShownNoGearToast, 
-    isUserLocationMode
+    appSettingsLoading,
+    userLocationsLoading,
+    isUserLocationMode,
+    displayEquipment.length,
+    displayUserLocations.length,
+    isSingleView
+  ]);
+
+  // Show toast only when data loading is complete and we have no data
+  useEffect(() => {
+    // Only show toast when map is loaded, data loading is complete, and we have no data
+    if (!mapLoaded || dataLoadingState !== 'empty') {
+      return;
+    }
+
+    // Create appropriate message based on context
+    const message = isUserLocationMode
+      ? activeCategory
+        ? `No users found with ${activeCategory} in their inventory. Try selecting a different category or clearing filters.`
+        : "No user locations found. Users need to add addresses to their profiles to appear on the map."
+      : searchQuery
+      ? `No equipment found matching "${searchQuery}". Try adjusting your search or filters.`
+      : activeCategory
+      ? `No equipment found in the ${activeCategory} category. Try a different category or clear filters.`
+      : "No equipment found in this area. Try expanding your search area or adjusting filters.";
+
+    console.log('🔍 Showing no data toast:', message);
+    
+    toast({
+      title: isUserLocationMode ? "No user locations found" : "No gear found",
+      description: message,
+      variant: "default",
+    });
+  }, [
+    mapLoaded,
+    dataLoadingState,
+    isUserLocationMode,
+    searchQuery,
+    activeCategory,
+    toast
   ]);
 
   // Load token on component mount
@@ -298,11 +310,11 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
         <>
           <MapLegend activeCategory={activeCategory} />
           <div ref={mapContainer} className="w-full h-full" />
-          {isUserLocationMode && userLocationsLoading && (
+          {dataLoadingState === 'loading' && (
             <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-md">
               <div className="flex items-center gap-2 text-sm">
                 <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-400" />
-                Loading user locations...
+                {isUserLocationMode ? 'Loading user locations...' : 'Loading equipment...'}
               </div>
             </div>
           )}
