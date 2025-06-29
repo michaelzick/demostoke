@@ -78,9 +78,9 @@ export const useEquipmentById = (id: string) => {
           responseRate: 95,
         },
         location: {
-          lat: Number(data.location_lat || 34.0522),
-          lng: Number(data.location_lng || -118.2437),
-          zip: data.location_zip || 'Los Angeles, CA',
+          lat: Number(data.location_lat || 0),
+          lng: Number(data.location_lng || 0),
+          zip: data.location_zip || '',
         },
         distance: 2.5,
         specifications: {

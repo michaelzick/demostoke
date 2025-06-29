@@ -71,8 +71,8 @@ const EquipmentDetailPage = () => {
         review_count: equipment.review_count || 0,
         owner: equipment.owner, // Use the actual owner data from the database
         location: equipment.location || {
-          lat: 34.0522, // Default to LA coordinates
-          lng: -118.2437,
+          lat: 0,
+          lng: 0,
           zip: ''
         },
         distance: 0,
