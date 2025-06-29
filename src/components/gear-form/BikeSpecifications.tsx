@@ -25,11 +25,41 @@ const BikeSpecifications = ({
     setDimensions({ length: newSizes.join(", "), width: "", thickness: "" });
   };
 
+  const handleSelectAll = () => {
+    const allSelected = selectedSizes.length === bikeSize.length;
+    const newSizes = allSelected ? [] : [...bikeSize];
+    setSelectedSizes(newSizes);
+    // Update dimensions.length for backward compatibility
+    setDimensions({ length: newSizes.join(", "), width: "", thickness: "" });
+  };
+
+  const allSelected = selectedSizes.length === bikeSize.length;
+  const someSelected = selectedSizes.length > 0 && selectedSizes.length < bikeSize.length;
+
   return (
     <div>
       <Label className="block text-lg font-medium mb-2">
         Available Sizes <span className="text-red-500">*</span>
       </Label>
+      
+      {/* Select All checkbox */}
+      <div className="flex items-center space-x-2 mb-3 pb-2 border-b">
+        <Checkbox
+          id="select-all-sizes"
+          checked={allSelected}
+          ref={(el) => {
+            if (el) el.indeterminate = someSelected;
+          }}
+          onCheckedChange={handleSelectAll}
+        />
+        <Label
+          htmlFor="select-all-sizes"
+          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        >
+          Select All
+        </Label>
+      </div>
+
       <div className="grid grid-cols-2 gap-3">
         {bikeSize.map((size) => (
           <div key={size} className="flex items-center space-x-2">

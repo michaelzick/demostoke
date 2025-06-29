@@ -27,11 +27,43 @@ const SkillLevelSpecifications = ({
     setSkillLevel(newSkillLevels.join(", "));
   };
 
+  const handleSelectAll = () => {
+    const allSelected = selectedSkillLevels.length === universalSkillLevels.length;
+    const newSkillLevels = allSelected ? [] : [...universalSkillLevels];
+    setSelectedSkillLevels(newSkillLevels);
+    // Update skillLevel for backward compatibility
+    setSkillLevel(newSkillLevels.join(", "));
+  };
+
+  const allSelected = selectedSkillLevels.length === universalSkillLevels.length;
+  const someSelected = selectedSkillLevels.length > 0 && selectedSkillLevels.length < universalSkillLevels.length;
+
   return (
     <div>
       <Label className="block text-lg font-medium mb-2">
         Suitable Skill Levels <span className="text-red-500">*</span>
       </Label>
+      
+      {/* Select All checkbox */}
+      {gearType && (
+        <div className="flex items-center space-x-2 mb-3 pb-2 border-b">
+          <Checkbox
+            id="select-all-skill-levels"
+            checked={allSelected}
+            ref={(el) => {
+              if (el) el.indeterminate = someSelected;
+            }}
+            onCheckedChange={handleSelectAll}
+          />
+          <Label
+            htmlFor="select-all-skill-levels"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Select All
+          </Label>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-3">
         {universalSkillLevels.map((level) => (
           <div key={level} className="flex items-center space-x-2">
