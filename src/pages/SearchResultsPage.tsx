@@ -232,6 +232,7 @@ const SearchResultsPage = () => {
             initialEquipment={mapEquipment}
             activeCategory={activeCategory}
             searchQuery={query?.toLowerCase()}
+            isEquipmentLoading={isLoading}
           />
         </div>
       ) : (

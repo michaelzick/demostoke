@@ -20,16 +20,20 @@ const ExplorePage = () => {
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
   const [filteredEquipment, setFilteredEquipment] = useState<Equipment[]>([]);
   const [allEquipment, setAllEquipment] = useState<Equipment[]>([]);
+  const [isEquipmentLoading, setIsEquipmentLoading] = useState(true);
 
   // Load equipment data using global app settings
   useEffect(() => {
     const loadEquipment = async () => {
+      setIsEquipmentLoading(true);
       try {
         const equipment = await getEquipmentData();
         setAllEquipment(equipment);
       } catch (error) {
         console.error("Failed to load equipment:", error);
         setAllEquipment([]);
+      } finally {
+        setIsEquipmentLoading(false);
       }
     };
 
@@ -139,6 +143,7 @@ const ExplorePage = () => {
                 : undefined
             }
             searchQuery={searchParams.get("q")?.toLowerCase()}
+            isEquipmentLoading={isEquipmentLoading}
           />
         </div>
       ) : (
