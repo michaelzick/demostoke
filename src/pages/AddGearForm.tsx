@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import FormHeader from "@/components/gear-form/FormHeader";
 import GearBasicInfo from "@/components/gear-form/GearBasicInfo";
@@ -96,6 +95,8 @@ const AddGearForm = () => {
           setUseImageUrls={formState.setUseImageUrls}
           selectedFiles={formState.images}
           setSelectedFiles={formState.setImages}
+          gearName={formState.gearName}
+          gearType={formState.gearType}
         />
 
         <GearPricing

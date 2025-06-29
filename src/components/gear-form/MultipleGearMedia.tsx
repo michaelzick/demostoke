@@ -4,7 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
+import { X, Search } from "lucide-react";
+import { useState } from "react";
+import ImageSearchDialog from "./ImageSearchDialog";
 
 interface MultipleGearMediaProps {
   handleMultipleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -16,6 +18,8 @@ interface MultipleGearMediaProps {
   setUseImageUrls: (value: boolean) => void;
   selectedFiles: File[];
   setSelectedFiles: (files: File[]) => void;
+  gearName?: string;
+  gearType?: string;
 }
 
 const MultipleGearMedia = ({
@@ -27,8 +31,11 @@ const MultipleGearMedia = ({
   useImageUrls,
   setUseImageUrls,
   selectedFiles,
-  setSelectedFiles
+  setSelectedFiles,
+  gearName = '',
+  gearType = ''
 }: MultipleGearMediaProps) => {
+  const [showImageSearch, setShowImageSearch] = useState(false);
   const displayImages = useImageUrls ? imageUrls : currentImages || duplicatedImageUrls || [];
 
   const addImageUrl = () => {
@@ -49,6 +56,18 @@ const MultipleGearMedia = ({
   const removeSelectedFile = (index: number) => {
     const newFiles = selectedFiles.filter((_, i) => i !== index);
     setSelectedFiles(newFiles);
+  };
+
+  const handleImagesSelected = (selectedImageUrls: string[]) => {
+    // Filter out empty URLs and add new ones
+    const existingUrls = imageUrls.filter(url => url.trim() !== '');
+    const newUrls = [...existingUrls, ...selectedImageUrls];
+    setImageUrls(newUrls);
+    
+    // Enable image URLs if not already enabled
+    if (!useImageUrls) {
+      setUseImageUrls(true);
+    }
   };
 
   return (
@@ -92,14 +111,26 @@ const MultipleGearMedia = ({
                 </Button>
               </div>
             ))}
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={addImageUrl}
-            >
-              Add Another URL
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addImageUrl}
+              >
+                Add Another URL
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowImageSearch(true)}
+                className="flex items-center gap-2"
+              >
+                <Search className="h-4 w-4" />
+                Search Google Images
+              </Button>
+            </div>
           </div>
         )}
       </div>
@@ -165,6 +196,15 @@ const MultipleGearMedia = ({
           }
         </p>
       </div>
+
+      {/* Image Search Dialog */}
+      <ImageSearchDialog
+        open={showImageSearch}
+        onOpenChange={setShowImageSearch}
+        onImagesSelected={handleImagesSelected}
+        defaultQuery={gearName}
+        gearType={gearType}
+      />
     </div>
   );
 };

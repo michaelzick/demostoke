@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -158,6 +157,8 @@ const EditGearForm = () => {
           setUseImageUrls={formState.setUseImageUrls}
           selectedFiles={formState.images}
           setSelectedFiles={formState.setImages}
+          gearName={formState.gearName}
+          gearType={formState.gearType}
         />
 
         <GearPricing

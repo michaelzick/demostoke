@@ -1,8 +1,12 @@
 
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
+import { Search } from "lucide-react";
+import { useState } from "react";
+import ImageSearchDialog from "./ImageSearchDialog";
 
 interface GearMediaProps {
   handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -12,6 +16,8 @@ interface GearMediaProps {
   setImageUrl: (value: string) => void;
   useImageUrl: boolean;
   setUseImageUrl: (value: boolean) => void;
+  gearName?: string;
+  gearType?: string;
 }
 
 const GearMedia = ({
@@ -21,9 +27,19 @@ const GearMedia = ({
   imageUrl,
   setImageUrl,
   useImageUrl,
-  setUseImageUrl
+  setUseImageUrl,
+  gearName = '',
+  gearType = ''
 }: GearMediaProps) => {
+  const [showImageSearch, setShowImageSearch] = useState(false);
   const displayImageUrl = useImageUrl ? imageUrl : currentImageUrl || duplicatedImageUrl;
+
+  const handleImagesSelected = (selectedImageUrls: string[]) => {
+    if (selectedImageUrls.length > 0) {
+      setImageUrl(selectedImageUrls[0]); // Take the first selected image
+      setUseImageUrl(true);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -37,14 +53,26 @@ const GearMedia = ({
           Image URL (optional)
         </Label>
         <div className="space-y-2">
-          <Input
-            id="imageUrl"
-            type="url"
-            placeholder="https://example.com/image.jpg"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            className={cn(useImageUrl && "focus:ring-2 focus:ring-offset-2")}
-          />
+          <div className="flex gap-2">
+            <Input
+              id="imageUrl"
+              type="url"
+              placeholder="https://example.com/image.jpg"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              className={cn(useImageUrl && "focus:ring-2 focus:ring-offset-2", "flex-1")}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowImageSearch(true)}
+              className="flex items-center gap-1 px-3"
+            >
+              <Search className="h-4 w-4" />
+              Search
+            </Button>
+          </div>
           <div className="flex items-center space-x-2">
             <Checkbox
               id="useImageUrl"
@@ -90,6 +118,15 @@ const GearMedia = ({
           }
         </p>
       </div>
+
+      {/* Image Search Dialog */}
+      <ImageSearchDialog
+        open={showImageSearch}
+        onOpenChange={setShowImageSearch}
+        onImagesSelected={handleImagesSelected}
+        defaultQuery={gearName}
+        gearType={gearType}
+      />
     </div>
   );
 };
