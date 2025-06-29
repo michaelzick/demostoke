@@ -198,7 +198,7 @@ Remember, expensive gear won't automatically make you a better rider, but the ri
     category: "gear reviews",
     publishedAt: "2024-01-20",
     readTime: 15,
-    tags: ["gear", "reviews", "2024", "buying guide", "mountain-bikes"],
+    tags: ["gear", "reviews", "2024", "buying guide", "mountain bikes"],
     heroImage: "https://images.unsplash.com/photo-1506316940527-4d1c138978a0?auto=format&fit=crop&w=1200&q=80",
     thumbnail: "https://images.unsplash.com/photo-1506316940527-4d1c138978a0?auto=format&fit=crop&w=800&q=80",
     author: 'Michael Zick',

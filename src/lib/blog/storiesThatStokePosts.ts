@@ -33,7 +33,7 @@ When I'm ready for my next snowboard, surfboard, mountain bike—whatever—I'll
 From that first pop-up on a Wavestorm to taking waves all the way to the sand at Pipeline, the boards I've ridden have shaped my experience immensely. Choosing the right gear matters and is often the difference between a stoked session and one where you wonder where your abilities went.
 
 When you get that gear that feels like it was made for you, the whole experience changes. That's what it means to ride what makes you feel alive.`,
-    category: "stories-that-stoke",
+    category: "stories that stoke",
     publishedAt: "2025-06-27",
     readTime: 2.5,
     heroImage: "https://www.theinertia.com/wp-content/uploads/2020/07/SurfCare1200.jpg",
