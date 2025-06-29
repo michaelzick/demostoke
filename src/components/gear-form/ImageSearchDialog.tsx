@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,11 +32,18 @@ const ImageSearchDialog = ({
   defaultQuery = '',
   gearType
 }: ImageSearchDialogProps) => {
-  const [query, setQuery] = useState(defaultQuery);
+  const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [selectedImages, setSelectedImages] = useState<Set<string>>(new Set());
   const [isSearching, setIsSearching] = useState(false);
   const { toast } = useToast();
+
+  // Pre-populate the search field when dialog opens or defaultQuery changes
+  useEffect(() => {
+    if (open && defaultQuery) {
+      setQuery(defaultQuery);
+    }
+  }, [open, defaultQuery]);
 
   const handleSearch = async () => {
     if (!query.trim()) {
