@@ -41,9 +41,10 @@ interface MapComponentProps {
   userLocations?: UserLocation[];
   isSingleView?: boolean;
   searchQuery?: string;
+  isEquipmentLoading?: boolean;
 }
 
-const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUserLocations, isSingleView = false, searchQuery }: MapComponentProps) => {
+const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUserLocations, isSingleView = false, searchQuery, isEquipmentLoading = false }: MapComponentProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
@@ -114,6 +115,11 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
       return;
     }
 
+    // Don't show toast while equipment is still loading
+    if (isEquipmentLoading) {
+      return;
+    }
+
     // Don't show toast if map isn't loaded yet
     if (!mapLoaded) {
       return;
@@ -161,7 +167,8 @@ const MapComponent = ({ activeCategory, initialEquipment, userLocations: propUse
     activeCategory,
     toast,
     isSingleView,
-    hasShownInitialToast
+    hasShownInitialToast,
+    isEquipmentLoading
   ]);
 
   // Reset toast flag when filters change

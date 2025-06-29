@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation, useSearchParams, useMatch } from "react-router-dom";
 import { getEquipmentData } from "@/services/searchService";
 import MapComponent from "@/components/MapComponent";
@@ -18,18 +18,21 @@ const ExplorePage = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("distance");
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
-  const [filteredEquipment, setFilteredEquipment] = useState<Equipment[]>([]);
   const [allEquipment, setAllEquipment] = useState<Equipment[]>([]);
+  const [isEquipmentLoading, setIsEquipmentLoading] = useState(true);
 
   // Load equipment data using global app settings
   useEffect(() => {
     const loadEquipment = async () => {
+      setIsEquipmentLoading(true);
       try {
         const equipment = await getEquipmentData();
         setAllEquipment(equipment);
       } catch (error) {
         console.error("Failed to load equipment:", error);
         setAllEquipment([]);
+      } finally {
+        setIsEquipmentLoading(false);
       }
     };
 
@@ -46,12 +49,12 @@ const ExplorePage = () => {
   // Get equipment with dynamic distances
   const { equipment: equipmentWithDynamicDistances, isLocationBased } = useEquipmentWithDynamicDistance(allEquipment);
 
-  // Apply filters, sorting, and search
-  useEffect(() => {
+  // Apply filters, sorting, and search synchronously to avoid stale data when
+  // switching categories
+  const filteredEquipment = useMemo(() => {
     let results = [...equipmentWithDynamicDistances];
     const searchQuery = searchParams.get("q")?.toLowerCase();
 
-    // Apply search filter first
     if (searchQuery) {
       results = results.filter(item =>
         item.name.toLowerCase().includes(searchQuery) ||
@@ -60,12 +63,10 @@ const ExplorePage = () => {
       );
     }
 
-    // Apply category filter
     if (activeCategory) {
       results = results.filter(item => item.category === activeCategory);
     }
 
-    // Apply sorting
     switch (sortBy) {
       case "distance":
         results.sort((a, b) => a.distance - b.distance);
@@ -80,15 +81,19 @@ const ExplorePage = () => {
         break;
     }
 
-    console.log('Sorting by:', sortBy);
-    console.log('First 3 items after sorting:', results.slice(0, 3).map(item => ({ 
-      name: item.name, 
-      distance: item.distance,
-      category: item.category 
-    })));
+    console.log("Sorting by:", sortBy);
+    console.log(
+      "First 3 items after sorting:",
+      results.slice(0, 3).map(item => ({
+        name: item.name,
+        distance: item.distance,
+        category: item.category,
+      }))
+    );
 
-    setFilteredEquipment(results);
+    return results;
   }, [activeCategory, sortBy, searchParams, viewMode, equipmentWithDynamicDistances]);
+
 
   // Handle reset
   const handleReset = () => {
@@ -139,6 +144,7 @@ const ExplorePage = () => {
                 : undefined
             }
             searchQuery={searchParams.get("q")?.toLowerCase()}
+            isEquipmentLoading={isEquipmentLoading}
           />
         </div>
       ) : (
