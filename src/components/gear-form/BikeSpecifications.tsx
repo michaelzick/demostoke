@@ -1,6 +1,7 @@
 
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useEffect, useRef } from "react";
 
 interface BikeSpecificationsProps {
   selectedSizes: string[];
@@ -14,6 +15,7 @@ const BikeSpecifications = ({
   setDimensions
 }: BikeSpecificationsProps) => {
   const bikeSize = ["Small", "Medium", "Large", "XL", "XXL"];
+  const selectAllRef = useRef<HTMLButtonElement>(null);
 
   const handleSizeToggle = (size: string) => {
     const newSizes = selectedSizes.includes(size)
@@ -36,6 +38,16 @@ const BikeSpecifications = ({
   const allSelected = selectedSizes.length === bikeSize.length;
   const someSelected = selectedSizes.length > 0 && selectedSizes.length < bikeSize.length;
 
+  // Set indeterminate state using useEffect
+  useEffect(() => {
+    if (selectAllRef.current) {
+      const checkbox = selectAllRef.current.querySelector('input[type="checkbox"]') as HTMLInputElement;
+      if (checkbox) {
+        checkbox.indeterminate = someSelected;
+      }
+    }
+  }, [someSelected]);
+
   return (
     <div>
       <Label className="block text-lg font-medium mb-2">
@@ -45,11 +57,9 @@ const BikeSpecifications = ({
       {/* Select All checkbox */}
       <div className="flex items-center space-x-2 mb-3 pb-2 border-b">
         <Checkbox
+          ref={selectAllRef}
           id="select-all-sizes"
           checked={allSelected}
-          ref={(el) => {
-            if (el) el.indeterminate = someSelected;
-          }}
           onCheckedChange={handleSelectAll}
         />
         <Label

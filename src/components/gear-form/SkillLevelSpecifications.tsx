@@ -1,6 +1,7 @@
 
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useEffect, useRef } from "react";
 
 interface SkillLevelSpecificationsProps {
   selectedSkillLevels: string[];
@@ -16,6 +17,7 @@ const SkillLevelSpecifications = ({
   gearType
 }: SkillLevelSpecificationsProps) => {
   const universalSkillLevels = ["Beginner", "Intermediate", "Advanced", "Expert"];
+  const selectAllRef = useRef<HTMLButtonElement>(null);
 
   const handleSkillLevelToggle = (level: string) => {
     const newSkillLevels = selectedSkillLevels.includes(level)
@@ -38,6 +40,16 @@ const SkillLevelSpecifications = ({
   const allSelected = selectedSkillLevels.length === universalSkillLevels.length;
   const someSelected = selectedSkillLevels.length > 0 && selectedSkillLevels.length < universalSkillLevels.length;
 
+  // Set indeterminate state using useEffect
+  useEffect(() => {
+    if (selectAllRef.current) {
+      const checkbox = selectAllRef.current.querySelector('input[type="checkbox"]') as HTMLInputElement;
+      if (checkbox) {
+        checkbox.indeterminate = someSelected;
+      }
+    }
+  }, [someSelected]);
+
   return (
     <div>
       <Label className="block text-lg font-medium mb-2">
@@ -48,11 +60,9 @@ const SkillLevelSpecifications = ({
       {gearType && (
         <div className="flex items-center space-x-2 mb-3 pb-2 border-b">
           <Checkbox
+            ref={selectAllRef}
             id="select-all-skill-levels"
             checked={allSelected}
-            ref={(el) => {
-              if (el) el.indeterminate = someSelected;
-            }}
             onCheckedChange={handleSelectAll}
           />
           <Label
