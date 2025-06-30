@@ -233,31 +233,45 @@ The Firewire Sci-Fi 2.0 is a standout for surfers who want to blend futuristic d
     id: "tom-wallisch-pro-skis-2025-review",
     title: "Tom Wallisch Pro Skis 2025 Review: Jib-Ready Freestyle Fun",
     excerpt: "A look at why the Line Tom Wallisch Pro is a favorite for park and urban skiers who still want all-mountain versatility.",
-    content: `The 2025 Tom Wallisch Pro from Line is consistently praised in ski reviews for its modern freestyle performance and all-mountain versatility. The ski features a symmetric shape, Carbon Ollieband construction, and a medium flex that balances playfulness and stability ([BlisterReview](https://blisterreview.com/gear-reviews/2025-line-tom-wallisch-pro)).
+    content: `The 2025 Tom Wallisch Pro from Line is consistently praised in ski reviews for its modern freestyle performance, durability, and all-mountain versatility. The ski features a symmetric shape, Carbon Ollieband construction, and a medium flex that balances playfulness and stability ([BlisterReview](https://blisterreview.com/gear-reviews/2025-line-tom-wallisch-pro), [SkiMag](https://www.skimag.com/gear/skis/line-tom-wallisch-pro/), [Newschoolers](https://www.newschoolers.com/news/read/2025-Line-Tom-Wallisch-Pro-Review)).
+
+**Build Quality and Construction**
+
+The Tom Wallisch Pro is built with Line's signature durability in mind. The Carbon Ollieband provides extra pop for jumps and presses, while the full sidewall construction and Fatty Base & Edge technology ensure the ski can withstand repeated impacts from rails and boxes. The symmetric flex and shape make it ideal for switch skiing and spinning in both directions.
 
 **Performance**
 
-- Park: The TW Pro excels on rails and jumps, with a flex pattern that feels balanced for presses without folding on landings. The 90mm waist is stable on takeoffs while staying quick edge to edge.
-- All-Mountain: While it's a true park ski, the TW Pro holds its own on groomers and in light powder. The sidecut makes carving predictable and the swing weight is low enough for quick spins off side hits.
+- Park: The TW Pro excels on rails and jumps, with a flex pattern that feels balanced for presses without folding on landings. The 90mm waist is stable on takeoffs while staying quick edge to edge. Reviewers note the ski's pop and energy, making it a favorite for both technical rail tricks and big jump lines.
+- All-Mountain: While it's a true park ski, the TW Pro holds its own on groomers and in light powder. The sidecut makes carving predictable, and the swing weight is low enough for quick spins off side hits. SkiMag highlights its surprising stability at speed for a park-oriented model.
+- Urban: The ski's durability and flex make it a top choice for urban features, with Newschoolers reviewers praising its ability to handle rough landings and variable snow conditions.
+
+**Who Should Ride It**
+
+- Freestyle skiers who spend most of their time in the park or sessioning urban features
+- Skiers who want a playful, poppy ski that can still carve on-piste
+- Riders looking for a durable ski that can withstand heavy use
 
 **Pros:**
 
 - Playful yet stable flex
-- Durable construction for park abuse
+- Durable construction for park and urban abuse
+- Symmetric shape for easy switch skiing
 - Versatile enough for cruising the whole mountain
+- Excellent pop for jumps and presses
 
 **Cons:**
 
 - 90mm waist sinks in deep powder
-- Not ideal for big-mountain charging
+- Not ideal for big-mountain charging or high-speed carving
+- Park-oriented flex may not suit all-mountain purists
 
 **Summary**
 
-Freestyle skiers who spend most of their time in the park or sessioning urban features will appreciate the Tom Wallisch Pro. For more, see [BlisterReview's review](https://blisterreview.com/gear-reviews/2025-line-tom-wallisch-pro).
+The Line Tom Wallisch Pro 2025 is a standout for freestyle skiers who want a ski that excels in the park but doesn't feel out of place on the rest of the mountain. Its blend of durability, pop, and versatility has made it a favorite among pros and dedicated park riders alike. For more, see [BlisterReview's review](https://blisterreview.com/gear-reviews/2025-line-tom-wallisch-pro), [SkiMag's review](https://www.skimag.com/gear/skis/line-tom-wallisch-pro/), and [Newschoolers' review](https://www.newschoolers.com/news/read/2025-Line-Tom-Wallisch-Pro-Review).
 `,
     category: "gear reviews",
     publishedAt: "2025-07-05",
-    readTime: 6,
+    readTime: 8,
     heroImage: "https://www.backcountry.com/images/items/1200/LIN/LINH05R/ONECOL_D4.jpg",
     thumbnail: "https://m.media-amazon.com/images/I/51s++VpbszL._UF1000,1000_QL80_.jpg",
     tags: ["gear reviews", "skis", "tom wallisch", "park", "freestyle"],
