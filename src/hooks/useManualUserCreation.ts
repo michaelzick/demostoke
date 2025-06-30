@@ -2,6 +2,7 @@
 import { useState, useMemo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { geocodeAddress } from "@/utils/geocoding";
 
 interface UserFormData {
   name: string;
@@ -88,7 +89,23 @@ export const useManualUserCreation = () => {
     try {
       console.log('Starting user creation process...');
       
-      // Step 1: Create the user account
+      // Step 1: Geocode address if provided
+      let locationLat: number | null = null;
+      let locationLng: number | null = null;
+      
+      if (formData.address && formData.address.trim()) {
+        console.log('Geocoding address:', formData.address);
+        const geocodeResult = await geocodeAddress(formData.address);
+        if (geocodeResult) {
+          locationLat = geocodeResult.lat;
+          locationLng = geocodeResult.lng;
+          console.log('Address geocoded successfully:', { lat: locationLat, lng: locationLng });
+        } else {
+          console.warn('Failed to geocode address:', formData.address);
+        }
+      }
+      
+      // Step 2: Create the user account
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -112,10 +129,10 @@ export const useManualUserCreation = () => {
 
       console.log('User created successfully:', authData.user.id);
 
-      // Step 2: Wait a moment for the trigger to create the profile
+      // Step 3: Wait a moment for the trigger to create the profile
       await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Step 3: Check if profile was created by trigger
+      // Step 4: Check if profile was created by trigger
       const { data: existingProfile, error: profileCheckError } = await supabase
         .from('profiles')
         .select('id, name')
@@ -128,17 +145,21 @@ export const useManualUserCreation = () => {
 
       console.log('Profile check result:', existingProfile);
 
-      // Step 4: Create or update the profile with form data
+      // Step 5: Create or update the profile with form data (including geocoded coordinates)
+      const profileData = {
+        name: formData.name,
+        role: formData.role,
+        phone: formData.phone || null,
+        address: formData.address || null,
+        location_lat: locationLat,
+        location_lng: locationLng,
+      };
+
       if (existingProfile) {
-        console.log('Updating existing profile...');
+        console.log('Updating existing profile with data:', profileData);
         const { error: updateError } = await supabase
           .from('profiles')
-          .update({
-            name: formData.name,
-            role: formData.role,
-            phone: formData.phone || null,
-            address: formData.address || null,
-          })
+          .update(profileData)
           .eq('id', authData.user.id);
 
         if (updateError) {
@@ -147,15 +168,12 @@ export const useManualUserCreation = () => {
         }
         console.log('Profile updated successfully');
       } else {
-        console.log('Creating new profile (trigger may have failed)...');
+        console.log('Creating new profile (trigger may have failed) with data:', profileData);
         const { error: insertError } = await supabase
           .from('profiles')
           .insert({
             id: authData.user.id,
-            name: formData.name,
-            role: formData.role,
-            phone: formData.phone || null,
-            address: formData.address || null,
+            ...profileData
           });
 
         if (insertError) {
@@ -165,12 +183,23 @@ export const useManualUserCreation = () => {
         console.log('Profile created successfully');
       }
 
-      // Step 5: Create user role entry
+      // Step 6: Create user role entry with proper role mapping
+      console.log('Assigning role:', formData.role);
+      
+      // Map frontend role values to database enum values
+      let dbRole: 'admin' | 'user' = 'user'; // Default to 'user' since enum only has 'admin' and 'user'
+      
+      // Only admins should get admin role - for now, all manually created users get 'user' role
+      // You can modify this logic based on your requirements
+      if (formData.role === 'admin') {
+        dbRole = 'admin';
+      }
+      
       const { error: roleError } = await supabase
         .from('user_roles')
         .upsert({
           user_id: authData.user.id,
-          role: formData.role as any
+          role: dbRole
         });
 
       if (roleError) {
@@ -182,21 +211,27 @@ export const useManualUserCreation = () => {
           variant: "destructive"
         });
       } else {
-        console.log('Role assigned successfully');
+        console.log('Role assigned successfully:', dbRole);
       }
 
-      // Step 6: Final verification
+      // Step 7: Final verification
       const { data: finalProfile } = await supabase
         .from('profiles')
-        .select('name, role, phone, address')
+        .select('name, role, phone, address, location_lat, location_lng')
         .eq('id', authData.user.id)
         .single();
 
       console.log('Final profile verification:', finalProfile);
 
+      const locationInfo = locationLat && locationLng 
+        ? ` Address geocoded to coordinates: ${locationLat.toFixed(4)}, ${locationLng.toFixed(4)}.`
+        : formData.address 
+          ? ' Address provided but geocoding failed.'
+          : '';
+
       toast({
-        title: "User Created Successfully",
-        description: `New user account created for ${formData.name} (${formData.email}) with role: ${formData.role}. ${authData.user.email_confirmed_at ? 'Email confirmed.' : 'They will need to confirm their email address.'}`,
+        title: "User Created Successfully", 
+        description: `New user account created for ${formData.name} (${formData.email}) with role: ${formData.role}. ${authData.user.email_confirmed_at ? 'Email confirmed.' : 'They will need to confirm their email address.'}${locationInfo}`,
       });
 
       resetForm();
