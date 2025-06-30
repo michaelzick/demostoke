@@ -63,7 +63,6 @@ export const useManualUserCreation = () => {
   };
 
   const createUser = async () => {
-    // Validate password length
     if (formData.password.length < 6) {
       toast({
         title: "Password Too Short",
@@ -87,7 +86,9 @@ export const useManualUserCreation = () => {
     setIsCreating(true);
 
     try {
-      // Use signup with captcha token
+      console.log('Starting user creation process...');
+      
+      // Step 1: Create the user account
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -101,6 +102,7 @@ export const useManualUserCreation = () => {
       });
 
       if (authError) {
+        console.error('Auth signup error:', authError);
         throw authError;
       }
 
@@ -110,44 +112,100 @@ export const useManualUserCreation = () => {
 
       console.log('User created successfully:', authData.user.id);
 
-      // Wait a moment for the trigger to create the profile
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Step 2: Wait a moment for the trigger to create the profile
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
-      // Update the profile with additional information from the form
-      const { error: updateError } = await supabase
+      // Step 3: Check if profile was created by trigger
+      const { data: existingProfile, error: profileCheckError } = await supabase
         .from('profiles')
-        .update({
-          name: formData.name,
-          role: formData.role,
-          phone: formData.phone || null,
-          address: formData.address || null,
-        })
-        .eq('id', authData.user.id);
+        .select('id, name')
+        .eq('id', authData.user.id)
+        .maybeSingle();
 
-      if (updateError) {
-        console.error('Profile update error:', updateError);
-        // Don't throw here - the user was created successfully
+      if (profileCheckError) {
+        console.error('Error checking profile:', profileCheckError);
+      }
+
+      console.log('Profile check result:', existingProfile);
+
+      // Step 4: Create or update the profile with form data
+      if (existingProfile) {
+        console.log('Updating existing profile...');
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({
+            name: formData.name,
+            role: formData.role,
+            phone: formData.phone || null,
+            address: formData.address || null,
+          })
+          .eq('id', authData.user.id);
+
+        if (updateError) {
+          console.error('Profile update error:', updateError);
+          throw new Error(`Failed to update profile: ${updateError.message}`);
+        }
+        console.log('Profile updated successfully');
+      } else {
+        console.log('Creating new profile (trigger may have failed)...');
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            id: authData.user.id,
+            name: formData.name,
+            role: formData.role,
+            phone: formData.phone || null,
+            address: formData.address || null,
+          });
+
+        if (insertError) {
+          console.error('Profile insert error:', insertError);
+          throw new Error(`Failed to create profile: ${insertError.message}`);
+        }
+        console.log('Profile created successfully');
+      }
+
+      // Step 5: Create user role entry
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .upsert({
+          user_id: authData.user.id,
+          role: formData.role as any
+        });
+
+      if (roleError) {
+        console.error('Role assignment error:', roleError);
+        // Don't throw here as the user was created successfully
         toast({
           title: "User Created with Warning",
-          description: `User account created successfully, but some profile information may not have been saved. User: ${formData.name} (${formData.email})`,
+          description: `User account created but role assignment failed. User: ${formData.name} (${formData.email})`,
           variant: "destructive"
         });
       } else {
-        toast({
-          title: "User Created Successfully",
-          description: `New user account created for ${formData.name} (${formData.email}) with role: ${formData.role}. They will need to confirm their email address.`,
-        });
+        console.log('Role assigned successfully');
       }
+
+      // Step 6: Final verification
+      const { data: finalProfile } = await supabase
+        .from('profiles')
+        .select('name, role, phone, address')
+        .eq('id', authData.user.id)
+        .single();
+
+      console.log('Final profile verification:', finalProfile);
+
+      toast({
+        title: "User Created Successfully",
+        description: `New user account created for ${formData.name} (${formData.email}) with role: ${formData.role}. ${authData.user.email_confirmed_at ? 'Email confirmed.' : 'They will need to confirm their email address.'}`,
+      });
 
       resetForm();
 
     } catch (error: any) {
-      console.error('Error creating user:', error);
+      console.error('Error in user creation process:', error);
       
-      // Reset captcha on any error to allow retry
       resetCaptcha();
       
-      // Handle specific error cases
       if (error.message?.includes('User already registered')) {
         toast({
           title: "User Already Exists",
@@ -169,7 +227,7 @@ export const useManualUserCreation = () => {
       } else {
         toast({
           title: "Error Creating User",
-          description: error.message || "Failed to create user account. Please try again.",
+          description: error.message || "Failed to create user account. Check the console for details.",
           variant: "destructive"
         });
       }
