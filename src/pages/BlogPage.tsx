@@ -217,7 +217,7 @@ const BlogPage = () => {
       </div>
 
       {/* Blog Posts */}
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 pb-12">
         {(searchQuery || selectedFilter) && (
           <div className="mb-8">
             <h2 className="text-2xl font-semibold mb-2">
