@@ -6,34 +6,38 @@ export interface LightspeedItem {
   category: string;
   manufacturer?: string;
   upc?: string;
+  zip?: string;
 }
 
 export const mockLightspeedItems: LightspeedItem[] = [
   {
     itemID: 'LS-1',
-    description: 'Demo Carbon Mountain Bike',
+    description: 'Santa Cruz Hightower Carbon S Kit',
     price: 120,
-    image: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=800&q=60',
+    image: 'https://images.squarespace-cdn.com/content/v1/54ed5347e4b0baa5b2214761/1598647769839-1S0QC0BYG10G1SNEJHGE/Santa+Cruz+Hightower+Carbon+S+kit+rental+demo+bike?format=2500w',
     category: 'mountain-bikes',
-    manufacturer: 'Demo Bikes',
+    manufacturer: 'Santa Cruz',
     upc: '111111',
+    zip: '89541',
   },
   {
     itemID: 'LS-2',
-    description: 'All-Mountain Snowboard',
-    price: 60,
-    image: 'https://images.unsplash.com/photo-1542038332026-6d45e63d29ed?auto=format&fit=crop&w=800&q=60',
-    category: 'snowboards',
-    manufacturer: 'Snow Co',
+    description: '2020 Specialized Stumpjumper 27.5" 29"',
+    price: 110,
+    image: 'https://images.squarespace-cdn.com/content/v1/54ed5347e4b0baa5b2214761/1572545263294-YK2I0B6KA8CRWWL5HF8K/2020+Specialized+Stumpjumper+27.5%22+29%22mountain+bike+demo%2Frental+Fairfax+Marin?format=2500w',
+    category: 'mountain-bikes',
+    manufacturer: 'Specialized',
     upc: '222222',
+    zip: '89541',
   },
   {
     itemID: 'LS-3',
-    description: '9ft Epoxy Longboard',
-    price: 45,
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=60',
-    category: 'surfboards',
-    manufacturer: 'WaveWorks',
+    description: 'Yeti SB130 Turq Series',
+    price: 130,
+    image: 'https://images.squarespace-cdn.com/content/v1/54ed5347e4b0baa5b2214761/5dcc5ca5-1d98-486f-9938-c23e8c7655e5/Screen+Shot+2022-02-25+at+3.22.11+PM.png?format=2500w',
+    category: 'mountain-bikes',
+    manufacturer: 'Yeti',
     upc: '333333',
+    zip: '89541',
   },
 ];
