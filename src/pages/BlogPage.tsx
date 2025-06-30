@@ -11,7 +11,7 @@ import { searchBlogPostsWithNLP } from "@/services/blogSearchService";
 const BlogPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  
+
   // Initialize state from URL params
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || "");
   const [searchResults, setSearchResults] = useState<BlogPost[]>(blogPosts);
@@ -27,7 +27,7 @@ const BlogPage = () => {
   useEffect(() => {
     const urlSearch = searchParams.get('search');
     const urlCategory = searchParams.get('category');
-    
+
     if (urlSearch) {
       setSearchQuery(urlSearch);
       handleSearch(urlSearch, urlCategory || "");
@@ -49,7 +49,7 @@ const BlogPage = () => {
   const handleSearch = async (query?: string, filter?: string) => {
     const searchTerm = query !== undefined ? query : searchQuery;
     const filterTerm = filter !== undefined ? filter : selectedFilter;
-    
+
     if (!searchTerm.trim()) {
       applyFilter(filterTerm);
       return;
@@ -62,7 +62,7 @@ const BlogPage = () => {
         ? results.filter(post => post.category === filterTerm || post.tags.includes(filterTerm))
         : results;
       setSearchResults(filteredResults);
-      
+
       // Update URL
       const params = new URLSearchParams();
       if (searchTerm) params.set('search', searchTerm);
@@ -98,7 +98,7 @@ const BlogPage = () => {
       post.category === filter || post.tags.includes(filter)
     );
     setSearchResults(filtered);
-    
+
     // Update URL
     const params = new URLSearchParams();
     if (searchQuery) params.set('search', searchQuery);
@@ -128,7 +128,7 @@ const BlogPage = () => {
       skis: "bg-lime-300 text-gray-900 hover:bg-lime-400",
       surfboards: "bg-lime-300 text-gray-900 hover:bg-lime-400",
       "mountain bikes": "bg-lime-300 text-gray-900 hover:bg-lime-400",
-      "stories that stoke": "bg-lime-300 text-gray-900 hover:bg-lime-400"
+      "stories that stoke": "bg-fuchsia-500 text-gray-900 hover:bg-fuchsia-600"
     };
     return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800 hover:bg-gray-200";
   };
