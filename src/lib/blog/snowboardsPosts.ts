@@ -1,7 +1,6 @@
-
 import { BlogPost } from './types';
 
-export const snowboardsPosts: Omit<BlogPost, 'author' | 'authorId'>[] = [
+export const snowboardsPosts: BlogPost[] = [
   {
     id: "snowboard-buying-guide-2025",
     title: "The Ultimate Snowboard Buying Guide for 2025: Everything You Need to Know",
@@ -221,6 +220,8 @@ The key to mastering these advanced techniques is consistent practice and patien
     readTime: 10,
     heroImage: "https://neversummer.com/cdn/shop/articles/10TipsBlog.jpg?v=1653255663",
     thumbnail: "https://neversummer.com/cdn/shop/articles/10TipsBlog.jpg?v=1653255663",
-    tags: ["snowboards", "advanced", "technique", "skills", "progression"]
+    tags: ["snowboards", "advanced", "technique", "skills", "progression"],
+    author: "Generative AI",
+    authorId: "generative-ai"
   }
 ];

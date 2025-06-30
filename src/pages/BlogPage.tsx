@@ -241,7 +241,7 @@ const BlogPage = () => {
                     <div className="flex items-center">
                       <User className="h-3 w-3 mr-1" />
                       <Link
-                        to={`/user-profile/${post.authorId}`}
+                        to={post.authorId !== 'generative-ai' ? `/user-profile/${post.authorId}` : '#'}
                         className="hover:text-primary transition-colors"
                       >
                         {post.author}

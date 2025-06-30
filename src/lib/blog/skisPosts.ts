@@ -1,7 +1,6 @@
-
 import { BlogPost } from './types';
 
-export const skisPosts: Omit<BlogPost, 'author' | 'authorId'>[] = [
+export const skisPosts: BlogPost[] = [
   {
     id: "ski-waxing-guide",
     title: "The Complete Guide to Ski Waxing: Keep Your Skis Running Fast",
@@ -120,7 +119,9 @@ Remember, consistency is more important than perfection. Regular waxing with bas
     readTime: 9,
     heroImage: "https://shop-raze-cat.com/cdn/shop/articles/warum-ski-wachsen-und-welches-wachs-sollte-ich-benutzen-raze-cat.jpg?v=1712086056",
     thumbnail: "https://shop-raze-cat.com/cdn/shop/articles/warum-ski-wachsen-und-welches-wachs-sollte-ich-benutzen-raze-cat.jpg?v=1712086056",
-    tags: ["skis", "maintenance", "waxing", "diy", "performance"]
+    tags: ["skis", "maintenance", "waxing", "diy", "performance"],
+    author: "Generative AI",
+    authorId: "generative-ai"
   },
   {
     id: "avalanche-safety-basics",
@@ -320,6 +321,8 @@ Remember: no powder run is worth your life or the lives of your partners. When i
     readTime: 12,
     heroImage: "https://www.weather.gov/images/wrn/Infographics/2021/ww-avalanche.png",
     thumbnail: "https://www.weather.gov/images/wrn/Infographics/2021/ww-avalanche.png",
-    tags: ["skis", "safety", "backcountry", "avalanche", "education"]
+    tags: ["skis", "safety", "backcountry", "avalanche", "education"],
+    author: "Generative AI",
+    authorId: "generative-ai"
   }
 ];

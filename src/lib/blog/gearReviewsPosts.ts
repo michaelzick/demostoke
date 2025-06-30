@@ -201,8 +201,8 @@ Remember, expensive gear won't automatically make you a better rider, but the ri
     tags: ["gear", "reviews", "2024", "buying guide", "mountain bikes"],
     heroImage: "https://images.unsplash.com/photo-1506316940527-4d1c138978a0?auto=format&fit=crop&w=1200&q=80",
     thumbnail: "https://images.unsplash.com/photo-1506316940527-4d1c138978a0?auto=format&fit=crop&w=800&q=80",
-    author: 'Michael Zick',
-    authorId: 'michael-zick',
+    author: 'Generative AI',
+    authorId: 'generative-ai',
   },
   {
     id: "never-summer-proto-type-two-review",
@@ -246,8 +246,6 @@ While not primarily designed for park riding, the Proto Type Two holds its own o
 - May be too aggressive for beginner/intermediate riders
 - Limited availability (sells out quickly each season)
 
-**Rating: 9/10**
-
 The Never Summer Proto Type Two delivers on its promise as a high-performance all-mountain board. While the price tag might give some pause, the quality construction and versatile performance make it worth the investment for advanced riders seeking one board that can handle everything the mountain throws at them.
 
 If you're an experienced rider looking for a daily driver that excels in carving, handles powder well, and will last for years, the Proto Type Two should be at the top of your list.
@@ -258,8 +256,8 @@ If you're an experienced rider looking for a daily driver that excels in carving
     heroImage: "https://www.outdoorsports.com/cdn/shop/files/NEVERS_2_109a2da9-eae2-4d78-8617-ae3319d5ffe1.png?v=1724440627",
     thumbnail: "https://www.outdoorsports.com/cdn/shop/files/NEVERS_2_109a2da9-eae2-4d78-8617-ae3319d5ffe1.png?v=1724440627",
     tags: ["gear reviews", "snowboards", "all-mountain", "never summer", "advanced"],
-    author: 'Michael Zick',
-    authorId: 'michael-zick',
+    author: 'Generative AI',
+    authorId: 'generative-ai',
   },
   {
     id: "firewire-seaside-surfboard-review",
@@ -319,8 +317,6 @@ The Seaside is perfect for:
 - Premium price point
 - Not suitable for aggressive, performance-oriented surfing
 
-**Rating: 8.5/10**
-
 The Firewire Seaside delivers exactly what it promises - pure fun in small waves. While it's not an everyday board for all conditions, it excels so dramatically in its intended environment that it's worth having in any serious surfer's quiver.
 
 If you find yourself struggling to have fun in typical beach break surf or want to rediscover the joy of surfing in less-than-perfect conditions, the Seaside might just change your perspective on what makes a good surf session.
@@ -331,8 +327,8 @@ If you find yourself struggling to have fun in typical beach break surf or want 
     heroImage: "https://www.warmwinds.com/web/image/5141-09f89d26/robs-seaside.jpg",
     thumbnail: "https://www.warmwinds.com/web/image/5142-fe25b03c/rob-with-seaside.jpg",
     tags: ["gear reviews", "surfboards", "small waves", "firewire", "rob machado"],
-    author: 'Michael Zick',
-    authorId: 'michael-zick',
+    author: 'Generative AI',
+    authorId: 'generative-ai',
   },
   {
     id: "pyzel-gremlin-surfboard-review",
@@ -379,8 +375,6 @@ Cons:
 - Not a true groveler for the absolute smallest days
 - May feel too wide for surfers who prefer narrow, high-performance shortboards
 
-**Rating: 9/10**
-
 The Pyzel Gremlin is a standout choice for surfers who want one board that can handle the majority of their sessions. It’s fun, fast, and forgiving, with enough performance to keep things interesting as the waves improve. If you’re looking for a small wave board that won’t hold you back as conditions get better, the Gremlin is well worth a look.
 `,
     category: "gear reviews",
@@ -389,8 +383,8 @@ The Pyzel Gremlin is a standout choice for surfers who want one board that can h
     heroImage: "https://d3iswawdztsslu.cloudfront.net/46/surfboards/4894339315f09c.png?or=270",
     thumbnail: "https://jackssurfboards.com/cdn/shop/files/GREMLIN.png?v=1738695642&width=1080",
     tags: ["gear reviews", "surfboards", "pyzel", "gremlin", "small wave", "review"],
-    author: 'Michael Zick',
-    authorId: 'michael-zick',
+    author: 'Generative AI',
+    authorId: 'generative-ai',
   },
   {
     id: "firewire-sci-fi-2-surfboard-review",
@@ -444,8 +438,6 @@ While not a dedicated step-up, the Sci-Fi 2.0 holds its own in overhead surf. Th
 - Wide tail can feel skatey in very steep waves
 - Premium price point
 
-**Rating: 9/10**
-
 The Firewire Sci-Fi 2.0 is a standout for surfers who want to blend futuristic design with real-world performance. It’s fast, fun, and forgiving, with enough versatility to handle everything from summer mush to overhead punchy surf. If you’re looking to add a modern, high-performance board to your quiver, the Sci-Fi 2.0 is well worth a look.
 `,
     category: "gear reviews",
@@ -454,8 +446,8 @@ The Firewire Sci-Fi 2.0 is a standout for surfers who want to blend futuristic d
     heroImage: "https://surfd.com/wp-content/uploads/2017/01/sci-fi-black-white.jpg",
     thumbnail: "https://images.squarespace-cdn.com/content/v1/5cab83fed7819e643e146c9b/1699999900037-NP11JSF8T78LRTJQEHF1/_KAI5089.JPG?format=1000w",
     tags: ["gear reviews", "surfboards", "firewire", "sci-fi 2.0", "tomo", "kelly slater", "review"],
-    author: 'Michael Zick',
-    authorId: 'michael-zick',
+    author: 'Generative AI',
+    authorId: 'generative-ai',
   },
   {
     id: "tom-wallisch-pro-skis-2025-review",
@@ -492,8 +484,6 @@ While it's a true park ski, the TW Pro holds its own on groomers and in light po
 - 90mm waist sinks in deep powder
 - Not ideal for big-mountain charging
 
-**Rating: 8.5/10**
-
 Freestyle skiers who spend most of their time in the park or sessioning urban features will love the Tom Wallisch Pro. It remains one of the most well-rounded park skis for 2025.`,
     category: "gear reviews",
     publishedAt: "2025-07-05",
@@ -501,7 +491,7 @@ Freestyle skiers who spend most of their time in the park or sessioning urban fe
     heroImage: "https://www.backcountry.com/images/items/1200/LIN/LINH05R/ONECOL_D4.jpg",
     thumbnail: "https://m.media-amazon.com/images/I/51s++VpbszL._UF1000,1000_QL80_.jpg",
     tags: ["gear reviews", "skis", "tom wallisch", "park", "freestyle"],
-    author: 'Michael Zick',
-    authorId: 'michael-zick',
+    author: 'Generative AI',
+    authorId: 'generative-ai',
   }
 ];
