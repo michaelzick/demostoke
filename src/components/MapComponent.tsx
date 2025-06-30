@@ -1,10 +1,10 @@
 
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useMatch } from "react-router-dom";
+import { useMatch } from "react-router-dom";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { supabase } from "@/integrations/supabase/client";
-import { LoadingSpinner } from "./LoadingSpinner";
+import LoadingSpinner from "./LoadingSpinner";
 import { useUserLocations } from "@/hooks/useUserLocations";
 import {
   initializeMap,
@@ -49,7 +49,7 @@ const MapComponent = ({
   const { 
     data: userLocations = [], 
     isLoading: isUserLocationsLoading 
-  } = useUserLocations(activeCategory, !isSearchRoute);
+  } = useUserLocations();
 
   // Fetch Mapbox token
   useEffect(() => {
@@ -128,7 +128,14 @@ const MapComponent = ({
       // Explore route: Show user location markers
       console.log('🗺️ Explore route: Showing user location markers');
       
-      userLocations.forEach((user) => {
+      // Filter user locations by category if specified
+      const filteredUserLocations = activeCategory 
+        ? userLocations.filter(user => 
+            user.equipment_categories.includes(activeCategory)
+          )
+        : userLocations;
+
+      filteredUserLocations.forEach((user) => {
         if (!user.location?.lat || !user.location?.lng) return;
 
         const el = createUserLocationMarkerElement(user.role, activeCategory);
@@ -143,8 +150,8 @@ const MapComponent = ({
           .addTo(map.current!);
       });
 
-      if (userLocations.length > 0) {
-        fitMapBounds(map.current, userLocations);
+      if (filteredUserLocations.length > 0) {
+        fitMapBounds(map.current, filteredUserLocations);
       }
     }
   }, [isSearchRoute, initialEquipment, userLocations, activeCategory, isLoading]);

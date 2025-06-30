@@ -1,5 +1,5 @@
 
-import { useAppSettings } from '@/hooks/useAppSettings';
+import { useMatch } from 'react-router-dom';
 
 const gearLegendItems = [
   { category: 'Snowboards', color: 'bg-fuchsia-500' },
@@ -19,13 +19,11 @@ interface MapLegendProps {
 }
 
 const MapLegend = ({ activeCategory }: MapLegendProps) => {
-  const { data: appSettings } = useAppSettings();
-  const isUserLocationMode = appSettings?.map_display_mode === 'user_locations';
+  const isSearchRoute = !!useMatch("/search");
 
-  // Show gear legend when a specific category is selected, profile legend otherwise
-  // If not in user location mode, always show gear legend.
-  // When in user location mode, show gear legend only when a category filter is active.
-  const showGearLegend = !isUserLocationMode || !!activeCategory;
+  // Show gear legend on search route, profile legend on explore route
+  // When on explore route and a category is selected, still show profile legend
+  const showGearLegend = isSearchRoute;
   const legendItems = showGearLegend ? gearLegendItems : profileLegendItems;
 
   return (
