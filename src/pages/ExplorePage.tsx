@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useLocation, useSearchParams, useMatch } from "react-router-dom";
 import { getEquipmentData } from "@/services/searchService";
 import MapComponent from "@/components/MapComponent";
+import MapLegend from "@/components/map/MapLegend";
 import EquipmentCard from "@/components/EquipmentCard";
 import FilterBar from "@/components/FilterBar";
 import { Equipment } from "@/types";
@@ -20,6 +21,7 @@ const ExplorePage = () => {
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
   const [allEquipment, setAllEquipment] = useState<Equipment[]>([]);
   const [isEquipmentLoading, setIsEquipmentLoading] = useState(true);
+  const [hasShownNoEquipmentToast, setHasShownNoEquipmentToast] = useState(false);
 
   // Load equipment data using global app settings
   useEffect(() => {
@@ -44,6 +46,7 @@ const ExplorePage = () => {
     const queryParams = new URLSearchParams(location.search);
     const categoryFromUrl = queryParams.get("category");
     setActiveCategory(categoryFromUrl);
+    setHasShownNoEquipmentToast(false); // Reset toast flag when category changes
   }, [location.search]);
 
   // Get equipment with dynamic distances
@@ -94,10 +97,22 @@ const ExplorePage = () => {
     return results;
   }, [activeCategory, sortBy, searchParams, viewMode, equipmentWithDynamicDistances]);
 
+  // Show toast when no equipment is found after filtering
+  useEffect(() => {
+    if (!isEquipmentLoading && filteredEquipment.length === 0 && activeCategory && !hasShownNoEquipmentToast) {
+      toast({
+        title: "No equipment found",
+        description: `No ${activeCategory.toLowerCase()} available in this area. Try expanding your search or browse other categories.`,
+      });
+      setHasShownNoEquipmentToast(true);
+    }
+  }, [filteredEquipment.length, activeCategory, isEquipmentLoading, hasShownNoEquipmentToast, toast]);
+
   // Handle reset
   const handleReset = () => {
     setActiveCategory(null);
     setSortBy("distance");
+    setHasShownNoEquipmentToast(false);
     toast({
       title: "Filters Reset",
       description: "All filters have been cleared.",
@@ -121,11 +136,12 @@ const ExplorePage = () => {
       />
 
       {viewMode === "map" ? (
-        <div className="h-[calc(100vh-12rem)]">
+        <div className="h-[calc(100vh-12rem)] relative">
           <MapComponent
             activeCategory={activeCategory}
             searchQuery={searchParams.get("q")?.toLowerCase()}
           />
+          <MapLegend activeCategory={activeCategory} />
         </div>
       ) : (
         <div className="container px-4 md:px-6 py-8">

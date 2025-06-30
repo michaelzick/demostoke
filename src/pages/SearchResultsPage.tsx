@@ -4,6 +4,7 @@ import { searchEquipmentWithNLP, getEquipmentData } from "@/services/searchServi
 import { AISearchResult } from "@/services/equipment/aiSearchService";
 import EquipmentCard from "@/components/EquipmentCard";
 import MapComponent from "@/components/MapComponent";
+import MapLegend from "@/components/map/MapLegend";
 import FilterBar from "@/components/FilterBar";
 import { Button } from "@/components/ui/button";
 import { Loader2, Search, Sparkles } from "lucide-react";
@@ -227,13 +228,14 @@ const SearchResultsPage = () => {
           <span className="ml-4 text-lg">Processing your search...</span>
         </div>
       ) : viewMode === "map" ? (
-        <div className="h-[calc(100vh-14rem)]">
+        <div className="h-[calc(100vh-14rem)] relative">
           <MapComponent
             initialEquipment={mapEquipment}
             activeCategory={activeCategory}
             searchQuery={query?.toLowerCase()}
             isEquipmentLoading={isLoading}
           />
+          <MapLegend activeCategory={activeCategory} />
         </div>
       ) : (
         <div className="container px-4 md:px-6 py-8">
