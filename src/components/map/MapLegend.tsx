@@ -20,10 +20,13 @@ interface MapLegendProps {
 
 const MapLegend = ({ activeCategory }: MapLegendProps) => {
   const isSearchRoute = !!useMatch("/search");
+  const isExploreRoute = !!useMatch("/explore");
 
-  // Show gear legend on search route, profile legend on explore route
-  // When on explore route and a category is selected, still show profile legend
-  const showGearLegend = isSearchRoute;
+  // Determine which legend to show:
+  // - Search route: always show gear legend
+  // - Explore route: show gear legend when category is selected, profile legend when showing all
+  // - Other routes: show profile legend
+  const showGearLegend = isSearchRoute || (isExploreRoute && activeCategory !== null);
   const legendItems = showGearLegend ? gearLegendItems : profileLegendItems;
 
   return (
