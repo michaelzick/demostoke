@@ -33,6 +33,8 @@ The type of mountain bike you choose depends on where and how you plan to ride:
 - Best for: Steep descents, technical trails
 - Frame travel: 140-170mm
 
+For budget-friendly options and detailed reviews, see [BikeRadar's beginner bike roundup](https://www.bikeradar.com/advice/buyers-guides/best-budget-mountain-bikes/) and [Singletracks' entry-level guide](https://www.singletracks.com/mtb-gear/best-entry-level-mountain-bikes/).
+
 **Downhill Bikes**
 
 - Heavy-duty bikes for lift-served riding
@@ -107,6 +109,8 @@ Remember, mountain biking is about having fun and enjoying the outdoors. Take yo
 **Essential Mountain Bike Maintenance: Keep Your Ride Rolling**
 
 Regular maintenance is crucial for mountain bike performance and safety. Here's what every rider should know about keeping their bike in top condition.
+
+For step-by-step tutorials, see [Park Tool's repair guides](https://www.parktool.com/blog/repair-help) and [Pinkbike's maintenance series](https://www.pinkbike.com/news/pinkbike-how-to-maintain-your-bike.html).
 
 **Daily Pre-Ride Checks**
 
@@ -234,6 +238,8 @@ A well-maintained mountain bike is a reliable companion for countless adventures
 **Top 10 Mountain Bike Trails Around Los Angeles**
 
 Los Angeles offers some of the best mountain biking in the world, with year-round riding weather and diverse terrain. Here are the top trails every LA mountain biker should experience.
+
+For recommended protective gear on these trails, see [REI's mountain biking checklist](https://www.rei.com/learn/expert-advice/mountain-biking-checklist.html).
 
 **1. El Moro Canyon Trail (Crystal Cove State Park)**
 

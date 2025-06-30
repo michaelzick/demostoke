@@ -78,6 +78,8 @@ Characteristics:
 
 Best for: Intermediate surfers, versatility seekers, most weekend warriors
 
+For board reviews and shape comparisons, see [Surfboard Guide](https://www.surfboardguide.com/) and [Boardshop's buyer's guide](https://www.boardshop.co.uk/blog/surfboard-buyers-guide).
+
 **Volume and Flotation**
 
 Board volume (measured in liters) determines how much water the board displaces and directly affects:
@@ -171,6 +173,8 @@ Custom Boards: Tailored to your specifications, unique designs, higher cost
 
 Remember that the "perfect" surfboard doesn't exist—every design involves compromises. The best board for you balances your skill level, local waves, and personal preferences. Don't be afraid to try different shapes and sizes as you develop as a surfer.
 
+For a deeper dive into board design, see [Surfer Magazine's board guide](https://www.surfer.com/gear/board-buying-guide).
+
 Start with a shape that's forgiving and appropriate for your level, then experiment as you gain experience and better understand your preferences.`,
     category: "surfboards",
     publishedAt: "2025-01-16",
@@ -186,6 +190,8 @@ Start with a shape that's forgiving and appropriate for your level, then experim
     title: "How to Read Surf Forecasts Like a Pro: Decode Wave Predictions",
     excerpt: "Master the art of surf forecasting with our detailed guide to understanding swell direction, wind patterns, tides, and timing to score the best waves.",
     content: `Understanding surf forecasts is crucial for maximizing your time in the water. Learning to interpret wave predictions, wind patterns, and tidal information will help you choose the best times and locations for surfing.
+
+For additional tips, see [Surfline's forecasting tutorial](https://www.surfline.com/surfline-forecasts-how-to) and [Magicseaweed's guide](https://magicseaweed.com/news/how-to-read-a-surf-forecast/3241/).
 
 **Essential Forecast Elements**
 

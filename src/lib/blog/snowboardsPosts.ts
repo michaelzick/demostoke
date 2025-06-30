@@ -96,6 +96,8 @@ export const snowboardsPosts: BlogPost[] = [
 
 - Salomon Assassin - Soft flex and true twin shape for freestyle progression.
 
+For detailed breakdowns of these models, see [Whitelines' 2025 snowboard guide](https://whitelines.com/snowboard-gear/reviews/best-snowboards-2025.html) and [Transworld Snowboarding's top picks](https://www.snowboarding.com/gear-reviews/best-snowboards-2025).
+
 **Making Your Decision**
 
 - Consider where you'll be riding most often.
@@ -110,6 +112,8 @@ export const snowboardsPosts: BlogPost[] = [
 - Professional tune-ups at the start of each season.
 
 The perfect snowboard is the one that matches your riding style and helps you progress. Take time to demo different boards when possible, and don't hesitate to ask shop experts for advice based on your specific needs.
+
+For in-depth board tests, browse [TheGoodRide](https://thegoodride.com) for user reviews and performance breakdowns.
 
 **Advanced Snowboard Techniques**
 

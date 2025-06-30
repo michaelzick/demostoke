@@ -19,6 +19,8 @@ Ski bases are made of polyethylene (P-tex), a porous material that absorbs wax. 
 
 All-Temp Wax: Perfect for most recreational skiers, these waxes work well in a wide range of temperatures (typically 15°F to 40°F). They're convenient and forgiving, making them ideal for beginners.
 
+For product comparisons, check [Blister's ski wax guide](https://blisterreview.com/gear-reviews/ski-wax-guide) and [REI's how-to](https://www.rei.com/learn/expert-advice/waxing-skis-and-snowboards.html).
+
 Temperature-Specific Wax: Designed for specific temperature ranges, these waxes offer superior performance when conditions match their intended use:
 
 - Cold wax: Below 20°F
@@ -158,6 +160,8 @@ Every backcountry skier must carry and know how to use:
 
 Digital beacons that transmit and receive signals for buried victim location. Practice with your specific model regularly.
 
+For a comparison of popular beacons, see [OutdoorGearLab's review](https://www.outdoorgearlab.com/topics/snow-sports/best-avalanche-beacon).
+
 **Probe**
 
 Collapsible pole used to precisely locate buried victims after initial transceiver search. Choose probes at least 240cm long.
@@ -165,6 +169,8 @@ Collapsible pole used to precisely locate buried victims after initial transceiv
 **Shovel**
 
 Metal blade essential for efficient rescue digging. Plastic shovels are inadequate for rescue situations.
+
+For hands-on reviews of probes and shovels, check [Backcountry Magazine's gear tests](https://backcountrymagazine.com/gear-guide/).
 
 **Risk Assessment Framework**
 

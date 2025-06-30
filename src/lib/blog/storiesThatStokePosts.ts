@@ -25,6 +25,8 @@ Too many people buy gear because someone told them it would work, they read abou
 
 Now that I've started snowboarding, the same lessons apply. I chose my first board after riding it at Palisades Tahoe in spring 2024: the Capita DOA. It felt right immediately. Easy enough for my abilities but with room to grow. Not perfect for every condition—deep powder needs something else—but it's excellent for all-mountain riding.
 
+For an in-depth look at this board, see [Snowboarder's review](https://www.snowboarder.com/gear/snowboard-review-capita-doa/).
+
 You ride powder boards on deep days, stiff boards on ice, something else for the park. The Capita DOA is a killer for most circumstances, but not everything. Of course, I'm still new to snowboarding, and there are ways I could tweak my bindings, but having the right board for the right conditions is the way to go.
 
 When I'm ready for my next snowboard, surfboard, mountain bike—whatever—I'll always try to demo it first.
