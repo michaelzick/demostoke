@@ -1,4 +1,3 @@
-
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +6,7 @@ import { blogPosts } from "@/lib/blog";
 import { useEffect, useState } from "react";
 import { useRelatedGear } from "@/hooks/useRelatedGear";
 import RelatedGear from "@/components/equipment-detail/RelatedGear";
+import MarkdownTextRenderer from "@/components/blog/MarkdownTextRenderer";
 
 const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string; }>();
@@ -108,7 +108,7 @@ const BlogPostPage = () => {
               </h1>
 
               <p className="text-xl text-muted-foreground mb-6 leading-relaxed">
-                {post.excerpt}
+                <MarkdownTextRenderer text={post.excerpt} />
               </p>
 
               <div className="flex items-center justify-between flex-wrap gap-4">
@@ -150,14 +150,16 @@ const BlogPostPage = () => {
                   return (
                     <ul key={index} className="list-disc list-inside space-y-2 mb-6">
                       {listItems.map((item, itemIndex) => (
-                        <li key={itemIndex}>{item}</li>
+                        <li key={itemIndex}>
+                          <MarkdownTextRenderer text={item} />
+                        </li>
                       ))}
                     </ul>
                   );
                 }
                 return (
                   <p key={index} className="mb-6 leading-relaxed">
-                    {paragraph}
+                    <MarkdownTextRenderer text={paragraph} />
                   </p>
                 );
               })}
