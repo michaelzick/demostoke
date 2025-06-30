@@ -42,10 +42,14 @@ const MapComponent = ({
   const [error, setError] = useState<string | null>(null);
   const [mapboxToken, setMapboxToken] = useState<string | null>(null);
   
-  // Determine if we're on the search route
+  // Determine which route we're on
   const isSearchRoute = !!useMatch("/search");
+  const isExploreRoute = !!useMatch("/explore");
   
-  // Only fetch user locations when NOT on search route
+  // Determine display mode
+  const isEquipmentDetailMode = !isSearchRoute && !isExploreRoute && initialEquipment && initialEquipment.length > 0;
+  
+  // Only fetch user locations when on explore route
   const { 
     data: userLocations = [], 
     isLoading: isUserLocationsLoading 
@@ -98,8 +102,29 @@ const MapComponent = ({
     const existingMarkers = document.querySelectorAll('.mapboxgl-marker');
     existingMarkers.forEach(marker => marker.remove());
 
-    if (isSearchRoute && initialEquipment) {
-      // Search route: Show individual gear items
+    if (isEquipmentDetailMode) {
+      // Equipment detail mode: Show single gear item without popup
+      console.log('🗺️ Equipment detail mode: Showing single gear item marker');
+      
+      const validEquipment = initialEquipment.filter(item => 
+        item.location && 
+        typeof item.location.lat === 'number' && 
+        typeof item.location.lng === 'number'
+      );
+
+      validEquipment.forEach((item) => {
+        const el = createMarkerElement(item.category);
+        
+        const marker = new mapboxgl.Marker(el)
+          .setLngLat([item.location.lng, item.location.lat])
+          .addTo(map.current!);
+      });
+
+      if (validEquipment.length > 0) {
+        fitMapBounds(map.current, validEquipment, validEquipment.length === 1);
+      }
+    } else if (isSearchRoute && initialEquipment) {
+      // Search route: Show individual gear items with popups
       console.log('🗺️ Search route: Showing gear item markers');
       
       const validEquipment = initialEquipment.filter(item => 
@@ -124,7 +149,7 @@ const MapComponent = ({
       if (validEquipment.length > 0) {
         fitMapBounds(map.current, validEquipment, validEquipment.length === 1);
       }
-    } else {
+    } else if (isExploreRoute) {
       // Explore route: Show user location markers
       console.log('🗺️ Explore route: Showing user location markers');
       
@@ -154,10 +179,10 @@ const MapComponent = ({
         fitMapBounds(map.current, filteredUserLocations);
       }
     }
-  }, [isSearchRoute, initialEquipment, userLocations, activeCategory, isLoading]);
+  }, [isSearchRoute, isExploreRoute, isEquipmentDetailMode, initialEquipment, userLocations, activeCategory, isLoading]);
 
   const showLoading = isLoading || 
-    (isSearchRoute ? isEquipmentLoading : isUserLocationsLoading);
+    (isSearchRoute ? isEquipmentLoading : (isExploreRoute ? isUserLocationsLoading : false));
 
   if (error) {
     return (
