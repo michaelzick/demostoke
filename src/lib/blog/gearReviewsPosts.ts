@@ -457,7 +457,6 @@ The Firewire Sci-Fi 2.0 is a standout for surfers who want to blend futuristic d
     author: 'Michael Zick',
     authorId: 'michael-zick',
   },
-
   {
     id: "tom-wallisch-pro-skis-2025-review",
     title: "Tom Wallisch Pro Skis 2025 Review: Jib-Ready Freestyle Fun",
@@ -499,8 +498,8 @@ Freestyle skiers who spend most of their time in the park or sessioning urban fe
     category: "gear reviews",
     publishedAt: "2025-07-05",
     readTime: 6,
-    heroImage: "https://www.newschoolers.com/ski-gear/2025/Skis/2746/Tom-Wallisch-Pro",
-    thumbnail: "https://www.amazon.com/2025-Line-Tom-Wallisch-Skis/dp/B0DD44SKWC",
+    heroImage: "https://www.backcountry.com/images/items/1200/LIN/LINH05R/ONECOL_D4.jpg",
+    thumbnail: "https://m.media-amazon.com/images/I/51s++VpbszL._UF1000,1000_QL80_.jpg",
     tags: ["gear reviews", "skis", "tom wallisch", "park", "freestyle"],
     author: 'Michael Zick',
     authorId: 'michael-zick',

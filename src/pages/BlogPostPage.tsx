@@ -118,8 +118,8 @@ const BlogPostPage = () => {
                     </Link>
                   </div>
                   <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-1" />
-                    {post.readTime} min read
+                    {/* <Clock className="h-4 w-4 mr-1" /> */}
+                    {/* {post.readTime} min read */}
                   </div>
                 </div>
 
