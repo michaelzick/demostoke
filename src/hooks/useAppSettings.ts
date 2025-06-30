@@ -11,27 +11,23 @@ export const useAppSettings = () => {
       const { data, error } = await supabase
         .from('app_settings')
         .select('setting_key, setting_value')
-        .in('setting_key', ['show_mock_data', 'map_display_mode']);
+        .eq('setting_key', 'show_mock_data');
 
       if (error) {
         console.error('❌ Error fetching app settings:', error);
         console.log('🔄 Using default fallback values');
         return { 
-          show_mock_data: true,
-          map_display_mode: 'gear_items'
+          show_mock_data: true
         };
       }
 
       const settings = {
-        show_mock_data: true, // default
-        map_display_mode: 'gear_items' // default
+        show_mock_data: true // default
       };
 
       data?.forEach(setting => {
         if (setting.setting_key === 'show_mock_data') {
           settings.show_mock_data = setting.setting_value === true;
-        } else if (setting.setting_key === 'map_display_mode') {
-          settings.map_display_mode = setting.setting_value === 'user_locations' ? 'user_locations' : 'gear_items';
         }
       });
       
@@ -48,7 +44,7 @@ export const useUpdateAppSettings = () => {
   const { isAdmin } = useIsAdmin();
 
   return useMutation({
-    mutationFn: async (settings: { showMockData?: boolean; mapDisplayMode?: string }) => {
+    mutationFn: async (settings: { showMockData?: boolean }) => {
       if (!isAdmin) {
         throw new Error('Only admins can update app settings');
       }
@@ -66,18 +62,6 @@ export const useUpdateAppSettings = () => {
               updated_at: new Date().toISOString()
             })
             .eq('setting_key', 'show_mock_data')
-        );
-      }
-
-      if (settings.mapDisplayMode !== undefined) {
-        updates.push(
-          supabase
-            .from('app_settings')
-            .update({ 
-              setting_value: settings.mapDisplayMode,
-              updated_at: new Date().toISOString()
-            })
-            .eq('setting_key', 'map_display_mode')
         );
       }
 

@@ -94,7 +94,6 @@ const ExplorePage = () => {
     return results;
   }, [activeCategory, sortBy, searchParams, viewMode, equipmentWithDynamicDistances]);
 
-
   // Handle reset
   const handleReset = () => {
     setActiveCategory(null);
@@ -125,26 +124,7 @@ const ExplorePage = () => {
         <div className="h-[calc(100vh-12rem)]">
           <MapComponent
             activeCategory={activeCategory}
-            initialEquipment={
-              filteredEquipment.length > 0
-                ? filteredEquipment
-                    .filter(item => item.location && typeof item.location.lat === 'number' && typeof item.location.lng === 'number')
-                    .map(item => ({
-                      id: item.id,
-                      name: item.name,
-                      category: item.category,
-                      price_per_day: item.price_per_day,
-                      location: {
-                        lat: item.location.lat,
-                        lng: item.location.lng,
-                      },
-                      ownerId: item.owner.id,
-                      ownerName: item.owner.name,
-                    }))
-                : undefined
-            }
             searchQuery={searchParams.get("q")?.toLowerCase()}
-            isEquipmentLoading={isEquipmentLoading}
           />
         </div>
       ) : (
