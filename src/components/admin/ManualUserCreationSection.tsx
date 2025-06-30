@@ -1,11 +1,13 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useManualUserCreation } from "@/hooks/useManualUserCreation";
+import { useAuth } from "@/helpers";
 import UserBasicInfoFields from "./UserBasicInfoFields";
 import UserContactFields from "./UserContactFields";
 import UserCreationFormActions from "./UserCreationFormActions";
 
 const ManualUserCreationSection = () => {
+  const { user } = useAuth();
   const { 
     formData, 
     isCreating, 
@@ -22,6 +24,11 @@ const ManualUserCreationSection = () => {
     e.preventDefault();
     await createUser();
   };
+
+  // Only show this section to authenticated users (admin check is handled by page-level routing)
+  if (!user) {
+    return null;
+  }
 
   return (
     <Card>
