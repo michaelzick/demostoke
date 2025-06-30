@@ -123,14 +123,14 @@ const BlogPage = () => {
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      snowboards: "bg-blue-100 text-blue-800",
-      skis: "bg-purple-100 text-purple-800",
-      surfboards: "bg-cyan-100 text-cyan-800",
-      "gear reviews": "bg-yellow-100 text-yellow-800",
-      "mountain bikes": "bg-red-100 text-red-800",
-      "stories that stoke": "bg-green-100 text-green-800"
+      "gear reviews": "bg-rose-500 text-white hover:bg-rose-600",
+      snowboards: "bg-lime-300 text-gray-900 hover:bg-lime-400",
+      skis: "bg-lime-300 text-gray-900 hover:bg-lime-400",
+      surfboards: "bg-lime-300 text-gray-900 hover:bg-lime-400",
+      "mountain bikes": "bg-lime-300 text-gray-900 hover:bg-lime-400",
+      "stories that stoke": "bg-lime-300 text-gray-900 hover:bg-lime-400"
     };
-    return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800";
+    return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800 hover:bg-gray-200";
   };
 
   return (
@@ -255,7 +255,7 @@ const BlogPage = () => {
                 <CardHeader>
                   <div className="flex items-center gap-2 mb-2">
                     <Link to={`/blog?category=${encodeURIComponent(post.category)}`}>
-                      <Badge className={`${getCategoryColor(post.category)} hover:opacity-80 transition-opacity cursor-pointer`}>
+                      <Badge className={`${getCategoryColor(post.category)} transition-colors cursor-pointer`}>
                         {post.category}
                       </Badge>
                     </Link>
@@ -295,7 +295,7 @@ const BlogPage = () => {
                   <div className="flex flex-wrap gap-1 mt-3">
                     {post.tags.slice(0, 3).map((tag) => (
                       <Link key={tag} to={`/blog?search=${encodeURIComponent(tag)}`}>
-                        <Badge variant="outline" className="text-xs hover:bg-gray-100 transition-colors cursor-pointer">
+                        <Badge variant="outline" className="text-xs hover:text-primary hover:border-primary hover:bg-transparent transition-colors cursor-pointer">
                           {tag}
                         </Badge>
                       </Link>
