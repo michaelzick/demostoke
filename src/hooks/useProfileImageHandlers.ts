@@ -51,6 +51,17 @@ export const useProfileImageHandlers = ({
     try {
       console.log('Starting profile image upload for user:', user.id);
       
+      // First, get the current profile data to preserve existing values
+      const { data: currentProfile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('role, name')
+        .eq('id', user.id)
+        .single();
+
+      if (fetchError) {
+        console.error('Error fetching current profile:', fetchError);
+      }
+
       // Delete old profile image if it exists and is from profile-images bucket
       if (profileImage && profileImage.includes('profile-images') && !profileImage.includes('dicebear.com')) {
         console.log('Deleting old profile image:', profileImage);
@@ -62,14 +73,14 @@ export const useProfileImageHandlers = ({
       const imageUrl = await uploadProfileImage(file, user.id);
       console.log('Upload successful, URL:', imageUrl);
 
-      // Update the avatar_url in the database
+      // Update the avatar_url in the database while preserving existing role and name
       const { error } = await supabase
         .from('profiles')
         .upsert({ 
           id: user.id,
           avatar_url: imageUrl,
-          name: user.name || '',
-          role: 'private-party'
+          name: currentProfile?.name || user.name || '',
+          role: currentProfile?.role || 'private-party' // Preserve existing role
         }, {
           onConflict: 'id'
         });
@@ -102,14 +113,20 @@ export const useProfileImageHandlers = ({
       const fallbackAvatar = generateDicebearAvatar(user.id);
       setProfileImage(fallbackAvatar);
 
-      // Update database with fallback avatar
+      // Update database with fallback avatar, preserving existing data
+      const { data: currentProfile } = await supabase
+        .from('profiles')
+        .select('role, name')
+        .eq('id', user.id)
+        .single();
+
       await supabase
         .from('profiles')
         .upsert({ 
           id: user.id,
           avatar_url: fallbackAvatar,
-          name: user.name || '',
-          role: 'private-party'
+          name: currentProfile?.name || user.name || '',
+          role: currentProfile?.role || 'private-party' // Preserve existing role
         }, {
           onConflict: 'id'
         });
@@ -124,6 +141,17 @@ export const useProfileImageHandlers = ({
     setIsDeletingImage(true);
 
     try {
+      // First, get the current profile data to preserve existing values
+      const { data: currentProfile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('role, name')
+        .eq('id', user.id)
+        .single();
+
+      if (fetchError) {
+        console.error('Error fetching current profile:', fetchError);
+      }
+
       // Delete the current profile image if it exists and is from profile-images bucket
       if (profileImage && profileImage.includes('profile-images') && !profileImage.includes('dicebear.com')) {
         await deleteProfileImage(profileImage, user.id);
@@ -132,14 +160,14 @@ export const useProfileImageHandlers = ({
       // Generate a new dicebear avatar
       const fallbackAvatar = generateDicebearAvatar(user.id);
 
-      // Update the avatar_url in the database
+      // Update the avatar_url in the database while preserving existing role and name
       const { error } = await supabase
         .from('profiles')
         .upsert({ 
           id: user.id,
           avatar_url: fallbackAvatar,
-          name: user.name || '',
-          role: 'private-party'
+          name: currentProfile?.name || user.name || '',
+          role: currentProfile?.role || 'private-party' // Preserve existing role
         }, {
           onConflict: 'id'
         });
