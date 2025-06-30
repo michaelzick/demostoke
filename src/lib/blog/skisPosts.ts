@@ -7,6 +7,8 @@ export const skisPosts: BlogPost[] = [
     excerpt: "Learn how to properly wax your skis at home with our step-by-step guide. From choosing the right wax to advanced techniques, we cover everything you need to know.",
     content: `Proper ski maintenance is crucial for optimal performance on the mountain. Waxing your skis regularly not only makes them faster but also extends their lifespan and improves your overall skiing experience.
 
+    "First things first, there are different types of wax for different activities. For example, a downhill racer will use a different kind of wax then a cross country skier. The primary type of downhill ski wax comes in hard blocks that are melted onto the ski with an iron. There are a few other types of waxes, too, like pastes and liquids. These are made more for last-minute on-hill touchups - there’s no substitute for a good hot wax. In this guide, we’ll focus on traditional hot waxing ([Evo](https://www.evo.com/guides/how-to-wax-skis))."
+
 **Why Waxing Matters**
 
 Ski bases are made of polyethylene (P-tex), a porous material that absorbs wax. Fresh wax provides:

@@ -9,7 +9,7 @@ export const gearReviewsPosts: BlogPost[] = [
 
 **Best Mountain Bike Gear of 2024: Complete Buying Guide**
 
-2024 has brought exciting innovations in mountain bike technology. This guide summarizes the best gear available this year, based on published reviews and expert opinions from sources like Pinkbike and BikeRadar ([Pinkbike](https://www.pinkbike.com/news/2024-gear-guide.html), [BikeRadar](https://www.bikeradar.com/advice/buyers-guides/)).
+2024 has brought exciting innovations in mountain bike technology. This guide summarizes the best gear available this year, based on published reviews and expert opinions from sources like Pinkbike ([BikeRadar](https://www.bikeradar.com/)) and BikeRadar ([Pinkbike](https://www.pinkbike.com/)).
 
 **Best Mountain Bikes by Category**
 
@@ -43,7 +43,7 @@ Experts recommend prioritizing helmet, tires, dropper post, and brakes for upgra
 
 **Summary**
 
-The mountain bike industry continues to evolve, offering better performance and value at every price point. Focus on safety gear first, then invest in components that will make the biggest difference to your riding experience. For more details, see [Pinkbike's 2024 Gear Guide](https://www.pinkbike.com/news/2024-gear-guide.html) and [BikeRadar's Buyer's Guides](https://www.bikeradar.com/advice/buyers-guides/).
+The mountain bike industry continues to evolve, offering better performance and value at every price point. Focus on safety gear first, then invest in components that will make the biggest difference to your riding experience.
 `,
     category: "gear reviews",
     publishedAt: "2024-01-20",
@@ -58,7 +58,9 @@ The mountain bike industry continues to evolve, offering better performance and 
     id: "never-summer-proto-type-two-review",
     title: "Never Summer Proto Type Two Review: The All-Mountain Beast That Lives Up to the Hype",
     excerpt: "After riding the Never Summer Proto Type Two for a full season, we break down why this board has become a favorite among advanced riders and what makes it stand out in the crowded all-mountain category.",
-    content: `The Never Summer Proto Type Two is frequently highlighted in snowboard reviews for its high-performance all-mountain capabilities. The board features Never Summer's proprietary Rocker Camber construction, with camber underfoot and rocker at the tip and tail, creating a lively, responsive feel that excels in both carving and powder ([TheGoodRide](https://thegoodride.com/snowboard-reviews/never-summer-proto-type-two-2019-2020-review/)).
+    content: `The Never Summer Proto Type Two is frequently highlighted in snowboard reviews for its high-performance all-mountain capabilities. The board features Never Summer's proprietary Rocker Camber construction, with camber underfoot and rocker at the tip and tail, creating a lively, responsive feel that excels in both carving and powder.
+
+    "Like most all-mountain boards, it is around a medium flex, which seems to be even throughout. It has a rockered middle, which felt nice to butter and wasn’t a bitch to get off the ground. It ollies and works the kickers well. I didn’t hit any rail or boxes, but I’m sure it would manoeuvre in and out well as it is pretty light underfoot. ([Whitelines](https://whitelines.com/snowboard-gear/reviews/snowboards/never-summer-proto-type-two-2019-2020.html))"
 
 **Build Quality and Construction**
 
@@ -86,7 +88,7 @@ The carbon fiber VXR laminate adds snap without making the board overly stiff. T
 
 **Summary**
 
-The Never Summer Proto Type Two is recommended for advanced riders seeking a board that can handle a variety of conditions. For more details, see [TheGoodRide review](https://thegoodride.com/snowboard-reviews/never-summer-proto-type-two-2019-2020-review/).
+The Never Summer Proto Type Two is recommended for advanced riders seeking a board that can handle a variety of conditions.
 `,
     category: "gear reviews",
     publishedAt: "2025-01-15",
@@ -101,7 +103,9 @@ The Never Summer Proto Type Two is recommended for advanced riders seeking a boa
     id: "firewire-seaside-surfboard-review",
     title: "Firewire Seaside Surfboard Review: Modern Fish with Classic Flow",
     excerpt: "A detailed look at the Firewire Seaside, a modern fish surfboard designed by Rob Machado, praised for its speed, maneuverability, and versatility in a wide range of conditions.",
-    content: `The Firewire Seaside, designed by Rob Machado, is widely recognized for blending the classic fish outline with modern performance features. Reviewers at Magicseaweed and Boardshop highlight its quad fin setup, wide outline, and low rocker, which together deliver impressive speed and flow in small to medium surf ([Magicseaweed](https://magicseaweed.com/news/firewire-seaside-review/11913/), [Boardshop](https://www.boardshop.co.uk/blog/firewire-seaside-surfboard-review)).
+    content: `The Firewire Seaside, designed by Rob Machado, is widely recognized for blending the classic fish outline with modern performance features. Reviewers at Magicseaweed and Boardshop highlight its quad fin setup, wide outline, and low rocker, which together deliver impressive speed and flow in small to medium surf.
+
+    "When it comes to surfboard design, few names carry the weight of Rob Machado. Machado, a legendary surfer with a fluid, almost otherworldly style, has spent his post-competitive career shaping surfboards, reflecting his smooth, fast, and endlessly playful wave-riding approach ([Mike Raven Coaching](https://www.mikeravencoaching.com/a-deep-dive-into-the-rob-machado-firewire-seaside-57/))."
 
 **Performance**
 
@@ -129,7 +133,7 @@ The Never Summer Proto Type Two is recommended for advanced riders seeking a boa
 
 **Summary**
 
-The Firewire Seaside is a standout for surfers who want a board that combines classic style with modern versatility. For more, see [Magicseaweed's review](https://magicseaweed.com/news/firewire-seaside-review/11913/) and [Boardshop's review](https://www.boardshop.co.uk/blog/firewire-seaside-surfboard-review).
+The Firewire Seaside is a standout for surfers who want a board that combines classic style with modern versatility.
 `,
     category: "gear reviews",
     publishedAt: "2025-06-29",
@@ -144,7 +148,9 @@ The Firewire Seaside is a standout for surfers who want a board that combines cl
     id: "pyzel-gremlin-surfboard-review",
     title: "Pyzel Gremlin Surfboard Review: Small Wave Powerhouse with Surprising Versatility",
     excerpt: "A look at why the Pyzel Gremlin is a favorite for surfers seeking fun, speed, and performance in everyday waves.",
-    content: `The Pyzel Gremlin is often recommended by surf reviewers as a board that brings maximum fun to average and below-average surf. Its full outline, wide nose, and low entry rocker make it easy to paddle and catch waves early. The single to double concave bottom and wide, curvy tail help generate speed and maintain control through turns ([StabMag](https://stabmag.com/gear/pyzel-gremlin-review/)).
+    content: `The Pyzel Gremlin is often recommended by surf reviewers as a board that brings maximum fun to average and below-average surf. Its full outline, wide nose, and low entry rocker make it easy to paddle and catch waves early. The single to double concave bottom and wide, curvy tail help generate speed and maintain control through turns.
+
+    "I found the Gremlin to be very fast and responsive and I enjoyed surfing it as a Thruster and a Quad. I highly recommend the Gremlin for beginner/intermediate to the pro level for ease of surf and high performance maneuverability ([Surf N Show](https://surfnshow.com/products/pyzel-surfboards-gremlin))."
 
 **Performance**
 
@@ -172,7 +178,7 @@ The Firewire Seaside is a standout for surfers who want a board that combines cl
 
 **Summary**
 
-The Pyzel Gremlin is a standout choice for surfers who want one board that can handle the majority of their sessions. For more, see [StabMag's review](https://stabmag.com/gear/pyzel-gremlin-review/).
+The Pyzel Gremlin is a standout choice for surfers who want one board that can handle the majority of their sessions.
 `,
     category: "gear reviews",
     publishedAt: "2025-06-23",
@@ -187,7 +193,9 @@ The Pyzel Gremlin is a standout choice for surfers who want one board that can h
     id: "firewire-sci-fi-2-surfboard-review",
     title: "Firewire Sci-Fi 2.0 Surfboard Review: Space-Age Performance for Modern Surfers",
     excerpt: "A look at why the Firewire Sci-Fi 2.0 is a favorite for progressive surfers seeking speed, versatility, and innovation.",
-    content: `The Firewire Sci-Fi 2.0, designed by Daniel "Tomo" Thomson in collaboration with Kelly Slater, is frequently praised for its futuristic outline and advanced construction. The board uses Firewire’s Helium construction, combining lightweight EPS foam with parabolic carbon rails for a lively, responsive feel ([Surfd](https://surfd.com/2020/01/firewire-sci-fi-2-0-review/)).
+    content: `The Firewire Sci-Fi 2.0, designed by Daniel "Tomo" Thomson in collaboration with Kelly Slater, is frequently praised for its futuristic outline and advanced construction. The board uses Firewire’s Helium construction, combining lightweight EPS foam with parabolic carbon rails for a lively, responsive feel.
+
+    Tomo says, "the Sci-Fi has been such a popular design and stood the test of time because of its functionality. It's such an easy board to ride. It gives the user an effortless sense of control and performance that you wouldn't get in a traditional shortboard ([Firewire](https://www.firewiresurfboards.com/products/prestige-sci-fi-2-0?srsltid=AfmBOopFBJbeOrk175qK4QI5ZpMPl4HZdRolXTZrbntn25VklmW6v19c))."
 
 **Performance**
 
@@ -218,7 +226,7 @@ The Pyzel Gremlin is a standout choice for surfers who want one board that can h
 
 **Summary**
 
-The Firewire Sci-Fi 2.0 is a standout for surfers who want to blend futuristic design with real-world performance. For more, see [Surfd's review](https://surfd.com/2020/01/firewire-sci-fi-2-0-review/).
+The Firewire Sci-Fi 2.0 is a standout for surfers who want to blend futuristic design with real-world performance.
 `,
     category: "gear reviews",
     publishedAt: "2025-06-27",
@@ -233,7 +241,7 @@ The Firewire Sci-Fi 2.0 is a standout for surfers who want to blend futuristic d
     id: "tom-wallisch-pro-skis-2025-review",
     title: "Tom Wallisch Pro Skis 2025 Review: Jib-Ready Freestyle Fun",
     excerpt: "A look at why the Line Tom Wallisch Pro is a favorite for park and urban skiers who still want all-mountain versatility.",
-    content: `The 2025 Tom Wallisch Pro from Line is consistently praised in ski reviews for its modern freestyle performance, durability, and all-mountain versatility. The ski features a symmetric shape, Carbon Ollieband construction, and a medium flex that balances playfulness and stability ([BlisterReview](https://blisterreview.com/gear-reviews/2025-line-tom-wallisch-pro), [SkiMag](https://www.skimag.com/gear/skis/line-tom-wallisch-pro/), [Newschoolers](https://www.newschoolers.com/news/read/2025-Line-Tom-Wallisch-Pro-Review)).
+    content: `The 2025 Tom Wallisch Pro from Line is consistently praised in ski reviews for its modern freestyle performance, durability, and all-mountain versatility. The ski features a symmetric shape, Carbon Ollieband construction, and a medium flex that balances playfulness and stability.
 
 **Build Quality and Construction**
 
@@ -267,7 +275,9 @@ The Tom Wallisch Pro is built with Line's signature durability in mind. The Carb
 
 **Summary**
 
-The Line Tom Wallisch Pro 2025 is a standout for freestyle skiers who want a ski that excels in the park but doesn't feel out of place on the rest of the mountain. Its blend of durability, pop, and versatility has made it a favorite among pros and dedicated park riders alike. For more, see [BlisterReview's review](https://blisterreview.com/gear-reviews/2025-line-tom-wallisch-pro), [SkiMag's review](https://www.skimag.com/gear/skis/line-tom-wallisch-pro/), and [Newschoolers' review](https://www.newschoolers.com/news/read/2025-Line-Tom-Wallisch-Pro-Review).
+The Line Tom Wallisch Pro 2025 is a standout for freestyle skiers who want a ski that excels in the park but doesn't feel out of place on the rest of the mountain. Its blend of durability, pop, and versatility has made it a favorite among pros and dedicated park riders alike.
+
+"The 2025 Line Tom Wallisch Pro is a freestyle park specific ski that delivers the same performance that the top professionals need to the general public so that they too may ride to the top of the podium. [SkiEssentials' review](https://www.skiessentials.com/2025-ski-test/skis/2025-line-tom-wallisch-pro)"
 `,
     category: "gear reviews",
     publishedAt: "2025-07-05",
