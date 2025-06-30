@@ -1,7 +1,6 @@
-
 import { BlogPost } from './types';
 
-export const surfboardsPosts: Omit<BlogPost, 'author' | 'authorId'>[] = [
+export const surfboardsPosts: BlogPost[] = [
   {
     id: "surfboard-shapes-explained",
     title: "Surfboard Shapes Explained: Finding Your Perfect Wave Riding Tool",
@@ -178,7 +177,9 @@ Start with a shape that's forgiving and appropriate for your level, then experim
     readTime: 11,
     heroImage: "https://lushpalm.com/wp-content/uploads/2018/07/beginner-surfboards-13.jpg",
     thumbnail: "https://lushpalm.com/wp-content/uploads/2018/07/beginner-surfboards-13.jpg",
-    tags: ["surfboards", "shapes", "buying guide", "design", "performance"]
+    tags: ["surfboards", "shapes", "buying guide", "design", "performance"],
+    author: "Generative AI",
+    authorId: "generative-ai"
   },
   {
     id: "reading-surf-forecasts",
@@ -395,6 +396,8 @@ The best surfers combine technical forecast reading with intuitive understanding
     readTime: 9,
     heroImage: "https://images.ctfassets.net/xhzuh2up4xai/1GZGyT2Xcd0W8CYYHVyEg7/ae886cec8bb759d248841e3840da6ce6/How-to-Read-a-Surf-Forecast-_-Swell-Charts.jpg",
     thumbnail: "https://images.ctfassets.net/xhzuh2up4xai/1GZGyT2Xcd0W8CYYHVyEg7/ae886cec8bb759d248841e3840da6ce6/How-to-Read-a-Surf-Forecast-_-Swell-Charts.jpg",
-    tags: ["surfboards", "forecasting", "waves", "planning", "technique"]
+    tags: ["surfboards", "forecasting", "waves", "planning", "technique"],
+    author: "Generative AI",
+    authorId: "generative-ai"
   }
 ];

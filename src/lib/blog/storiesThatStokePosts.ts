@@ -1,7 +1,6 @@
-
 import { BlogPost } from './types';
 
-export const storiesThatStokePosts: Omit<BlogPost, 'author' | 'authorId'>[] = [
+export const storiesThatStokePosts: BlogPost[] = [
   {
     id: "from-foamie-to-fresh-powder",
     title: "From Foamie To Fresh Powder: How I Became Demo-Obsessed",
@@ -39,5 +38,7 @@ When you get that gear that feels like it was made for you, the whole experience
     heroImage: "https://www.theinertia.com/wp-content/uploads/2020/07/SurfCare1200.jpg",
     thumbnail: "https://www.theinertia.com/wp-content/uploads/2020/07/SurfCare1200.jpg",
     tags: ["surfing", "snowboarding", "demo gear", "stories that stoke", "soft-top"],
+    author: "Michael Zick",
+    authorId: "98f914a6-2a72-455d-aa4b-41b081f4014d"
   }
 ];
