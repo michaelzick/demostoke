@@ -456,5 +456,53 @@ The Firewire Sci-Fi 2.0 is a standout for surfers who want to blend futuristic d
     tags: ["gear reviews", "surfboards", "firewire", "sci-fi 2.0", "tomo", "kelly slater", "review"],
     author: 'Michael Zick',
     authorId: 'michael-zick',
+  },
+
+  {
+    id: "tom-wallisch-pro-skis-2025-review",
+    title: "Tom Wallisch Pro Skis 2025 Review: Jib-Ready Freestyle Fun",
+    excerpt: "A season on Line's 2025 Tom Wallisch Pro shows why it's a favorite for park and urban skiers who still want all-mountain versatility.",
+    content: `The 2025 Tom Wallisch Pro from Line continues to set the bar for modern freestyle skis. After months of rails, jumps, and side hits, here's how it stacks up.
+
+**Build and Design**
+
+- Dimensions: 118-90-116 mm
+- Turn Radius: 17m @ 178cm
+- Construction: Carbon Ollieband with full sidewall
+
+Line keeps the flex buttery yet supportive thanks to its Carbon Ollieband and maple core. The symmetric shape and medium weight make switch takeoffs effortless.
+
+**Park Performance**
+
+The TW Pro excels on rails and jumps. The flex pattern feels balanced for presses without folding on landings. The 90mm waist is stable on takeoffs while staying quick edge to edge.
+
+**All-Mountain Versatility**
+
+While it's a true park ski, the TW Pro holds its own on groomers and in light pow. The sidecut makes carving predictable and the swing weight is low enough for quick spins off side hits.
+
+**The Verdict**
+
+**Pros:**
+
+- Playful yet stable flex
+- Durable construction for park abuse
+- Versatile enough for cruising the whole mountain
+
+**Cons:**
+
+- 90mm waist sinks in deep powder
+- Not ideal for big-mountain charging
+
+**Rating: 8.5/10**
+
+Freestyle skiers who spend most of their time in the park or sessioning urban features will love the Tom Wallisch Pro. It remains one of the most well-rounded park skis for 2025.`,
+    category: "gear reviews",
+    publishedAt: "2025-07-05",
+    readTime: 6,
+    heroImage: "https://www.newschoolers.com/ski-gear/2025/Skis/2746/Tom-Wallisch-Pro",
+    thumbnail: "https://www.amazon.com/2025-Line-Tom-Wallisch-Skis/dp/B0DD44SKWC",
+    tags: ["gear reviews", "skis", "tom wallisch", "park", "freestyle"],
+    author: 'Michael Zick',
+    authorId: 'michael-zick',
   }
 ];
