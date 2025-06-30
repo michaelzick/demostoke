@@ -1,3 +1,4 @@
+
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -89,9 +90,11 @@ const BlogPostPage = () => {
             {/* Article Header */}
             <header className="mb-8">
               <div className="flex items-center gap-2 mb-4">
-                <Badge className={getCategoryColor(post.category)}>
-                  {post.category}
-                </Badge>
+                <Link to={`/blog?category=${encodeURIComponent(post.category)}`}>
+                  <Badge className={`${getCategoryColor(post.category)} hover:opacity-80 transition-opacity cursor-pointer`}>
+                    {post.category}
+                  </Badge>
+                </Link>
                 <div className="flex items-center text-sm text-muted-foreground">
                   <Calendar className="h-3 w-3 mr-1" />
                   {formatDate(post.publishedAt)}
@@ -163,9 +166,11 @@ const BlogPostPage = () => {
               <h4 className="text-lg font-semibold mb-3">Tags</h4>
               <div className="flex flex-wrap gap-2">
                 {post.tags.map((tag) => (
-                  <Badge key={tag} variant="outline">
-                    {tag}
-                  </Badge>
+                  <Link key={tag} to={`/blog?search=${encodeURIComponent(tag)}`}>
+                    <Badge variant="outline" className="hover:bg-gray-100 transition-colors cursor-pointer">
+                      {tag}
+                    </Badge>
+                  </Link>
                 ))}
               </div>
             </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -9,15 +9,33 @@ import { blogPosts, BlogPost } from "@/lib/blog";
 import { searchBlogPostsWithNLP } from "@/services/blogSearchService";
 
 const BlogPage = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  
+  // Initialize state from URL params
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || "");
   const [searchResults, setSearchResults] = useState<BlogPost[]>(blogPosts);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState<string>("");
+  const [selectedFilter, setSelectedFilter] = useState<string>(searchParams.get('category') || "");
 
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Handle URL params on page load
+  useEffect(() => {
+    const urlSearch = searchParams.get('search');
+    const urlCategory = searchParams.get('category');
+    
+    if (urlSearch) {
+      setSearchQuery(urlSearch);
+      handleSearch(urlSearch, urlCategory || "");
+    } else if (urlCategory) {
+      setSelectedFilter(urlCategory);
+      applyFilter(urlCategory);
+    }
+  }, [searchParams]);
 
   const filters = [
     { label: "Gear Reviews", value: "gear reviews" },
@@ -28,19 +46,28 @@ const BlogPage = () => {
     { label: "Stories That Stoke", value: "stories that stoke" }
   ];
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
-      applyFilter(selectedFilter);
+  const handleSearch = async (query?: string, filter?: string) => {
+    const searchTerm = query !== undefined ? query : searchQuery;
+    const filterTerm = filter !== undefined ? filter : selectedFilter;
+    
+    if (!searchTerm.trim()) {
+      applyFilter(filterTerm);
       return;
     }
 
     setIsSearching(true);
     try {
-      const results = await searchBlogPostsWithNLP(searchQuery, blogPosts);
-      const filteredResults = selectedFilter
-        ? results.filter(post => post.category === selectedFilter || post.tags.includes(selectedFilter))
+      const results = await searchBlogPostsWithNLP(searchTerm, blogPosts);
+      const filteredResults = filterTerm
+        ? results.filter(post => post.category === filterTerm || post.tags.includes(filterTerm))
         : results;
       setSearchResults(filteredResults);
+      
+      // Update URL
+      const params = new URLSearchParams();
+      if (searchTerm) params.set('search', searchTerm);
+      if (filterTerm) params.set('category', filterTerm);
+      navigate(`/blog?${params.toString()}`, { replace: true });
     } catch (error) {
       console.error("Search error:", error);
       setSearchResults([]);
@@ -60,6 +87,10 @@ const BlogPage = () => {
 
     if (!filter) {
       setSearchResults(blogPosts);
+      // Update URL - remove category param
+      const params = new URLSearchParams();
+      if (searchQuery) params.set('search', searchQuery);
+      navigate(`/blog${params.toString() ? `?${params.toString()}` : ''}`, { replace: true });
       return;
     }
 
@@ -67,12 +98,19 @@ const BlogPage = () => {
       post.category === filter || post.tags.includes(filter)
     );
     setSearchResults(filtered);
+    
+    // Update URL
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('search', searchQuery);
+    if (filter) params.set('category', filter);
+    navigate(`/blog?${params.toString()}`, { replace: true });
   };
 
   const clearSearch = () => {
     setSearchQuery("");
     setSelectedFilter("");
     setSearchResults(blogPosts);
+    navigate('/blog', { replace: true });
   };
 
   const formatDate = (dateString: string) => {
@@ -122,7 +160,7 @@ const BlogPage = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               </div>
               <Button
-                onClick={handleSearch}
+                onClick={() => handleSearch()}
                 disabled={isSearching}
                 className="bg-white text-blue-600 hover:bg-blue-50"
               >
@@ -216,9 +254,11 @@ const BlogPage = () => {
                 </Link>
                 <CardHeader>
                   <div className="flex items-center gap-2 mb-2">
-                    <Badge className={getCategoryColor(post.category)}>
-                      {post.category}
-                    </Badge>
+                    <Link to={`/blog?category=${encodeURIComponent(post.category)}`}>
+                      <Badge className={`${getCategoryColor(post.category)} hover:opacity-80 transition-opacity cursor-pointer`}>
+                        {post.category}
+                      </Badge>
+                    </Link>
                     <div className="flex items-center text-sm text-muted-foreground">
                       <Calendar className="h-3 w-3 mr-1" />
                       {formatDate(post.publishedAt)}
@@ -254,9 +294,11 @@ const BlogPage = () => {
                   </div>
                   <div className="flex flex-wrap gap-1 mt-3">
                     {post.tags.slice(0, 3).map((tag) => (
-                      <Badge key={tag} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
+                      <Link key={tag} to={`/blog?search=${encodeURIComponent(tag)}`}>
+                        <Badge variant="outline" className="text-xs hover:bg-gray-100 transition-colors cursor-pointer">
+                          {tag}
+                        </Badge>
+                      </Link>
                     ))}
                   </div>
                 </CardContent>
