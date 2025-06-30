@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,10 +6,16 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, CheckCircle, AlertCircle, Info } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ExternalLink, CheckCircle, AlertCircle, Info, Eye, EyeOff } from "lucide-react";
 import FormHeader from "@/components/gear-form/FormHeader";
 import { useToast } from "@/hooks/use-toast";
 import { useAddGearForm } from "@/hooks/useAddGearForm";
+import { useAuth } from "@/helpers";
+import { useUserEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { fetchMockLightspeedInventory, ingestLightspeedInventory } from "@/services/lightspeed/lightspeedService";
 
 const LightspeedPOSPage = () => {
   // Scroll to top on page load
@@ -20,6 +26,47 @@ const LightspeedPOSPage = () => {
   const {
     handlers,
   } = useAddGearForm();
+
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { data: inventory = [], isLoading: inventoryLoading } = useUserEquipment(user?.id);
+  const updateVisibilityMutation = useUpdateEquipmentVisibility();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
+  const masterToggleState = useMemo(() => {
+    if (inventory.length === 0) return { checked: false, indeterminate: false };
+    const visibleCount = inventory.filter(item => item.visible_on_map).length;
+    if (visibleCount === 0) {
+      return { checked: false, indeterminate: false };
+    } else if (visibleCount === inventory.length) {
+      return { checked: true, indeterminate: false };
+    } else {
+      return { checked: false, indeterminate: true };
+    }
+  }, [inventory]);
+
+  const handleVisibilityToggle = (id: string, current: boolean) => {
+    updateVisibilityMutation.mutate({ equipmentId: id, visible: !current });
+  };
+
+  const handleMasterToggle = () => {
+    const shouldShowAll = !masterToggleState.checked;
+    inventory.forEach(item => {
+      if (item.visible_on_map !== shouldShowAll) {
+        updateVisibilityMutation.mutate({ equipmentId: item.id, visible: shouldShowAll });
+      }
+    });
+  };
+
+  const handleViewDetails = (id: string) => {
+    navigate(`/equipment/${id}`);
+  };
+
+  const totalPages = Math.ceil(inventory.length / itemsPerPage) || 1;
+  const paginatedItems = inventory.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const [credentials, setCredentials] = useState({
     clientId: "",
@@ -60,19 +107,21 @@ const LightspeedPOSPage = () => {
   };
 
   const handleSync = async () => {
+    if (!user) return;
     setIsLoading(true);
     try {
-      // Simulate sync process
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      const items = await fetchMockLightspeedInventory();
+      await ingestLightspeedInventory(items, user.id);
+      queryClient.invalidateQueries({ queryKey: ['userEquipment'] });
       toast({
-        title: "Sync Complete!",
-        description: "Your inventory has been successfully synced with DemoStoke.",
+        title: 'Sync Complete!',
+        description: 'Your inventory has been successfully synced with DemoStoke.',
       });
     } catch (error) {
       toast({
-        title: "Sync Failed",
-        description: "There was an error syncing your inventory.",
-        variant: "destructive",
+        title: 'Sync Failed',
+        description: 'There was an error syncing your inventory.',
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -252,12 +301,101 @@ const LightspeedPOSPage = () => {
                     disabled={isLoading}
                     className="w-full"
                   >
-                    {isLoading ? "Syncing Inventory..." : "Sync Now"}
+                    {isLoading ? 'Syncing Inventory...' : 'Sync Now'}
                   </Button>
                 </div>
               )}
             </CardContent>
           </Card>
+
+          {isConnected && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Inventory</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {inventory.length === 0 && !inventoryLoading ? (
+                  <p className="text-sm text-muted-foreground">No items imported yet.</p>
+                ) : (
+                  <>
+                    <div className="mb-4 flex items-center space-x-2">
+                      <div className="relative flex items-center">
+                        <Checkbox
+                          id="inventory-master-toggle"
+                          checked={masterToggleState.checked}
+                          onCheckedChange={handleMasterToggle}
+                          disabled={updateVisibilityMutation.isPending}
+                          className={`${masterToggleState.indeterminate ? 'data-[state=checked]:bg-primary/50 data-[state=checked]:border-primary' : ''} flex-shrink-0`}
+                        />
+                        {masterToggleState.indeterminate && (
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div className="w-2 h-0.5 bg-primary rounded-sm" />
+                          </div>
+                        )}
+                      </div>
+                      <label
+                        htmlFor="inventory-master-toggle"
+                        className="text-sm font-medium cursor-pointer flex-1"
+                      >
+                        {masterToggleState.indeterminate
+                          ? 'Some gear visible — click to show all'
+                          : masterToggleState.checked
+                            ? 'Uncheck to hide all gear'
+                            : 'Check to show all gear'}
+                      </label>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {paginatedItems.map(item => (
+                        <Card key={item.id} className="overflow-hidden">
+                          <div className="relative h-32 cursor-pointer" onClick={() => handleViewDetails(item.id)}>
+                            <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                            <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
+                              {item.visible_on_map ? (
+                                <Eye className="h-4 w-4 text-green-600" />
+                              ) : (
+                                <EyeOff className="h-4 w-4 text-gray-500" />
+                              )}
+                            </div>
+                          </div>
+                          <CardHeader className="p-4 cursor-pointer" onClick={() => handleViewDetails(item.id)}>
+                            <CardTitle className="text-base line-clamp-1">{item.name}</CardTitle>
+                            <CardDescription>${item.price_per_day}/day</CardDescription>
+                          </CardHeader>
+                          <CardContent className="border-t p-4">
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`vis-${item.id}`}
+                                checked={item.visible_on_map}
+                                onCheckedChange={() => handleVisibilityToggle(item.id, item.visible_on_map)}
+                                disabled={updateVisibilityMutation.isPending}
+                              />
+                              <label htmlFor={`vis-${item.id}`} className="text-sm cursor-pointer">
+                                Show on map
+                              </label>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+
+                    {totalPages > 1 && (
+                      <div className="flex justify-center gap-2 pt-4">
+                        <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))}>
+                          Prev
+                        </Button>
+                        <span className="px-2 text-sm">Page {currentPage} of {totalPages}</span>
+                        <Button variant="outline" size="sm" disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}>
+                          Next
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
         </TabsContent>
 
         <TabsContent value="help" className="space-y-6">
