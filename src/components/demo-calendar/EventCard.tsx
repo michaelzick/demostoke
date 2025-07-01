@@ -1,6 +1,6 @@
 
 import { format } from "date-fns";
-import { Clock, MapPin, Package } from "lucide-react";
+import { Clock, MapPin, Package, Pencil, Trash2 } from "lucide-react";
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
 import { Button } from "@/components/ui/button";
 
@@ -48,35 +48,12 @@ const EventCard = ({ event, categoryColors, onEdit, onDelete, isDeleting, isAdmi
 
   return (
     <div className="bg-card rounded-lg p-3 shadow-sm border hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <div className={`h-3 w-3 rounded-full ${categoryColor}`} />
-          <h4 className="font-semibold text-sm">{event.title}</h4>
-        </div>
-        {isAdmin && (
-          <div className="flex gap-1">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => onEdit(event)}
-              className="h-6 px-2 text-xs"
-            >
-              Edit
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => onDelete(event.id)}
-              disabled={isDeleting}
-              className="h-6 px-2 text-xs text-destructive hover:text-destructive"
-            >
-              {isDeleting ? "..." : "Delete"}
-            </Button>
-          </div>
-        )}
+      <div className="flex items-center gap-2 mb-2">
+        <div className={`h-3 w-3 rounded-full ${categoryColor}`} />
+        <h4 className="font-semibold text-sm">{event.title}</h4>
       </div>
       
-      <div className="space-y-1 text-xs text-muted-foreground">
+      <div className="space-y-1 text-xs text-muted-foreground mb-3">
         <div className="flex items-center gap-1">
           <Clock className="h-3 w-3" />
           <span>{formatDate(event.event_date)} • {formatTime(event.event_time)}</span>
@@ -96,6 +73,28 @@ const EventCard = ({ event, categoryColors, onEdit, onDelete, isDeleting, isAdmi
           </div>
         )}
       </div>
+
+      {isAdmin && (
+        <div className="flex justify-end gap-1 pt-2 border-t">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => onEdit(event)}
+            className="h-7 w-7 p-0"
+          >
+            <Pencil className="h-3 w-3" />
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => onDelete(event.id)}
+            disabled={isDeleting}
+            className="h-7 w-7 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+          >
+            {isDeleting ? "..." : <Trash2 className="h-3 w-3" />}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
