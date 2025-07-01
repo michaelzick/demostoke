@@ -13,13 +13,21 @@ interface EventCardProps {
   isAdmin: boolean;
 }
 
+// Helper function to parse date strings as local dates
+const parseLocalDate = (dateStr: string) => {
+  // Parse date as local by appending 'T00:00:00' to force local timezone interpretation
+  return new Date(dateStr + 'T00:00:00');
+};
+
 const EventCard = ({ event, categoryColors, onEdit, onDelete, isDeleting, isAdmin }: EventCardProps) => {
   const categoryColor = categoryColors.find(c => c.category === event.gear_category)?.color || 'bg-gray-500';
   
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return "Date TBD";
     try {
-      return format(new Date(dateStr), 'MMM d, yyyy');
+      // Parse the date as a local date to avoid timezone issues
+      const eventDate = parseLocalDate(dateStr);
+      return format(eventDate, 'MMM d, yyyy');
     } catch {
       return "Date TBD";
     }

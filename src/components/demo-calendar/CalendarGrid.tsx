@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday } from "date-fns";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday, parseISO } from "date-fns";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
@@ -19,6 +19,12 @@ interface CalendarGridProps {
   isAdmin: boolean;
   isLoadingRole: boolean;
 }
+
+// Helper function to parse date strings as local dates
+const parseLocalDate = (dateStr: string) => {
+  // Parse date as local by appending 'T00:00:00' to force local timezone interpretation
+  return new Date(dateStr + 'T00:00:00');
+};
 
 const CalendarGrid = ({
   currentDate,
@@ -46,7 +52,8 @@ const CalendarGrid = ({
     return filteredEvents.filter(event => {
       if (!event.event_date) return false;
       try {
-        const eventDate = new Date(event.event_date);
+        // Parse the date as a local date to avoid timezone issues
+        const eventDate = parseLocalDate(event.event_date);
         return isSameDay(eventDate, date);
       } catch {
         return false;
