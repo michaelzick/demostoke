@@ -37,15 +37,15 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="lg:hidden">
+    <div className="lg:hidden fixed inset-0 z-50">
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm" 
+        className="absolute inset-0 bg-black/20 backdrop-blur-sm" 
         onClick={onClose}
       />
       
       {/* Menu */}
-      <div className="fixed top-0 right-0 z-50 h-full w-64 bg-background border-l shadow-lg">
+      <div className="absolute top-0 right-0 h-full w-64 bg-background border-l shadow-lg">
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b">
@@ -54,7 +54,7 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="p-1"
+              className="p-1 h-auto w-auto"
             >
               <X className="h-5 w-5" />
             </Button>
@@ -65,7 +65,7 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
             <div className="space-y-1 px-4">
               <Link
                 to="/"
-                className="block py-2 text-base font-medium hover:text-primary transition-colors"
+                className="block py-2 text-base font-medium text-foreground hover:text-primary transition-colors"
                 onClick={handleLinkClick}
               >
                 Home
@@ -75,14 +75,14 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
               
               <button
                 onClick={handleListGearClick}
-                className="block w-full text-left py-2 text-base font-medium hover:text-primary transition-colors"
+                className="block w-full text-left py-2 text-base font-medium text-foreground hover:text-primary transition-colors"
               >
                 List Your Gear
               </button>
               
               <Link
                 to="/demo-calendar"
-                className="block py-2 text-base font-medium hover:text-primary transition-colors"
+                className="block py-2 text-base font-medium text-foreground hover:text-primary transition-colors"
                 onClick={handleLinkClick}
               >
                 Demo Calendar
@@ -90,7 +90,7 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
               
               <Link
                 to="/blog"
-                className="block py-2 text-base font-medium hover:text-primary transition-colors"
+                className="block py-2 text-base font-medium text-foreground hover:text-primary transition-colors"
                 onClick={handleLinkClick}
               >
                 Blog
@@ -98,7 +98,7 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
               
               <button
                 onClick={handleSearchClick}
-                className="flex items-center w-full py-2 text-base font-medium hover:text-primary transition-colors"
+                className="flex items-center w-full py-2 text-base font-medium text-foreground hover:text-primary transition-colors"
               >
                 <Search className="h-4 w-4 mr-2" />
                 Search
