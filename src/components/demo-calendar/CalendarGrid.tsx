@@ -5,6 +5,9 @@ import { ChevronLeft, ChevronRight, Plus, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
 import EventCard from "./EventCard";
+import EventTitle from "./EventTitle";
+import EventModal from "./EventModal";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CalendarGridProps {
   currentDate: Date;
@@ -41,6 +44,9 @@ const CalendarGrid = ({
   isAdmin,
   isLoadingRole
 }: CalendarGridProps) => {
+  const isMobile = useIsMobile();
+  const [selectedEvent, setSelectedEvent] = useState<DemoEvent | null>(null);
+
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   
@@ -70,6 +76,26 @@ const CalendarGrid = ({
 
   // Get events without dates (TBD events)
   const tbdEvents = filteredEvents.filter(event => !event.event_date);
+
+  const handleEventClick = (event: DemoEvent) => {
+    if (isMobile) {
+      setSelectedEvent(event);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setSelectedEvent(null);
+  };
+
+  const handleEditFromModal = (event: DemoEvent) => {
+    setSelectedEvent(null);
+    onEditEvent(event);
+  };
+
+  const handleDeleteFromModal = (eventId: string) => {
+    setSelectedEvent(null);
+    onDeleteEvent(eventId);
+  };
 
   return (
     <div className="bg-card rounded-lg shadow-sm border">
@@ -132,7 +158,7 @@ const CalendarGrid = ({
           return (
             <div
               key={day.toISOString()}
-              className={`min-h-[120px] p-2 border-r border-b last:border-r-0 ${
+              className={`${isMobile ? 'min-h-[80px]' : 'min-h-[120px]'} p-2 border-r border-b last:border-r-0 ${
                 !isCurrentMonth ? 'bg-muted/30' : ''
               }`}
             >
@@ -148,15 +174,24 @@ const CalendarGrid = ({
               
               <div className="space-y-1">
                 {dayEvents.map((event) => (
-                  <EventCard
-                    key={event.id}
-                    event={event}
-                    categoryColors={categoryFilters}
-                    onEdit={onEditEvent}
-                    onDelete={onDeleteEvent}
-                    isDeleting={isDeleting}
-                    isAdmin={isAdmin}
-                  />
+                  isMobile ? (
+                    <EventTitle
+                      key={event.id}
+                      event={event}
+                      categoryColors={categoryFilters}
+                      onClick={() => handleEventClick(event)}
+                    />
+                  ) : (
+                    <EventCard
+                      key={event.id}
+                      event={event}
+                      categoryColors={categoryFilters}
+                      onEdit={onEditEvent}
+                      onDelete={onDeleteEvent}
+                      isDeleting={isDeleting}
+                      isAdmin={isAdmin}
+                    />
+                  )
                 ))}
               </div>
             </div>
@@ -170,18 +205,40 @@ const CalendarGrid = ({
           <h3 className="font-semibold text-sm mb-3">Events with Date TBD</h3>
           <div className="grid gap-2">
             {tbdEvents.map((event) => (
-              <EventCard
-                key={event.id}
-                event={event}
-                categoryColors={categoryFilters}
-                onEdit={onEditEvent}
-                onDelete={onDeleteEvent}
-                isDeleting={isDeleting}
-                isAdmin={isAdmin}
-              />
+              isMobile ? (
+                <EventTitle
+                  key={event.id}
+                  event={event}
+                  categoryColors={categoryFilters}
+                  onClick={() => handleEventClick(event)}
+                />
+              ) : (
+                <EventCard
+                  key={event.id}
+                  event={event}
+                  categoryColors={categoryFilters}
+                  onEdit={onEditEvent}
+                  onDelete={onDeleteEvent}
+                  isDeleting={isDeleting}
+                  isAdmin={isAdmin}
+                />
+              )
             ))}
           </div>
         </div>
+      )}
+
+      {/* Event Modal for Mobile */}
+      {isMobile && (
+        <EventModal
+          event={selectedEvent}
+          categoryColors={categoryFilters}
+          onClose={handleCloseModal}
+          onEdit={handleEditFromModal}
+          onDelete={handleDeleteFromModal}
+          isDeleting={isDeleting}
+          isAdmin={isAdmin}
+        />
       )}
     </div>
   );
