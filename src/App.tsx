@@ -63,6 +63,7 @@ const App = () => {
                   </Route>
                   <Route path="/" element={<MainLayout />}>
                     <Route index element={<HomePage />} />
+                    <Route path="about" element={<AboutPage />} />
                     <Route path="blog" element={<BlogPage />} />
                     <Route path="blog/:slug" element={<BlogPostPage />} />
                     <Route path="contact-us" element={<ContactPage />} />
