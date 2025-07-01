@@ -1,11 +1,11 @@
 
 import { useState } from "react";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday, parseISO, startOfWeek, endOfWeek } from "date-fns";
-import { ChevronLeft, ChevronRight, Plus, Calendar } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, parseISO, startOfWeek, endOfWeek } from "date-fns";
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
-import EventCard from "./EventCard";
-import EventTitle from "./EventTitle";
+import CalendarHeader from "./CalendarHeader";
+import CalendarDaysHeader from "./CalendarDaysHeader";
+import CalendarDay from "./CalendarDay";
+import TBDEventsSection from "./TBDEventsSection";
 import EventModal from "./EventModal";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -75,14 +75,14 @@ const CalendarGrid = ({
         // Parse the date as a local date to avoid timezone issues
         const eventDate = parseLocalDate(event.event_date);
         const isSame = isSameDay(eventDate, date);
-        console.log(`Checking event "${event.title}" (${event.event_date}) against date ${format(date, 'yyyy-MM-dd')}: ${isSame}`);
+        console.log(`Checking event "${event.title}" (${event.event_date}) against date ${date.toISOString().split('T')[0]}: ${isSame}`);
         return isSame;
       } catch (error) {
         console.error('Error parsing event date:', event.event_date, error);
         return false;
       }
     });
-    console.log(`Events for ${format(date, 'yyyy-MM-dd')}:`, dayEvents);
+    console.log(`Events for ${date.toISOString().split('T')[0]}:`, dayEvents);
     return dayEvents;
   };
 
@@ -111,134 +111,49 @@ const CalendarGrid = ({
 
   return (
     <div className="bg-card rounded-lg shadow-sm border">
-      {/* Calendar Header */}
-      <div className="flex items-center justify-between p-4 border-b">
-        <div className="flex items-center gap-4">
-          <h2 className="text-xl font-semibold">
-            {format(currentDate, 'MMMM yyyy')}
-          </h2>
-          <div className="flex items-center gap-1">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={onPreviousMonth}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={onNextMonth}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={onGoToToday}
-              className="ml-2"
-            >
-              <Calendar className="h-4 w-4 mr-1" />
-              Today
-            </Button>
-          </div>
-        </div>
-        {isAdmin && !isLoadingRole && (
-          <Button onClick={onAddEvent} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Add Event
-          </Button>
-        )}
-      </div>
+      <CalendarHeader
+        currentDate={currentDate}
+        onPreviousMonth={onPreviousMonth}
+        onNextMonth={onNextMonth}
+        onGoToToday={onGoToToday}
+        onAddEvent={onAddEvent}
+        isAdmin={isAdmin}
+        isLoadingRole={isLoadingRole}
+      />
 
-      {/* Days of Week Header */}
-      <div className="grid grid-cols-7 border-b">
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-          <div key={day} className="p-3 text-center text-sm font-medium text-muted-foreground border-r last:border-r-0">
-            {day}
-          </div>
-        ))}
-      </div>
+      <CalendarDaysHeader />
 
       {/* Calendar Days */}
       <div className="grid grid-cols-7">
-        {calendarDays.map((day, index) => {
+        {calendarDays.map((day) => {
           const dayEvents = getEventsForDate(day);
-          const isCurrentMonth = isSameMonth(day, currentDate);
-          const isTodayDate = isToday(day);
 
           return (
-            <div
+            <CalendarDay
               key={day.toISOString()}
-              className={`${isMobile ? 'min-h-[80px]' : 'min-h-[120px]'} p-2 border-r border-b last:border-r-0 ${
-                !isCurrentMonth ? 'bg-muted/30' : ''
-              }`}
-            >
-              <div className={`text-sm font-medium mb-2 ${
-                isTodayDate 
-                  ? 'bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center'
-                  : !isCurrentMonth
-                  ? 'text-muted-foreground'
-                  : ''
-              }`}>
-                {format(day, 'd')}
-              </div>
-              
-              <div className="space-y-1">
-                {dayEvents.map((event) => (
-                  isMobile ? (
-                    <EventTitle
-                      key={event.id}
-                      event={event}
-                      categoryColors={categoryFilters}
-                      onClick={() => handleEventClick(event)}
-                    />
-                  ) : (
-                    <EventCard
-                      key={event.id}
-                      event={event}
-                      categoryColors={categoryFilters}
-                      onEdit={onEditEvent}
-                      onDelete={onDeleteEvent}
-                      isDeleting={isDeleting}
-                      isAdmin={isAdmin}
-                    />
-                  )
-                ))}
-              </div>
-            </div>
+              day={day}
+              currentDate={currentDate}
+              dayEvents={dayEvents}
+              categoryFilters={categoryFilters}
+              onEditEvent={onEditEvent}
+              onDeleteEvent={onDeleteEvent}
+              onEventClick={handleEventClick}
+              isDeleting={isDeleting}
+              isAdmin={isAdmin}
+            />
           );
         })}
       </div>
 
-      {/* TBD Events Section */}
-      {tbdEvents.length > 0 && (
-        <div className="p-4 border-t bg-muted/20">
-          <h3 className="font-semibold text-sm mb-3">Events with Date TBD</h3>
-          <div className="grid gap-2">
-            {tbdEvents.map((event) => (
-              isMobile ? (
-                <EventTitle
-                  key={event.id}
-                  event={event}
-                  categoryColors={categoryFilters}
-                  onClick={() => handleEventClick(event)}
-                />
-              ) : (
-                <EventCard
-                  key={event.id}
-                  event={event}
-                  categoryColors={categoryFilters}
-                  onEdit={onEditEvent}
-                  onDelete={onDeleteEvent}
-                  isDeleting={isDeleting}
-                  isAdmin={isAdmin}
-                />
-              )
-            ))}
-          </div>
-        </div>
-      )}
+      <TBDEventsSection
+        tbdEvents={tbdEvents}
+        categoryFilters={categoryFilters}
+        onEditEvent={onEditEvent}
+        onDeleteEvent={onDeleteEvent}
+        onEventClick={handleEventClick}
+        isDeleting={isDeleting}
+        isAdmin={isAdmin}
+      />
 
       {/* Event Modal for Mobile */}
       {isMobile && (

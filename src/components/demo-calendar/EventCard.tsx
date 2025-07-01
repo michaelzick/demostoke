@@ -89,7 +89,7 @@ const EventCard = ({ event, categoryColors, onEdit, onDelete, isDeleting, isAdmi
             variant="ghost"
             onClick={() => onDelete(event.id)}
             disabled={isDeleting}
-            className="h-7 w-7 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+            className="h-7 w-7 p-0 text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/30"
           >
             {isDeleting ? "..." : <Trash2 className="h-3 w-3" />}
           </Button>
