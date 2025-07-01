@@ -1,5 +1,6 @@
 
 import { useEffect } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { useParams, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +41,10 @@ const privateParties: { [key: string]: PrivateParty } = {
 };
 
 const PrivatePartyPage = () => {
+  usePageMetadata({
+    title: 'Private Party | DemoStoke',
+    description: 'Join or learn more about this private party on DemoStoke.'
+  });
   const { partyId } = useParams<{ partyId: string }>();
   const party = partyId ? privateParties[partyId] : null;
 

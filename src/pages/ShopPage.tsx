@@ -1,5 +1,6 @@
 
 import { useEffect } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { useParams, Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -59,6 +60,10 @@ const shops: { [key: string]: Shop; } = {
 };
 
 const ShopPage = () => {
+  usePageMetadata({
+    title: 'Shop | DemoStoke',
+    description: 'View shop details and available gear on DemoStoke.'
+  });
   const { shopId } = useParams<{ shopId: string; }>();
   const shop = shopId ? shops[shopId] : null;
 

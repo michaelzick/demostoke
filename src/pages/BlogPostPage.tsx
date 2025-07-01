@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router-dom";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Clock, User, Calendar, Share2, ArrowUp } from "lucide-react";
@@ -12,6 +13,24 @@ const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string; }>();
   const post = blogPosts.find(p => p.id === slug);
   const [showBackToTop, setShowBackToTop] = useState(false);
+
+  usePageMetadata({
+    title: post ? `${post.title} | DemoStoke` : 'Blog Post | DemoStoke',
+    description: post?.excerpt,
+    image: post?.heroImage,
+    type: 'article',
+    schema: post
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'BlogPosting',
+          headline: post.title,
+          description: post.excerpt,
+          image: post.heroImage,
+          datePublished: post.publishedAt,
+          author: { '@type': 'Person', name: post.author }
+        }
+      : undefined
+  });
 
   // Fetch related gear based on the blog post title
   const { data: relatedGear, isLoading: isLoadingRelatedGear } = useRelatedGear(post?.tags || []);

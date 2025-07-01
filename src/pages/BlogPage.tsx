@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +10,10 @@ import { blogPosts, BlogPost } from "@/lib/blog";
 import { searchBlogPostsWithNLP } from "@/services/blogSearchService";
 
 const BlogPage = () => {
+  usePageMetadata({
+    title: 'DemoStoke Blog',
+    description: 'Tips, gear reviews and stories from the DemoStoke community.'
+  });
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { useParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useEquipmentById } from "@/hooks/useEquipmentById";
@@ -16,6 +17,10 @@ import GearPricing from "@/components/gear-form/GearPricing";
 import FormActions from "@/components/gear-form/FormActions";
 
 const EditGearForm = () => {
+  usePageMetadata({
+    title: 'Edit Gear | DemoStoke',
+    description: 'Update your gear listing details on DemoStoke.'
+  });
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();

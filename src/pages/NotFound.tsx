@@ -1,10 +1,15 @@
 
 import { useEffect } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 
 const NotFound = () => {
+  usePageMetadata({
+    title: 'Page Not Found | DemoStoke',
+    description: 'The page you are looking for does not exist.'
+  });
   const location = useLocation();
 
   useEffect(() => {

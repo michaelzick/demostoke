@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import FormHeader from "@/components/gear-form/FormHeader";
 import GearBasicInfo from "@/components/gear-form/GearBasicInfo";
 import GearSpecifications from "@/components/gear-form/GearSpecifications";
@@ -11,6 +12,10 @@ import { useDuplicatedGearData } from "@/hooks/gear-form/useDuplicatedGearData";
 import { useAuth } from "@/helpers";
 
 const AddGearForm = () => {
+  usePageMetadata({
+    title: 'Add Gear | DemoStoke',
+    description: 'List new gear for rent or demo on DemoStoke.'
+  });
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);

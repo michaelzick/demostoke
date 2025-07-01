@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { useEffect, useState, useMemo } from "react";
 import { Edit, Trash2, Copy, ExternalLink, Eye, EyeOff } from "lucide-react";
 import { Snowflake, Waves, Bicycle } from "@phosphor-icons/react";
@@ -23,6 +24,10 @@ import { useUserEquipment, useDeleteEquipment, useUpdateEquipmentVisibility } fr
 import { UserEquipment } from "@/types/equipment";
 
 const MyEquipmentPage = () => {
+  usePageMetadata({
+    title: 'My Gear | DemoStoke',
+    description: 'Manage the equipment you have listed on DemoStoke.'
+  });
   const { toast } = useToast();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();

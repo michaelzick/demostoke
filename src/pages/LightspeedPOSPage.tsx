@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,10 @@ import { useNavigate } from "react-router-dom";
 import { fetchMockLightspeedInventory, ingestLightspeedInventory } from "@/services/lightspeed/lightspeedService";
 
 const LightspeedPOSPage = () => {
+  usePageMetadata({
+    title: 'Lightspeed POS | DemoStoke',
+    description: 'Import and manage your Lightspeed inventory on DemoStoke.'
+  });
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);

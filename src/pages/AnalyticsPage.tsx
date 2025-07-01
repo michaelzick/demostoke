@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { DateRange } from "react-day-picker";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,6 +11,10 @@ import RevenueChart from "@/components/analytics/RevenueChart";
 import { getAnalyticsData } from "@/lib/mockAnalyticsData";
 
 const AnalyticsPage = () => {
+  usePageMetadata({
+    title: 'Gear Analytics | DemoStoke',
+    description: 'View performance metrics for your gear listings.'
+  });
   const [dateRange, setDateRange] = useState<DateRange | undefined>(() => {
     const today = new Date();
     const thirtyDaysAgo = new Date();
