@@ -93,7 +93,8 @@ const DemoCalendarPage = () => {
         </p>
       </div>
 
-      {!isAuthenticated && (
+      {/* Uncomment this section if you want to show a sign-in prompt for unauthenticated users */}
+      {/* {!isAuthenticated && (
         <div className="mb-8 p-4 bg-muted rounded-lg">
           <p className="text-sm text-muted-foreground mb-3">
             Sign in to add/edit demo events.
@@ -102,7 +103,7 @@ const DemoCalendarPage = () => {
             Sign In
           </Button>
         </div>
-      )}
+      )} */}
 
       {isAuthenticated && !isLoadingRole && !isAdmin && (
         <div className="mb-8 p-4 bg-muted rounded-lg">

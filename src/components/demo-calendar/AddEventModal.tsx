@@ -81,7 +81,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -119,7 +119,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
         <DialogHeader>
           <DialogTitle>{editEvent ? 'Edit Event' : 'Add New Event'}</DialogTitle>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="title">Title *</Label>
@@ -146,8 +146,8 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
 
           <div>
             <Label htmlFor="gear_category">Gear Category *</Label>
-            <Select 
-              value={formData.gear_category} 
+            <Select
+              value={formData.gear_category}
               onValueChange={(value) => setFormData(prev => ({ ...prev, gear_category: value as any }))}
             >
               <SelectTrigger className={errors.gear_category ? 'border-destructive' : ''}>
@@ -195,12 +195,12 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
           </div>
 
           <div>
-            <Label htmlFor="equipment">Equipment Available</Label>
+            <Label htmlFor="equipment">Notes or Equipment Available</Label>
             <Textarea
               id="equipment"
               value={formData.equipment_available || ''}
               onChange={(e) => setFormData(prev => ({ ...prev, equipment_available: e.target.value || null }))}
-              placeholder="Describe available equipment"
+              placeholder="List available equipment or additional notes"
               rows={3}
             />
           </div>
