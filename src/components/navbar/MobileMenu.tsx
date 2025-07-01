@@ -39,13 +39,13 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
   return (
     <div className="lg:hidden fixed inset-0 z-50">
       {/* Backdrop */}
-      <div 
-        className="absolute inset-0 bg-black/20 backdrop-blur-sm" 
+      <div
+        className="absolute inset-0 bg-black/20"
         onClick={onClose}
       />
-      
+
       {/* Menu */}
-      <div className="absolute top-0 right-0 h-full w-80 bg-white dark:bg-zinc-900 border-l shadow-lg">
+      <div className="absolute top-0 right-0 h-full w-80 bg-white dark:bg-zinc-900 shadow-lg">
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b">
@@ -61,7 +61,7 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex flex-col p-6 space-y-4 bg-white dark:bg-zinc-900">
+          <nav className="flex flex-col p-6 space-y-4 bg-white dark:bg-zinc-900 rounded-bl-md">
             <Button
               variant="outline"
               onClick={handleSearchClick}
@@ -70,7 +70,7 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
               <Search className="h-4 w-4 mr-2" />
               <span>Search gear...</span>
             </Button>
-            
+
             <Link
               to="/"
               className="text-lg font-medium"
@@ -78,16 +78,16 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
             >
               Home
             </Link>
-            
+
             <MobileExploreMenu onClose={onClose} />
-            
+
             <button
               onClick={handleListGearClick}
               className="text-lg font-medium text-left"
             >
               List Your Gear
             </button>
-            
+
             <Link
               to="/demo-calendar"
               className="text-lg font-medium"
@@ -95,7 +95,7 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
             >
               Demo Calendar
             </Link>
-            
+
             <Link
               to="/blog"
               className="text-lg font-medium"
@@ -103,7 +103,7 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
             >
               Blog
             </Link>
-            
+
             <div className="pt-4 border-t">
               <div className="flex flex-col gap-2">
                 {!isAuthenticated && (
