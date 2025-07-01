@@ -1,5 +1,6 @@
 
 import { useAuth } from "@/helpers";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import UserManagementSection from "@/components/admin/UserManagementSection";
 import ManualUserCreationSection from "@/components/admin/ManualUserCreationSection";
 import VideoUploadSection from "@/components/admin/VideoUploadSection";
@@ -9,6 +10,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const AdminPage = () => {
+  usePageMetadata({
+    title: 'Admin Dashboard | DemoStoke',
+    description: 'Administrative tools for managing DemoStoke.'
+  });
   const { user } = useAuth();
 
   if (!user) {

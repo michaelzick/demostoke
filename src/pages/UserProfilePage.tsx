@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
@@ -13,6 +14,10 @@ import { PasswordChangeSection } from "@/components/profile/PasswordChangeSectio
 import { HeroImageSection } from "@/components/profile/HeroImageSection";
 
 const UserProfilePage = () => {
+  usePageMetadata({
+    title: 'My Profile | DemoStoke',
+    description: 'Manage your DemoStoke profile settings.'
+  });
   const { user, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();

@@ -1,5 +1,6 @@
 
 import { useState, useEffect, useMemo } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { useLocation, useSearchParams, useMatch } from "react-router-dom";
 import { getEquipmentData } from "@/services/searchService";
 import MapComponent from "@/components/MapComponent";
@@ -11,6 +12,10 @@ import { useToast } from "@/hooks/use-toast";
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
 
 const ExplorePage = () => {
+  usePageMetadata({
+    title: 'Explore Gear | DemoStoke',
+    description: 'Find gear near you and book demos on DemoStoke.'
+  });
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();

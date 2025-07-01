@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +17,10 @@ import {
 } from "lucide-react";
 
 const ListYourGearPage = () => {
+  usePageMetadata({
+    title: 'List Your Gear | DemoStoke',
+    description: 'Earn money by renting out your gear to the DemoStoke community.'
+  });
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);

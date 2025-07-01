@@ -1,4 +1,5 @@
 import { useState } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { format, parseISO, addDays } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 
@@ -37,6 +38,10 @@ const getBookingDates = (bookings: Booking[]): Date[] => {
 type ViewMode = "myBookings" | "othersBookings";
 
 const BookingsPage = () => {
+  usePageMetadata({
+    title: 'My Bookings | DemoStoke',
+    description: 'View and manage your DemoStoke gear reservations.'
+  });
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("myBookings");
   const isMobile = useIsMobile();

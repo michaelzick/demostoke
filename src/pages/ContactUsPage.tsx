@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,10 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 const ContactUsPage = () => {
+  usePageMetadata({
+    title: 'Contact Us | DemoStoke',
+    description: 'Get in touch with the DemoStoke team.'
+  });
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);

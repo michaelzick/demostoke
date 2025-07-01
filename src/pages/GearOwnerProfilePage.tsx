@@ -1,5 +1,6 @@
 
 import { useEffect } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { mockEquipment, ownerPersonas } from "@/lib/mockData";
@@ -10,6 +11,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 
 const GearOwnerProfilePage = () => {
+  usePageMetadata({
+    title: 'Gear Owner Profile | DemoStoke',
+    description: 'View information about this gear owner on DemoStoke.'
+  });
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);

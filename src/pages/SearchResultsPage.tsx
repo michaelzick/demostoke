@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { useSearchParams } from "react-router-dom";
 import { searchEquipmentWithNLP, getEquipmentData } from "@/services/searchService";
 import { AISearchResult } from "@/services/equipment/aiSearchService";
@@ -14,6 +15,10 @@ import { useMockData } from "@/hooks/useMockData";
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
 
 const SearchResultsPage = () => {
+  usePageMetadata({
+    title: 'Search Results | DemoStoke',
+    description: 'Find gear near you with DemoStoke search.'
+  });
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
   const [results, setResults] = useState<AISearchResult[]>([]);

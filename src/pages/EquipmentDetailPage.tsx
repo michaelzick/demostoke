@@ -1,5 +1,6 @@
 
 import { useParams } from "react-router-dom";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useEquipmentById } from "@/hooks/useEquipmentById";
@@ -19,6 +20,11 @@ function isValidUUID(id: string) {
 }
 
 const EquipmentDetailPage = () => {
+  usePageMetadata({
+    title: 'Gear Details | DemoStoke',
+    description: 'View detailed information about this gear listing.',
+    type: 'product'
+  });
   const { id } = useParams<{ id: string; }>();
   const [waiverCompleted, setWaiverCompleted] = useState(false);
   const [showWaiver, setShowWaiver] = useState(false);

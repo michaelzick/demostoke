@@ -1,5 +1,6 @@
 
 import { useEffect } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { useParams } from "react-router-dom";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useUserStats } from "@/hooks/useUserStats";
@@ -18,6 +19,10 @@ import { UserProfileNotFound } from "@/components/profile/UserProfileNotFound";
 import type { UserProfile } from "@/types";
 
 const RealUserProfilePage = () => {
+  usePageMetadata({
+    title: 'User Profile | DemoStoke',
+    description: 'View rider profiles and their listed gear on DemoStoke.'
+  });
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);

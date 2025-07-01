@@ -1,6 +1,11 @@
 // Update this page (the content is just a fallback if you fail to update the page)
+import usePageMetadata from "@/hooks/usePageMetadata";
 
 const Index = () => {
+  usePageMetadata({
+    title: 'DemoStoke',
+    description: 'Ride what makes you feel alive.'
+  });
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="text-center">

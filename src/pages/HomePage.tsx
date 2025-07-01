@@ -1,5 +1,6 @@
 
 import { useState, useEffect, useRef } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import HeroSection from "@/components/HeroSection";
 import HowItWorksSection from "@/components/home/HowItWorksSection";
 import FeaturedGearSection from "@/components/home/FeaturedGearSection";
@@ -25,6 +26,10 @@ import { supabase } from "@/integrations/supabase/client";
 import HCaptcha from "@/components/HCaptcha";
 
 const HomePage = () => {
+  usePageMetadata({
+    title: 'DemoStoke - Ride What Makes You Feel Alive',
+    description: 'Discover and demo outdoor gear from local riders on DemoStoke.'
+  });
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);

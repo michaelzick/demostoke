@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { useAuth } from "@/helpers";
 import { useDemoEvents } from "@/hooks/useDemoEvents";
 import { useCalendarNavigation } from "@/hooks/useCalendarNavigation";
@@ -12,6 +13,10 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 const DemoCalendarPage = () => {
+  usePageMetadata({
+    title: 'Demo Events Calendar | DemoStoke',
+    description: 'Explore upcoming demo events and manage your own.'
+  });
   const { isAuthenticated } = useAuth();
   const { isAdmin, isLoading: isLoadingRole } = useIsAdmin();
   const navigate = useNavigate();

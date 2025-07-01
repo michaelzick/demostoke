@@ -1,6 +1,11 @@
 import { useEffect } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 
 const AboutPage = () => {
+  usePageMetadata({
+    title: 'About DemoStoke',
+    description: 'Learn how DemoStoke connects riders with local gear owners.'
+  });
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);

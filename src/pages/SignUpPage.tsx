@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +18,10 @@ import { MapPin } from "lucide-react";
 import HCaptcha from "@/components/HCaptcha";
 
 const SignUpPage = () => {
+  usePageMetadata({
+    title: 'Sign Up | DemoStoke',
+    description: 'Create your DemoStoke account.'
+  });
   const navigate = useNavigate();
   const { signup, isLoading } = useAuth();
 
