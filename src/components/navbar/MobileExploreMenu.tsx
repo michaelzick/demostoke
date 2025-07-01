@@ -26,7 +26,7 @@ const MobileExploreMenu = ({ onClose }: MobileExploreMenuProps) => {
     <div>
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex items-center justify-between w-full text-lg font-medium text-left py-2 text-foreground hover:text-primary transition-colors"
+        className="flex items-center justify-between w-full text-lg font-medium text-left py-2"
       >
         Explore
         {isExpanded ? (
@@ -41,7 +41,7 @@ const MobileExploreMenu = ({ onClose }: MobileExploreMenuProps) => {
           <Link
             key={"all"}
             to={`/explore`}
-            className="block text-base font-medium py-1 text-foreground hover:text-primary transition-colors"
+            className="block text-base font-medium py-1"
             onClick={handleCategoryClick}
           >
             All Equipment
@@ -50,7 +50,7 @@ const MobileExploreMenu = ({ onClose }: MobileExploreMenuProps) => {
             <Link
               key={gear.category}
               to={`/explore?category=${gear.category}`}
-              className="block text-base font-medium py-1 text-foreground hover:text-primary transition-colors"
+              className="block text-base font-medium py-1"
               onClick={handleCategoryClick}
             >
               {gear.name}
