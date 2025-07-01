@@ -45,7 +45,7 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
       />
       
       {/* Menu */}
-      <div className="absolute top-0 right-0 h-full w-64 bg-white dark:bg-zinc-900 border-l shadow-lg">
+      <div className="absolute top-0 right-0 h-full w-80 bg-white dark:bg-zinc-900 border-l shadow-lg">
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b">
@@ -61,7 +61,7 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex flex-col p-6 space-y-4">
+          <nav className="flex flex-col p-6 space-y-4 bg-white dark:bg-zinc-900">
             <Button
               variant="outline"
               onClick={handleSearchClick}
