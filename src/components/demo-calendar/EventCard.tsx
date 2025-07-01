@@ -20,8 +20,27 @@ const parseLocalDate = (dateStr: string) => {
 };
 
 const EventCard = ({ event, categoryColors, onEdit, onDelete, isDeleting, isAdmin }: EventCardProps) => {
-  const categoryColor = categoryColors.find(c => c.category === event.gear_category)?.color || 'bg-gray-500';
+  const categoryFilter = categoryColors.find(c => c.category === event.gear_category);
+  const colorClass = categoryFilter?.color || 'bg-gray-500';
   
+  // Map background colors to their corresponding text colors
+  const getTextColor = (bgColor: string) => {
+    switch (bgColor) {
+      case 'bg-fuchsia-500':
+        return 'text-fuchsia-600';
+      case 'bg-green-400':
+        return 'text-green-600';
+      case 'bg-sky-500':
+        return 'text-sky-600';
+      case 'bg-violet-400':
+        return 'text-violet-600';
+      default:
+        return 'text-gray-600';
+    }
+  };
+
+  const textColorClass = getTextColor(colorClass);
+
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return "Date TBD";
     try {
@@ -48,9 +67,8 @@ const EventCard = ({ event, categoryColors, onEdit, onDelete, isDeleting, isAdmi
 
   return (
     <div className="bg-card rounded-lg p-3 shadow-sm border hover:shadow-md transition-shadow">
-      <div className="flex items-center gap-2 mb-2">
-        <div className={`h-3 w-3 rounded-full ${categoryColor}`} />
-        <h4 className="font-semibold text-sm">{event.title}</h4>
+      <div className="mb-2">
+        <h4 className={`font-semibold text-sm ${textColorClass}`}>{event.title}</h4>
       </div>
       
       <div className="space-y-1 text-xs text-muted-foreground mb-3">
