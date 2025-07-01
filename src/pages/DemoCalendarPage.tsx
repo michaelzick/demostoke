@@ -17,10 +17,10 @@ const DemoCalendarPage = () => {
   const navigate = useNavigate();
   const { currentDate, goToPreviousMonth, goToNextMonth } = useCalendarNavigation();
   const { events, createEvent, updateEvent, deleteEvent, isCreating, isUpdating, isDeleting } = useDemoEvents();
-  
+
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<DemoEvent | null>(null);
-  
+
   const [categoryFilters, setCategoryFilters] = useState<CategoryFilterType[]>([
     { category: 'snowboards', name: 'Snowboards', color: 'bg-fuchsia-500', enabled: true },
     { category: 'skis', name: 'Skis', color: 'bg-green-400', enabled: true },
@@ -29,9 +29,9 @@ const DemoCalendarPage = () => {
   ]);
 
   const handleToggleCategory = (category: string) => {
-    setCategoryFilters(prev => 
-      prev.map(filter => 
-        filter.category === category 
+    setCategoryFilters(prev =>
+      prev.map(filter =>
+        filter.category === category
           ? { ...filter, enabled: !filter.enabled }
           : filter
       )
@@ -96,7 +96,7 @@ const DemoCalendarPage = () => {
       {!isAuthenticated && (
         <div className="mb-8 p-4 bg-muted rounded-lg">
           <p className="text-sm text-muted-foreground mb-3">
-            Sign in to view demo events.
+            Sign in to add/edit demo events.
           </p>
           <Button onClick={() => navigate("/auth/signin")}>
             Sign In
