@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday, parseISO } from "date-fns";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday, parseISO, startOfWeek, endOfWeek } from "date-fns";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
@@ -41,7 +41,12 @@ const CalendarGrid = ({
 }: CalendarGridProps) => {
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
-  const monthDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
+  
+  // Get the full calendar view - start from Sunday of the week containing the first day
+  // and end on Saturday of the week containing the last day
+  const calendarStart = startOfWeek(monthStart);
+  const calendarEnd = endOfWeek(monthEnd);
+  const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
 
   // Filter events based on enabled categories
   const enabledCategories = categoryFilters.filter(f => f.enabled).map(f => f.category);
@@ -108,7 +113,7 @@ const CalendarGrid = ({
 
       {/* Calendar Days */}
       <div className="grid grid-cols-7">
-        {monthDays.map((day, index) => {
+        {calendarDays.map((day, index) => {
           const dayEvents = getEventsForDate(day);
           const isCurrentMonth = isSameMonth(day, currentDate);
           const isTodayDate = isToday(day);
