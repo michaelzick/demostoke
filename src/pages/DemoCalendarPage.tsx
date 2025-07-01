@@ -15,7 +15,7 @@ const DemoCalendarPage = () => {
   const { isAuthenticated } = useAuth();
   const { isAdmin, isLoading: isLoadingRole } = useIsAdmin();
   const navigate = useNavigate();
-  const { currentDate, goToPreviousMonth, goToNextMonth } = useCalendarNavigation();
+  const { currentDate, goToPreviousMonth, goToNextMonth, goToToday } = useCalendarNavigation();
   const { events, createEvent, updateEvent, deleteEvent, isCreating, isUpdating, isDeleting } = useDemoEvents();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -129,6 +129,7 @@ const DemoCalendarPage = () => {
             categoryFilters={categoryFilters}
             onPreviousMonth={goToPreviousMonth}
             onNextMonth={goToNextMonth}
+            onGoToToday={goToToday}
             onAddEvent={handleAddEvent}
             onEditEvent={handleEditEvent}
             onDeleteEvent={handleDeleteEvent}

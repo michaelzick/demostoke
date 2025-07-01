@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday, parseISO, startOfWeek, endOfWeek } from "date-fns";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
 import EventCard from "./EventCard";
@@ -12,6 +12,7 @@ interface CalendarGridProps {
   categoryFilters: CategoryFilter[];
   onPreviousMonth: () => void;
   onNextMonth: () => void;
+  onGoToToday: () => void;
   onAddEvent: () => void;
   onEditEvent: (event: DemoEvent) => void;
   onDeleteEvent: (eventId: string) => void;
@@ -32,6 +33,7 @@ const CalendarGrid = ({
   categoryFilters,
   onPreviousMonth,
   onNextMonth,
+  onGoToToday,
   onAddEvent,
   onEditEvent,
   onDeleteEvent,
@@ -91,6 +93,15 @@ const CalendarGrid = ({
               onClick={onNextMonth}
             >
               <ChevronRight className="h-4 w-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onGoToToday}
+              className="ml-2"
+            >
+              <Calendar className="h-4 w-4 mr-1" />
+              Today
             </Button>
           </div>
         </div>
