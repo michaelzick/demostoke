@@ -7,7 +7,7 @@ export interface DemoEvent {
   event_time: string | null;
   location: string | null;
   equipment_available: string | null;
-  company: string | null;
+  company: string;
   created_at: string;
   updated_at: string;
   created_by: string;
@@ -20,7 +20,7 @@ export interface DemoEventInput {
   event_time?: string | null;
   location?: string | null;
   equipment_available?: string | null;
-  company?: string | null;
+  company: string;
 }
 
 export interface CategoryFilter {

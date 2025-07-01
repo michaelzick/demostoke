@@ -31,7 +31,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
     event_time: null,
     location: null,
     equipment_available: null,
-    company: null,
+    company: '',
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -44,7 +44,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
         event_time: editEvent.event_time,
         location: editEvent.location,
         equipment_available: editEvent.equipment_available,
-        company: editEvent.company,
+        company: editEvent.company || '',
       });
     } else {
       setFormData({
@@ -54,7 +54,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
         event_time: null,
         location: null,
         equipment_available: null,
-        company: null,
+        company: '',
       });
     }
     setErrors({});
@@ -69,6 +69,10 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
 
     if (!formData.gear_category) {
       newErrors.gear_category = 'Gear category is required';
+    }
+
+    if (!formData.company?.trim()) {
+      newErrors.company = 'Company is required';
     }
 
     setErrors(newErrors);
@@ -89,7 +93,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
       event_time: formData.event_time?.trim() || null,
       location: formData.location?.trim() || null,
       equipment_available: formData.equipment_available?.trim() || null,
-      company: formData.company?.trim() || null,
+      company: formData.company?.trim() || '',
     };
 
     onSubmit(cleanedData);
@@ -103,7 +107,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
       event_time: null,
       location: null,
       equipment_available: null,
-      company: null,
+      company: '',
     });
     setErrors({});
     onClose();
@@ -129,13 +133,15 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
           </div>
 
           <div>
-            <Label htmlFor="company">Company</Label>
+            <Label htmlFor="company">Company *</Label>
             <Input
               id="company"
               value={formData.company || ''}
-              onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value || null }))}
+              onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
               placeholder="Enter hosting company"
+              className={errors.company ? 'border-destructive' : ''}
             />
+            {errors.company && <p className="text-sm text-destructive mt-1">{errors.company}</p>}
           </div>
 
           <div>

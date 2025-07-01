@@ -1,7 +1,7 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { format } from "date-fns";
-import { Clock, MapPin, Package, X } from "lucide-react";
+import { Clock, MapPin, Package, Building2 } from "lucide-react";
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
 import { Button } from "@/components/ui/button";
 
@@ -63,15 +63,19 @@ const EventModal = ({
             <div className={`h-4 w-4 rounded-full ${categoryColor}`} />
             <div>
               <DialogTitle className="text-lg">{event.title}</DialogTitle>
-              {event.company && (
-                <p className="text-sm font-semibold text-foreground">{event.company}</p>
-              )}
             </div>
           </div>
         </DialogHeader>
         
         <div className="space-y-4">
           <div className="space-y-3">
+            {event.company && (
+              <div className="flex items-center gap-2 text-sm">
+                <Building2 className="h-4 w-4 text-muted-foreground" />
+                <span className="font-semibold text-foreground">{event.company}</span>
+              </div>
+            )}
+            
             <div className="flex items-center gap-2 text-sm">
               <Clock className="h-4 w-4 text-muted-foreground" />
               <span>{formatDate(event.event_date)} • {formatTime(event.event_time)}</span>
