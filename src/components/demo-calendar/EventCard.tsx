@@ -22,20 +22,20 @@ const parseLocalDate = (dateStr: string) => {
 const EventCard = ({ event, categoryColors, onEdit, onDelete, isDeleting, isAdmin }: EventCardProps) => {
   const categoryFilter = categoryColors.find(c => c.category === event.gear_category);
   const colorClass = categoryFilter?.color || 'bg-gray-500';
-  
+
   // Map background colors to their corresponding text colors
   const getTextColor = (bgColor: string) => {
     switch (bgColor) {
       case 'bg-fuchsia-500':
-        return 'text-fuchsia-600';
+        return 'text-fuchsia-500';
       case 'bg-green-400':
-        return 'text-green-600';
+        return 'text-green-400';
       case 'bg-sky-500':
-        return 'text-sky-600';
+        return 'text-sky-500';
       case 'bg-violet-400':
-        return 'text-violet-600';
+        return 'text-violet-400';
       default:
-        return 'text-gray-600';
+        return 'text-gray-500';
     }
   };
 
@@ -70,20 +70,20 @@ const EventCard = ({ event, categoryColors, onEdit, onDelete, isDeleting, isAdmi
       <div className="mb-2">
         <h4 className={`font-semibold text-sm ${textColorClass}`}>{event.title}</h4>
       </div>
-      
+
       <div className="space-y-1 text-xs text-muted-foreground mb-3">
         <div className="flex items-center gap-1">
           <Clock className="h-3 w-3" />
           <span>{formatDate(event.event_date)} • {formatTime(event.event_time)}</span>
         </div>
-        
+
         {event.location && (
           <div className="flex items-center gap-1">
             <MapPin className="h-3 w-3" />
             <span>{event.location}</span>
           </div>
         )}
-        
+
         {event.equipment_available && (
           <div className="flex items-center gap-1">
             <Package className="h-3 w-3" />
