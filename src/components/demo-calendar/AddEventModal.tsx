@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -27,10 +26,10 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
   const [formData, setFormData] = useState<DemoEventInput>({
     title: '',
     gear_category: 'snowboards',
-    event_date: null,
-    event_time: null,
-    location: null,
-    equipment_available: null,
+    event_date: '',
+    event_time: '',
+    location: '',
+    equipment_available: '',
     company: '',
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -40,20 +39,20 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
       setFormData({
         title: editEvent.title,
         gear_category: editEvent.gear_category,
-        event_date: editEvent.event_date,
-        event_time: editEvent.event_time,
-        location: editEvent.location,
-        equipment_available: editEvent.equipment_available,
+        event_date: editEvent.event_date || '',
+        event_time: editEvent.event_time || '',
+        location: editEvent.location || '',
+        equipment_available: editEvent.equipment_available || '',
         company: editEvent.company || '',
       });
     } else {
       setFormData({
         title: '',
         gear_category: 'snowboards',
-        event_date: null,
-        event_time: null,
-        location: null,
-        equipment_available: null,
+        event_date: '',
+        event_time: '',
+        location: '',
+        equipment_available: '',
         company: '',
       });
     }
@@ -103,10 +102,10 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
     setFormData({
       title: '',
       gear_category: 'snowboards',
-      event_date: null,
-      event_time: null,
-      location: null,
-      equipment_available: null,
+      event_date: '',
+      event_time: '',
+      location: '',
+      equipment_available: '',
       company: '',
     });
     setErrors({});
@@ -148,7 +147,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
             <Label htmlFor="gear_category">Gear Category *</Label>
             <Select
               value={formData.gear_category}
-              onValueChange={(value) => setFormData(prev => ({ ...prev, gear_category: value as any }))}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, gear_category: value as DemoEventInput["gear_category"] }))}
             >
               <SelectTrigger className={errors.gear_category ? 'border-destructive' : ''}>
                 <SelectValue />
@@ -170,7 +169,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
               id="date"
               type="date"
               value={formData.event_date || ''}
-              onChange={(e) => setFormData(prev => ({ ...prev, event_date: e.target.value || null }))}
+              onChange={(e) => setFormData(prev => ({ ...prev, event_date: e.target.value || '' }))}
             />
           </div>
 
@@ -180,7 +179,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
               id="time"
               type="time"
               value={formData.event_time || ''}
-              onChange={(e) => setFormData(prev => ({ ...prev, event_time: e.target.value || null }))}
+              onChange={(e) => setFormData(prev => ({ ...prev, event_time: e.target.value || '' }))}
             />
           </div>
 
@@ -189,7 +188,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
             <Input
               id="location"
               value={formData.location || ''}
-              onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value || null }))}
+              onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value || '' }))}
               placeholder="Enter event location"
             />
           </div>
@@ -199,7 +198,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
             <Textarea
               id="equipment"
               value={formData.equipment_available || ''}
-              onChange={(e) => setFormData(prev => ({ ...prev, equipment_available: e.target.value || null }))}
+              onChange={(e) => setFormData(prev => ({ ...prev, equipment_available: e.target.value || '' }))}
               placeholder="List available equipment or additional notes"
               rows={3}
             />
