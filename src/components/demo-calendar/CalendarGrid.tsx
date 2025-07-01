@@ -90,9 +90,7 @@ const CalendarGrid = ({
   const tbdEvents = filteredEvents.filter(event => !event.event_date);
 
   const handleEventClick = (event: DemoEvent) => {
-    if (isMobile) {
-      setSelectedEvent(event);
-    }
+    setSelectedEvent(event);
   };
 
   const handleCloseModal = () => {
@@ -155,18 +153,16 @@ const CalendarGrid = ({
         isAdmin={isAdmin}
       />
 
-      {/* Event Modal for Mobile */}
-      {isMobile && (
-        <EventModal
-          event={selectedEvent}
-          categoryColors={categoryFilters}
-          onClose={handleCloseModal}
-          onEdit={handleEditFromModal}
-          onDelete={handleDeleteFromModal}
-          isDeleting={isDeleting}
-          isAdmin={isAdmin}
-        />
-      )}
+      {/* Event Modal */}
+      <EventModal
+        event={selectedEvent}
+        categoryColors={categoryFilters}
+        onClose={handleCloseModal}
+        onEdit={handleEditFromModal}
+        onDelete={handleDeleteFromModal}
+        isDeleting={isDeleting}
+        isAdmin={isAdmin}
+      />
     </div>
   );
 };
