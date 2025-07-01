@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAuth } from "@/helpers";
 import { useDemoEvents } from "@/hooks/useDemoEvents";
 import { useCalendarNavigation } from "@/hooks/useCalendarNavigation";
-import { DemoEvent, DemoEventInput, CategoryFilter } from "@/types/demo-calendar";
+import { DemoEvent, DemoEventInput, CategoryFilter as CategoryFilterType } from "@/types/demo-calendar";
 import CalendarGrid from "@/components/demo-calendar/CalendarGrid";
 import CategoryFilter from "@/components/demo-calendar/CategoryFilter";
 import AddEventModal from "@/components/demo-calendar/AddEventModal";
@@ -19,7 +19,7 @@ const DemoCalendarPage = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<DemoEvent | null>(null);
   
-  const [categoryFilters, setCategoryFilters] = useState<CategoryFilter[]>([
+  const [categoryFilters, setCategoryFilters] = useState<CategoryFilterType[]>([
     { category: 'snowboards', name: 'Snowboards', color: 'bg-fuchsia-500', enabled: true },
     { category: 'skis', name: 'Skis', color: 'bg-green-400', enabled: true },
     { category: 'surfboards', name: 'Surfboards', color: 'bg-sky-500', enabled: true },
