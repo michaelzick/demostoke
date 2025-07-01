@@ -1,3 +1,4 @@
+
 import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -34,6 +35,7 @@ const GearOwnerProfilePage = lazy(() => import("./pages/GearOwnerProfilePage"));
 const ShopPage = lazy(() => import("./pages/ShopPage"));
 const PrivatePartyPage = lazy(() => import("./pages/PrivatePartyPage"));
 const SearchResultsPage = lazy(() => import("./pages/SearchResultsPage"));
+const DemoCalendarPage = lazy(() => import("./pages/DemoCalendarPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -61,7 +63,6 @@ const App = () => {
                   </Route>
                   <Route path="/" element={<MainLayout />}>
                     <Route index element={<HomePage />} />
-                    <Route path="about" element={<AboutPage />} />
                     <Route path="blog" element={<BlogPage />} />
                     <Route path="blog/:slug" element={<BlogPostPage />} />
                     <Route path="contact-us" element={<ContactPage />} />
@@ -81,6 +82,7 @@ const App = () => {
                     <Route path="shop/:shopId" element={<ShopPage />} />
                     <Route path="private-party/:partyId" element={<PrivatePartyPage />} />
                     <Route path="search" element={<SearchResultsPage />} />
+                    <Route path="demo-calendar" element={<DemoCalendarPage />} />
                     <Route path="*" element={<NotFoundPage />} />
                   </Route>
                 </Routes>

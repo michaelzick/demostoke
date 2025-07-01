@@ -151,6 +151,44 @@ export interface Database {
           updated_at?: string;
         };
       };
+      demo_calendar: {
+        Row: {
+          id: string;
+          title: string;
+          gear_category: string;
+          event_date: string | null;
+          event_time: string | null;
+          location: string | null;
+          equipment_available: string | null;
+          created_at: string;
+          updated_at: string;
+          created_by: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          gear_category: string;
+          event_date?: string | null;
+          event_time?: string | null;
+          location?: string | null;
+          equipment_available?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          gear_category?: string;
+          event_date?: string | null;
+          event_time?: string | null;
+          location?: string | null;
+          equipment_available?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          created_by?: string;
+        };
+      };
     };
     Views: {};
     Functions: {};

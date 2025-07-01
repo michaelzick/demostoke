@@ -36,6 +36,45 @@ export type Database = {
         }
         Relationships: []
       }
+      demo_calendar: {
+        Row: {
+          created_at: string
+          created_by: string
+          equipment_available: string | null
+          event_date: string | null
+          event_time: string | null
+          gear_category: string
+          id: string
+          location: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          equipment_available?: string | null
+          event_date?: string | null
+          event_time?: string | null
+          gear_category: string
+          id?: string
+          location?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          equipment_available?: string | null
+          event_date?: string | null
+          event_time?: string | null
+          gear_category?: string
+          id?: string
+          location?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       equipment: {
         Row: {
           category: string

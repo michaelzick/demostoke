@@ -1,135 +1,112 @@
 
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
 import { useAuth } from "@/helpers";
+import { Search, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import MobileExploreMenu from "./MobileExploreMenu";
 
-type MobileMenuProps = {
+interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   onOpenSearch: () => void;
-};
+}
 
 const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const handleListGearClick = () => {
+  const handleListGearClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onClose();
     if (isAuthenticated) {
       navigate("/list-your-gear");
     } else {
       navigate("/auth/signin");
     }
+  };
+
+  const handleSearchClick = () => {
+    onClose();
+    onOpenSearch();
+  };
+
+  const handleLinkClick = () => {
     onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 top-16 z-50 bg-background lg:hidden">
-      <nav className="flex flex-col p-6 space-y-4 bg-white dark:bg-zinc-900">
-        <Button
-          variant="outline"
-          className="w-full justify-start"
-          onClick={() => {
-            onOpenSearch();
-            onClose();
-          }}
-        >
-          <Search className="h-4 w-4 mr-2" />
-          <span>Search gear...</span>
-        </Button>
+    <div className="lg:hidden">
+      {/* Backdrop */}
+      <div 
+        className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm" 
+        onClick={onClose}
+      />
+      
+      {/* Menu */}
+      <div className="fixed top-0 right-0 z-50 h-full w-64 bg-background border-l shadow-lg">
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b">
+            <span className="font-semibold">Menu</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="p-1"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
 
-        <Link
-          to="/"
-          className="text-lg font-medium"
-          onClick={onClose}
-        >
-          Home
-        </Link>
-
-        <MobileExploreMenu onClose={onClose} />
-
-        <button
-          onClick={handleListGearClick}
-          className="text-lg font-medium text-left"
-        >
-          List Your Gear
-        </button>
-        <Link
-          to="/about"
-          className="text-lg font-medium"
-          onClick={onClose}
-        >
-          About
-        </Link>
-        <Link
-          to="/blog"
-          className="text-lg font-medium"
-          onClick={onClose}
-        >
-          Blog
-        </Link>
-        <div className="pt-4 border-t">
-          {isAuthenticated ? (
-            <>
+          {/* Navigation Links */}
+          <div className="flex-1 overflow-y-auto py-4">
+            <div className="space-y-1 px-4">
               <Link
-                to="/profile"
-                className="block py-2 text-lg font-medium cursor-pointer"
-                onClick={onClose}
+                to="/"
+                className="block py-2 text-base font-medium hover:text-primary transition-colors"
+                onClick={handleLinkClick}
               >
-                Profile
+                Home
               </Link>
-              <Link
-                to="/my-gear"
-                className="block py-2 text-lg font-medium cursor-pointer"
-                onClick={onClose}
-              >
-                My Gear
-              </Link>
-              <Link
-                to="/analytics"
-                className="block py-2 text-lg font-medium cursor-pointer"
-                onClick={onClose}
-              >
-                Analytics
-              </Link>
-              <Link
-                to="/bookings"
-                className="block py-2 text-lg font-medium cursor-pointer"
-                onClick={onClose}
-              >
-                Bookings
-              </Link>
+              
+              <MobileExploreMenu onClose={onClose} />
+              
               <button
-                className="block py-2 text-lg font-medium text-destructive cursor-pointer"
-                onClick={() => { logout(); onClose(); }}
+                onClick={handleListGearClick}
+                className="block w-full text-left py-2 text-base font-medium hover:text-primary transition-colors"
               >
-                Logout
+                List Your Gear
               </button>
-            </>
-          ) : (
-            <div className="flex flex-col gap-2">
-              <Button
-                variant="outline"
-                className="w-full"
-                asChild
-                onClick={onClose}
+              
+              <Link
+                to="/demo-calendar"
+                className="block py-2 text-base font-medium hover:text-primary transition-colors"
+                onClick={handleLinkClick}
               >
-                <Link to="/auth/signin">Sign In</Link>
-              </Button>
-              {/* <Button
-                className="w-full"
-                asChild
-                onClick={onClose}
+                Demo Calendar
+              </Link>
+              
+              <Link
+                to="/blog"
+                className="block py-2 text-base font-medium hover:text-primary transition-colors"
+                onClick={handleLinkClick}
               >
-                <Link to="/auth/signup">Sign Up</Link>
-              </Button> */}
+                Blog
+              </Link>
+              
+              <button
+                onClick={handleSearchClick}
+                className="flex items-center w-full py-2 text-base font-medium hover:text-primary transition-colors"
+              >
+                <Search className="h-4 w-4 mr-2" />
+                Search
+              </button>
             </div>
-          )}
+          </div>
         </div>
-      </nav>
+      </div>
     </div>
   );
 };
