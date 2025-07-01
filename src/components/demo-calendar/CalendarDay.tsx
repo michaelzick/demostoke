@@ -64,6 +64,7 @@ const CalendarDay = ({
               categoryColors={categoryFilters}
               onEdit={onEditEvent}
               onDelete={onDeleteEvent}
+              onEventClick={onEventClick}
               isDeleting={isDeleting}
               isAdmin={isAdmin}
             />

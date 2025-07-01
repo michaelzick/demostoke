@@ -37,7 +37,7 @@ const TBDEventsSection = ({
               key={event.id}
               event={event}
               categoryColors={categoryFilters}
-              onClick={() => onEventClick(event)}
+              onClick={() => onEventClick(event)}  
             />
           ) : (
             <EventCard
@@ -46,6 +46,7 @@ const TBDEventsSection = ({
               categoryColors={categoryFilters}
               onEdit={onEditEvent}
               onDelete={onDeleteEvent}
+              onEventClick={onEventClick}
               isDeleting={isDeleting}
               isAdmin={isAdmin}
             />
