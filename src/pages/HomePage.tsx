@@ -257,7 +257,6 @@ const HomePage = () => {
         </DialogContent>
       </Dialog>
       <HeroSection />
-      <HowItWorksSection />
 
       {/* Conditionally render trending section only if we have trending data */}
       {!trendingLoading && trendingEquipment && trendingEquipment.length > 0 && (
@@ -277,6 +276,7 @@ const HomePage = () => {
       )}
 
       <CategoriesSection />
+      <HowItWorksSection />
       <CtaSection />
     </div>
   );

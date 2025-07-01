@@ -6,11 +6,11 @@ import { Snowflake, Waves } from "@phosphor-icons/react";
 
 const HowItWorksSection = () => {
   return (
-    <section className="py-16 bg-white dark:bg-zinc-900">
+    <section className="py-8 bg-white dark:bg-black">
       <div className="container px-4 md:px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-3">How It Works</h2>
-          <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
             Browse gear based on where you ride, how you ride, and what makes you feel alive.
             Demo boards, skis, or surfcraft from local shops, indie shapers, or other riders — all matched to your conditions, skill level, and vibe.
             If it clicks, keep riding it. If not, try again — until you find <em>the one.</em>
