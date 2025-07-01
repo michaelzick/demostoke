@@ -31,6 +31,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
     event_time: null,
     location: null,
     equipment_available: null,
+    company: null,
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -43,6 +44,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
         event_time: editEvent.event_time,
         location: editEvent.location,
         equipment_available: editEvent.equipment_available,
+        company: editEvent.company,
       });
     } else {
       setFormData({
@@ -52,6 +54,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
         event_time: null,
         location: null,
         equipment_available: null,
+        company: null,
       });
     }
     setErrors({});
@@ -86,6 +89,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
       event_time: formData.event_time?.trim() || null,
       location: formData.location?.trim() || null,
       equipment_available: formData.equipment_available?.trim() || null,
+      company: formData.company?.trim() || null,
     };
 
     onSubmit(cleanedData);
@@ -99,6 +103,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
       event_time: null,
       location: null,
       equipment_available: null,
+      company: null,
     });
     setErrors({});
     onClose();
@@ -121,6 +126,16 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
               className={errors.title ? 'border-destructive' : ''}
             />
             {errors.title && <p className="text-sm text-destructive mt-1">{errors.title}</p>}
+          </div>
+
+          <div>
+            <Label htmlFor="company">Company</Label>
+            <Input
+              id="company"
+              value={formData.company || ''}
+              onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value || null }))}
+              placeholder="Enter hosting company"
+            />
           </div>
 
           <div>

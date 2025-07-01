@@ -61,7 +61,12 @@ const EventModal = ({
         <DialogHeader>
           <div className="flex items-center gap-3">
             <div className={`h-4 w-4 rounded-full ${categoryColor}`} />
-            <DialogTitle className="text-lg">{event.title}</DialogTitle>
+            <div>
+              <DialogTitle className="text-lg">{event.title}</DialogTitle>
+              {event.company && (
+                <p className="text-sm font-semibold text-foreground">{event.company}</p>
+              )}
+            </div>
           </div>
         </DialogHeader>
         

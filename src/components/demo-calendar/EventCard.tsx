@@ -69,6 +69,9 @@ const EventCard = ({ event, categoryColors, onEdit, onDelete, isDeleting, isAdmi
     <div className="bg-card rounded-lg p-3 shadow-sm border hover:shadow-md transition-shadow">
       <div className="mb-2">
         <h4 className={`font-semibold text-sm ${textColorClass}`}>{event.title}</h4>
+        {event.company && (
+          <p className="text-sm font-semibold text-foreground">{event.company}</p>
+        )}
       </div>
 
       <div className="space-y-1 text-xs text-muted-foreground mb-3">
