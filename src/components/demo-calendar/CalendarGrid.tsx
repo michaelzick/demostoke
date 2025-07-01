@@ -47,6 +47,10 @@ const CalendarGrid = ({
   const isMobile = useIsMobile();
   const [selectedEvent, setSelectedEvent] = useState<DemoEvent | null>(null);
 
+  console.log('CalendarGrid - Current date:', currentDate);
+  console.log('CalendarGrid - All events:', events);
+  console.log('CalendarGrid - Category filters:', categoryFilters);
+
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   
@@ -60,18 +64,26 @@ const CalendarGrid = ({
   const enabledCategories = categoryFilters.filter(f => f.enabled).map(f => f.category);
   const filteredEvents = events.filter(event => enabledCategories.includes(event.gear_category));
 
+  console.log('CalendarGrid - Enabled categories:', enabledCategories);
+  console.log('CalendarGrid - Filtered events:', filteredEvents);
+
   // Get events for a specific date
   const getEventsForDate = (date: Date) => {
-    return filteredEvents.filter(event => {
+    const dayEvents = filteredEvents.filter(event => {
       if (!event.event_date) return false;
       try {
         // Parse the date as a local date to avoid timezone issues
         const eventDate = parseLocalDate(event.event_date);
-        return isSameDay(eventDate, date);
-      } catch {
+        const isSame = isSameDay(eventDate, date);
+        console.log(`Checking event "${event.title}" (${event.event_date}) against date ${format(date, 'yyyy-MM-dd')}: ${isSame}`);
+        return isSame;
+      } catch (error) {
+        console.error('Error parsing event date:', event.event_date, error);
         return false;
       }
     });
+    console.log(`Events for ${format(date, 'yyyy-MM-dd')}:`, dayEvents);
+    return dayEvents;
   };
 
   // Get events without dates (TBD events)
