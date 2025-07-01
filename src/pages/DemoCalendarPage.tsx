@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useAuth } from "@/helpers";
 import { useDemoEvents } from "@/hooks/useDemoEvents";
 import { useCalendarNavigation } from "@/hooks/useCalendarNavigation";
+import { useIsAdmin } from "@/hooks/useUserRole";
 import { DemoEvent, DemoEventInput, CategoryFilter as CategoryFilterType } from "@/types/demo-calendar";
 import CalendarGrid from "@/components/demo-calendar/CalendarGrid";
 import CategoryFilter from "@/components/demo-calendar/CategoryFilter";
@@ -12,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 
 const DemoCalendarPage = () => {
   const { isAuthenticated } = useAuth();
+  const { isAdmin, isLoading: isLoadingRole } = useIsAdmin();
   const navigate = useNavigate();
   const { currentDate, goToPreviousMonth, goToNextMonth } = useCalendarNavigation();
   const { events, createEvent, updateEvent, deleteEvent, isCreating, isUpdating, isDeleting } = useDemoEvents();
@@ -41,6 +43,9 @@ const DemoCalendarPage = () => {
       navigate("/auth/signin");
       return;
     }
+    if (!isAdmin) {
+      return; // Only admins can add events
+    }
     setIsAddModalOpen(true);
   };
 
@@ -48,6 +53,9 @@ const DemoCalendarPage = () => {
     if (!isAuthenticated) {
       navigate("/auth/signin");
       return;
+    }
+    if (!isAdmin) {
+      return; // Only admins can edit events
     }
     setEditingEvent(event);
   };
@@ -63,6 +71,9 @@ const DemoCalendarPage = () => {
   };
 
   const handleDeleteEvent = (eventId: string) => {
+    if (!isAdmin) {
+      return; // Only admins can delete events
+    }
     if (window.confirm('Are you sure you want to delete this event?')) {
       deleteEvent(eventId);
     }
@@ -85,11 +96,19 @@ const DemoCalendarPage = () => {
       {!isAuthenticated && (
         <div className="mb-8 p-4 bg-muted rounded-lg">
           <p className="text-sm text-muted-foreground mb-3">
-            Sign in to create and manage demo events.
+            Sign in to view demo events.
           </p>
           <Button onClick={() => navigate("/auth/signin")}>
             Sign In
           </Button>
+        </div>
+      )}
+
+      {isAuthenticated && !isLoadingRole && !isAdmin && (
+        <div className="mb-8 p-4 bg-muted rounded-lg">
+          <p className="text-sm text-muted-foreground">
+            Only administrators can create and manage demo events.
+          </p>
         </div>
       )}
 
@@ -114,6 +133,8 @@ const DemoCalendarPage = () => {
             onEditEvent={handleEditEvent}
             onDeleteEvent={handleDeleteEvent}
             isDeleting={isDeleting}
+            isAdmin={isAdmin}
+            isLoadingRole={isLoadingRole}
           />
         </div>
       </div>

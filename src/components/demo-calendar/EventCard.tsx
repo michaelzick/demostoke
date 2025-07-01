@@ -10,9 +10,10 @@ interface EventCardProps {
   onEdit: (event: DemoEvent) => void;
   onDelete: (eventId: string) => void;
   isDeleting?: boolean;
+  isAdmin: boolean;
 }
 
-const EventCard = ({ event, categoryColors, onEdit, onDelete, isDeleting }: EventCardProps) => {
+const EventCard = ({ event, categoryColors, onEdit, onDelete, isDeleting, isAdmin }: EventCardProps) => {
   const categoryColor = categoryColors.find(c => c.category === event.gear_category)?.color || 'bg-gray-500';
   
   const formatDate = (dateStr: string | null) => {
@@ -44,25 +45,27 @@ const EventCard = ({ event, categoryColors, onEdit, onDelete, isDeleting }: Even
           <div className={`h-3 w-3 rounded-full ${categoryColor}`} />
           <h4 className="font-semibold text-sm">{event.title}</h4>
         </div>
-        <div className="flex gap-1">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onEdit(event)}
-            className="h-6 px-2 text-xs"
-          >
-            Edit
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => onDelete(event.id)}
-            disabled={isDeleting}
-            className="h-6 px-2 text-xs text-destructive hover:text-destructive"
-          >
-            {isDeleting ? "..." : "Delete"}
-          </Button>
-        </div>
+        {isAdmin && (
+          <div className="flex gap-1">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onEdit(event)}
+              className="h-6 px-2 text-xs"
+            >
+              Edit
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => onDelete(event.id)}
+              disabled={isDeleting}
+              className="h-6 px-2 text-xs text-destructive hover:text-destructive"
+            >
+              {isDeleting ? "..." : "Delete"}
+            </Button>
+          </div>
+        )}
       </div>
       
       <div className="space-y-1 text-xs text-muted-foreground">

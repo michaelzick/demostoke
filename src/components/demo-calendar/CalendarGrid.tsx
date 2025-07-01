@@ -16,6 +16,8 @@ interface CalendarGridProps {
   onEditEvent: (event: DemoEvent) => void;
   onDeleteEvent: (eventId: string) => void;
   isDeleting?: boolean;
+  isAdmin: boolean;
+  isLoadingRole: boolean;
 }
 
 const CalendarGrid = ({
@@ -27,7 +29,9 @@ const CalendarGrid = ({
   onAddEvent,
   onEditEvent,
   onDeleteEvent,
-  isDeleting
+  isDeleting,
+  isAdmin,
+  isLoadingRole
 }: CalendarGridProps) => {
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -78,10 +82,12 @@ const CalendarGrid = ({
             </Button>
           </div>
         </div>
-        <Button onClick={onAddEvent} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Add Event
-        </Button>
+        {isAdmin && !isLoadingRole && (
+          <Button onClick={onAddEvent} className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Add Event
+          </Button>
+        )}
       </div>
 
       {/* Days of Week Header */}
@@ -126,6 +132,7 @@ const CalendarGrid = ({
                     onEdit={onEditEvent}
                     onDelete={onDeleteEvent}
                     isDeleting={isDeleting}
+                    isAdmin={isAdmin}
                   />
                 ))}
               </div>
@@ -147,6 +154,7 @@ const CalendarGrid = ({
                 onEdit={onEditEvent}
                 onDelete={onDeleteEvent}
                 isDeleting={isDeleting}
+                isAdmin={isAdmin}
               />
             ))}
           </div>
