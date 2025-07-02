@@ -1,12 +1,10 @@
 
-import { mapGearTypeToCategory } from "@/utils/gearTypeMapping";
-
 interface PrepareEquipmentDataParams {
   userId?: string;
   gearName: string;
   gearType: string;
   description: string;
-  zipCode: string;
+  address: string; // Changed from zipCode to address
   coordinates: { lat: number; lng: number } | null;
   size: string;
   skillLevel: string;
@@ -14,7 +12,7 @@ interface PrepareEquipmentDataParams {
   pricePerHour?: string;
   pricePerWeek?: string;
   finalImageUrl: string;
-  damageDeposit?: string;
+  damageDeposit: string;
 }
 
 export const prepareEquipmentData = ({
@@ -22,7 +20,7 @@ export const prepareEquipmentData = ({
   gearName,
   gearType,
   description,
-  zipCode,
+  address, // Changed from zipCode to address
   coordinates,
   size,
   skillLevel,
@@ -32,44 +30,27 @@ export const prepareEquipmentData = ({
   finalImageUrl,
   damageDeposit,
 }: PrepareEquipmentDataParams) => {
+  // Parse numeric values
+  const parsedPricePerDay = parseFloat(pricePerDay) || 0;
+  const parsedPricePerHour = pricePerHour && pricePerHour.trim() ? parseFloat(pricePerHour) : null;
+  const parsedPricePerWeek = pricePerWeek && pricePerWeek.trim() ? parseFloat(pricePerWeek) : null;
+  const parsedDamageDeposit = damageDeposit && damageDeposit.trim() ? parseFloat(damageDeposit) : null;
+
   const equipmentData: any = {
     name: gearName,
-    category: mapGearTypeToCategory(gearType),
-    description,
+    category: gearType,
+    description: description,
     image_url: finalImageUrl,
-    price_per_day: parseFloat(pricePerDay),
-    location_zip: zipCode,
+    location_address: address, // Changed from location_zip to location_address
     size: size,
     suitable_skill_level: skillLevel,
+    price_per_day: parsedPricePerDay,
+    price_per_hour: parsedPricePerHour,
+    price_per_week: parsedPricePerWeek,
+    damage_deposit: parsedDamageDeposit,
     status: 'available',
     visible_on_map: true,
   };
-
-  // Handle optional price columns - set to null if empty string to clear the database value
-  if (pricePerHour !== undefined) {
-    if (pricePerHour.trim() === '') {
-      equipmentData.price_per_hour = null;
-    } else {
-      equipmentData.price_per_hour = parseFloat(pricePerHour);
-    }
-  }
-
-  if (pricePerWeek !== undefined) {
-    if (pricePerWeek.trim() === '') {
-      equipmentData.price_per_week = null;
-    } else {
-      equipmentData.price_per_week = parseFloat(pricePerWeek);
-    }
-  }
-
-  // Add damage deposit - set to null if empty string to clear the database value
-  if (damageDeposit !== undefined) {
-    if (damageDeposit.trim() === '') {
-      equipmentData.damage_deposit = null;
-    } else {
-      equipmentData.damage_deposit = parseFloat(damageDeposit);
-    }
-  }
 
   // Add coordinates if available
   if (coordinates) {
@@ -77,7 +58,7 @@ export const prepareEquipmentData = ({
     equipmentData.location_lng = coordinates.lng;
   }
 
-  // Add user_id if provided (for new equipment)
+  // Add user_id only if provided (for creation, not updates)
   if (userId) {
     equipmentData.user_id = userId;
   }

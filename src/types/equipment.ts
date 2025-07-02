@@ -19,7 +19,7 @@ export interface UserEquipment {
   location: {
     lat: number;
     lng: number;
-    zip: string;
+    address: string; // Changed from zip to address
   };
   specifications: {
     size: string;

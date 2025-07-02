@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -15,7 +16,7 @@ interface UseEditGearFormSubmissionProps {
   gearName: string;
   gearType: string;
   description: string;
-  zipCode: string;
+  address: string; // Changed from zipCode to address
   measurementUnit: string;
   size: string;
   skillLevel: string;
@@ -33,7 +34,7 @@ export const useEditGearFormSubmission = ({
   gearName,
   gearType,
   description,
-  zipCode,
+  address, // Changed from zipCode to address
   measurementUnit,
   size,
   skillLevel,
@@ -78,7 +79,7 @@ export const useEditGearFormSubmission = ({
       gearName,
       gearType,
       description,
-      zipCode,
+      address, // Changed from zipCode to address
       measurementUnit,
       size,
       skillLevel,
@@ -107,8 +108,8 @@ export const useEditGearFormSubmission = ({
       });
 
       // Handle location updates
-      const currentZip = equipment!.location?.zip || '';
-      const coordinates = await handleLocationUpdate({ zipCode, currentZip });
+      const currentAddress = equipment!.location?.address || ''; // Changed from zip to address
+      const coordinates = await handleLocationUpdate({ address, currentAddress }); // Changed zipCode to address
 
       // Update database with individual price fields - pass empty strings to allow clearing
       await updateGearInDatabase({
@@ -117,7 +118,7 @@ export const useEditGearFormSubmission = ({
         gearName,
         gearType,
         description,
-        zipCode,
+        address, // Changed from zipCode to address
         coordinates,
         size,
         skillLevel,

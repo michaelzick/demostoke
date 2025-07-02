@@ -21,7 +21,7 @@ interface UserEquipment {
   location: {
     lat: number;
     lng: number;
-    zip: string;
+    address: string; // Changed from zip to address
   };
   specifications: {
     size: string;
@@ -62,7 +62,7 @@ export const useUserEquipment = (userId?: string, visibleOnly: boolean = false) 
           visible_on_map,
           location_lat,
           location_lng,
-          location_zip,
+          location_address,
           size,
           weight,
           material,
@@ -114,7 +114,7 @@ export const useUserEquipment = (userId?: string, visibleOnly: boolean = false) 
             location: {
               lat: item.location_lat || 0,
               lng: item.location_lng || 0,
-              zip: item.location_zip || ''
+              address: item.location_address || '' // Changed from zip to address
             },
             specifications: {
               size: item.size || '',

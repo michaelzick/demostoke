@@ -17,8 +17,8 @@ interface GearBasicInfoProps {
   setGearType: (value: string) => void;
   description: string;
   setDescription: (value: string) => void;
-  zipCode: string;
-  setZipCode: (value: string) => void;
+  address: string; // Changed from zipCode to address
+  setAddress: (value: string) => void; // Changed from setZipCode to setAddress
 }
 
 const GearBasicInfo = ({
@@ -28,8 +28,8 @@ const GearBasicInfo = ({
   setGearType,
   description,
   setDescription,
-  zipCode,
-  setZipCode
+  address, // Changed from zipCode to address
+  setAddress // Changed from setZipCode to setAddress
 }: GearBasicInfoProps) => {
   return (
     <>
@@ -81,14 +81,14 @@ const GearBasicInfo = ({
 
       {/* Address / Location */}
       <div>
-        <Label htmlFor="zipCode" className="block text-lg font-medium mb-2">
+        <Label htmlFor="address" className="block text-lg font-medium mb-2">
           Address <span className="text-red-500">*</span>
         </Label>
         <Input
-          id="zipCode"
+          id="address"
           type="text"
-          value={zipCode}
-          onChange={(e) => setZipCode(e.target.value)}
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
           placeholder="Enter full address"
           required
         />

@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Equipment } from "@/types";
@@ -54,7 +53,7 @@ export const useEquipmentById = (id: string) => {
       const allImages = additionalImages.length > 0 ? additionalImages : (data.image_url ? [data.image_url] : []);
       console.log('Final combined images array:', allImages);
 
-      // Convert to Equipment type with proper price column mapping
+      // Convert to Equipment type with proper location mapping
       const equipment = {
         id: data.id,
         name: data.name,
@@ -80,7 +79,7 @@ export const useEquipmentById = (id: string) => {
         location: {
           lat: Number(data.location_lat || 0),
           lng: Number(data.location_lng || 0),
-          zip: data.location_zip || '',
+          address: data.location_address || '', // Changed from zip to address
         },
         distance: 2.5,
         specifications: {

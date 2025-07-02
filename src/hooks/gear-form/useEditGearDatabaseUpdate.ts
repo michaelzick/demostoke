@@ -9,7 +9,7 @@ interface DatabaseUpdateParams {
   gearName: string;
   gearType: string;
   description: string;
-  zipCode: string;
+  address: string; // Changed from zipCode to address
   coordinates: { lat: number; lng: number } | null;
   size: string;
   skillLevel: string;
@@ -28,7 +28,7 @@ export const useEditGearDatabaseUpdate = () => {
       gearName,
       gearType,
       description,
-      zipCode,
+      address, // Changed from zipCode to address
       coordinates,
       size,
       skillLevel,
@@ -51,7 +51,7 @@ export const useEditGearDatabaseUpdate = () => {
       gearName,
       gearType,
       description,
-      zipCode,
+      address, // Changed from zipCode to address
       coordinates,
       size,
       skillLevel,

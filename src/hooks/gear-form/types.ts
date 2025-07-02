@@ -9,7 +9,7 @@ export interface DuplicatedGear {
   gearName: string;
   gearType: string;
   description: string;
-  zipCode: string;
+  address: string; // Changed from zipCode to address
   measurementUnit: string;
   dimensions: {
     length: string;
@@ -27,7 +27,7 @@ export interface FormData {
   gearName: string;
   gearType: string;
   description: string;
-  zipCode: string;
+  address: string; // Changed from zipCode to address
   measurementUnit: string;
   size: string;
   skillLevel: string;
@@ -45,8 +45,8 @@ export interface FormState {
   setGearType: (value: string) => void;
   description: string;
   setDescription: (value: string) => void;
-  zipCode: string;
-  setZipCode: (value: string) => void;
+  address: string; // Changed from zipCode to address
+  setAddress: (value: string) => void; // Changed from setZipCode to setAddress
   measurementUnit: string;
   setMeasurementUnit: (value: string) => void;
   size: string;

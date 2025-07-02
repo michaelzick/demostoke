@@ -10,7 +10,7 @@ export const useGearFormValidation = () => {
       gearName,
       gearType,
       description,
-      zipCode,
+      address, // Changed from zipCode to address
       size,
       skillLevel,
       damageDeposit,
@@ -48,7 +48,7 @@ export const useGearFormValidation = () => {
       return false;
     }
 
-    if (!zipCode.trim()) {
+    if (!address.trim()) { // Changed from zipCode to address
       toast({
         title: "Validation Error",
         description: "Address is required.",

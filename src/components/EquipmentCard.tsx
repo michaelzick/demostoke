@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -112,7 +113,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         <div className="flex items-center justify-between mb-2">
           <div>
             <p className="text-sm font-medium">${equipment.price_per_day}/day</p>
-            <p className="text-xs text-muted-foreground">{equipment.location.zip}</p>
+            <p className="text-xs text-muted-foreground">{equipment.location.address}</p>
           </div>
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <DistanceDisplay equipment={equipment} showUnit={false} />

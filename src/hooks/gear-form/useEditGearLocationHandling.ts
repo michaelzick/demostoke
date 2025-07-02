@@ -2,8 +2,8 @@
 import { geocodeAddress } from "@/utils/geocoding";
 
 interface LocationHandlingParams {
-  zipCode: string;
-  currentZip: string;
+  address: string; // Changed from zipCode to address
+  currentAddress: string; // Changed from currentZip to currentAddress
 }
 
 interface LocationHandlingResult {
@@ -12,42 +12,42 @@ interface LocationHandlingResult {
 }
 
 export const useEditGearLocationHandling = () => {
-  const handleLocationUpdate = async ({ zipCode, currentZip }: LocationHandlingParams): Promise<LocationHandlingResult | null> => {
-    // Get coordinates from zip code (only if zip code changed)
+  const handleLocationUpdate = async ({ address, currentAddress }: LocationHandlingParams): Promise<LocationHandlingResult | null> => {
+    // Get coordinates from address (only if address changed)
     let coordinates = null;
-    if (zipCode !== currentZip) {
+    if (address !== currentAddress) {
       try {
-        console.log('🔍 Attempting to geocode address:', zipCode);
-        coordinates = await geocodeAddress(zipCode);
+        console.log('🔍 Attempting to geocode address:', address);
+        coordinates = await geocodeAddress(address);
         
         if (coordinates) {
-          console.log('✅ Successfully geocoded zip code', zipCode, ':', coordinates);
+          console.log('✅ Successfully geocoded address', address, ':', coordinates);
         } else {
-          console.warn('⚠️ Geocoding returned null for zip code:', zipCode);
+          console.warn('⚠️ Geocoding returned null for address:', address);
           // Try a retry with a delay
           console.log('🔄 Retrying geocoding after delay...');
           await new Promise(resolve => setTimeout(resolve, 1000));
-          coordinates = await geocodeAddress(zipCode);
+          coordinates = await geocodeAddress(address);
           
           if (coordinates) {
-            console.log('✅ Retry successful for zip code', zipCode, ':', coordinates);
+            console.log('✅ Retry successful for address', address, ':', coordinates);
           } else {
-            console.error('❌ Geocoding failed after retry for zip code:', zipCode);
+            console.error('❌ Geocoding failed after retry for address:', address);
           }
         }
       } catch (error) {
-        console.error('❌ Geocoding error for zip code', zipCode, ':', error);
+        console.error('❌ Geocoding error for address', address, ':', error);
         
         // Try one more time with a longer delay
         try {
           console.log('🔄 Final retry attempt for geocoding...');
           await new Promise(resolve => setTimeout(resolve, 2000));
-          coordinates = await geocodeAddress(zipCode);
+          coordinates = await geocodeAddress(address);
           
           if (coordinates) {
-            console.log('✅ Final retry successful for zip code', zipCode, ':', coordinates);
+            console.log('✅ Final retry successful for address', address, ':', coordinates);
           } else {
-            console.error('❌ All geocoding attempts failed for zip code:', zipCode);
+            console.error('❌ All geocoding attempts failed for address:', address);
           }
         } catch (retryError) {
           console.error('❌ Final retry also failed:', retryError);

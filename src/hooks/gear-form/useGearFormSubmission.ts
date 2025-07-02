@@ -14,7 +14,7 @@ interface UseGearFormSubmissionProps {
   gearName: string;
   gearType: string;
   description: string;
-  zipCode: string;
+  address: string; // Changed from zipCode to address
   measurementUnit: string;
   size: string;
   skillLevel: string;
@@ -33,7 +33,7 @@ export const useGearFormSubmission = ({
   gearName,
   gearType,
   description,
-  zipCode,
+  address, // Changed from zipCode to address
   measurementUnit,
   size,
   skillLevel,
@@ -81,7 +81,7 @@ export const useGearFormSubmission = ({
       gearName,
       gearType,
       description,
-      zipCode,
+      address, // Changed from zipCode to address
       measurementUnit,
       size,
       skillLevel,
@@ -117,8 +117,8 @@ export const useGearFormSubmission = ({
       // Get coordinates from address
       let coordinates = null;
       try {
-        coordinates = await geocodeAddress(zipCode);
-        console.log('Coordinates for address', zipCode, ':', coordinates);
+        coordinates = await geocodeAddress(address); // Changed from zipCode to address
+        console.log('Coordinates for address', address, ':', coordinates); // Changed from zipCode to address
       } catch (error) {
         console.error('Geocoding failed:', error);
         // Continue without coordinates if geocoding fails
@@ -130,7 +130,7 @@ export const useGearFormSubmission = ({
         gearName,
         gearType,
         description,
-        zipCode,
+        address, // Changed from zipCode to address
         coordinates,
         size,
         skillLevel,
