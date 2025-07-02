@@ -8,13 +8,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Eye, 
-  EyeOff, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Copy, 
+import {
+  Eye,
+  EyeOff,
+  Plus,
+  Edit,
+  Trash2,
+  Copy,
   MapPin,
   CalendarDays,
   Star,
@@ -72,7 +72,7 @@ const MyEquipmentPage = () => {
         equipmentId,
         visible: !currentVisibility
       });
-      
+
       toast({
         title: "Visibility Updated",
         description: `${equipmentName} is now ${!currentVisibility ? 'visible' : 'hidden'} on the map.`,
@@ -130,7 +130,7 @@ const MyEquipmentPage = () => {
           </div>
           <Skeleton className="h-10 w-32" />
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (
             <Card key={i}>
@@ -165,12 +165,12 @@ const MyEquipmentPage = () => {
 
   const filteredEquipment = equipment?.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.category.toLowerCase().includes(searchTerm.toLowerCase());
+      item.category.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
-    const matchesVisibility = visibilityFilter === "all" || 
-                             (visibilityFilter === "visible" && item.visible_on_map) ||
-                             (visibilityFilter === "hidden" && !item.visible_on_map);
-    
+    const matchesVisibility = visibilityFilter === "all" ||
+      (visibilityFilter === "visible" && item.visible_on_map) ||
+      (visibilityFilter === "hidden" && !item.visible_on_map);
+
     return matchesSearch && matchesCategory && matchesVisibility;
   }) || [];
 
@@ -187,7 +187,7 @@ const MyEquipmentPage = () => {
           </p>
         </div>
         <Button asChild>
-          <Link to="/add-gear">
+          <Link to="/list-your-gear">
             <Plus className="h-4 w-4 mr-2" />
             Add Equipment
           </Link>
@@ -212,7 +212,7 @@ const MyEquipmentPage = () => {
                 className="max-w-sm"
               />
             </div>
-            
+
             <div className="flex gap-4">
               <select
                 value={selectedCategory}
@@ -226,7 +226,7 @@ const MyEquipmentPage = () => {
                   </option>
                 ))}
               </select>
-              
+
               <select
                 value={visibilityFilter}
                 onChange={(e) => setVisibilityFilter(e.target.value)}
@@ -244,7 +244,7 @@ const MyEquipmentPage = () => {
             <div className="text-center py-20">
               <h3 className="text-lg font-medium mb-2">No equipment found</h3>
               <p className="text-muted-foreground mb-6">
-                {equipment?.length === 0 
+                {equipment?.length === 0
                   ? "You haven't added any equipment yet. Start by adding your first item!"
                   : "No equipment matches your current filters."
                 }
@@ -284,7 +284,7 @@ const MyEquipmentPage = () => {
                                     <img
                                       src={imageUrl}
                                       alt={`${item.name} - Image ${index + 1}`}
-                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                      className="w-full h-full object-cover"
                                     />
                                   </CarouselItem>
                                 ))}
@@ -309,14 +309,14 @@ const MyEquipmentPage = () => {
                             {item.status}
                           </Badge>
                           {!item.visible_on_map && (
-                            <Badge variant="outline" className="text-xs text-gray-900 border-gray-900">
+                            <Badge className="text-xs text-gray-900 bg-rose-500 hover:bg-rose-500">
                               <EyeOff className="h-3 w-3 mr-1 text-gray-900" />
                               Hidden
                             </Badge>
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="space-y-1">
                         <Link to={`/equipment/${item.id}`}>
                           <CardTitle className="text-lg line-clamp-1 hover:text-primary transition-colors">{item.name}</CardTitle>
@@ -331,77 +331,78 @@ const MyEquipmentPage = () => {
                         </div>
                       </div>
                     </CardHeader>
-                  
-                  <CardContent className="pt-2">
-                    <div className="space-y-3">
-                      {/* Price */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1 text-lg font-semibold">
-                          <DollarSign className="h-4 w-4" />
-                          {item.price_per_day}/day
+
+                    <CardContent className="pt-2">
+                      <div className="space-y-3">
+                        {/* Price */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1 text-lg font-semibold">
+                            <DollarSign className="h-4 w-4" />
+                            {item.price_per_day}/day
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Location */}
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <MapPin className="h-3 w-3" />
-                        <span className="line-clamp-1">{item.location.address}</span>
-                      </div>
+                        {/* Location */}
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <MapPin className="h-3 w-3" />
+                          <span className="line-clamp-1">{item.location.address}</span>
+                        </div>
 
-                       {/* Actions */}
-                       <Separator />
-                       <div className="flex items-center justify-between">
-                         <div className="flex items-center gap-1">
-                           <Button
-                             variant="ghost"
-                             size="sm"
-                             onClick={() => handleVisibilityToggle(item.id, item.visible_on_map, item.name)}
-                             disabled={updateVisibilityMutation.isPending}
-                           >
-                             {item.visible_on_map ? (
-                               <Eye className="h-4 w-4" />
-                             ) : (
-                               <EyeOff className="h-4 w-4" />
-                             )}
-                           </Button>
-                           
-                           <Button
+                        {/* Actions */}
+                        <Separator />
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleVisibilityToggle(item.id, item.visible_on_map, item.name)}
+                              disabled={updateVisibilityMutation.isPending}
+                            >
+                              {item.visible_on_map ? (
+                                <Eye className="h-4 w-4" />
+                              ) : (
+                                <EyeOff className="h-4 w-4" />
+                              )}
+                            </Button>
+
+                            {/* Commenting out till duplicate functionality is implemented */}
+                            {/* <Button
                              variant="ghost"
                              size="sm"
                              onClick={() => handleDuplicate(item)}
                            >
                              <Copy className="h-4 w-4" />
-                           </Button>
-                           
-                           <Button
-                             variant="ghost"
-                             size="sm"
-                             asChild
-                           >
-                             <Link to={`/edit-gear/${item.id}`}>
-                               <Edit className="h-4 w-4" />
-                             </Link>
-                           </Button>
-                           
-                           <Button
-                             variant="ghost"
-                             size="sm"
-                             onClick={() => handleDelete(item.id, item.name)}
-                             disabled={deleteEquipmentMutation.isPending}
-                           >
-                             <Trash2 className="h-4 w-4" />
-                           </Button>
-                         </div>
+                           </Button> */}
 
-                         <Button size="sm" asChild>
-                           <Link to={`/equipment/${item.id}`}>
-                             View Details
-                           </Link>
-                         </Button>
-                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              asChild
+                            >
+                              <Link to={`/edit-gear/${item.id}`}>
+                                <Edit className="h-4 w-4" />
+                              </Link>
+                            </Button>
+
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDelete(item.id, item.name)}
+                              disabled={deleteEquipmentMutation.isPending}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+
+                          <Button size="sm" asChild>
+                            <Link to={`/equipment/${item.id}`}>
+                              View Details
+                            </Link>
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 );
               })}
             </div>
