@@ -89,14 +89,14 @@ Start with easier trails and gradually progress. Consider taking a skills clinic
 
 Remember, mountain biking is about having fun and enjoying the outdoors. Take your time, be safe, and enjoy the ride!
     `,
-    publishedAt: '2024-01-15',
+    publishedAt: "2024-01-15",
     readTime: 8,
-    category: 'mountain bikes',
-    tags: ['beginner', 'guide', 'technique', 'safety', 'mountain bikes'],
+    category: "mountain bikes",
+    tags: ["beginner", "guides", "technique", "safety", "mountain bikes"],
     author: "Generative AI",
     authorId: "generative-ai",
-    heroImage: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1200&q=80',
-    thumbnail: 'https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=800&q=80'
+    heroImage: "https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1200&q=80",
+    thumbnail: "https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=800&q=80"
   },
   {
     id: 'mountain-bike-maintenance-tips',
@@ -216,19 +216,19 @@ Regular maintenance not only extends your bike's life but also ensures safer, mo
 
 A well-maintained mountain bike is a reliable companion for countless adventures on the trails!
     `,
-    publishedAt: '2024-01-10',
+    publishedAt: "2024-01-10",
     readTime: 10,
-    category: 'mountain bikes',
-    tags: ['maintenance', 'repair', 'tools', 'care', 'mountain bikes'],
+    category: "mountain bikes",
+    tags: ["maintenance", "repair", "tools", "care", "mountain bikes", "guides"],
     author: "Generative AI",
     authorId: "generative-ai",
-    heroImage: 'https://images.unsplash.com/photo-1534150034764-046bf225d3fa?auto=format&fit=crop&w=1200&q=80',
-    thumbnail: 'https://images.unsplash.com/photo-1534150034764-046bf225d3fa?auto=format&fit=crop&w=800&q=80'
+    heroImage: "https://images.unsplash.com/photo-1534150034764-046bf225d3fa?auto=format&fit=crop&w=1200&q=80",
+    thumbnail: "https://images.unsplash.com/photo-1534150034764-046bf225d3fa?auto=format&fit=crop&w=800&q=80"
   },
   {
-    id: 'best-mountain-bike-trails-la',
-    title: 'Top 10 Mountain Bike Trails Around Los Angeles',
-    excerpt: 'Discover the best mountain biking trails in and around LA, from beginner-friendly paths to challenging technical rides.',
+    id: "best-mountain-bike-trails-la",
+    title: "Top 10 Mountain Bike Trails Around Los Angeles",
+    excerpt: "Discover the best mountain biking trails in and around LA, from beginner-friendly paths to challenging technical rides.",
     content: `
 
 **Top 10 Mountain Bike Trails Around Los Angeles**
@@ -343,13 +343,13 @@ If you're new to mountain biking in LA, consider:
 
 Los Angeles mountain biking offers something for every rider. From beginner-friendly paths to world-class technical trails, there's always a new adventure waiting on the trails!
     `,
-    publishedAt: '2024-01-05',
+    publishedAt: "2024-01-05",
     readTime: 12,
-    category: 'mountain bikes',
-    tags: ['trails', 'los angeles', 'guide', 'locations', 'mountain bikes'],
+    category: "mountain bikes",
+    tags: ["trails", "los angeles", "guides", "locations", "mountain bikes"],
     author: "Generative AI",
     authorId: "generative-ai",
-    heroImage: 'https://images.unsplash.com/photo-1615729947596-a598e5de0ab3?auto=format&fit=crop&w=1200&q=80',
-    thumbnail: 'https://images.unsplash.com/photo-1615729947596-a598e5de0ab3?auto=format&fit=crop&w=800&q=80'
+    heroImage: "https://images.unsplash.com/photo-1615729947596-a598e5de0ab3?auto=format&fit=crop&w=1200&q=80",
+    thumbnail: "https://images.unsplash.com/photo-1615729947596-a598e5de0ab3?auto=format&fit=crop&w=800&q=80"
   }
 ];

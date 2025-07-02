@@ -9,7 +9,8 @@ export const gearReviewsPosts: BlogPost[] = [
 
 **Best Mountain Bike Gear of 2024: Complete Buying Guide**
 
-2024 has brought exciting innovations in mountain bike technology. This guide summarizes the best gear available this year, based on published reviews and expert opinions from sources like Pinkbike ([BikeRadar](https://www.bikeradar.com/)) and BikeRadar ([Pinkbike](https://www.pinkbike.com/)).
+2024 has brought exciting innovations in mountain bike technology. This guide summarizes the best gear available this year, based on
+published reviews and expert opinions from sources like Pinkbike ([BikeRadar](https://www.bikeradar.com/)) and BikeRadar ([Pinkbike](https://www.pinkbike.com/)).
 
 **Best Mountain Bikes by Category**
 
@@ -280,7 +281,7 @@ The Line Tom Wallisch Pro 2025 is a standout for freestyle skiers who want a ski
 "The 2025 Line Tom Wallisch Pro is a freestyle park specific ski that delivers the same performance that the top professionals need to the general public so that they too may ride to the top of the podium. [SkiEssentials' review](https://www.skiessentials.com/2025-ski-test/skis/2025-line-tom-wallisch-pro)"
 `,
     category: "gear reviews",
-    publishedAt: "2025-07-05",
+    publishedAt: "2025-06-30",
     readTime: 8,
     heroImage: "https://www.backcountry.com/images/items/1200/LIN/LINH05R/ONECOL_D4.jpg",
     thumbnail: "https://m.media-amazon.com/images/I/51s++VpbszL._UF1000,1000_QL80_.jpg",

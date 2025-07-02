@@ -177,7 +177,7 @@ Start with a shape that's forgiving and appropriate for your level, then experim
     readTime: 11,
     heroImage: "https://lushpalm.com/wp-content/uploads/2018/07/beginner-surfboards-13.jpg",
     thumbnail: "https://lushpalm.com/wp-content/uploads/2018/07/beginner-surfboards-13.jpg",
-    tags: ["surfboards", "shapes", "buying guide", "design", "performance"],
+    tags: ["surfboards", "shapes", "guides", "design", "performance"],
     author: "Generative AI",
     authorId: "generative-ai"
   },
@@ -396,7 +396,7 @@ The best surfers combine technical forecast reading with intuitive understanding
     readTime: 9,
     heroImage: "https://images.ctfassets.net/xhzuh2up4xai/1GZGyT2Xcd0W8CYYHVyEg7/ae886cec8bb759d248841e3840da6ce6/How-to-Read-a-Surf-Forecast-_-Swell-Charts.jpg",
     thumbnail: "https://images.ctfassets.net/xhzuh2up4xai/1GZGyT2Xcd0W8CYYHVyEg7/ae886cec8bb759d248841e3840da6ce6/How-to-Read-a-Surf-Forecast-_-Swell-Charts.jpg",
-    tags: ["surfboards", "forecasting", "waves", "planning", "technique"],
+    tags: ["surfboards", "forecasting", "waves", "planning", "technique", "guides"],
     author: "Generative AI",
     authorId: "generative-ai"
   },
@@ -438,7 +438,7 @@ The best surfers combine technical forecast reading with intuitive understanding
 - Placing your hands too far forward, causing the board to stall.
 
 Practice the pop-up on land before heading into the water, and remember that fluidity comes with repetition. With time, you’ll move from wobbly first attempts to confident takeoffs on any wave.`,
-    category: 'guides',
+    category: 'surfboards',
     publishedAt: '2025-07-02',
     readTime: 5,
     heroImage: 'https://live.staticflickr.com/65535/52323073938_344a33aeef_b.jpg',

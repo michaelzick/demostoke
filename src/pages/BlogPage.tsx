@@ -134,7 +134,6 @@ const BlogPage = () => {
       surfboards: "bg-lime-300 text-gray-900 hover:bg-lime-400",
       "mountain bikes": "bg-lime-300 text-gray-900 hover:bg-lime-400",
       "stories that stoke": "bg-fuchsia-500 text-gray-900 hover:bg-fuchsia-600",
-      guides: "bg-sky-500 text-gray-900 hover:bg-sky-600"
     };
     return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800 hover:bg-gray-200";
   };
