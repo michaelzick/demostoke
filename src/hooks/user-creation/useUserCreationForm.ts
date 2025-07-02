@@ -8,6 +8,7 @@ export const useUserCreationForm = () => {
     email: '',
     password: '',
     role: 'private-party',
+    website: '',
     phone: '',
     address: '',
   });
@@ -30,6 +31,7 @@ export const useUserCreationForm = () => {
       email: '',
       password: '',
       role: 'private-party',
+      website: '',
       phone: '',
       address: '',
     });

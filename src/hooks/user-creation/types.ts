@@ -4,6 +4,7 @@ export interface UserFormData {
   email: string;
   password: string;
   role: string;
+  website: string;
   phone: string;
   address: string;
 }

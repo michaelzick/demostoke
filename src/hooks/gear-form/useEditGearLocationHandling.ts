@@ -1,5 +1,5 @@
 
-import { geocodeZipCode } from "@/utils/geocoding";
+import { geocodeAddress } from "@/utils/geocoding";
 
 interface LocationHandlingParams {
   zipCode: string;
@@ -17,8 +17,8 @@ export const useEditGearLocationHandling = () => {
     let coordinates = null;
     if (zipCode !== currentZip) {
       try {
-        console.log('🔍 Attempting to geocode zip code:', zipCode);
-        coordinates = await geocodeZipCode(zipCode);
+        console.log('🔍 Attempting to geocode address:', zipCode);
+        coordinates = await geocodeAddress(zipCode);
         
         if (coordinates) {
           console.log('✅ Successfully geocoded zip code', zipCode, ':', coordinates);
@@ -27,7 +27,7 @@ export const useEditGearLocationHandling = () => {
           // Try a retry with a delay
           console.log('🔄 Retrying geocoding after delay...');
           await new Promise(resolve => setTimeout(resolve, 1000));
-          coordinates = await geocodeZipCode(zipCode);
+          coordinates = await geocodeAddress(zipCode);
           
           if (coordinates) {
             console.log('✅ Retry successful for zip code', zipCode, ':', coordinates);
@@ -42,7 +42,7 @@ export const useEditGearLocationHandling = () => {
         try {
           console.log('🔄 Final retry attempt for geocoding...');
           await new Promise(resolve => setTimeout(resolve, 2000));
-          coordinates = await geocodeZipCode(zipCode);
+          coordinates = await geocodeAddress(zipCode);
           
           if (coordinates) {
             console.log('✅ Final retry successful for zip code', zipCode, ':', coordinates);

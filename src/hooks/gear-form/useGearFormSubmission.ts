@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
 import { useGearFormValidation } from "@/hooks/useGearFormValidation";
-import { geocodeZipCode } from "@/utils/geocoding";
+import { geocodeAddress } from "@/utils/geocoding";
 import { handleGearImageUpload } from "@/utils/gearImageHandling";
 import { prepareEquipmentData } from "@/utils/equipmentDataPreparation";
 import { createEquipmentInDatabase, createPricingOptionsInDatabase } from "@/utils/gearDatabaseOperations";
@@ -114,11 +114,11 @@ export const useGearFormSubmission = ({
         },
       });
 
-      // Get coordinates from zip code
+      // Get coordinates from address
       let coordinates = null;
       try {
-        coordinates = await geocodeZipCode(zipCode);
-        console.log('Coordinates for zip code', zipCode, ':', coordinates);
+        coordinates = await geocodeAddress(zipCode);
+        console.log('Coordinates for address', zipCode, ':', coordinates);
       } catch (error) {
         console.error('Geocoding failed:', error);
         // Continue without coordinates if geocoding fails

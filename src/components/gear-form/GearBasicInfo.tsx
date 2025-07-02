@@ -79,16 +79,17 @@ const GearBasicInfo = ({
         />
       </div>
 
-      {/* Zip Code/Location */}
+      {/* Address / Location */}
       <div>
         <Label htmlFor="zipCode" className="block text-lg font-medium mb-2">
-          Zip Code <span className="text-red-500">*</span>
+          Address <span className="text-red-500">*</span>
         </Label>
         <Input
           id="zipCode"
           type="text"
           value={zipCode}
           onChange={(e) => setZipCode(e.target.value)}
+          placeholder="Enter full address"
           required
         />
       </div>
