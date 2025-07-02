@@ -65,15 +65,14 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
   return staticIds.slice(0, count).map((id, index) => {
     const category = categories[index % categories.length];
     const location = generateRandomLocation(losAngelesLat, losAngelesLng, 50);
-    const specificLocation = losAngelesLocations[index % losAngelesLocations.length];
+    const specificLocationName = losAngelesLocations[index % losAngelesLocations.length];
     
-    // Use specific location if available, otherwise use generated location
-    // Ensure we always have a location object with lat, lng, and address
-    const equipmentLocation = specificLocation ? {
-      lat: typeof specificLocation === 'object' ? specificLocation.lat : location.lat,
-      lng: typeof specificLocation === 'object' ? specificLocation.lng : location.lng,
-      address: typeof specificLocation === 'string' ? specificLocation : location.address
-    } : location;
+    // Create a proper location object with all required properties
+    const equipmentLocation = {
+      lat: location.lat,
+      lng: location.lng,
+      address: specificLocationName || `Location ${index + 1}, Los Angeles, CA`
+    };
     
     // Randomly select an owner for this equipment
     const owner = allOwners[index % allOwners.length];

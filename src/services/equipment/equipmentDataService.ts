@@ -45,3 +45,10 @@ export const fetchEquipmentFromSupabase = async (): Promise<Equipment[]> => {
   console.log(`✅ Successfully converted ${convertedEquipment.length} equipment items`);
   return convertedEquipment;
 };
+
+// Export getEquipmentData function that was missing
+export const getEquipmentData = async (): Promise<Equipment[]> => {
+  // This function should determine whether to use mock data or real data
+  // For now, let's use the Supabase data
+  return await fetchEquipmentFromSupabase();
+};
