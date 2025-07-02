@@ -1,5 +1,9 @@
 import { useEffect } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useUserProfile } from "@/hooks/useUserProfile";
+
+const FOUNDER_ID = "98f914a6-2a72-455d-aa4b-41b081f4014d";
 
 const AboutPage = () => {
   usePageMetadata({
@@ -10,6 +14,8 @@ const AboutPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const { data: founderProfile } = useUserProfile(FOUNDER_ID);
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10 text-gray-800 dark:text-white">
@@ -63,8 +69,14 @@ const AboutPage = () => {
         </p>
       </section>
 
-      <br />< br />
+      <br /><br />
       <h1 className="text-4xl font-bold mb-6">Meet the Founder</h1>
+      {founderProfile?.avatar_url && (
+        <Avatar className="w-[175px] h-[175px] mb-6">
+          <AvatarImage src={founderProfile.avatar_url} alt="Michael Zick" />
+          <AvatarFallback>MZ</AvatarFallback>
+        </Avatar>
+      )}
 
       <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-2">Michael Zick</h2>
