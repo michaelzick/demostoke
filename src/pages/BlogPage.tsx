@@ -62,7 +62,20 @@ const BlogPage = () => {
 
     setIsSearching(true);
     try {
-      const results = await searchBlogPostsWithNLP(searchTerm, blogPosts);
+      // Check if the search term is an exact tag match first
+      const exactTagMatches = blogPosts.filter(post => 
+        post.tags.some(tag => tag.toLowerCase() === searchTerm.toLowerCase())
+      );
+
+      let results;
+      if (exactTagMatches.length > 0) {
+        // If we found exact tag matches, use those
+        results = exactTagMatches;
+      } else {
+        // Otherwise, fall back to NLP search
+        results = await searchBlogPostsWithNLP(searchTerm, blogPosts);
+      }
+
       const filteredResults = filterTerm
         ? results.filter(post => post.category === filterTerm || post.tags.includes(filterTerm))
         : results;
