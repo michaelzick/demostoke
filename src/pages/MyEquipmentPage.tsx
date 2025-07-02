@@ -274,50 +274,48 @@ const MyEquipmentPage = () => {
                 return (
                   <Card key={item.id} className="group hover:shadow-lg transition-shadow">
                     <CardHeader className="pb-2">
-                      <Link to={`/equipment/${item.id}`} className="block">
-                        <div className="aspect-square relative overflow-hidden rounded-md mb-4">
-                          {hasImages ? (
-                            hasMultipleImages ? (
-                              <Carousel className="w-full h-full" opts={{ loop: true }}>
-                                <CarouselContent>
-                                  {images.map((imageUrl, index) => (
-                                    <CarouselItem key={index}>
-                                      <img
-                                        src={imageUrl}
-                                        alt={`${item.name} - Image ${index + 1}`}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                                      />
-                                    </CarouselItem>
-                                  ))}
-                                </CarouselContent>
-                                <CarouselPrevious className="left-2" />
-                                <CarouselNext className="right-2" />
-                              </Carousel>
-                            ) : (
-                              <img
-                                src={images[0]}
-                                alt={item.name}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                              />
-                            )
+                      <div className="aspect-square relative overflow-hidden rounded-md mb-4">
+                        {hasImages ? (
+                          hasMultipleImages ? (
+                            <Carousel className="w-full h-full" opts={{ loop: true }}>
+                              <CarouselContent>
+                                {images.map((imageUrl, index) => (
+                                  <CarouselItem key={index}>
+                                    <img
+                                      src={imageUrl}
+                                      alt={`${item.name} - Image ${index + 1}`}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                    />
+                                  </CarouselItem>
+                                ))}
+                              </CarouselContent>
+                              <CarouselPrevious className="left-2" />
+                              <CarouselNext className="right-2" />
+                            </Carousel>
                           ) : (
-                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                              <span className="text-gray-500">No image available</span>
-                            </div>
-                          )}
-                          <div className="absolute top-2 right-2 flex gap-1">
-                            <Badge variant={item.status === 'available' ? 'default' : 'secondary'} className="text-xs">
-                              {item.status}
-                            </Badge>
-                            {!item.visible_on_map && (
-                              <Badge variant="outline" className="text-xs text-gray-900 border-gray-900">
-                                <EyeOff className="h-3 w-3 mr-1 text-gray-900" />
-                                Hidden
-                              </Badge>
-                            )}
+                            <img
+                              src={images[0]}
+                              alt={item.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            />
+                          )
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                            <span className="text-gray-500">No image available</span>
                           </div>
+                        )}
+                        <div className="absolute top-2 right-2 flex gap-1">
+                          <Badge variant={item.status === 'available' ? 'default' : 'secondary'} className="text-xs">
+                            {item.status}
+                          </Badge>
+                          {!item.visible_on_map && (
+                            <Badge variant="outline" className="text-xs text-gray-900 border-gray-900">
+                              <EyeOff className="h-3 w-3 mr-1 text-gray-900" />
+                              Hidden
+                            </Badge>
+                          )}
                         </div>
-                      </Link>
+                      </div>
                       
                       <div className="space-y-1">
                         <Link to={`/equipment/${item.id}`}>
@@ -350,53 +348,57 @@ const MyEquipmentPage = () => {
                         <span className="line-clamp-1">{item.location.address}</span>
                       </div>
 
-                      {/* Actions */}
-                      <Separator />
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleVisibilityToggle(item.id, item.visible_on_map, item.name)}
-                            disabled={updateVisibilityMutation.isPending}
-                          >
-                            {item.visible_on_map ? (
-                              <Eye className="h-4 w-4" />
-                            ) : (
-                              <EyeOff className="h-4 w-4" />
-                            )}
-                          </Button>
-                          
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDuplicate(item)}
-                          >
-                            <Copy className="h-4 w-4" />
-                          </Button>
-                        </div>
+                       {/* Actions */}
+                       <Separator />
+                       <div className="flex items-center justify-between">
+                         <div className="flex items-center gap-1">
+                           <Button
+                             variant="ghost"
+                             size="sm"
+                             onClick={() => handleVisibilityToggle(item.id, item.visible_on_map, item.name)}
+                             disabled={updateVisibilityMutation.isPending}
+                           >
+                             {item.visible_on_map ? (
+                               <Eye className="h-4 w-4" />
+                             ) : (
+                               <EyeOff className="h-4 w-4" />
+                             )}
+                           </Button>
+                           
+                           <Button
+                             variant="ghost"
+                             size="sm"
+                             onClick={() => handleDuplicate(item)}
+                           >
+                             <Copy className="h-4 w-4" />
+                           </Button>
+                           
+                           <Button
+                             variant="ghost"
+                             size="sm"
+                             asChild
+                           >
+                             <Link to={`/edit-gear/${item.id}`}>
+                               <Edit className="h-4 w-4" />
+                             </Link>
+                           </Button>
+                           
+                           <Button
+                             variant="ghost"
+                             size="sm"
+                             onClick={() => handleDelete(item.id, item.name)}
+                             disabled={deleteEquipmentMutation.isPending}
+                           >
+                             <Trash2 className="h-4 w-4" />
+                           </Button>
+                         </div>
 
-                        <div className="flex items-center gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            asChild
-                          >
-                            <Link to={`/edit-gear/${item.id}`}>
-                              <Edit className="h-4 w-4" />
-                            </Link>
-                          </Button>
-                          
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(item.id, item.name)}
-                            disabled={deleteEquipmentMutation.isPending}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
+                         <Button size="sm" asChild>
+                           <Link to={`/equipment/${item.id}`}>
+                             View Details
+                           </Link>
+                         </Button>
+                       </div>
                     </div>
                   </CardContent>
                 </Card>
