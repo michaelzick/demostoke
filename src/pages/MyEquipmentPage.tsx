@@ -22,6 +22,7 @@ import {
   BarChart3,
   Settings
 } from "lucide-react";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { useUserEquipment, useDeleteEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
@@ -102,7 +103,7 @@ const MyEquipmentPage = () => {
     };
 
     sessionStorage.setItem('duplicateGearData', JSON.stringify(duplicateData));
-    navigate('/add-gear');
+    navigate('/list-your-gear/add-gear-form');
   };
 
   if (!user) {
@@ -259,44 +260,79 @@ const MyEquipmentPage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredEquipment.map((item) => (
-                <Card key={item.id} className="group hover:shadow-lg transition-shadow">
-                  <CardHeader className="pb-2">
-                    <div className="aspect-square relative overflow-hidden rounded-md mb-4">
-                      <img
-                        src={item.image_url || '/placeholder-equipment.jpg'}
-                        alt={item.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = '/placeholder-equipment.jpg';
-                        }}
-                      />
-                      <div className="absolute top-2 right-2 flex gap-1">
-                        <Badge variant={item.status === 'available' ? 'default' : 'secondary'} className="text-xs">
-                          {item.status}
-                        </Badge>
-                        {!item.visible_on_map && (
-                          <Badge variant="outline" className="text-xs">
-                            <EyeOff className="h-3 w-3 mr-1" />
-                            Hidden
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-1">
-                      <CardTitle className="text-lg line-clamp-1">{item.name}</CardTitle>
-                      <div className="flex items-center justify-between text-sm text-muted-foreground">
-                        <span className="capitalize">{item.category}</span>
-                        <div className="flex items-center gap-1">
-                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                          <span>{item.rating}</span>
-                          <span>({item.review_count})</span>
+              {filteredEquipment.map((item) => {
+                // Handle both single image_url and multiple images array - ensure we always have an array
+                const images = item.images && item.images.length > 0
+                  ? item.images
+                  : item.image_url
+                    ? [item.image_url]
+                    : [];
+
+                const hasMultipleImages = images.length > 1;
+                const hasImages = images.length > 0;
+
+                return (
+                  <Card key={item.id} className="group hover:shadow-lg transition-shadow">
+                    <CardHeader className="pb-2">
+                      <Link to={`/equipment/${item.id}`} className="block">
+                        <div className="aspect-square relative overflow-hidden rounded-md mb-4">
+                          {hasImages ? (
+                            hasMultipleImages ? (
+                              <Carousel className="w-full h-full" opts={{ loop: true }}>
+                                <CarouselContent>
+                                  {images.map((imageUrl, index) => (
+                                    <CarouselItem key={index}>
+                                      <img
+                                        src={imageUrl}
+                                        alt={`${item.name} - Image ${index + 1}`}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                      />
+                                    </CarouselItem>
+                                  ))}
+                                </CarouselContent>
+                                <CarouselPrevious className="left-2" />
+                                <CarouselNext className="right-2" />
+                              </Carousel>
+                            ) : (
+                              <img
+                                src={images[0]}
+                                alt={item.name}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                              />
+                            )
+                          ) : (
+                            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                              <span className="text-gray-500">No image available</span>
+                            </div>
+                          )}
+                          <div className="absolute top-2 right-2 flex gap-1">
+                            <Badge variant={item.status === 'available' ? 'default' : 'secondary'} className="text-xs">
+                              {item.status}
+                            </Badge>
+                            {!item.visible_on_map && (
+                              <Badge variant="outline" className="text-xs text-gray-900 border-gray-900">
+                                <EyeOff className="h-3 w-3 mr-1 text-gray-900" />
+                                Hidden
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </Link>
+                      
+                      <div className="space-y-1">
+                        <Link to={`/equipment/${item.id}`}>
+                          <CardTitle className="text-lg line-clamp-1 hover:text-primary transition-colors">{item.name}</CardTitle>
+                        </Link>
+                        <div className="flex items-center justify-between text-sm text-muted-foreground">
+                          <span className="capitalize">{item.category}</span>
+                          <div className="flex items-center gap-1">
+                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                            <span>{item.rating}</span>
+                            <span>({item.review_count})</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </CardHeader>
+                    </CardHeader>
                   
                   <CardContent className="pt-2">
                     <div className="space-y-3">
@@ -364,7 +400,8 @@ const MyEquipmentPage = () => {
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+                );
+              })}
             </div>
           )}
         </TabsContent>
@@ -385,8 +422,8 @@ const MyEquipmentPage = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold">4,567</p>
-                  <p className="text-sm text-muted-foreground">+12% from last month</p>
+                  <p className="text-2xl font-bold">0</p>
+                  <p className="text-sm text-muted-foreground">No data available</p>
                 </CardContent>
               </Card>
 
@@ -398,8 +435,8 @@ const MyEquipmentPage = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold">234</p>
-                  <p className="text-sm text-muted-foreground">-5% from last month</p>
+                  <p className="text-2xl font-bold">0</p>
+                  <p className="text-sm text-muted-foreground">No data available</p>
                 </CardContent>
               </Card>
 
@@ -411,8 +448,8 @@ const MyEquipmentPage = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold">$12,345</p>
-                  <p className="text-sm text-muted-foreground">+8% from last month</p>
+                  <p className="text-2xl font-bold">$0</p>
+                  <p className="text-sm text-muted-foreground">No data available</p>
                 </CardContent>
               </Card>
             </div>
