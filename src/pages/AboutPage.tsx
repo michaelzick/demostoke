@@ -72,7 +72,7 @@ const AboutPage = () => {
       <br /><br />
       <h1 className="text-4xl font-bold mb-6">Meet the Founder</h1>
       {founderProfile?.avatar_url && (
-        <Avatar className="w-[175px] h-[175px] mx-auto mb-6">
+        <Avatar className="w-[175px] h-[175px] mb-6">
           <AvatarImage src={founderProfile.avatar_url} alt="Michael Zick" />
           <AvatarFallback>MZ</AvatarFallback>
         </Avatar>
