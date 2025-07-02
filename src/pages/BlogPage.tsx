@@ -28,18 +28,17 @@ const BlogPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Handle URL params on page load
+  // Perform search whenever query or filter changes
   useEffect(() => {
-    const urlSearch = searchParams.get('search');
-    const urlCategory = searchParams.get('category');
+    handleSearch();
+  }, [searchQuery, selectedFilter]);
 
-    if (urlSearch) {
-      setSearchQuery(urlSearch);
-      handleSearch(urlSearch, urlCategory || "");
-    } else if (urlCategory) {
-      setSelectedFilter(urlCategory);
-      applyFilter(urlCategory);
-    }
+  // Sync state with URL params (e.g. when navigating with browser controls)
+  useEffect(() => {
+    const urlSearch = searchParams.get('search') || "";
+    const urlCategory = searchParams.get('category') || "";
+    setSearchQuery(urlSearch);
+    setSelectedFilter(urlCategory);
   }, [searchParams]);
 
   const filters = [
@@ -94,11 +93,6 @@ const BlogPage = () => {
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
 
   const applyFilter = (filter: string) => {
     setSelectedFilter(filter);
@@ -172,18 +166,10 @@ const BlogPage = () => {
                   placeholder="Search blog posts..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={handleKeyPress}
                   className="pl-10 bg-white text-gray-900"
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               </div>
-              <Button
-                onClick={() => handleSearch()}
-                disabled={isSearching}
-                className="bg-white text-blue-600 hover:bg-blue-50"
-              >
-                {isSearching ? "Searching..." : "Search"}
-              </Button>
             </div>
 
             {/* Filter Pills */}
