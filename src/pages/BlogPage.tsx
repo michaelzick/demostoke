@@ -63,7 +63,7 @@ const BlogPage = () => {
     setIsSearching(true);
     try {
       // Check if the search term is an exact tag match first
-      const exactTagMatches = blogPosts.filter(post => 
+      const exactTagMatches = blogPosts.filter(post =>
         post.tags.some(tag => tag.toLowerCase() === searchTerm.toLowerCase())
       );
 
@@ -311,7 +311,7 @@ const BlogPage = () => {
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-1 mt-3">
-                    {post.tags.slice(0, 3).map((tag) => (
+                    {post.tags.map((tag) => (
                       <Link key={tag} to={`/blog?search=${encodeURIComponent(tag)}`}>
                         <Badge variant="outline" className="text-xs hover:text-primary hover:border-primary hover:bg-transparent transition-colors cursor-pointer">
                           {tag}
