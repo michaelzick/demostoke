@@ -7,7 +7,9 @@ export const guidesPosts: BlogPost[] = [
     excerpt: 'Master the pop-up technique with this detailed walkthrough so you can get to your feet quickly and confidently.',
     content: `The pop-up is the moment where paddling ends and surfing begins. Done correctly, it launches you from laying down to riding with balance and control.
 
-    "The pop-up is a quick transition from prone to standing. Arch your back, press your hands flat on the deck, and in one swift movement bring your feet underneath you to land in surf stance" ([SurferToday](https://www.surfertoday.com/surfing/how-to-pop-up-on-a-surfboard)).
+    "Before you start to stand on the board you will need to figure out what stance your prefer. The best way to stand on a board is sideward you will need to play
+    around with what stance feel more comfortable. If your “Regular” stance you will have your right foot at the back closer to the tail, and the left at the front
+    closer to the center of the board and if you’re “Goofy” it will be the opposite. Both these stance are the same it’s just down to your preference ([SBS Boards](https://sbsboards.com/pop-surfboard/))."
 
 **Preparation**
 
@@ -40,8 +42,8 @@ Practice the pop-up on land before heading into the water, and remember that flu
     category: 'guides',
     publishedAt: '2025-07-10',
     readTime: 5,
-    heroImage: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
-    thumbnail: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80',
+    heroImage: 'https://live.staticflickr.com/65535/52323073938_344a33aeef_b.jpg',
+    thumbnail: 'https://live.staticflickr.com/65535/52323073938_344a33aeef_b.jpg',
     tags: ['guides', 'surfing', 'pop up', 'technique', 'beginner'],
     author: 'Generative AI',
     authorId: 'generative-ai'
