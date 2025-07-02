@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Equipment } from "@/types";
 import { convertSupabaseToEquipment } from "./equipmentConverter";
+import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 
 export const fetchEquipmentFromSupabase = async (): Promise<Equipment[]> => {
   console.log('🔍 Fetching equipment from Supabase...');
@@ -30,14 +31,24 @@ export const fetchEquipmentFromSupabase = async (): Promise<Equipment[]> => {
 
   console.log(`📦 Found ${data.length} equipment items in Supabase`);
 
-  // Convert each item using the converter
+  // Convert each item and fetch additional images
   const convertedEquipment = await Promise.all(
     data.map(async (item) => {
+      // Fetch additional images from equipment_images table
+      const additionalImages = await fetchEquipmentImages(item.id);
+      
+      // Create the flat item with all images combined
       const flatItem = {
         ...item,
         profile_name: item.profiles?.name,
-        profile_avatar_url: item.profiles?.avatar_url
+        profile_avatar_url: item.profiles?.avatar_url,
+        // Combine main image_url with additional images
+        all_images: [
+          ...(item.image_url ? [item.image_url] : []),
+          ...additionalImages
+        ].filter((url, index, array) => array.indexOf(url) === index) // Remove duplicates
       };
+      
       return await convertSupabaseToEquipment(flatItem);
     })
   );

@@ -2,14 +2,28 @@
 import type { Equipment } from "@/types";
 
 export const convertDbEquipmentToFrontend = (dbEquipment: any): Equipment => {
+  // Handle images array - prioritize all_images if available, fallback to images, then image_url
+  let imagesArray: string[] = [];
+  
+  if (dbEquipment.all_images && Array.isArray(dbEquipment.all_images)) {
+    imagesArray = dbEquipment.all_images;
+  } else if (dbEquipment.images && Array.isArray(dbEquipment.images)) {
+    imagesArray = dbEquipment.images;
+  } else if (dbEquipment.image_url) {
+    imagesArray = [dbEquipment.image_url];
+  }
+
+  // Ensure we have at least one image for the image_url field
+  const primaryImageUrl = imagesArray.length > 0 ? imagesArray[0] : '';
+
   return {
     id: dbEquipment.id,
     name: dbEquipment.name,
     category: dbEquipment.category,
     subcategory: dbEquipment.subcategory,
     description: dbEquipment.description || '',
-    image_url: dbEquipment.image_url || '',
-    images: dbEquipment.images || [],
+    image_url: primaryImageUrl,
+    images: imagesArray, // This will now include all images for carousel functionality
     price_per_day: Number(dbEquipment.price_per_day),
     price_per_hour: dbEquipment.price_per_hour ? Number(dbEquipment.price_per_hour) : undefined,
     price_per_week: dbEquipment.price_per_week ? Number(dbEquipment.price_per_week) : undefined,
