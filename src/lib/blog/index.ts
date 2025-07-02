@@ -5,7 +5,6 @@ import { surfboardsPosts } from './surfboardsPosts';
 import { mountainBikesPosts } from './mountainBikesPosts';
 import { gearReviewsPosts } from './gearReviewsPosts';
 import { storiesThatStokePosts } from './storiesThatStokePosts';
-import { guidesPosts } from './guidesPosts';
 
 export type { BlogPost };
 
@@ -16,5 +15,4 @@ export const blogPosts: BlogPost[] = [
   ...mountainBikesPosts,
   ...gearReviewsPosts,
   ...storiesThatStokePosts,
-  ...guidesPosts
 ].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
