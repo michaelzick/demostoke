@@ -44,7 +44,7 @@ Practice the pop-up on land before heading into the water, and remember that flu
     readTime: 5,
     heroImage: 'https://live.staticflickr.com/65535/52323073938_344a33aeef_b.jpg',
     thumbnail: 'https://live.staticflickr.com/65535/52323073938_344a33aeef_b.jpg',
-    tags: ['guides', 'surfing', 'pop up', 'technique', 'beginner'],
+    tags: ['guides', 'surfing', 'pop up', 'technique', 'beginner', 'surfboards'],
     author: 'Generative AI',
     authorId: 'generative-ai'
   }
