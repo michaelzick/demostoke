@@ -5,7 +5,7 @@ export const useEditGearFormState = () => {
   const [gearName, setGearName] = useState("");
   const [gearType, setGearType] = useState("");
   const [description, setDescription] = useState("");
-  const [zipCode, setZipCode] = useState("");
+  const [address, setAddress] = useState(""); // Changed from zipCode to address
   const [measurementUnit, setMeasurementUnit] = useState("inches");
   const [size, setSize] = useState("");
   const [skillLevel, setSkillLevel] = useState("");
@@ -40,8 +40,8 @@ export const useEditGearFormState = () => {
     setGearType,
     description,
     setDescription,
-    zipCode,
-    setZipCode,
+    address, // Changed from zipCode to address
+    setAddress, // Changed from setZipCode to setAddress
     measurementUnit,
     setMeasurementUnit,
     size,

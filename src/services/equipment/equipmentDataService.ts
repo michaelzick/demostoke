@@ -1,58 +1,47 @@
 
-import { Equipment } from "@/types";
-import { mockEquipment } from "@/lib/mockData";
 import { supabase } from "@/integrations/supabase/client";
+import { Equipment } from "@/types";
 import { convertSupabaseToEquipment } from "./equipmentConverter";
-import { getShowMockDataSetting } from "./appSettingsService";
 
-// Get equipment data based on global app setting
-export const getEquipmentData = async (): Promise<Equipment[]> => {
-  const useMockData = await getShowMockDataSetting();
+export const fetchEquipmentFromSupabase = async (): Promise<Equipment[]> => {
+  console.log('🔍 Fetching equipment from Supabase...');
   
-  if (useMockData) {
-    console.log('📦 Using MOCK equipment data');
-    return mockEquipment;
+  const { data, error } = await supabase
+    .from('equipment')
+    .select(`
+      *,
+      profiles!equipment_user_id_fkey (
+        name,
+        avatar_url
+      )
+    `)
+    .eq('status', 'available')
+    .eq('visible_on_map', true);
+
+  if (error) {
+    console.error('❌ Supabase query error:', error);
+    throw error;
   }
 
-  console.log('🗄️ Using REAL equipment data from database');
-  try {
-    const { data, error } = await supabase
-      .from('equipment')
-      .select(`
-        *,
-        profiles!equipment_user_id_fkey (
-          name,
-          avatar_url
-        )
-      `)
-      .eq('status', 'available')
-      .eq('visible_on_map', true); // Only fetch visible equipment
+  if (!data || data.length === 0) {
+    console.log('📭 No equipment found in Supabase');
+    return [];
+  }
 
-    if (error) {
-      console.error('❌ Error fetching equipment from database:', error);
-      console.log('🔄 Falling back to empty array (no mock data fallback)');
-      return [];
-    }
+  console.log(`📦 Found ${data.length} equipment items in Supabase`);
 
-    console.log('✅ Fetched equipment from database:', data?.length, 'items');
-    data?.forEach(item => {
-      console.log(`Equipment: ${item.name}, Category: ${item.category}, Owner: ${item.profiles?.name || 'Owner'}, Location: ${item.location_lat}, ${item.location_lng}, Visible: ${item.visible_on_map}`);
-    });
-
-    // Convert all equipment items and fetch their images
-    const equipmentPromises = (data || []).map(item => {
-      // Flatten the profile data for easier access in convertSupabaseToEquipment
+  // Convert each item using the converter
+  const convertedEquipment = await Promise.all(
+    data.map(async (item) => {
       const flatItem = {
         ...item,
         profile_name: item.profiles?.name,
         profile_avatar_url: item.profiles?.avatar_url
       };
-      return convertSupabaseToEquipment(flatItem);
-    });
-    return await Promise.all(equipmentPromises);
-  } catch (error) {
-    console.error('❌ Exception fetching equipment from database:', error);
-    console.log('🔄 Falling back to empty array (no mock data fallback)');
-    return [];
-  }
+      return await convertSupabaseToEquipment(flatItem);
+    })
+  );
+
+  console.log(`✅ Successfully converted ${convertedEquipment.length} equipment items`);
+  return convertedEquipment;
 };

@@ -1,222 +1,146 @@
-import { useNavigate } from "react-router-dom";
-import usePageMetadata from "@/hooks/usePageMetadata";
-import { useEffect, useState, useMemo } from "react";
-import { Edit, Trash2, Copy, ExternalLink, Eye, EyeOff } from "lucide-react";
-import { Snowflake, Waves, Bicycle } from "@phosphor-icons/react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Eye, 
+  EyeOff, 
+  Plus, 
+  Edit, 
+  Trash2, 
+  Copy, 
+  MapPin,
+  CalendarDays,
+  Star,
+  DollarSign,
+  BarChart3,
+  Settings
+} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/helpers";
 import { useUserEquipment, useDeleteEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
-import { UserEquipment } from "@/types/equipment";
+import usePageMetadata from "@/hooks/usePageMetadata";
+import { useAuth } from "@/helpers";
 
 const MyEquipmentPage = () => {
   usePageMetadata({
-    title: 'My Gear | DemoStoke',
-    description: 'Manage the equipment you have listed on DemoStoke.'
+    title: 'My Equipment | DemoStoke',
+    description: 'Manage your equipment listings on DemoStoke.'
   });
-  const { toast } = useToast();
+
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuth();
-  const { data: userEquipment = [], isLoading, error } = useUserEquipment(user?.id);
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [visibilityFilter, setVisibilityFilter] = useState("all");
+  const [showVisibilityOnly, setShowVisibilityOnly] = useState(false);
+
+  const { data: equipment, isLoading, error } = useUserEquipment(user?.id, showVisibilityOnly);
   const deleteEquipmentMutation = useDeleteEquipment();
   const updateVisibilityMutation = useUpdateEquipmentVisibility();
 
-  // Calculate master toggle state
-  const masterToggleState = useMemo(() => {
-    if (userEquipment.length === 0) return { checked: false, indeterminate: false };
-
-    const visibleCount = userEquipment.filter(item => item.visible_on_map).length;
-
-    if (visibleCount === 0) {
-      return { checked: false, indeterminate: false };
-    } else if (visibleCount === userEquipment.length) {
-      return { checked: true, indeterminate: false };
-    } else {
-      return { checked: false, indeterminate: true };
-    }
-  }, [userEquipment]);
-
-  // Handle authentication and scroll to top
-  useEffect(() => {
-    window.scrollTo(0, 0);
-
-    if (!isAuthenticated) {
-      navigate("/auth/signin");
-    }
-  }, [isAuthenticated, navigate]);
-
-  // Function to get the appropriate icon based on equipment category
-  const getEquipmentIcon = (category: string) => {
-    switch (category) {
-      case "snowboards":
-        return <Snowflake className="h-5 w-5" weight="fill" />;
-      case "skis":
-        return <Snowflake className="h-5 w-5" weight="fill" />;
-      case "surfboards":
-        return <Waves className="h-5 w-5" weight="fill" />;
-      case "mountain-bikes":
-        return <Bicycle className="h-5 w-5" weight="fill" />;
-      default:
-        return null;
-    }
-  };
-
-  // Function to get display name for category
-  const getCategoryDisplayName = (category: string) => {
-    switch (category) {
-      case "snowboards":
-        return "Snowboard";
-      case "skis":
-        return "Skis";
-      case "surfboards":
-        return "Surfboard";
-      case "mountain-bikes":
-        return "Mountain Bike";
-      default:
-        return category;
-    }
-  };
-
-  const handleDelete = (id: string) => {
-    deleteEquipmentMutation.mutate(id, {
-      onSuccess: () => {
+  const handleDelete = async (equipmentId: string, equipmentName: string) => {
+    if (window.confirm(`Are you sure you want to delete "${equipmentName}"? This action cannot be undone.`)) {
+      try {
+        await deleteEquipmentMutation.mutateAsync(equipmentId);
         toast({
           title: "Equipment Deleted",
-          description: "The equipment has been removed from your listings.",
+          description: `${equipmentName} has been successfully deleted.`,
         });
-      },
-      onError: (error: unknown) => {
-        console.error('Error deleting equipment:', error);
+      } catch (error) {
+        console.error('Delete error:', error);
         toast({
           title: "Error",
-          description: error instanceof Error ? error.message : "Failed to delete equipment",
+          description: "Failed to delete equipment. Please try again.",
           variant: "destructive",
         });
-      },
-    });
-  };
-
-  const handleVisibilityToggle = (id: string, currentVisibility: boolean) => {
-    updateVisibilityMutation.mutate(
-      { equipmentId: id, visible: !currentVisibility },
-      {
-        onSuccess: () => {
-          toast({
-            title: currentVisibility ? "Gear Hidden" : "Gear Shown",
-            description: currentVisibility
-              ? "Your gear is now hidden from public view."
-              : "Your gear is now visible to others.",
-          });
-        },
-        onError: (error: unknown) => {
-          console.error('Error updating visibility:', error);
-          toast({
-            title: "Error",
-            description: error instanceof Error ? error.message : "Failed to update visibility",
-            variant: "destructive",
-          });
-        },
       }
-    );
+    }
   };
 
-  const handleMasterToggle = () => {
-    const shouldShowAll = !masterToggleState.checked;
-
-    // Update all equipment visibility
-    userEquipment.forEach(item => {
-      if (item.visible_on_map !== shouldShowAll) {
-        updateVisibilityMutation.mutate(
-          { equipmentId: item.id, visible: shouldShowAll },
-          {
-            onError: (error: unknown) => {
-              console.error('Error updating visibility:', error);
-              toast({
-                title: "Error",
-                description: `Failed to update visibility for ${item.name}`,
-                variant: "destructive",
-              });
-            },
-          }
-        );
-      }
-    });
-
-    toast({
-      title: shouldShowAll ? "All Gear Shown" : "All Gear Hidden",
-      description: shouldShowAll
-        ? "All your gear is now visible to others."
-        : "All your gear is now hidden from public view.",
-    });
+  const handleVisibilityToggle = async (equipmentId: string, currentVisibility: boolean, equipmentName: string) => {
+    try {
+      await updateVisibilityMutation.mutateAsync({
+        equipmentId,
+        visible: !currentVisibility
+      });
+      
+      toast({
+        title: "Visibility Updated",
+        description: `${equipmentName} is now ${!currentVisibility ? 'visible' : 'hidden'} on the map.`,
+      });
+    } catch (error) {
+      console.error('Visibility toggle error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update visibility. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleUpdate = (id: string) => {
-    navigate(`/edit-gear/${id}`);
-  };
-
-  const handleViewDetails = (id: string) => {
-    navigate(`/equipment/${id}`);
-  };
-
-  const handleDuplicate = (equipment: UserEquipment) => {
-    const duplicatedData = {
-      ...equipment,
-      id: `${equipment.id}-copy`,
-      name: `${equipment.name} (Copy)`
+  const handleDuplicate = (equipmentItem: any) => {
+    const duplicateData = {
+      name: equipmentItem.name,
+      category: equipmentItem.category,
+      description: equipmentItem.description,
+      location_address: equipmentItem.location?.address || '', // Changed from zip to address
+      size: equipmentItem.specifications?.size || '',
+      weight: equipmentItem.specifications?.weight || '',
+      material: equipmentItem.specifications?.material || '',
+      suitable_skill_level: equipmentItem.specifications?.suitable || '',
+      price_per_day: equipmentItem.price_per_day,
+      damage_deposit: equipmentItem.damage_deposit || 0,
+      image_url: equipmentItem.image_url
     };
-    
-    sessionStorage.setItem('duplicatedEquipment', JSON.stringify(duplicatedData));
+
+    sessionStorage.setItem('duplicateGearData', JSON.stringify(duplicateData));
     navigate('/add-gear');
   };
 
-  const handleListGearClick = () => {
-    if (isAuthenticated) {
-      navigate("/list-your-gear");
-    } else {
-      navigate("/auth/signin");
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
+  if (!user) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center py-20">
+          <h2 className="text-xl font-medium mb-2">Please sign in</h2>
+          <p className="text-muted-foreground mb-6">
+            You need to be signed in to view your equipment.
+          </p>
+          <Button onClick={() => navigate("/auth/signin")}>Sign In</Button>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
-      <div className="container py-10">
-        <div className="flex justify-between items-center mb-8">
-          <Skeleton className="h-8 w-32" />
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div>
+            <Skeleton className="h-8 w-48 mb-2" />
+            <Skeleton className="h-4 w-64" />
+          </div>
           <Skeleton className="h-10 w-32" />
         </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 3 }).map((_, i) => (
+          {Array.from({ length: 6 }).map((_, i) => (
             <Card key={i}>
-              <Skeleton className="h-48 w-full" />
               <CardHeader>
-                <Skeleton className="h-6 w-3/4" />
+                <Skeleton className="h-48 w-full rounded-md" />
+                <Skeleton className="h-4 w-3/4 mt-4" />
                 <Skeleton className="h-4 w-1/2" />
               </CardHeader>
               <CardContent>
-                <Skeleton className="h-4 w-full mb-2" />
-                <Skeleton className="h-4 w-2/3" />
+                <Skeleton className="h-16 w-full" />
               </CardContent>
-              <CardFooter>
-                <Skeleton className="h-10 w-full" />
-              </CardFooter>
             </Card>
           ))}
         </div>
@@ -226,187 +150,295 @@ const MyEquipmentPage = () => {
 
   if (error) {
     return (
-      <div className="container py-10">
+      <div className="container mx-auto px-4 py-8">
         <div className="text-center py-20">
-          <h2 className="text-xl font-medium mb-2">Error loading your gear</h2>
-          <p className="text-muted-foreground mb-6">There was a problem loading your equipment. Please try again.</p>
+          <h2 className="text-xl font-medium mb-2">Error loading equipment</h2>
+          <p className="text-muted-foreground mb-6">
+            There was an error loading your equipment. Please try again.
+          </p>
           <Button onClick={() => window.location.reload()}>Retry</Button>
         </div>
       </div>
     );
   }
 
+  const filteredEquipment = equipment?.filter(item => {
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.category.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
+    const matchesVisibility = visibilityFilter === "all" || 
+                             (visibilityFilter === "visible" && item.visible_on_map) ||
+                             (visibilityFilter === "hidden" && !item.visible_on_map);
+    
+    return matchesSearch && matchesCategory && matchesVisibility;
+  }) || [];
+
+  const categories = [...new Set(equipment?.map(item => item.category) || [])];
+
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">My Gear</h1>
-        <Button onClick={handleListGearClick}>Add New Gear</Button>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+          <h1 className="text-3xl font-bold">My Equipment</h1>
+          <p className="text-muted-foreground">
+            Manage your equipment listings and track their performance
+          </p>
+        </div>
+        <Button asChild>
+          <Link to="/add-gear">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Equipment
+          </Link>
+        </Button>
       </div>
 
-      {userEquipment.length === 0 ? (
-        <div className="text-center py-20">
-          <h2 className="text-xl font-medium mb-2">You haven't listed any gear yet</h2>
-          <p className="text-muted-foreground mb-6">Start sharing your gear with others and earn money.</p>
-          <Button onClick={handleListGearClick}>List Your First Item</Button>
-        </div>
-      ) : (
-        <>
-          {/* Master visibility toggle */}
-          <div className="mb-6 p-4 bg-muted/50 rounded-lg border">
-            <div className="flex items-center space-x-2">
-              <div className="relative flex items-center">
-                <Checkbox
-                  id="master-visibility-toggle"
-                  checked={masterToggleState.checked}
-                  onCheckedChange={handleMasterToggle}
-                  disabled={updateVisibilityMutation.isPending}
-                  className={`${masterToggleState.indeterminate ? "data-[state=checked]:bg-primary/50 data-[state=checked]:border-primary" : ""} flex-shrink-0`}
-                />
-                {masterToggleState.indeterminate && (
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="w-2 h-0.5 bg-primary rounded-sm" />
-                  </div>
-                )}
-              </div>
-              <label
-                htmlFor="master-visibility-toggle"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex-1"
-              >
-                {masterToggleState.indeterminate
-                  ? "Some gear visible — click to show all"
-                  : masterToggleState.checked
-                    ? "Uncheck to hide all gear from map and search results"
-                    : "Check to show all gear on map and in search results"
-                }
-              </label>
+      <Tabs defaultValue="equipment" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="equipment">Equipment</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          <TabsTrigger value="settings">Settings</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="equipment" className="space-y-6">
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <Input
+                placeholder="Search equipment..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="max-w-sm"
+              />
             </div>
-            <p className="text-xs text-muted-foreground mt-1 ml-6">
-              Control visibility of all your gear items at once
-            </p>
+            
+            <div className="flex gap-4">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="px-3 py-2 border border-input bg-background rounded-md text-sm"
+              >
+                <option value="all">All Categories</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                  </option>
+                ))}
+              </select>
+              
+              <select
+                value={visibilityFilter}
+                onChange={(e) => setVisibilityFilter(e.target.value)}
+                className="px-3 py-2 border border-input bg-background rounded-md text-sm"
+              >
+                <option value="all">All Items</option>
+                <option value="visible">Visible Only</option>
+                <option value="hidden">Hidden Only</option>
+              </select>
+            </div>
           </div>
 
-          {userEquipment.length > 0 && (
+          {/* Equipment Grid */}
+          {filteredEquipment.length === 0 ? (
+            <div className="text-center py-20">
+              <h3 className="text-lg font-medium mb-2">No equipment found</h3>
+              <p className="text-muted-foreground mb-6">
+                {equipment?.length === 0 
+                  ? "You haven't added any equipment yet. Start by adding your first item!"
+                  : "No equipment matches your current filters."
+                }
+              </p>
+              {equipment?.length === 0 && (
+                <Button asChild>
+                  <Link to="/add-gear">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Your First Equipment
+                  </Link>
+                </Button>
+              )}
+            </div>
+          ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {userEquipment.map((equipment) => (
-                <Card key={equipment.id} className="overflow-hidden">
-                  <div className="relative h-48 cursor-pointer" onClick={() => handleViewDetails(equipment.id)}>
-                    <img
-                      src={equipment.image_url}
-                      alt={equipment.name}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
-                      <div className="flex items-center gap-1.5">
-                        {getEquipmentIcon(equipment.category)}
-                        <span className="capitalize text-sm font-medium">
-                          {getCategoryDisplayName(equipment.category)}
-                        </span>
+              {filteredEquipment.map((item) => (
+                <Card key={item.id} className="group hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-2">
+                    <div className="aspect-square relative overflow-hidden rounded-md mb-4">
+                      <img
+                        src={item.image_url || '/placeholder-equipment.jpg'}
+                        alt={item.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/placeholder-equipment.jpg';
+                        }}
+                      />
+                      <div className="absolute top-2 right-2 flex gap-1">
+                        <Badge variant={item.status === 'available' ? 'default' : 'secondary'} className="text-xs">
+                          {item.status}
+                        </Badge>
+                        {!item.visible_on_map && (
+                          <Badge variant="outline" className="text-xs">
+                            <EyeOff className="h-3 w-3 mr-1" />
+                            Hidden
+                          </Badge>
+                        )}
                       </div>
                     </div>
-                    <div className="absolute top-2 left-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
-                      <ExternalLink className="h-4 w-4" />
+                    
+                    <div className="space-y-1">
+                      <CardTitle className="text-lg line-clamp-1">{item.name}</CardTitle>
+                      <div className="flex items-center justify-between text-sm text-muted-foreground">
+                        <span className="capitalize">{item.category}</span>
+                        <div className="flex items-center gap-1">
+                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                          <span>{item.rating}</span>
+                          <span>({item.review_count})</span>
+                        </div>
+                      </div>
                     </div>
-                    {/* Visibility indicator */}
-                    <div className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
-                      {equipment.visible_on_map ? (
-                        <Eye className="h-4 w-4 text-green-600" />
-                      ) : (
-                        <EyeOff className="h-4 w-4 text-gray-500" />
-                      )}
-                    </div>
-                  </div>
-                  <CardHeader className="cursor-pointer" onClick={() => handleViewDetails(equipment.id)}>
-                    <CardTitle className="line-clamp-1">{equipment.name}</CardTitle>
-                    <CardDescription className="flex justify-between">
-                      <span>${equipment.price_per_day}/day</span>
-                      <span className="badge bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 px-2 py-0.5 rounded text-xs">
-                        {equipment.status.toUpperCase()}
-                      </span>
-                    </CardDescription>
                   </CardHeader>
-                  <CardContent className="p-4">
-                    <p className="text-muted-foreground line-clamp-2">{equipment.description}</p>
-                    <div className="flex items-center text-sm text-muted-foreground mb-3">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      <span>{equipment.location.address}</span>
-                    </div>
-                    <div className="mt-4">
-                      <div className="text-sm">
-                        <span className="font-medium">Skill Level:</span> {equipment.specifications?.suitable || 'N/A'}
+                  
+                  <CardContent className="pt-2">
+                    <div className="space-y-3">
+                      {/* Price */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1 text-lg font-semibold">
+                          <DollarSign className="h-4 w-4" />
+                          {item.price_per_day}/day
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Visibility toggle */}
-                    <div className="mt-4 pt-4 border-t">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`visibility-${equipment.id}`}
-                          checked={equipment.visible_on_map}
-                          onCheckedChange={() => handleVisibilityToggle(equipment.id, equipment.visible_on_map)}
-                          disabled={updateVisibilityMutation.isPending}
-                        />
-                        <label
-                          htmlFor={`visibility-${equipment.id}`}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                        >
-                          Show on map and in search results
-                        </label>
+                      {/* Location */}
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <MapPin className="h-3 w-3" />
+                        <span className="line-clamp-1">{item.location.address}</span>
+                      </div>
+
+                      {/* Actions */}
+                      <Separator />
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleVisibilityToggle(item.id, item.visible_on_map, item.name)}
+                            disabled={updateVisibilityMutation.isPending}
+                          >
+                            {item.visible_on_map ? (
+                              <Eye className="h-4 w-4" />
+                            ) : (
+                              <EyeOff className="h-4 w-4" />
+                            )}
+                          </Button>
+                          
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDuplicate(item)}
+                          >
+                            <Copy className="h-4 w-4" />
+                          </Button>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            asChild
+                          >
+                            <Link to={`/edit-gear/${item.id}`}>
+                              <Edit className="h-4 w-4" />
+                            </Link>
+                          </Button>
+                          
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDelete(item.id, item.name)}
+                            disabled={deleteEquipmentMutation.isPending}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-between gap-2">
-                    <Button
-                      variant="default"
-                      className="flex-1"
-                      onClick={() => handleUpdate(equipment.id)}
-                    >
-                      <Edit className="h-4 w-4 mr-2" />
-                      Update
-                    </Button>
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() => handleDuplicate(equipment)}
-                    >
-                      <Copy className="h-4 w-4 mr-2" />
-                      Duplicate
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="destructive"
-                          className="flex-1"
-                          disabled={deleteEquipmentMutation.isPending}
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Equipment</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete "{equipment.name}"? This action cannot be undone and will permanently remove this equipment from your listings.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(equipment.id)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </CardFooter>
                 </Card>
               ))}
             </div>
           )}
-        </>
-      )}
+        </TabsContent>
+
+        <TabsContent value="analytics">
+          <div className="py-6">
+            <h3 className="text-lg font-semibold mb-4">Analytics Dashboard</h3>
+            <p className="text-muted-foreground">
+              Here you can view detailed analytics about your equipment listings.
+            </p>
+            <Separator className="my-4" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart3 className="h-4 w-4" />
+                    Total Views
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold">4,567</p>
+                  <p className="text-sm text-muted-foreground">+12% from last month</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4" />
+                    Total Bookings
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold">234</p>
+                  <p className="text-sm text-muted-foreground">-5% from last month</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <DollarSign className="h-4 w-4" />
+                    Total Earnings
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-2xl font-bold">$12,345</p>
+                  <p className="text-sm text-muted-foreground">+8% from last month</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="settings">
+          <div className="py-6">
+            <h3 className="text-lg font-semibold mb-4">Settings</h3>
+            <p className="text-muted-foreground">
+              Manage your equipment listing settings.
+            </p>
+            <Separator className="my-4" />
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="show-visibility">Show Visibility Only</Label>
+                <Switch
+                  id="show-visibility"
+                  checked={showVisibilityOnly}
+                  onCheckedChange={(checked) => setShowVisibilityOnly(checked)}
+                />
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

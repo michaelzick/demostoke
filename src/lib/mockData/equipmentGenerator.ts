@@ -68,7 +68,12 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
     const specificLocation = losAngelesLocations[index % losAngelesLocations.length];
     
     // Use specific location if available, otherwise use generated location
-    const equipmentLocation = specificLocation || location;
+    // Ensure we always have a location object with lat, lng, and address
+    const equipmentLocation = specificLocation ? {
+      lat: typeof specificLocation === 'object' ? specificLocation.lat : location.lat,
+      lng: typeof specificLocation === 'object' ? specificLocation.lng : location.lng,
+      address: typeof specificLocation === 'string' ? specificLocation : location.address
+    } : location;
     
     // Randomly select an owner for this equipment
     const owner = allOwners[index % allOwners.length];
@@ -120,11 +125,7 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
       review_count: Math.floor(Math.random() * 50) + 1,
       damage_deposit: Math.floor(Math.random() * 200) + 50,
       owner,
-      location: {
-        lat: equipmentLocation.lat,
-        lng: equipmentLocation.lng,
-        address: equipmentLocation.address // Changed from zip to address
-      },
+      location: equipmentLocation,
       distance: parseFloat((Math.random() * 30 + 0.5).toFixed(1)),
       specifications: {
         size: category === "mountain-bikes" ? `${["Small", "Medium", "Large"][index % 3]}` : category === "surfboards" ? `${Math.floor(Math.random() * 3) + 6}'${Math.floor(Math.random() * 12)}"` : `${Math.floor(Math.random() * 20) + 140}cm`,

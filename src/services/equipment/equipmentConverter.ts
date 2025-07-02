@@ -46,3 +46,8 @@ export const convertDbEquipmentToFrontend = (dbEquipment: any): Equipment => {
     visible_on_map: dbEquipment.visible_on_map !== undefined ? dbEquipment.visible_on_map : true,
   };
 };
+
+// Export the function with the expected name for backward compatibility
+export const convertSupabaseToEquipment = async (dbEquipment: any): Promise<Equipment> => {
+  return convertDbEquipmentToFrontend(dbEquipment);
+};
