@@ -60,138 +60,89 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
   const paddleMaterials = ["Epoxy", "Inflatable", "Carbon Fiber", "Plastic"];
   const bikeMaterials = ["Aluminum", "Carbon Fiber", "Steel", "Titanium"];
 
-  // Mountain bike experts and enthusiasts
-  const bikeOwnerIds = ["owner-2", "owner-5", "owner-8", "owner-10"]; // Chris T, Dustin R, Taylor S, Casey K
+  const suitableSkills = ["Beginner", "Intermediate", "Advanced", "Expert"];
 
-  return Array.from({ length: count }).map((_, i) => {
-    const id = staticIds[i]; // Use static ID
-    const category = categories[i % categories.length]; // Cycle through categories
+  return staticIds.slice(0, count).map((id, index) => {
+    const category = categories[index % categories.length];
+    const location = generateRandomLocation(losAngelesLat, losAngelesLng, 50);
+    const specificLocation = losAngelesLocations[index % losAngelesLocations.length];
+    
+    // Use specific location if available, otherwise use generated location
+    const equipmentLocation = specificLocation || location;
+    
+    // Randomly select an owner for this equipment
+    const owner = allOwners[index % allOwners.length];
 
-    // Assign owner based on category
-    let ownerId: string;
+    // Select appropriate images based on category
+    let imageArray: string[];
+    let materials: string[];
+    
     switch (category) {
-      case "surfboards":
-        ownerId = "shop-the-boarder";
-        break;
       case "snowboards":
+        imageArray = snowboardImages;
+        materials = snowboardMaterials;
+        break;
       case "skis":
-        ownerId = "shop-the-pow-house";
+        imageArray = skiImages;
+        materials = skiMaterials;
+        break;
+      case "surfboards":
+        imageArray = surfboardImages;
+        materials = surfboardMaterials;
         break;
       case "mountain-bikes":
-        // Use individual owners for mountain bikes, cycling through them
-        ownerId = bikeOwnerIds[i % bikeOwnerIds.length];
+        imageArray = bikeImages;
+        materials = bikeMaterials;
         break;
       default:
-        ownerId = `owner-${(i % 10) + 1}`;
+        imageArray = snowboardImages;
+        materials = snowboardMaterials;
     }
 
-    // Generate different details based on category
-    let name, material, suitable, images, subcategory;
-
-    switch (category) {
-      case "snowboards": {
-        const snowboardTypes = ['All-Mountain', 'Freestyle', 'Freeride', 'Powder'];
-        const snowboardType = snowboardTypes[i % 4];
-        name = `${snowboardType} Snowboard`;
-        subcategory = snowboardType;
-        material = snowboardMaterials[i % snowboardMaterials.length];
-        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][i % 4]}`;
-        const snowboardCount = Math.floor(Math.random() * 3) + 2;
-        images = snowboardImages.slice(0, snowboardCount);
-        break;
-      }
-      case "skis": {
-        const skiTypes = ['All-Mountain', 'Freestyle', 'Freeride', 'Powder'];
-        const skiType = skiTypes[i % 4];
-        name = `${skiType} Skis`;
-        subcategory = skiType;
-        material = skiMaterials[i % skiMaterials.length];
-        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Park Rider'][i % 4]}`;
-        const skiCount = Math.floor(Math.random() * 3) + 2;
-        images = skiImages.slice(0, skiCount);
-        break;
-      }
-      case "surfboards": {
-        const surfboardTypes = ['Shortboard', 'Longboard', 'Fish', 'Funboard'];
-        const surfboardType = surfboardTypes[i % 4];
-        name = `${surfboardType} Surfboard`;
-        subcategory = surfboardType;
-        material = surfboardMaterials[i % surfboardMaterials.length];
-        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'All Levels'][i % 4]} Surfers`;
-        const surfboardCount = Math.floor(Math.random() * 3) + 2;
-        images = surfboardImages.slice(0, surfboardCount);
-        break;
-      }
-      case "mountain-bikes": {
-        const bikeTypes = ['Trail', 'Cross Country', 'Enduro', 'Downhill'];
-        const bikeType = bikeTypes[i % 4];
-        name = `${bikeType} Mountain Bike`;
-        subcategory = bikeType;
-        material = bikeMaterials[i % bikeMaterials.length];
-        suitable = `${['Beginner', 'Intermediate', 'Advanced', 'Expert'][i % 4]} Riders`;
-        const bikeCount = Math.floor(Math.random() * 3) + 2;
-        images = bikeImages.slice(0, bikeCount);
-        break;
-      }
-      default:
-        name = "Equipment";
-        subcategory = "General";
-        material = "Various";
-        suitable = "All Levels";
-        images = ["https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80"];
-    }
-
-    // Generate random location near LA
-    const location = generateRandomLocation(losAngelesLat, losAngelesLng, 8);
-    const locationName = losAngelesLocations[i % losAngelesLocations.length];
-
-    // Use owner from combined list
-    const ownerData = ownerIdToOwner[ownerId] || {
-      id: ownerId,
-      name: `Owner ${ownerId}`,
-      imageUrl: `https://api.dicebear.com/6.x/avataaars/svg?seed=${i}`,
-      rating: Number((Math.random() * 1 + 4).toFixed(1)),
-      reviewCount: Math.floor(Math.random() * 50) + 1,
-      responseRate: Math.floor(Math.random() * 20) + 80,
-    };
+    const images = [
+      imageArray[index % imageArray.length],
+      imageArray[(index + 1) % imageArray.length],
+      imageArray[(index + 2) % imageArray.length]
+    ].slice(0, Math.floor(Math.random() * 3) + 1); // 1-3 images per equipment
 
     return {
       id,
-      name,
+      name: `${category === "mountain-bikes" ? "Trek" : category === "surfboards" ? "Lost" : category === "skis" ? "Rossignol" : "Burton"} ${category === "mountain-bikes" ? "Fuel EX" : category === "surfboards" ? "Mayhem" : category === "skis" ? "Experience" : "Custom"} ${index + 1}`,
       category,
-      subcategory, // Now properly assigned for all categories
-      description: `Great ${category.replace('-', ' ')} for ${suitable.toLowerCase()}. Well maintained and ready for your next adventure!`,
+      subcategory: category === "surfboards" ? "Shortboard" : category === "mountain-bikes" ? "Trail" : undefined,
+      description: `High-quality ${category.slice(0, -1)} perfect for ${suitableSkills[index % suitableSkills.length].toLowerCase()} riders. Features premium construction and excellent performance characteristics.`,
       image_url: images[0],
-      images: images,
-      price_per_day: Math.floor(Math.random() * 30) + 20,
-      rating: Number((Math.random() * 2 + 3).toFixed(1)),
+      images,
+      price_per_day: Math.floor(Math.random() * 80) + 20,
+      price_per_hour: Math.floor(Math.random() * 15) + 5,
+      price_per_week: Math.floor(Math.random() * 400) + 100,
+      rating: parseFloat((Math.random() * 1.5 + 3.5).toFixed(1)),
       review_count: Math.floor(Math.random() * 50) + 1,
-      owner: ownerData,
+      damage_deposit: Math.floor(Math.random() * 200) + 50,
+      owner,
       location: {
-        lat: location.lat,
-        lng: location.lng,
-        zip: locationName,
+        lat: equipmentLocation.lat,
+        lng: equipmentLocation.lng,
+        address: equipmentLocation.address // Changed from zip to address
       },
-      distance: +(Math.random() * 8).toFixed(1),
+      distance: parseFloat((Math.random() * 30 + 0.5).toFixed(1)),
       specifications: {
-        size: category === "mountain-bikes"
-          ? `${['Small', 'Medium', 'Large', 'XL', 'XXL'][i % 5]}`
-          : `${Math.floor(Math.random() * 20) + 152}cm`,
-        weight: `${Math.floor(Math.random() * 5) + 3}kg`,
-        material,
-        suitable,
+        size: category === "mountain-bikes" ? `${["Small", "Medium", "Large"][index % 3]}` : category === "surfboards" ? `${Math.floor(Math.random() * 3) + 6}'${Math.floor(Math.random() * 12)}"` : `${Math.floor(Math.random() * 20) + 140}cm`,
+        weight: `${(Math.random() * 5 + 2).toFixed(1)}kg`,
+        material: materials[index % materials.length],
+        suitable: suitableSkills[index % suitableSkills.length]
       },
       availability: {
         available: Math.random() > 0.2,
-        nextAvailableDate: Math.random() > 0.2 ? undefined : new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        nextAvailableDate: Math.random() > 0.8 ? new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] : undefined
       },
       pricing_options: [
-        { id: '1', price: Math.floor(Math.random() * 30) + 20, duration: 'day' }
+        { id: `${id}-day`, price: Math.floor(Math.random() * 80) + 20, duration: "day" }
       ],
-      status: 'available',
+      status: "available",
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      visible_on_map: true,
+      visible_on_map: true
     };
   });
 }

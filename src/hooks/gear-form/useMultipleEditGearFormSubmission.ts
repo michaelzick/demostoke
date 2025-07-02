@@ -14,7 +14,7 @@ interface UseMultipleEditGearFormSubmissionProps {
   gearName: string;
   gearType: string;
   description: string;
-  zipCode: string;
+  address: string; // Changed from zipCode
   measurementUnit: string;
   size: string;
   skillLevel: string;
@@ -33,7 +33,7 @@ export const useMultipleEditGearFormSubmission = ({
   gearName,
   gearType,
   description,
-  zipCode,
+  address, // Changed from zipCode
   measurementUnit,
   size,
   skillLevel,
@@ -84,7 +84,7 @@ export const useMultipleEditGearFormSubmission = ({
       gearName,
       gearType,
       description,
-      zipCode,
+      address, // Changed from zipCode
       measurementUnit,
       size: isBikeType ? selectedSizes.join(", ") : size,
       skillLevel,
@@ -137,8 +137,8 @@ export const useMultipleEditGearFormSubmission = ({
       }
 
       // Handle location updates
-      const currentZip = equipment!.location?.zip || '';
-      const coordinates = await handleLocationUpdate({ zipCode, currentZip });
+      const currentAddress = equipment!.location?.address || ''; // Changed from zip to address
+      const coordinates = await handleLocationUpdate({ address, currentAddress }); // Changed parameters
 
       // Update database with individual price fields - pass empty strings to allow clearing
       await updateGearInDatabase({
@@ -147,7 +147,7 @@ export const useMultipleEditGearFormSubmission = ({
         gearName,
         gearType,
         description,
-        zipCode,
+        address, // Changed from zipCode
         coordinates,
         size: isBikeType ? selectedSizes.join(", ") : size,
         skillLevel,

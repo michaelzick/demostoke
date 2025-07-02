@@ -8,7 +8,7 @@ interface UseDuplicatedGearDataProps {
   setGearName: (value: string) => void;
   setGearType: (value: string) => void;
   setDescription: (value: string) => void;
-  setZipCode: (value: string) => void;
+  setAddress: (value: string) => void; // Changed from setZipCode
   setMeasurementUnit: (value: string) => void;
   setSize: (value: string) => void;
   setRole: (value: string) => void;
@@ -25,7 +25,7 @@ export const useDuplicatedGearData = ({
   setGearName,
   setGearType,
   setDescription,
-  setZipCode,
+  setAddress, // Changed from setZipCode
   setMeasurementUnit,
   setSize,
   setRole,
@@ -55,7 +55,7 @@ export const useDuplicatedGearData = ({
         setGearName(duplicatedEquipment.name);
         setGearType(mappedGearType || "");
         setDescription(duplicatedEquipment.description || "");
-        setZipCode(duplicatedEquipment.location?.zip || "");
+        setAddress(duplicatedEquipment.location?.address || ""); // Changed from zip to address
 
         // Set size from specifications.size
         const equipmentSize = duplicatedEquipment.specifications?.size || "";
@@ -158,7 +158,7 @@ export const useDuplicatedGearData = ({
         });
       }
     }
-  }, [toast, setGearName, setGearType, setDescription, setZipCode, setMeasurementUnit, setSize, setRole, setSkillLevel, setPricePerDay, setPricePerHour, setPricePerWeek, setDamageDeposit, setImageUrls, setUseImageUrls]);
+  }, [toast, setGearName, setGearType, setDescription, setAddress, setMeasurementUnit, setSize, setRole, setSkillLevel, setPricePerDay, setPricePerHour, setPricePerWeek, setDamageDeposit, setImageUrls, setUseImageUrls]);
 
   // Return the duplicated equipment data so it can be used by the form
   const getDuplicatedGearData = () => {

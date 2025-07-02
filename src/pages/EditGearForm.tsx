@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useParams, useNavigate } from "react-router-dom";
@@ -41,7 +42,7 @@ const EditGearForm = () => {
     setGearName: formState.setGearName,
     setGearType: formState.setGearType,
     setDescription: formState.setDescription,
-    setZipCode: formState.setZipCode,
+    setAddress: formState.setAddress, // Changed from setZipCode
     setSize: formState.setSize,
     setSkillLevel: formState.setSkillLevel,
     setPricePerDay: formState.setPricePerDay,
@@ -83,7 +84,7 @@ const EditGearForm = () => {
     gearName: formState.gearName,
     gearType: formState.gearType,
     description: formState.description,
-    zipCode: formState.zipCode,
+    address: formState.address, // Changed from zipCode
     measurementUnit: formState.measurementUnit,
     size: formState.size,
     skillLevel: formState.skillLevel,
@@ -137,8 +138,8 @@ const EditGearForm = () => {
           setGearType={formState.setGearType}
           description={formState.description}
           setDescription={formState.setDescription}
-          zipCode={formState.zipCode}
-          setZipCode={formState.setZipCode}
+          address={formState.address} // Changed from zipCode
+          setAddress={formState.setAddress} // Changed from setZipCode
         />
 
         <GearSpecifications

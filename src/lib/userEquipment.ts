@@ -21,7 +21,7 @@ export const mockUserEquipment: UserEquipment[] = [
     location: {
       lat: 34.0522,
       lng: -118.2437,
-      zip: "90001"
+      address: "123 Main St, Los Angeles, CA 90001" // Changed from zip to address
     },
     specifications: {
       size: "158cm",
@@ -54,7 +54,7 @@ export const mockUserEquipment: UserEquipment[] = [
     location: {
       lat: 34.0195,
       lng: -118.4912,
-      zip: "90401"
+      address: "456 Beach Blvd, Santa Monica, CA 90401" // Changed from zip to address
     },
     specifications: {
       size: "6'4\"",

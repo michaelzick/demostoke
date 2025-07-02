@@ -13,7 +13,7 @@ interface UseMultipleGearFormSubmissionProps {
   gearName: string;
   gearType: string;
   description: string;
-  zipCode: string;
+  address: string; // Changed from zipCode
   measurementUnit: string;
   size: string;
   skillLevel: string;
@@ -32,7 +32,7 @@ export const useMultipleGearFormSubmission = ({
   gearName,
   gearType,
   description,
-  zipCode,
+  address, // Changed from zipCode
   measurementUnit,
   size,
   skillLevel,
@@ -84,7 +84,7 @@ export const useMultipleGearFormSubmission = ({
       gearName,
       gearType,
       description,
-      zipCode,
+      address, // Changed from zipCode
       measurementUnit,
       size,
       skillLevel,
@@ -138,8 +138,8 @@ export const useMultipleGearFormSubmission = ({
       // Get coordinates from address
       let coordinates = null;
       try {
-        coordinates = await geocodeAddress(zipCode);
-        console.log('Coordinates for address', zipCode, ':', coordinates);
+        coordinates = await geocodeAddress(address); // Changed from zipCode
+        console.log('Coordinates for address', address, ':', coordinates); // Changed log message
       } catch (error) {
         console.error('Geocoding failed:', error);
       }
@@ -150,7 +150,7 @@ export const useMultipleGearFormSubmission = ({
         gearName,
         gearType,
         description,
-        zipCode,
+        address, // Changed from zipCode
         coordinates,
         size,
         skillLevel,

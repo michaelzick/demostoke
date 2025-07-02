@@ -172,25 +172,15 @@ const MyEquipmentPage = () => {
     navigate(`/equipment/${id}`);
   };
 
-  const handleDuplicate = (item: UserEquipment) => {
-    // Add detailed logging to see what data we're storing
-    console.log('Full equipment item being duplicated:', item);
-    console.log('Equipment specifications:', item.specifications);
-    console.log('Equipment specifications.suitable:', item.specifications?.suitable);
-    console.log('Equipment price_per_hour:', item.price_per_hour);
-    console.log('Equipment damage_deposit:', item.damage_deposit);
-    console.log('Equipment images array:', item.images);
-    console.log('Equipment single image_url:', item.image_url);
-
-    // Store the complete equipment data in sessionStorage for duplication
-    sessionStorage.setItem('duplicatedEquipment', JSON.stringify(item));
-
-    navigate('/list-your-gear/add-gear-form');
-
-    toast({
-      title: "Duplicating Gear",
-      description: "Creating a new listing with the selected gear's information.",
-    });
+  const handleDuplicate = (equipment: UserEquipment) => {
+    const duplicatedData = {
+      ...equipment,
+      id: `${equipment.id}-copy`,
+      name: `${equipment.name} (Copy)`
+    };
+    
+    sessionStorage.setItem('duplicatedEquipment', JSON.stringify(duplicatedData));
+    navigate('/add-gear');
   };
 
   const handleListGearClick = () => {
@@ -247,7 +237,7 @@ const MyEquipmentPage = () => {
   }
 
   return (
-    <div className="container py-10">
+    <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">My Gear</h1>
         <Button onClick={handleListGearClick}>Add New Gear</Button>
@@ -297,19 +287,19 @@ const MyEquipmentPage = () => {
 
           {userEquipment.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {userEquipment.map((item) => (
-                <Card key={item.id} className="overflow-hidden">
-                  <div className="relative h-48 cursor-pointer" onClick={() => handleViewDetails(item.id)}>
+              {userEquipment.map((equipment) => (
+                <Card key={equipment.id} className="overflow-hidden">
+                  <div className="relative h-48 cursor-pointer" onClick={() => handleViewDetails(equipment.id)}>
                     <img
-                      src={item.image_url}
-                      alt={item.name}
+                      src={equipment.image_url}
+                      alt={equipment.name}
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
                       <div className="flex items-center gap-1.5">
-                        {getEquipmentIcon(item.category)}
+                        {getEquipmentIcon(equipment.category)}
                         <span className="capitalize text-sm font-medium">
-                          {getCategoryDisplayName(item.category)}
+                          {getCategoryDisplayName(equipment.category)}
                         </span>
                       </div>
                     </div>
@@ -318,33 +308,31 @@ const MyEquipmentPage = () => {
                     </div>
                     {/* Visibility indicator */}
                     <div className="absolute bottom-2 right-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
-                      {item.visible_on_map ? (
+                      {equipment.visible_on_map ? (
                         <Eye className="h-4 w-4 text-green-600" />
                       ) : (
                         <EyeOff className="h-4 w-4 text-gray-500" />
                       )}
                     </div>
                   </div>
-                  <CardHeader className="cursor-pointer" onClick={() => handleViewDetails(item.id)}>
-                    <CardTitle className="line-clamp-1">{item.name}</CardTitle>
+                  <CardHeader className="cursor-pointer" onClick={() => handleViewDetails(equipment.id)}>
+                    <CardTitle className="line-clamp-1">{equipment.name}</CardTitle>
                     <CardDescription className="flex justify-between">
-                      <span>${item.price_per_day}/day</span>
+                      <span>${equipment.price_per_day}/day</span>
                       <span className="badge bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 px-2 py-0.5 rounded text-xs">
-                        {item.status.toUpperCase()}
+                        {equipment.status.toUpperCase()}
                       </span>
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground line-clamp-2">{item.description}</p>
+                  <CardContent className="p-4">
+                    <p className="text-muted-foreground line-clamp-2">{equipment.description}</p>
+                    <div className="flex items-center text-sm text-muted-foreground mb-3">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      <span>{equipment.location.address}</span>
+                    </div>
                     <div className="mt-4">
                       <div className="text-sm">
-                        <span className="font-medium">Location:</span> {item.location?.zip || 'N/A'}
-                      </div>
-                      <div className="text-sm">
-                        <span className="font-medium">Added:</span> {item.created_at ? formatDate(item.created_at) : 'N/A'}
-                      </div>
-                      <div className="text-sm">
-                        <span className="font-medium">Skill Level:</span> {item.specifications?.suitable || 'N/A'}
+                        <span className="font-medium">Skill Level:</span> {equipment.specifications?.suitable || 'N/A'}
                       </div>
                     </div>
 
@@ -352,13 +340,13 @@ const MyEquipmentPage = () => {
                     <div className="mt-4 pt-4 border-t">
                       <div className="flex items-center space-x-2">
                         <Checkbox
-                          id={`visibility-${item.id}`}
-                          checked={item.visible_on_map}
-                          onCheckedChange={() => handleVisibilityToggle(item.id, item.visible_on_map)}
+                          id={`visibility-${equipment.id}`}
+                          checked={equipment.visible_on_map}
+                          onCheckedChange={() => handleVisibilityToggle(equipment.id, equipment.visible_on_map)}
                           disabled={updateVisibilityMutation.isPending}
                         />
                         <label
-                          htmlFor={`visibility-${item.id}`}
+                          htmlFor={`visibility-${equipment.id}`}
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
                         >
                           Show on map and in search results
@@ -370,7 +358,7 @@ const MyEquipmentPage = () => {
                     <Button
                       variant="default"
                       className="flex-1"
-                      onClick={() => handleUpdate(item.id)}
+                      onClick={() => handleUpdate(equipment.id)}
                     >
                       <Edit className="h-4 w-4 mr-2" />
                       Update
@@ -378,7 +366,7 @@ const MyEquipmentPage = () => {
                     <Button
                       variant="outline"
                       className="flex-1"
-                      onClick={() => handleDuplicate(item)}
+                      onClick={() => handleDuplicate(equipment)}
                     >
                       <Copy className="h-4 w-4 mr-2" />
                       Duplicate
@@ -398,13 +386,13 @@ const MyEquipmentPage = () => {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Delete Equipment</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Are you sure you want to delete "{item.name}"? This action cannot be undone and will permanently remove this equipment from your listings.
+                            Are you sure you want to delete "{equipment.name}"? This action cannot be undone and will permanently remove this equipment from your listings.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => handleDelete(item.id)}
+                            onClick={() => handleDelete(equipment.id)}
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           >
                             Delete

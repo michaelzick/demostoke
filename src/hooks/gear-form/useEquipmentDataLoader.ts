@@ -8,7 +8,7 @@ interface UseEquipmentDataLoaderProps {
   setGearName: (value: string) => void;
   setGearType: (value: string) => void;
   setDescription: (value: string) => void;
-  setZipCode: (value: string) => void;
+  setAddress: (value: string) => void; // Changed from setZipCode
   setSize: (value: string) => void;
   setSkillLevel: (value: string) => void;
   setPricePerDay: (value: string) => void;
@@ -26,7 +26,7 @@ export const useEquipmentDataLoader = ({
   setGearName,
   setGearType,
   setDescription,
-  setZipCode,
+  setAddress, // Changed from setZipCode
   setSize,
   setSkillLevel,
   setPricePerDay,
@@ -50,7 +50,7 @@ export const useEquipmentDataLoader = ({
       setGearName(equipment.name || "");
       setGearType(mappedGearType || "");
       setDescription(equipment.description || "");
-      setZipCode(equipment.location?.zip || "");
+      setAddress(equipment.location?.address || ""); // Changed from zip to address
       
       // Set size directly from the database
       const equipmentSize = equipment.specifications?.size || "";

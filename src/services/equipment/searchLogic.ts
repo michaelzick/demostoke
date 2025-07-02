@@ -1,243 +1,141 @@
-
 import { Equipment } from "@/types";
-import { AISearchResult } from "./aiSearchService";
 
-// Legacy search logic for backwards compatibility
-export const processSearchQuery = async (query: string, equipmentData: Equipment[]): Promise<Equipment[]> => {
-  console.log(`🔍 Processing search query (legacy): "${query}"`);
+// Helper function to calculate distance between two coordinates
+const calculateDistance = (
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number
+): number => {
+  const R = 6371; // Radius of the Earth in kilometers
+  const toRadians = (angle: number) => (angle * Math.PI) / 180;
 
-  if (equipmentData.length === 0) {
-    console.log('⚠️ No equipment data available for search');
-    return [];
-  }
+  const lat1Rad = toRadians(lat1);
+  const lng1Rad = toRadians(lng1);
+  const lat2Rad = toRadians(lat2);
+  const lng2Rad = toRadians(lng2);
 
-  // Convert query to lowercase for easier matching
-  const lowerQuery = query.toLowerCase();
+  const deltaLat = lat2Rad - lat1Rad;
+  const deltaLng = lng2Rad - lng1Rad;
 
-  // Extract search criteria
-  const categoryMatches = extractCategoryMatches(lowerQuery);
-  const locationMatches = extractLocationMatches(lowerQuery);
-  const skillLevelKeywords = extractSkillLevelKeywords(lowerQuery);
+  const a =
+    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
+    Math.cos(lat1Rad) * Math.cos(lat2Rad) *
+    Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-  console.log('🔍 Search criteria extracted:', {
-    categoryMatches,
-    locationMatches,
-    skillLevelKeywords,
-    equipmentCount: equipmentData.length
-  });
-
-  // Add a short delay to simulate AI processing time
-  await new Promise(resolve => setTimeout(resolve, 300));
-
-  // Filter and score equipment with enhanced text matching
-  const filteredEquipment = filterAndScoreEquipmentWithTextPriority(
-    equipmentData,
-    lowerQuery,
-    categoryMatches,
-    locationMatches,
-    skillLevelKeywords
-  );
-
-  console.log('🔍 Filtered equipment count:', filteredEquipment.length);
-
-  // Sort by relevance with text priority scoring
-  const sortedResults = sortEquipmentByTextRelevance(filteredEquipment);
-
-  console.log('🔍 Final search results:', sortedResults.length, 'items');
-
-  return sortedResults;
+  const distance = R * c;
+  return distance;
 };
 
-// Helper function to process AI search results for display
-export const processAISearchResults = (results: AISearchResult[]): AISearchResult[] => {
-  return results.map(item => ({
-    ...item,
-    // Add any additional processing here if needed
-    searchScore: item.ai_relevance_score || 0
-  }));
-};
-
-interface CategoryMatches {
-  [key: string]: number;
-}
-
-interface EquipmentWithScore extends Equipment {
-  searchScore: number;
-}
-
-// Extract category keywords from search query
-const extractCategoryMatches = (lowerQuery: string): CategoryMatches => {
-  const categoryMatches: CategoryMatches = {
-    snowboards: 0,
-    skis: 0,
-    surfboards: 0,
-    "mountain-bikes": 0,
-  };
-
-  // Check for category keywords
-  if (lowerQuery.includes("snow") || lowerQuery.includes("snowboard")) {
-    categoryMatches.snowboards += 3;
-  }
-  if (lowerQuery.includes("ski") || lowerQuery.includes("skiing")) {
-    categoryMatches.skis += 3;
-  }
-  if (lowerQuery.includes("surf") || lowerQuery.includes("surfboard") || lowerQuery.includes("waves")) {
-    categoryMatches.surfboards += 3;
-  }
-  if (lowerQuery.includes("bike") || lowerQuery.includes("mountain bike") || lowerQuery.includes("mtb") || lowerQuery.includes("cycling")) {
-    categoryMatches["mountain-bikes"] += 3;
-  }
-
-  return categoryMatches;
-};
-
-// Extract location keywords from search query
-const extractLocationMatches = (lowerQuery: string): string[] => {
-  const locations = [
-    "Hollywood", "Downtown LA", "Santa Monica", "Venice",
-    "Beverly Hills", "Westwood", "Silver Lake", "Echo Park",
-    "Koreatown", "Culver City", "Brentwood", "Bel Air",
-    "Pasadena", "Glendale", "Burbank"
-  ];
-
-  return locations.filter(location =>
-    lowerQuery.includes(location.toLowerCase())
-  );
-};
-
-// Extract skill level keywords from search query
-const extractSkillLevelKeywords = (lowerQuery: string) => {
-  return {
-    isBeginnerSearch: lowerQuery.includes("beginner") || lowerQuery.includes("new") || lowerQuery.includes("learning"),
-    isIntermediateSearch: lowerQuery.includes("intermediate"),
-    isAdvancedSearch: lowerQuery.includes("advanced") || lowerQuery.includes("expert") || lowerQuery.includes("pro"),
-  };
-};
-
-// Enhanced filter and score equipment with text priority scoring
-const filterAndScoreEquipmentWithTextPriority = (
-  equipmentData: Equipment[],
-  lowerQuery: string,
-  categoryMatches: CategoryMatches,
-  locationMatches: string[],
-  skillLevelKeywords: { isBeginnerSearch: boolean; isIntermediateSearch: boolean; isAdvancedSearch: boolean; }
-): EquipmentWithScore[] => {
-  // Check if any specific categories were mentioned
-  const categoriesRequested = Object.entries(categoryMatches)
-    .filter(([_, score]) => score > 0)
-    .map(([category]) => category);
-
-  // Extract individual search terms for text matching
-  const searchTerms = lowerQuery.split(/\s+/).filter(term => term.length > 0);
-
-  return equipmentData
-    .map(item => {
-      let score = 0;
-      let textScore = 0;
-
-      // Calculate text matching score with priority: title > subcategory > description
-      searchTerms.forEach(term => {
-        // Title matching (highest priority - 10 points)
-        if (item.name.toLowerCase().includes(term)) {
-          textScore += 10;
-        }
-
-        // Subcategory matching (medium priority - 7 points)
-        if (item.subcategory && item.subcategory.toLowerCase().includes(term)) {
-          textScore += 7;
-        }
-
-        // Description matching (lowest priority - 3 points)
-        if (item.description && item.description.toLowerCase().includes(term)) {
-          textScore += 3;
-        }
-      });
-
-      // Category filtering and scoring
-      if (categoriesRequested.length > 0) {
-        if (!categoriesRequested.includes(item.category)) {
-          return null; // Filter out items that don't match requested categories
-        }
-        score += categoryMatches[item.category] || 0;
-      } else {
-        // If no specific categories requested, give base score
-        score += 1;
-      }
-
-      // Location matching
-      if (locationMatches.length > 0) {
-        if (locationMatches.some(loc =>
-          item.location.zip.toLowerCase().includes(loc.toLowerCase()))) {
-          score += 2;
-        }
-      } else {
-        // If no locations were specified, don't filter by location
-        score += 1;
-      }
-
-      // Skill level matching
-      if (skillLevelKeywords.isBeginnerSearch && item.specifications.suitable.toLowerCase().includes("beginner")) {
-        score += 2;
-      }
-      if (skillLevelKeywords.isIntermediateSearch && item.specifications.suitable.toLowerCase().includes("intermediate")) {
-        score += 2;
-      }
-      if (skillLevelKeywords.isAdvancedSearch && item.specifications.suitable.toLowerCase().includes("advanced")) {
-        score += 2;
-      }
-
-      // Combine text score with other factors
-      const totalScore = textScore + score;
-
-      // Only return items with some relevance
-      return totalScore > 0 ? { ...item, searchScore: totalScore } : null;
-    })
-    .filter((item): item is EquipmentWithScore => item !== null);
-};
-
-// Sort equipment based on text relevance priority
-const sortEquipmentByTextRelevance = (equipment: EquipmentWithScore[]): Equipment[] => {
-  return equipment
-    .sort((a, b) => {
-      // Primary sort: by search score (higher is better)
-      if (a.searchScore !== b.searchScore) {
-        return b.searchScore - a.searchScore;
-      }
-
-      // Secondary sort: by rating (higher is better)
-      return b.rating - a.rating;
-    })
-    .map(({ searchScore, ...item }) => item); // Remove searchScore from final result
-};
-
-// Legacy functions for backwards compatibility
-export const filterAndScoreEquipment = (
-  equipmentData: Equipment[],
-  lowerQuery: string,
-  categoryMatches: CategoryMatches,
-  locationMatches: string[],
-  skillLevelKeywords: { isBeginnerSearch: boolean; isIntermediateSearch: boolean; isAdvancedSearch: boolean; }
-): Equipment[] => {
-  return filterAndScoreEquipmentWithTextPriority(
-    equipmentData,
-    lowerQuery,
-    categoryMatches,
-    locationMatches,
-    skillLevelKeywords
-  );
-};
-
-export const sortEquipmentByRelevance = (
+export const filterEquipmentByLocation = (
   equipment: Equipment[],
-  categoryMatches: CategoryMatches,
-  locationMatches: string[]
+  userLat?: number,
+  userLng?: number,
+  maxDistance?: number
 ): Equipment[] => {
-  // Convert to EquipmentWithScore for sorting
-  const equipmentWithScore: EquipmentWithScore[] = equipment.map(item => ({
-    ...item,
-    searchScore: (categoryMatches[item.category] || 0) +
-                 (locationMatches.some(loc => item.location.zip.toLowerCase().includes(loc.toLowerCase())) ? 2 : 0)
-  }));
+  if (!userLat || !userLng || !maxDistance) {
+    return equipment;
+  }
 
-  return sortEquipmentByTextRelevance(equipmentWithScore);
+  return equipment.filter(item => {
+    const distance = calculateDistance(
+      userLat,
+      userLng,
+      item.location.lat,
+      item.location.lng
+    );
+    return distance <= maxDistance;
+  });
+};
+
+export const filterEquipmentByCategory = (
+  equipment: Equipment[],
+  category: string | null
+): Equipment[] => {
+  if (!category) {
+    return equipment;
+  }
+
+  return equipment.filter(item => item.category === category);
+};
+
+export const filterEquipmentByPriceRange = (
+  equipment: Equipment[],
+  priceRange?: [number, number]
+): Equipment[] => {
+  if (!priceRange) {
+    return equipment;
+  }
+
+  const [minPrice, maxPrice] = priceRange;
+
+  return equipment.filter(item => item.price_per_day >= minPrice && item.price_per_day <= maxPrice);
+};
+
+export const sortEquipment = (
+  equipment: Equipment[],
+  sortBy?: string
+): Equipment[] => {
+  if (!sortBy) {
+    return equipment;
+  }
+
+  switch (sortBy) {
+    case "price-asc":
+      return [...equipment].sort((a, b) => a.price_per_day - b.price_per_day);
+    case "price-desc":
+      return [...equipment].sort((a, b) => b.price_per_day - a.price_per_day);
+    case "rating-desc":
+      return [...equipment].sort((a, b) => b.rating - a.rating);
+    default:
+      return equipment;
+  }
+};
+
+export const searchEquipment = (
+  equipment: Equipment[],
+  searchTerm: string,
+  categoryFilter: string | null,
+  userLat?: number,
+  userLng?: number,
+  maxDistance?: number,
+  priceRange?: [number, number],
+  sortBy?: string
+): Equipment[] => {
+  let filtered = equipment;
+
+  // Apply text search
+  if (searchTerm.trim()) {
+    const term = searchTerm.toLowerCase();
+    filtered = filtered.filter(item =>
+      item.name.toLowerCase().includes(term) ||
+      item.description.toLowerCase().includes(term) ||
+      item.category.toLowerCase().includes(term) ||
+      item.specifications.suitable.toLowerCase().includes(term) ||
+      item.location.address.toLowerCase().includes(term)
+    );
+  }
+
+  // Apply category filter
+  if (categoryFilter) {
+    filtered = filterEquipmentByCategory(filtered, categoryFilter);
+  }
+
+  // Apply location filter
+  if (userLat && userLng && maxDistance) {
+    filtered = filterEquipmentByLocation(filtered, userLat, userLng, maxDistance);
+  }
+
+  // Apply price range filter
+  if (priceRange) {
+    filtered = filterEquipmentByPriceRange(filtered, priceRange);
+  }
+
+  // Apply sorting
+  if (sortBy) {
+    filtered = sortEquipment(filtered, sortBy);
+  }
+
+  return filtered;
 };

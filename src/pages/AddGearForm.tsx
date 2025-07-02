@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import FormHeader from "@/components/gear-form/FormHeader";
@@ -29,7 +30,7 @@ const AddGearForm = () => {
     setGearName: formState.setGearName,
     setGearType: formState.setGearType,
     setDescription: formState.setDescription,
-    setZipCode: formState.setZipCode,
+    setAddress: formState.setAddress, // Changed from setZipCode
     setMeasurementUnit: formState.setMeasurementUnit,
     setSize: formState.setSize,
     setRole: formState.setRole,
@@ -46,7 +47,7 @@ const AddGearForm = () => {
     gearName: formState.gearName,
     gearType: formState.gearType,
     description: formState.description,
-    zipCode: formState.zipCode,
+    address: formState.address, // Changed from zipCode
     measurementUnit: formState.measurementUnit,
     size: formState.size,
     skillLevel: formState.skillLevel,
@@ -76,8 +77,8 @@ const AddGearForm = () => {
           setGearType={formState.setGearType}
           description={formState.description}
           setDescription={formState.setDescription}
-          zipCode={formState.zipCode}
-          setZipCode={formState.setZipCode}
+          address={formState.address} // Changed from zipCode
+          setAddress={formState.setAddress} // Changed from setZipCode
         />
 
         <GearSpecifications

@@ -37,7 +37,7 @@ export const useAddGearForm = () => {
     setGearName: formState.setGearName,
     setGearType: formState.setGearType,
     setDescription: formState.setDescription,
-    setZipCode: formState.setZipCode,
+    setAddress: formState.setAddress, // Changed from setZipCode
     setMeasurementUnit: formState.setMeasurementUnit,
     setSize: formState.setSize,
     setRole: formState.setRole,
@@ -61,7 +61,7 @@ export const useAddGearForm = () => {
     gearName: formState.gearName,
     gearType: formState.gearType,
     description: formState.description,
-    zipCode: formState.zipCode,
+    address: formState.address, // Changed from zipCode
     measurementUnit: formState.measurementUnit,
     size: formState.size,
     skillLevel: formState.skillLevel,

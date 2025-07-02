@@ -27,7 +27,7 @@ export const useEditGearForm = () => {
     setGearName: formState.setGearName,
     setGearType: formState.setGearType,
     setDescription: formState.setDescription,
-    setZipCode: formState.setZipCode,
+    setAddress: formState.setAddress, // Changed from setZipCode
     setSize: formState.setSize,
     setSkillLevel: formState.setSkillLevel,
     setPricePerDay: formState.setPricePerDay,
@@ -51,7 +51,7 @@ export const useEditGearForm = () => {
     gearName: formState.gearName,
     gearType: formState.gearType,
     description: formState.description,
-    zipCode: formState.zipCode,
+    address: formState.address, // Changed from zipCode
     measurementUnit: formState.measurementUnit,
     size: formState.size,
     skillLevel: formState.skillLevel,

@@ -57,7 +57,7 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
         </div>
         <div className="flex items-center text-sm text-muted-foreground">
           <MapPin className="h-4 w-4 mr-1" />
-          <span>{equipment.location.zip}</span>
+          <span>{equipment.location.address}</span>
           <span className="mx-2">•</span>
           <DistanceDisplay equipment={equipment} />
         </div>
