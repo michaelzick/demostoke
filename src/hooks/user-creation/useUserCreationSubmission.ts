@@ -101,6 +101,7 @@ export const useUserCreationSubmission = () => {
       const profileData = {
         name: formData.name,
         role: formData.role,
+        website: formData.website || null,
         phone: formData.phone || null,
         address: formData.address || null,
         location_lat: locationLat,
@@ -169,7 +170,7 @@ export const useUserCreationSubmission = () => {
       // Step 7: Final verification
       const { data: finalProfile } = await supabase
         .from('profiles')
-        .select('name, role, phone, address, location_lat, location_lng')
+        .select('name, role, phone, address, website, location_lat, location_lng')
         .eq('id', authData.user.id)
         .single();
 

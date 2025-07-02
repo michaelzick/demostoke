@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 interface UserContactFieldsProps {
   formData: {
+    website: string;
     phone: string;
     address: string;
   };
@@ -15,6 +16,18 @@ interface UserContactFieldsProps {
 const UserContactFields = ({ formData, isCreating, onInputChange }: UserContactFieldsProps) => {
   return (
     <>
+      <div className="space-y-2">
+        <Label htmlFor="website">Website</Label>
+        <Input
+          id="website"
+          type="url"
+          value={formData.website}
+          onChange={(e) => onInputChange('website', e.target.value)}
+          placeholder="https://www.example.com"
+          disabled={isCreating}
+        />
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="phone">Phone Number</Label>
         <Input

@@ -51,18 +51,7 @@ export const useGearFormValidation = () => {
     if (!zipCode.trim()) {
       toast({
         title: "Validation Error",
-        description: "Zip code is required.",
-        variant: "destructive",
-      });
-      return false;
-    }
-
-    // Validate zip code format (5 digits)
-    const zipCodeRegex = /^\d{5}$/;
-    if (!zipCodeRegex.test(zipCode.trim())) {
-      toast({
-        title: "Validation Error",
-        description: "Please enter a valid 5-digit zip code.",
+        description: "Address is required.",
         variant: "destructive",
       });
       return false;
