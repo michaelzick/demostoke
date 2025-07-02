@@ -48,8 +48,7 @@ const BlogPage = () => {
     { label: "Skis", value: "skis" },
     { label: "Surfboards", value: "surfboards" },
     { label: "Mountain Bikes", value: "mountain bikes" },
-    { label: "Stories That Stoke", value: "stories that stoke" },
-    { label: "Guides", value: "guides" }
+    { label: "Stories That Stoke", value: "stories that stoke" }
   ];
 
   const handleSearch = async (query?: string, filter?: string) => {
