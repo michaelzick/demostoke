@@ -60,7 +60,7 @@ The mountain bike industry continues to evolve, offering better performance and 
     excerpt: "After riding the Never Summer Proto Type Two for a full season, we break down why this board has become a favorite among advanced riders and what makes it stand out in the crowded all-mountain category.",
     content: `The Never Summer Proto Type Two is frequently highlighted in snowboard reviews for its high-performance all-mountain capabilities. The board features Never Summer's proprietary Rocker Camber construction, with camber underfoot and rocker at the tip and tail, creating a lively, responsive feel that excels in both carving and powder.
 
-    "Like most all-mountain boards, it is around a medium flex, which seems to be even throughout. It has a rockered middle, which felt nice to butter and wasn’t a bitch to get off the ground. It ollies and works the kickers well. I didn’t hit any rail or boxes, but I’m sure it would manoeuvre in and out well as it is pretty light underfoot. ([Whitelines](https://whitelines.com/snowboard-gear/reviews/snowboards/never-summer-proto-type-two-2019-2020.html))"
+    "Like most all-mountain boards, it is around a medium flex, which seems to be even throughout. It has a rockered middle, which felt nice to butter and wasn’t a bitch to get off the ground. It ollies and works the kickers well. I didn’t hit any rail or boxes, but I’m sure it would manoeuvre in and out well as it is pretty light underfoot ([Whitelines](https://whitelines.com/snowboard-gear/reviews/snowboards/never-summer-proto-type-two-2019-2020.html))."
 
 **Build Quality and Construction**
 
