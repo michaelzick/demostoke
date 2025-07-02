@@ -131,7 +131,10 @@ const EquipmentDetailPage = () => {
   // Shared handlers
   const handleBookNowClick = () => {
     if (bookingCardRef.current) {
-      bookingCardRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      const header = document.querySelector('header.sticky') as HTMLElement | null;
+      const headerHeight = header ? header.offsetHeight : 0;
+      const top = bookingCardRef.current.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+      window.scrollTo({ top, behavior: "smooth" });
     }
   };
   const handleWaiverComplete = () => {
@@ -139,7 +142,10 @@ const EquipmentDetailPage = () => {
     setShowWaiver(false);
     setTimeout(() => {
       if (bookingCardRef.current) {
-        bookingCardRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+        const header = document.querySelector('header.sticky') as HTMLElement | null;
+        const headerHeight = header ? header.offsetHeight : 0;
+        const top = bookingCardRef.current.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+        window.scrollTo({ top, behavior: "smooth" });
       }
     }, 100);
   };
