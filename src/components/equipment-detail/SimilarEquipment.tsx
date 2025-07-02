@@ -31,9 +31,9 @@ const SimilarEquipment = ({ similarEquipment }: SimilarEquipmentProps) => {
                 <div className="w-1/3 relative">
                   {hasMultipleImages ? (
                     <Carousel className="w-full h-full" opts={{ loop: true }}>
-                      <CarouselContent>
+                      <CarouselContent className="h-full">
                         {images.map((imageUrl, index) => (
-                          <CarouselItem key={index}>
+                          <CarouselItem key={index} className="h-full">
                             <img
                               src={imageUrl}
                               alt={`${item.name} - Image ${index + 1}`}
