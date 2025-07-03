@@ -52,12 +52,12 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
     <div className="lg:hidden fixed inset-0 z-50">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/20"
+        className="fixed inset-0 bg-black/20"
         onClick={onClose}
       />
 
       {/* Menu */}
-      <div className="absolute top-0 right-0 h-full w-80 bg-white dark:bg-zinc-900 shadow-lg">
+      <div className="fixed top-0 right-0 h-full w-80 bg-white dark:bg-zinc-900 shadow-lg">
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b">
@@ -171,7 +171,7 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
                   <Button
                     variant="outline"
                     onClick={handleLogout}
-                    className="w-full justify-start mt-2 text-destructive hover:text-destructive"
+                    className="w-full justify-start mt-2 text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300"
                   >
                     Logout
                   </Button>
