@@ -2,6 +2,44 @@ import { BlogPost } from './types';
 
 export const snowboardsPosts: BlogPost[] = [
   {
+    id: "from-rentals-to-doa",
+    title: "From Rentals to the Capita DOA: My First Season Progression",
+    excerpt: "How demoing the Capita DOA at Palisades Tahoe turned a beginner into a confident snowboarder.",
+    content: `Slush and lots of sunscreen.
+
+It was late spring, 2024, at Palisades Tahoe, and I was catching the last of the last of the season.
+
+I'd gotten the Spring Trio + Demo package, and I was in the market for my own board. Up till then, I had only rented because I was brand new to the sport.
+
+My first day at Palisades (formerly Squaw Valley or "Squawlywood), I opted for the LibTech Orca. A great, beginner-friendly board that I had no problems with. However, I needed to be pushed a little more. On the second day, I asked the shop attendant to recommend something a little more challenging. Something that would encourage me to progress, but not too strongly.
+
+"Ah," he said confidently. "I know what you need. I'm gonna set you up with a Capita DOA."
+
+"Um, ok," I said like a noob. The guy could've said I should ride a screen door, and I probably would've done it, but what he gave me was magic.
+
+"Yes," I thought to myself as I rode down Poppy and Monkey Flower repeatedly. "This board feels great." Not too squirrely but a little more challenging than the Orca. So when it came time for the 2024/25 season to kick off, I knew what to order.
+
+I found my way to [Evo.com](https://www.evo.com/), where I found a great deal on a full setup — a Capita DOA 158, Season bindings, a Giro helmet, and K2 boots. Btw, NEVER buy boots online before trying them on. Luckily, I can make the K2s work by doubling up thick socks, but thinking my size 10 street shoe size would fit me was a mistake.
+
+By the end of the 24/25 season, I was charging black runs and hitting the park regularly on the DOA after starting the season on the bunny slope. Getting acclimated to the board took some time, but once I learned edge control and how to carve, my progression really took off.
+
+What allowed me to have such a successful first season was that I tried a board, found out what worked, and bought the same board. In other words, I demoed before I purchased, and this is why I created DemoStoke. I want people to have that same experience and make it as easy as possible.
+
+So the next time you're in the market for a new board (or boots!), try before you buy. This applies to surfboards, skis, bikes, or any other equipment. You can't replicate the knowledge of what it *feels* like to ride a piece of gear. No stats, AI, or seeing what your friend rides can replace putting something through its paces in different conditions. You have to get out there and do it.
+
+Contact me and share a story about a success or failure you've experienced with gear purchases!
+
+Cheers 🤙🏻`,
+    category: "snowboards",
+    publishedAt: "2025-07-03",
+    readTime: 3,
+    heroImage: "https://images.unsplash.com/photo-1511963210-8e061f8be823",
+    thumbnail: "https://images.unsplash.com/photo-1511963210-8e061f8be823",
+    tags: ["snowboards", "demo gear", "capita", "progression"],
+    author: "Michael Zick",
+    authorId: "98f914a6-2a72-455d-aa4b-41b081f4014d"
+  },
+  {
     id: "snowboard-buying-guide-2025",
     title: "The Ultimate Snowboard Buying Guide for 2025: Everything You Need to Know",
     excerpt: "From powder boards to park sticks, discover how to choose the perfect snowboard for your riding style, skill level, and the terrain you love most.",
