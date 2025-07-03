@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Eye,
@@ -40,9 +40,8 @@ const MyEquipmentPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [visibilityFilter, setVisibilityFilter] = useState("all");
-  const [showVisibilityOnly, setShowVisibilityOnly] = useState(false);
 
-  const { data: equipment, isLoading, error } = useUserEquipment(user?.id, showVisibilityOnly);
+  const { data: equipment, isLoading, error } = useUserEquipment(user?.id);
   const deleteEquipmentMutation = useDeleteEquipment();
   const updateVisibilityMutation = useUpdateEquipmentVisibility();
 
@@ -194,10 +193,9 @@ const MyEquipmentPage = () => {
       </div>
 
       <Tabs defaultValue="equipment" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="equipment">Equipment</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="equipment" className="space-y-6">
@@ -458,25 +456,6 @@ const MyEquipmentPage = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="settings">
-          <div className="py-6">
-            <h3 className="text-lg font-semibold mb-4">Settings</h3>
-            <p className="text-muted-foreground">
-              Manage your equipment listing settings.
-            </p>
-            <Separator className="my-4" />
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="show-visibility">Show Visibility Only</Label>
-                <Switch
-                  id="show-visibility"
-                  checked={showVisibilityOnly}
-                  onCheckedChange={(checked) => setShowVisibilityOnly(checked)}
-                />
-              </div>
-            </div>
-          </div>
-        </TabsContent>
       </Tabs>
     </div>
   );
