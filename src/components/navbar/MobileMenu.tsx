@@ -1,8 +1,9 @@
 
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/helpers";
-import { Search, X } from "lucide-react";
+import { Search, X, User, Package, BarChart3, Calendar, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useIsAdmin } from "@/hooks/useUserRole";
 import MobileExploreMenu from "./MobileExploreMenu";
 
 interface MobileMenuProps {
@@ -12,7 +13,8 @@ interface MobileMenuProps {
 }
 
 const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
+  const { isAdmin, isLoading: isAdminLoading } = useIsAdmin();
   const navigate = useNavigate();
 
   const handleListGearClick = (e: React.MouseEvent) => {
@@ -32,6 +34,16 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
 
   const handleLinkClick = () => {
     onClose();
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      onClose();
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   if (!isOpen) return null;
@@ -104,9 +116,73 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
               Blog
             </Link>
 
-            <div className="pt-4 border-t">
-              <div className="flex flex-col gap-2">
-                {!isAuthenticated && (
+            {/* My Account Section */}
+            {isAuthenticated && (
+              <div className="pt-4 border-t">
+                <h3 className="text-sm font-semibold text-muted-foreground mb-3">My Account</h3>
+                <div className="flex flex-col gap-2">
+                  <Link
+                    to="/profile"
+                    className="flex items-center gap-3 text-base hover:text-primary transition-colors"
+                    onClick={handleLinkClick}
+                  >
+                    <User className="h-4 w-4" />
+                    Profile
+                  </Link>
+
+                  <Link
+                    to="/my-equipment"
+                    className="flex items-center gap-3 text-base hover:text-primary transition-colors"
+                    onClick={handleLinkClick}
+                  >
+                    <Package className="h-4 w-4" />
+                    My Gear
+                  </Link>
+
+                  <Link
+                    to="/analytics"
+                    className="flex items-center gap-3 text-base hover:text-primary transition-colors"
+                    onClick={handleLinkClick}
+                  >
+                    <BarChart3 className="h-4 w-4" />
+                    Analytics
+                  </Link>
+
+                  <Link
+                    to="/bookings"
+                    className="flex items-center gap-3 text-base hover:text-primary transition-colors"
+                    onClick={handleLinkClick}
+                  >
+                    <Calendar className="h-4 w-4" />
+                    Bookings
+                  </Link>
+
+                  {isAdmin && !isAdminLoading && (
+                    <Link
+                      to="/admin"
+                      className="flex items-center gap-3 text-base hover:text-primary transition-colors"
+                      onClick={handleLinkClick}
+                    >
+                      <Settings className="h-4 w-4" />
+                      Admin
+                    </Link>
+                  )}
+
+                  <Button
+                    variant="outline"
+                    onClick={handleLogout}
+                    className="w-full justify-start mt-2 text-destructive hover:text-destructive"
+                  >
+                    Logout
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Sign In for non-authenticated users */}
+            {!isAuthenticated && (
+              <div className="pt-4 border-t">
+                <div className="flex flex-col gap-2">
                   <Link
                     to="/auth/signin"
                     className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 w-full"
@@ -114,9 +190,9 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
                   >
                     Sign In
                   </Link>
-                )}
+                </div>
               </div>
-            </div>
+            )}
           </nav>
         </div>
       </div>
