@@ -27,8 +27,8 @@ const CalendarHeader = ({
   isLoadingRole
 }: CalendarHeaderProps) => {
   return (
-    <div className="flex items-center justify-between p-4 border-b">
-      <div className="flex items-center gap-4">
+    <div className="flex flex-wrap items-center justify-between gap-y-2 p-4 border-b">
+      <div className="flex items-center gap-4 w-full sm:w-auto">
         <h2 className="text-xl font-semibold">
           {format(currentDate, 'MMMM yyyy')}
         </h2>
@@ -58,7 +58,7 @@ const CalendarHeader = ({
           </Button>
         </div>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 w-full sm:w-auto justify-end sm:justify-normal">
         <div className="flex items-center gap-1">
           <Button
             size="sm"
