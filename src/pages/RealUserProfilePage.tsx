@@ -19,10 +19,6 @@ import { UserProfileNotFound } from "@/components/profile/UserProfileNotFound";
 import type { UserProfile } from "@/types";
 
 const RealUserProfilePage = () => {
-  usePageMetadata({
-    title: 'User Profile | DemoStoke',
-    description: 'View rider profiles and their listed gear on DemoStoke.'
-  });
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -81,11 +77,18 @@ const RealUserProfilePage = () => {
   const stats = isMockUser ? mockStats : dbStats;
   
   // For mock users, filter visible equipment; for real users, visibility is already handled by the hook
-  const userEquipment = isMockUser 
+  const userEquipment = isMockUser
     ? mockEquipment.filter(item => item.owner.id === id) // Mock data doesn't have visibility field, so show all
     : dbUserEquipment;
-    
+
   const isLoading = isMockUser ? false : (profileLoading || statsLoading);
+
+  const profileName = profile?.name;
+
+  usePageMetadata({
+    title: profileName ? `User Profile | ${profileName}` : 'User Profile | DemoStoke',
+    description: 'View rider profiles and their listed gear on DemoStoke.'
+  });
 
   if (isLoading) {
     return <UserProfileLoading />;

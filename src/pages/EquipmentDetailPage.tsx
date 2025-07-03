@@ -20,11 +20,6 @@ function isValidUUID(id: string) {
 }
 
 const EquipmentDetailPage = () => {
-  usePageMetadata({
-    title: 'Gear Details | DemoStoke',
-    description: 'View detailed information about this gear listing.',
-    type: 'product'
-  });
   const { id } = useParams<{ id: string; }>();
   const [waiverCompleted, setWaiverCompleted] = useState(false);
   const [showWaiver, setShowWaiver] = useState(false);
@@ -129,6 +124,14 @@ const EquipmentDetailPage = () => {
 
   // Use real similar equipment data, fallback to empty array
   const similarEquipment = similarEquipmentFromDb || [];
+
+  const equipmentName = currentEquipment?.name;
+
+  usePageMetadata({
+    title: equipmentName ? `Gear Details | ${equipmentName}` : 'Gear Details | DemoStoke',
+    description: 'View detailed information about this gear listing.',
+    type: 'product'
+  });
 
   // Shared handlers
   const handleBookNowClick = () => {
