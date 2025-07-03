@@ -42,9 +42,9 @@ const EventListItem = ({
   const textColorClass = getTextColor(colorClass);
 
   return (
-    <div className="flex items-center justify-between gap-2 py-2">
+    <div className="flex items-center justify-between gap-2 py-2 min-w-0">
       <button
-        className="flex-1 text-left"
+        className="flex-1 min-w-0 text-left"
         onClick={() => onEventClick(event)}
       >
         <p className={`font-semibold text-sm truncate hover:underline ${textColorClass}`}>{event.title}</p>
