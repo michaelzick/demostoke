@@ -131,7 +131,7 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
                   </Link>
 
                   <Link
-                    to="/my-equipment"
+                    to="/my-gear"
                     className="flex items-center gap-3 text-base hover:text-primary transition-colors"
                     onClick={handleLinkClick}
                   >
