@@ -80,14 +80,14 @@ const HeroSection = () => {
             <Button size="lg" asChild className='bg-primary'>
               <Link to="/explore">Show Me The Gear</Link>
             </Button>
-            <Button
+            {/* <Button
               size="lg"
               variant="outline"
               className="bg-white/20 dark:bg-zinc-800/40 border-white dark:border-zinc-700"
               onClick={handleListGearClick}
             >
               List Your Gear
-            </Button>
+            </Button> */}
           </div>
           <div className="flex flex-wrap gap-8 justify-center">
             <Link

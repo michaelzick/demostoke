@@ -81,13 +81,13 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
         </NavigationMenuList>
       </NavigationMenu>
 
-      <button
+      {/* <button
         onClick={handleListGearClick}
         className="relative group text-base font-medium hover:text-primary transition-colors py-2"
       >
         List Your Gear
         <SquiggleUnderline />
-      </button>
+      </button> */}
       <Link to="/demo-calendar" className="relative group text-base font-medium hover:text-primary transition-colors py-2">
         Demo Calendar
         <SquiggleUnderline />

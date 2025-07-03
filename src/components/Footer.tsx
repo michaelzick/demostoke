@@ -33,11 +33,11 @@ const Footer = () => {
                     Find Equipment
                   </Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link to="list-your-gear" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     List Your Gear
                   </Link>
-                </li>
+                </li> */}
                 <li>
                   <Link to="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     How It Works

@@ -93,12 +93,12 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
 
             <MobileExploreMenu onClose={onClose} />
 
-            <button
+            {/* <button
               onClick={handleListGearClick}
               className="text-lg font-medium text-left"
             >
               List Your Gear
-            </button>
+            </button> */}
 
             <Link
               to="/demo-calendar"

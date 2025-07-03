@@ -277,7 +277,7 @@ const HomePage = () => {
 
       <CategoriesSection />
       <HowItWorksSection />
-      <CtaSection />
+      {/* <CtaSection /> */}
     </div>
   );
 };
