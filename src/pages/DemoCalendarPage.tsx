@@ -172,7 +172,7 @@ const DemoCalendarPage = () => {
               isAdmin={isAdmin}
               isLoadingRole={isLoadingRole}
             />
-          )
+          )}
         </div>
       </div>
 
