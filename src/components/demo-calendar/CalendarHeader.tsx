@@ -1,6 +1,6 @@
 
 import { format } from "date-fns";
-import { ChevronLeft, ChevronRight, Plus, Calendar } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Calendar, LayoutList, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface CalendarHeaderProps {
@@ -9,6 +9,8 @@ interface CalendarHeaderProps {
   onNextMonth: () => void;
   onGoToToday: () => void;
   onAddEvent: () => void;
+  viewMode: 'calendar' | 'list';
+  onChangeView: (mode: 'calendar' | 'list') => void;
   isAdmin: boolean;
   isLoadingRole: boolean;
 }
@@ -19,6 +21,8 @@ const CalendarHeader = ({
   onNextMonth,
   onGoToToday,
   onAddEvent,
+  viewMode,
+  onChangeView,
   isAdmin,
   isLoadingRole
 }: CalendarHeaderProps) => {
@@ -54,12 +58,32 @@ const CalendarHeader = ({
           </Button>
         </div>
       </div>
-      {isAdmin && !isLoadingRole && (
-        <Button onClick={onAddEvent} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Add Event
-        </Button>
-      )}
+      <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          <Button
+            size="sm"
+            variant={viewMode === 'calendar' ? 'default' : 'outline'}
+            onClick={() => onChangeView('calendar')}
+            aria-label="Calendar view"
+          >
+            <CalendarDays className="h-4 w-4" />
+          </Button>
+          <Button
+            size="sm"
+            variant={viewMode === 'list' ? 'default' : 'outline'}
+            onClick={() => onChangeView('list')}
+            aria-label="List view"
+          >
+            <LayoutList className="h-4 w-4" />
+          </Button>
+        </div>
+        {isAdmin && !isLoadingRole && (
+          <Button onClick={onAddEvent} className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            Add Event
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

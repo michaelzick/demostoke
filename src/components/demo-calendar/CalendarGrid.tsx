@@ -17,6 +17,8 @@ interface CalendarGridProps {
   onNextMonth: () => void;
   onGoToToday: () => void;
   onAddEvent: () => void;
+  viewMode: 'calendar' | 'list';
+  onChangeView: (mode: 'calendar' | 'list') => void;
   onEditEvent: (event: DemoEvent) => void;
   onDeleteEvent: (eventId: string) => void;
   isDeleting?: boolean;
@@ -38,6 +40,8 @@ const CalendarGrid = ({
   onNextMonth,
   onGoToToday,
   onAddEvent,
+  viewMode,
+  onChangeView,
   onEditEvent,
   onDeleteEvent,
   isDeleting,
@@ -115,6 +119,8 @@ const CalendarGrid = ({
         onNextMonth={onNextMonth}
         onGoToToday={onGoToToday}
         onAddEvent={onAddEvent}
+        viewMode={viewMode}
+        onChangeView={onChangeView}
         isAdmin={isAdmin}
         isLoadingRole={isLoadingRole}
       />
