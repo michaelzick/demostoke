@@ -137,7 +137,7 @@ const DemoCalendarPage = () => {
         </div>
 
         {/* Calendar / List */}
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-3 min-w-0">
           {viewMode === 'calendar' ? (
             <CalendarGrid
               currentDate={currentDate}
