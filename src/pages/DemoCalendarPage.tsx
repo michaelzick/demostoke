@@ -1,12 +1,14 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useAuth } from "@/helpers";
 import { useDemoEvents } from "@/hooks/useDemoEvents";
 import { useCalendarNavigation } from "@/hooks/useCalendarNavigation";
 import { useIsAdmin } from "@/hooks/useUserRole";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { DemoEvent, DemoEventInput, CategoryFilter as CategoryFilterType } from "@/types/demo-calendar";
 import CalendarGrid from "@/components/demo-calendar/CalendarGrid";
+import CalendarList from "@/components/demo-calendar/CalendarList";
 import CategoryFilter from "@/components/demo-calendar/CategoryFilter";
 import AddEventModal from "@/components/demo-calendar/AddEventModal";
 import { Button } from "@/components/ui/button";
@@ -22,6 +24,13 @@ const DemoCalendarPage = () => {
   const navigate = useNavigate();
   const { currentDate, goToPreviousMonth, goToNextMonth, goToToday } = useCalendarNavigation();
   const { events, createEvent, updateEvent, deleteEvent, isCreating, isUpdating, isDeleting } = useDemoEvents();
+  const isMobile = useIsMobile();
+
+  const [viewMode, setViewMode] = useState<'calendar' | 'list'>(isMobile ? 'list' : 'calendar');
+
+  useEffect(() => {
+    setViewMode(isMobile ? 'list' : 'calendar');
+  }, [isMobile]);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<DemoEvent | null>(null);
@@ -127,22 +136,43 @@ const DemoCalendarPage = () => {
           />
         </div>
 
-        {/* Calendar */}
-        <div className="lg:col-span-3">
-          <CalendarGrid
-            currentDate={currentDate}
-            events={events}
-            categoryFilters={categoryFilters}
-            onPreviousMonth={goToPreviousMonth}
-            onNextMonth={goToNextMonth}
-            onGoToToday={goToToday}
-            onAddEvent={handleAddEvent}
-            onEditEvent={handleEditEvent}
-            onDeleteEvent={handleDeleteEvent}
-            isDeleting={isDeleting}
-            isAdmin={isAdmin}
-            isLoadingRole={isLoadingRole}
-          />
+        {/* Calendar / List */}
+        <div className="lg:col-span-3 min-w-0">
+          {viewMode === 'calendar' ? (
+            <CalendarGrid
+              currentDate={currentDate}
+              events={events}
+              categoryFilters={categoryFilters}
+              onPreviousMonth={goToPreviousMonth}
+              onNextMonth={goToNextMonth}
+              onGoToToday={goToToday}
+              onAddEvent={handleAddEvent}
+              viewMode={viewMode}
+              onChangeView={setViewMode}
+              onEditEvent={handleEditEvent}
+              onDeleteEvent={handleDeleteEvent}
+              isDeleting={isDeleting}
+              isAdmin={isAdmin}
+              isLoadingRole={isLoadingRole}
+            />
+          ) : (
+            <CalendarList
+              currentDate={currentDate}
+              events={events}
+              categoryFilters={categoryFilters}
+              onPreviousMonth={goToPreviousMonth}
+              onNextMonth={goToNextMonth}
+              onGoToToday={goToToday}
+              onAddEvent={handleAddEvent}
+              viewMode={viewMode}
+              onChangeView={setViewMode}
+              onEditEvent={handleEditEvent}
+              onDeleteEvent={handleDeleteEvent}
+              isDeleting={isDeleting}
+              isAdmin={isAdmin}
+              isLoadingRole={isLoadingRole}
+            />
+          )}
         </div>
       </div>
 

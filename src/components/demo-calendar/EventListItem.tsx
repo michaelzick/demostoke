@@ -1,9 +1,8 @@
-
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 
-interface EventCardProps {
+interface EventListItemProps {
   event: DemoEvent;
   categoryColors: CategoryFilter[];
   onEdit: (event: DemoEvent) => void;
@@ -13,19 +12,18 @@ interface EventCardProps {
   isAdmin: boolean;
 }
 
-const EventCard = ({ 
-  event, 
-  categoryColors, 
-  onEdit, 
-  onDelete, 
+const EventListItem = ({
+  event,
+  categoryColors,
+  onEdit,
+  onDelete,
   onEventClick,
-  isDeleting, 
-  isAdmin 
-}: EventCardProps) => {
+  isDeleting,
+  isAdmin
+}: EventListItemProps) => {
   const categoryFilter = categoryColors.find(c => c.category === event.gear_category);
   const colorClass = categoryFilter?.color || 'bg-gray-500';
 
-  // Map background colors to their corresponding text colors
   const getTextColor = (bgColor: string) => {
     switch (bgColor) {
       case 'bg-fuchsia-500':
@@ -44,24 +42,18 @@ const EventCard = ({
   const textColorClass = getTextColor(colorClass);
 
   return (
-    <div className="bg-card rounded-lg p-3 shadow-sm border hover:shadow-md transition-shadow">
-      <div className="mb-2">
-        <h4
-          className={`font-semibold text-sm cursor-pointer hover:underline truncate ${textColorClass}`}
-          onClick={() => onEventClick(event)}
-          title={event.title}
-        >
-          {event.title}
-        </h4>
+    <div className="flex items-center justify-between gap-2 py-2">
+      <button
+        className="flex-1 text-left"
+        onClick={() => onEventClick(event)}
+      >
+        <p className={`font-semibold text-sm truncate hover:underline ${textColorClass}`}>{event.title}</p>
         {event.company && (
-          <p className="text-sm font-semibold text-foreground truncate" title={event.company}>
-            {event.company}
-          </p>
+          <p className="text-sm font-semibold text-foreground truncate">{event.company}</p>
         )}
-      </div>
-
+      </button>
       {isAdmin && (
-        <div className="flex justify-end gap-1 pt-2 border-t">
+        <div className="flex gap-1">
           <Button
             size="sm"
             variant="ghost"
@@ -77,7 +69,7 @@ const EventCard = ({
             disabled={isDeleting}
             className="h-7 w-7 p-0 text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/30"
           >
-            {isDeleting ? "..." : <Trash2 className="h-3 w-3" />}
+            {isDeleting ? '...' : <Trash2 className="h-3 w-3" />}
           </Button>
         </div>
       )}
@@ -85,4 +77,4 @@ const EventCard = ({
   );
 };
 
-export default EventCard;
+export default EventListItem;
