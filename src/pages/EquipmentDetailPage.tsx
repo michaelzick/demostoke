@@ -122,7 +122,9 @@ const EquipmentDetailPage = () => {
   const currentEquipment = equipmentForDisplayDb || equipmentForDisplayMock;
   const { data: similarEquipmentFromDb, isLoading: similarLoading } = useSimilarEquipment(
     currentEquipment?.category || '',
-    currentEquipment?.id || ''
+    currentEquipment?.id || '',
+    currentEquipment?.location?.lat,
+    currentEquipment?.location?.lng
   );
 
   // Use real similar equipment data, fallback to empty array
