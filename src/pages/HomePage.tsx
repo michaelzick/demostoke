@@ -5,7 +5,7 @@ import HeroSection from "@/components/HeroSection";
 import HowItWorksSection from "@/components/home/HowItWorksSection";
 import FeaturedGearSection from "@/components/home/FeaturedGearSection";
 import CategoriesSection from "@/components/home/CategoriesSection";
-import CtaSection from "@/components/home/CtaSection";
+import FeaturedPostsSection from "@/components/home/FeaturedPostsSection";
 import { useTrendingEquipment } from "@/hooks/useTrendingEquipment";
 import { useRecentEquipment } from "@/hooks/useRecentEquipment";
 import {
@@ -277,7 +277,7 @@ const HomePage = () => {
 
       <CategoriesSection />
       <HowItWorksSection />
-      {/* <CtaSection /> */}
+      <FeaturedPostsSection />
     </div>
   );
 };

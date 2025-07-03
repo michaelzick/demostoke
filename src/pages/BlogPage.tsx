@@ -6,8 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Clock, User, Calendar } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { blogPosts, BlogPost } from "@/lib/blog";
 import { searchBlogPostsWithNLP } from "@/services/blogSearchService";
+import { useUserRole } from "@/hooks/useUserRole";
+import { toast } from "@/hooks/use-toast";
 
 const BlogPage = () => {
   usePageMetadata({
@@ -22,10 +25,18 @@ const BlogPage = () => {
   const [searchResults, setSearchResults] = useState<BlogPost[]>(blogPosts);
   const [isSearching, setIsSearching] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<string>(searchParams.get('category') || "");
+  const [featuredPosts, setFeaturedPosts] = useState<string[]>([]);
+  const { data: userRole } = useUserRole();
+  const isAdmin = userRole === 'admin';
 
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
+    // Load featured posts from localStorage
+    const saved = localStorage.getItem('featuredBlogPosts');
+    if (saved) {
+      setFeaturedPosts(JSON.parse(saved));
+    }
   }, []);
 
   // Perform search whenever query or filter changes
@@ -145,6 +156,26 @@ const BlogPage = () => {
     return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800 hover:bg-gray-200";
   };
 
+  const handleFeatureToggle = (postId: string, checked: boolean) => {
+    if (checked) {
+      if (featuredPosts.length >= 3) {
+        toast({
+          title: "Maximum Featured Posts",
+          description: "You can only feature up to 3 blog posts on the homepage.",
+          variant: "destructive"
+        });
+        return;
+      }
+      const newFeatured = [...featuredPosts, postId];
+      setFeaturedPosts(newFeatured);
+      localStorage.setItem('featuredBlogPosts', JSON.stringify(newFeatured));
+    } else {
+      const newFeatured = featuredPosts.filter(id => id !== postId);
+      setFeaturedPosts(newFeatured);
+      localStorage.setItem('featuredBlogPosts', JSON.stringify(newFeatured));
+    }
+  };
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -257,6 +288,22 @@ const BlogPage = () => {
                   </div>
                 </Link>
                 <CardHeader>
+                  {isAdmin && (
+                    <div className="flex items-center gap-2 mb-3">
+                      <Checkbox
+                        id={`featured-${post.id}`}
+                        checked={featuredPosts.includes(post.id)}
+                        onCheckedChange={(checked) => handleFeatureToggle(post.id, checked as boolean)}
+                        disabled={!featuredPosts.includes(post.id) && featuredPosts.length >= 3}
+                      />
+                      <label 
+                        htmlFor={`featured-${post.id}`} 
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Feature on homepage
+                      </label>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2 mb-2">
                     <Link to={`/blog?category=${encodeURIComponent(post.category)}`}>
                       <Badge className={`${getCategoryColor(post.category)} transition-colors cursor-pointer`}>
