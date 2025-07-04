@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { MessageCircleIcon, StarIcon, MapPinIcon, PhoneIcon, GlobeIcon } from "lucide-react";
+import MapComponent from "@/components/MapComponent";
 
 interface UserProfileSidebarProps {
   profile: {
@@ -11,6 +12,8 @@ interface UserProfileSidebarProps {
     role: string;
     phone?: string | null;
     address?: string | null;
+    location_lat?: number | null;
+    location_lng?: number | null;
     website?: string | null;
   };
   stats?: {
@@ -31,6 +34,23 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {profile.location_lat && profile.location_lng && (
+          <div className="h-40 rounded-md overflow-hidden">
+            <MapComponent
+              initialEquipment={[{
+                id: profile.name,
+                name: profile.name,
+                category: 'user',
+                price_per_day: 0,
+                location: { lat: profile.location_lat, lng: profile.location_lng },
+                ownerId: profile.name,
+                ownerName: profile.name,
+              }]}
+              activeCategory={null}
+              interactive={false}
+            />
+          </div>
+        )}
         <div className="whitespace-pre-line text-sm text-muted-foreground leading-relaxed">
           {profile.about ||
             (profile.role === 'private-party'
@@ -48,7 +68,14 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
                 <div className="flex items-start gap-3">
                   <MapPinIcon className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-sm text-muted-foreground">{profile.address}</p>
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(profile.address!)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-muted-foreground hover:text-primary underline"
+                    >
+                      {profile.address}
+                    </a>
                   </div>
                 </div>
               )}

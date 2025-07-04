@@ -24,6 +24,7 @@ const LocationTab = ({ equipment }: LocationTabProps) => {
             ownerName: equipment.owner.name
           }]}
           activeCategory={null}
+          interactive={false}
         />
       </div>
       <p className="text-sm text-muted-foreground">

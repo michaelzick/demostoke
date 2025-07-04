@@ -28,13 +28,15 @@ interface MapProps {
   }>;
   searchQuery?: string;
   isEquipmentLoading?: boolean;
+  interactive?: boolean;
 }
 
-const MapComponent = ({ 
-  activeCategory, 
-  initialEquipment, 
+const MapComponent = ({
+  activeCategory,
+  initialEquipment,
   searchQuery,
-  isEquipmentLoading = false
+  isEquipmentLoading = false,
+  interactive = true
 }: MapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -197,7 +199,10 @@ const MapComponent = ({
 
   return (
     <div className="relative w-full h-full">
-      <div ref={mapContainer} className="w-full h-full" />
+      <div
+        ref={mapContainer}
+        className={`w-full h-full${!interactive ? ' pointer-events-none' : ''}`}
+      />
       {showLoading && (
         <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
           <LoadingSpinner />
