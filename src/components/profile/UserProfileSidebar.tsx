@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { MessageCircleIcon, StarIcon, MapPinIcon, PhoneIcon, GlobeIcon } from "lucide-react";
+import MapComponent from "@/components/MapComponent";
 
 interface UserProfileSidebarProps {
   profile: {
@@ -11,6 +12,8 @@ interface UserProfileSidebarProps {
     role: string;
     phone?: string | null;
     address?: string | null;
+    location_lat?: number | null;
+    location_lng?: number | null;
     website?: string | null;
   };
   stats?: {
@@ -23,14 +26,15 @@ interface UserProfileSidebarProps {
 
 export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProfileSidebarProps) => {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MessageCircleIcon className="h-5 w-5" />
-          About {profile.name}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MessageCircleIcon className="h-5 w-5" />
+            About {profile.name}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
         <div className="whitespace-pre-line text-sm text-muted-foreground leading-relaxed">
           {profile.about ||
             (profile.role === 'private-party'
@@ -48,7 +52,14 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
                 <div className="flex items-start gap-3">
                   <MapPinIcon className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-sm text-muted-foreground">{profile.address}</p>
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(profile.address!)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-muted-foreground hover:text-primary underline"
+                    >
+                      {profile.address}
+                    </a>
                   </div>
                 </div>
               )}
@@ -134,5 +145,24 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
         )}
       </CardContent>
     </Card>
+      {profile.location_lat && profile.location_lng && (
+        <div className="h-40 rounded-md overflow-hidden mt-4">
+          <MapComponent
+            initialEquipment={[{
+              id: profile.name,
+              name: profile.name,
+              category: 'user',
+              price_per_day: 0,
+              location: { lat: profile.location_lat, lng: profile.location_lng },
+              ownerId: profile.name,
+              ownerName: profile.name,
+            }]}
+            activeCategory={null}
+            interactive={false}
+            userRole={profile.role}
+          />
+        </div>
+      )}
+    </>
   );
 };

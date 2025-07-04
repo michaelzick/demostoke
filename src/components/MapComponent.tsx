@@ -26,15 +26,19 @@ interface MapProps {
     ownerId: string;
     ownerName: string;
   }>;
+  userRole?: string;
   searchQuery?: string;
   isEquipmentLoading?: boolean;
+  interactive?: boolean;
 }
 
-const MapComponent = ({ 
-  activeCategory, 
-  initialEquipment, 
+const MapComponent = ({
+  activeCategory,
+  initialEquipment,
+  userRole,
   searchQuery,
-  isEquipmentLoading = false
+  isEquipmentLoading = false,
+  interactive = true
 }: MapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -113,8 +117,10 @@ const MapComponent = ({
       );
 
       validEquipment.forEach((item) => {
-        const el = createMarkerElement(item.category);
-        
+        const el = userRole
+          ? createUserLocationMarkerElement(userRole, activeCategory || undefined)
+          : createMarkerElement(item.category);
+
         const marker = new mapboxgl.Marker(el)
           .setLngLat([item.location.lng, item.location.lat])
           .addTo(map.current!);
@@ -197,7 +203,10 @@ const MapComponent = ({
 
   return (
     <div className="relative w-full h-full">
-      <div ref={mapContainer} className="w-full h-full" />
+      <div
+        ref={mapContainer}
+        className={`w-full h-full${!interactive ? ' pointer-events-none' : ''}`}
+      />
       {showLoading && (
         <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
           <LoadingSpinner />
