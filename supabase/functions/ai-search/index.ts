@@ -23,6 +23,8 @@ interface Equipment {
   };
   location: {
     zip: string;
+    lat: number;
+    lng: number;
   };
 }
 
@@ -32,6 +34,11 @@ interface SearchAnalysis {
   reasoning: string;
 }
 
+interface UserLocation {
+  lat: number;
+  lng: number;
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -39,7 +46,7 @@ serve(async (req) => {
   }
 
   try {
-    const { query, equipment } = await req.json();
+    const { query, equipment, userLocation } = await req.json();
     
     if (!query || !equipment || !Array.isArray(equipment)) {
       return new Response(
@@ -59,6 +66,24 @@ serve(async (req) => {
 
     console.log(`🤖 AI Search: Processing query "${query}" for ${equipment.length} items`);
 
+    const calculateDistance = (
+      lat1: number,
+      lng1: number,
+      lat2: number,
+      lng2: number
+    ): number => {
+      const R = 6371; // km
+      const toRad = (val: number) => (val * Math.PI) / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLng = toRad(lng2 - lng1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    };
+
     // Create a simplified version of equipment data for AI analysis
     const equipmentSummary = equipment.map((item: Equipment) => ({
       id: item.id,
@@ -70,11 +95,23 @@ serve(async (req) => {
       material: item.specifications?.material || '',
       size: item.specifications?.size || '',
       location: item.location?.zip || '',
+      distance_from_user: userLocation
+        ? calculateDistance(
+            userLocation.lat,
+            userLocation.lng,
+            item.location.lat,
+            item.location.lng
+          )
+        : undefined,
       price: item.price_per_day,
       rating: item.rating
     }));
 
-    const prompt = `You are an expert outdoor gear search assistant. Analyze the following search query and equipment inventory to determine relevance scores.
+    const locationNote = userLocation
+      ? `The user is located at latitude ${userLocation.lat.toFixed(4)}, longitude ${userLocation.lng.toFixed(4)}.`
+      : 'User location not provided.';
+
+    const prompt = `You are an expert outdoor gear search assistant. ${locationNote} Analyze the following search query and equipment inventory to determine relevance scores.
 
 SEARCH QUERY: "${query}"
 
@@ -90,7 +127,7 @@ INSTRUCTIONS:
    - Brand name matching (e.g., "DHD" should match DHD surfboards)
    - Equipment attributes (size, material, style)
    - Semantic understanding (e.g., "bikes" = mountain bikes, "boards" = surfboards/snowboards)
-   - Location relevance if mentioned
+   - Location relevance if mentioned; prefer items with a smaller distance_from_user value when provided
 
 3. STRICT FILTERING RULES:
    - If query specifies a category (like "mountain bike"), ONLY return items from that category
@@ -184,11 +221,45 @@ RESPOND WITH VALID JSON ONLY in this exact format:
 
     console.log(`✅ AI Search complete: ${filteredEquipment.length} relevant items found`);
 
+    let summary = '';
+    try {
+      const summaryResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            {
+              role: 'system',
+              content: 'You provide concise summaries of outdoor gear search results.'
+            },
+            {
+              role: 'user',
+              content: `Summarize the search results for "${query}" in 1-3 sentences.`
+            }
+          ],
+          temperature: 0.6,
+          max_tokens: 120,
+        }),
+      });
+
+      if (summaryResponse.ok) {
+        const summaryJson = await summaryResponse.json();
+        summary = summaryJson.choices[0].message.content.trim();
+      }
+    } catch (summaryErr) {
+      console.error('Summary generation failed:', summaryErr);
+    }
+
     return new Response(
       JSON.stringify({
         results: filteredEquipment,
         total_analyzed: equipment.length,
-        relevant_found: filteredEquipment.length
+        relevant_found: filteredEquipment.length,
+        summary
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
