@@ -75,17 +75,6 @@ const SearchDialog = ({ isOpen, onClose }: SearchDialogProps) => {
       </div>
       <CommandList>
         <CommandEmpty>Type to search for gear...</CommandEmpty>
-        <CommandGroup heading="Suggestions">
-          <CommandItem onSelect={() => setQuery("Surfboard for beginners in Santa Monica")}>
-            Surfboard for beginners in Santa Monica
-          </CommandItem>
-          <CommandItem onSelect={() => setQuery("All-mountain snowboard near Downtown LA")}>
-            All-mountain snowboard near Downtown LA
-          </CommandItem>
-          <CommandItem onSelect={() => setQuery("Mountain bike for trails in Malibu")}>
-            Mountain bike for trails in Malibu
-          </CommandItem>
-        </CommandGroup>
         <div className="p-2">
           <Button
             className="w-full"
