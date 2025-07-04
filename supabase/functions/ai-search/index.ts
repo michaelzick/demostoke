@@ -154,7 +154,7 @@ RESPOND WITH VALID JSON ONLY in this exact format:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1',
+        model: 'gpt-4.1-nano',
         messages: [
           {
             role: 'system',
@@ -230,7 +230,7 @@ RESPOND WITH VALID JSON ONLY in this exact format:
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'gpt-4.1',
+          model: 'gpt-4.1-nano',
           messages: [
             {
               role: 'system',
