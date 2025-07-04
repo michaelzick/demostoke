@@ -2,21 +2,23 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { BlogPost } from "@/lib/blog/types";
+import { featuredPostsService } from "@/services/featuredPostsService";
 
 const FeaturedPostsSection = () => {
   const [featuredPosts, setFeaturedPosts] = useState<BlogPost[]>([]);
 
   useEffect(() => {
-    // Get featured posts from localStorage
-    const featured = localStorage.getItem('featuredBlogPosts');
-    if (featured) {
-      const featuredIds = JSON.parse(featured);
-      // Import blog posts dynamically to get the featured ones
-      import("@/lib/blog").then(({ blogPosts }) => {
+    // Get featured posts from Supabase
+    const loadFeaturedPosts = async () => {
+      const featuredIds = await featuredPostsService.getFeaturedPosts();
+      if (featuredIds.length > 0) {
+        // Import blog posts dynamically to get the featured ones
+        const { blogPosts } = await import("@/lib/blog");
         const posts = blogPosts.filter(post => featuredIds.includes(post.id)).slice(0, 3);
         setFeaturedPosts(posts);
-      });
-    }
+      }
+    };
+    loadFeaturedPosts();
   }, []);
 
   if (featuredPosts.length === 0) {

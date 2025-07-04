@@ -11,6 +11,7 @@ import { blogPosts, BlogPost } from "@/lib/blog";
 import { searchBlogPostsWithNLP } from "@/services/blogSearchService";
 import { useUserRole } from "@/hooks/useUserRole";
 import { toast } from "@/hooks/use-toast";
+import { featuredPostsService } from "@/services/featuredPostsService";
 
 const BlogPage = () => {
   usePageMetadata({
@@ -32,11 +33,12 @@ const BlogPage = () => {
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
-    // Load featured posts from localStorage
-    const saved = localStorage.getItem('featuredBlogPosts');
-    if (saved) {
-      setFeaturedPosts(JSON.parse(saved));
-    }
+    // Load featured posts from Supabase
+    const loadFeaturedPosts = async () => {
+      const posts = await featuredPostsService.getFeaturedPosts();
+      setFeaturedPosts(posts);
+    };
+    loadFeaturedPosts();
   }, []);
 
   // Perform search whenever query or filter changes
@@ -156,7 +158,7 @@ const BlogPage = () => {
     return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800 hover:bg-gray-200";
   };
 
-  const handleFeatureToggle = (postId: string, checked: boolean) => {
+  const handleFeatureToggle = async (postId: string, checked: boolean) => {
     if (checked) {
       if (featuredPosts.length >= 3) {
         toast({
@@ -166,13 +168,27 @@ const BlogPage = () => {
         });
         return;
       }
-      const newFeatured = [...featuredPosts, postId];
-      setFeaturedPosts(newFeatured);
-      localStorage.setItem('featuredBlogPosts', JSON.stringify(newFeatured));
+      const result = await featuredPostsService.addFeaturedPost(postId);
+      if (result.success) {
+        setFeaturedPosts(result.posts);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to feature the blog post. Please try again.",
+          variant: "destructive"
+        });
+      }
     } else {
-      const newFeatured = featuredPosts.filter(id => id !== postId);
-      setFeaturedPosts(newFeatured);
-      localStorage.setItem('featuredBlogPosts', JSON.stringify(newFeatured));
+      const result = await featuredPostsService.removeFeaturedPost(postId);
+      if (result.success) {
+        setFeaturedPosts(result.posts);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to remove the featured blog post. Please try again.",
+          variant: "destructive"
+        });
+      }
     }
   };
 
