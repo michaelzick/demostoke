@@ -6,9 +6,6 @@ import {
   CommandDialog,
   CommandInput,
   CommandList,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
 } from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
@@ -65,7 +62,7 @@ const SearchDialog = ({ isOpen, onClose }: SearchDialogProps) => {
       <div className="flex items-center border-b px-3 w-full">
         <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
         <CommandInput
-          placeholder="Search for gear using natural language..."
+          placeholder="What do you want to ride?"
           value={query}
           onValueChange={setQuery}
           onKeyDown={handleKeyDown}
@@ -74,7 +71,6 @@ const SearchDialog = ({ isOpen, onClose }: SearchDialogProps) => {
         {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
       </div>
       <CommandList>
-        <CommandEmpty>Type to search for gear...</CommandEmpty>
         <div className="p-2">
           <Button
             className="w-full"
