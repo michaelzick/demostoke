@@ -26,31 +26,15 @@ interface UserProfileSidebarProps {
 
 export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProfileSidebarProps) => {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MessageCircleIcon className="h-5 w-5" />
-          About {profile.name}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {profile.location_lat && profile.location_lng && (
-          <div className="h-40 rounded-md overflow-hidden">
-            <MapComponent
-              initialEquipment={[{
-                id: profile.name,
-                name: profile.name,
-                category: 'user',
-                price_per_day: 0,
-                location: { lat: profile.location_lat, lng: profile.location_lng },
-                ownerId: profile.name,
-                ownerName: profile.name,
-              }]}
-              activeCategory={null}
-              interactive={false}
-            />
-          </div>
-        )}
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MessageCircleIcon className="h-5 w-5" />
+            About {profile.name}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
         <div className="whitespace-pre-line text-sm text-muted-foreground leading-relaxed">
           {profile.about ||
             (profile.role === 'private-party'
@@ -161,5 +145,24 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
         )}
       </CardContent>
     </Card>
+      {profile.location_lat && profile.location_lng && (
+        <div className="h-40 rounded-md overflow-hidden mt-4">
+          <MapComponent
+            initialEquipment={[{
+              id: profile.name,
+              name: profile.name,
+              category: 'user',
+              price_per_day: 0,
+              location: { lat: profile.location_lat, lng: profile.location_lng },
+              ownerId: profile.name,
+              ownerName: profile.name,
+            }]}
+            activeCategory={null}
+            interactive={false}
+            userRole={profile.role}
+          />
+        </div>
+      )}
+    </>
   );
 };

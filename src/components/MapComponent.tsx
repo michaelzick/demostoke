@@ -26,6 +26,7 @@ interface MapProps {
     ownerId: string;
     ownerName: string;
   }>;
+  userRole?: string;
   searchQuery?: string;
   isEquipmentLoading?: boolean;
   interactive?: boolean;
@@ -34,6 +35,7 @@ interface MapProps {
 const MapComponent = ({
   activeCategory,
   initialEquipment,
+  userRole,
   searchQuery,
   isEquipmentLoading = false,
   interactive = true
@@ -115,8 +117,10 @@ const MapComponent = ({
       );
 
       validEquipment.forEach((item) => {
-        const el = createMarkerElement(item.category);
-        
+        const el = userRole
+          ? createUserLocationMarkerElement(userRole, activeCategory || undefined)
+          : createMarkerElement(item.category);
+
         const marker = new mapboxgl.Marker(el)
           .setLngLat([item.location.lng, item.location.lat])
           .addTo(map.current!);
