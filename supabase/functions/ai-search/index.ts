@@ -39,14 +39,137 @@ interface UserLocation {
   lng: number;
 }
 
+// Basic fallback search utilities used when the OpenAI API fails
+const extractCategoryMatches = (lowerQuery: string) => {
+  const categoryMatches: Record<string, number> = {
+    snowboards: 0,
+    skis: 0,
+    "mountain-bikes": 0,
+    surfboards: 0,
+  };
+
+  if (lowerQuery.includes("snow")) categoryMatches.snowboards += 3;
+  if (lowerQuery.includes("ski")) categoryMatches.skis += 3;
+  if (lowerQuery.includes("bike")) categoryMatches["mountain-bikes"] += 3;
+  if (lowerQuery.includes("surf")) categoryMatches.surfboards += 3;
+
+  return categoryMatches;
+};
+
+const extractSkillLevelKeywords = (lowerQuery: string) => ({
+  isBeginnerSearch:
+    lowerQuery.includes("beginner") ||
+    lowerQuery.includes("beginners") ||
+    lowerQuery.includes("new"),
+  isIntermediateSearch: lowerQuery.includes("intermediate"),
+  isAdvancedSearch:
+    lowerQuery.includes("advanced") ||
+    lowerQuery.includes("expert") ||
+    lowerQuery.includes("pro"),
+});
+
+const checkSkillLevelMatch = (query: string, suitable: string): boolean => {
+  const suitableLower = suitable.toLowerCase();
+  if (query.includes("beginner")) return suitableLower.includes("beginner");
+  if (query.includes("intermediate"))
+    return suitableLower.includes("intermediate");
+  if (query.includes("advanced") || query.includes("expert") || query.includes("pro")) {
+    return (
+      suitableLower.includes("advanced") || suitableLower.includes("expert")
+    );
+  }
+  return false;
+};
+
+const calculateRelevanceScore = (
+  query: string,
+  item: Equipment,
+  categoryMatches: Record<string, number>
+): number => {
+  let score = 0;
+  const qLower = query.toLowerCase();
+
+  if (item.name.toLowerCase() === qLower) score += 10;
+  else if (item.name.toLowerCase().includes(qLower)) score += 5;
+
+  if (item.description?.toLowerCase().includes(qLower)) score += 3;
+
+  score += categoryMatches[item.category] || 0;
+
+  if (checkSkillLevelMatch(qLower, item.specifications.suitable)) score += 4;
+
+  if (item?.owner?.name?.toLowerCase().includes(qLower)) score += 2;
+
+  return score;
+};
+
+const fallbackSearch = (query: string, equipmentData: Equipment[]): Equipment[] => {
+  const lowerQuery = query.toLowerCase();
+  const categoryMatches = extractCategoryMatches(lowerQuery);
+  const skillKeywords = extractSkillLevelKeywords(lowerQuery);
+
+  const categoriesRequested = Object.entries(categoryMatches)
+    .filter(([_, v]) => v > 0)
+    .map(([c]) => c);
+
+  const hasSkillLevelQuery =
+    skillKeywords.isBeginnerSearch ||
+    skillKeywords.isIntermediateSearch ||
+    skillKeywords.isAdvancedSearch;
+
+  return equipmentData
+    .filter((item) => {
+      const nameMatch = item.name.toLowerCase().includes(lowerQuery);
+      const descMatch = item.description?.toLowerCase().includes(lowerQuery) || false;
+      const queryWords = lowerQuery.split(" ").filter((w) => w.length > 2);
+      const descWordMatch = queryWords.some(
+        (word) =>
+          item.description?.toLowerCase().includes(word) ||
+          item.name.toLowerCase().includes(word)
+      );
+
+      let categoryMatch = true;
+      if (categoriesRequested.length > 0) {
+        categoryMatch = categoriesRequested.includes(item.category);
+      }
+
+      let skillLevelMatch = true;
+      if (hasSkillLevelQuery) {
+        skillLevelMatch = checkSkillLevelMatch(lowerQuery, item.specifications.suitable);
+      }
+
+      const ownerMatch = item.owner?.name?.toLowerCase().includes(lowerQuery) || false;
+      const textMatch = nameMatch || descMatch || descWordMatch || ownerMatch;
+
+      if (categoriesRequested.length > 0 || hasSkillLevelQuery) {
+        return categoryMatch && skillLevelMatch && textMatch;
+      }
+
+      return textMatch;
+    })
+    .sort((a, b) => {
+      const aScore = calculateRelevanceScore(lowerQuery, a, categoryMatches);
+      const bScore = calculateRelevanceScore(lowerQuery, b, categoryMatches);
+      if (aScore !== bScore) return bScore - aScore;
+      return b.rating - a.rating;
+    });
+};
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
+  let query = '';
+  let equipment: Equipment[] = [];
+  let userLocation: UserLocation | undefined;
+
   try {
-    const { query, equipment, userLocation } = await req.json();
+    const body = await req.json();
+    query = body.query;
+    equipment = body.equipment;
+    userLocation = body.userLocation;
     
     if (!query || !equipment || !Array.isArray(equipment)) {
       return new Response(
@@ -268,15 +391,19 @@ RESPOND WITH VALID JSON ONLY in this exact format:
 
   } catch (error) {
     console.error('AI Search error:', error);
-    
+    const fallbackResults = fallbackSearch(query, equipment);
+
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
+        results: fallbackResults,
+        total_analyzed: equipment.length,
+        relevant_found: fallbackResults.length,
+        fallback: true,
         error: 'AI search failed',
-        details: error.message,
-        fallback: true 
+        details: error.message
       }),
       {
-        status: 500,
+        status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     );
