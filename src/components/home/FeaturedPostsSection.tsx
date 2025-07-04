@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { BlogPost } from "@/lib/blog/types";
 
@@ -47,6 +48,15 @@ const FeaturedPostsSection = () => {
                   </h3>
                 </Link>
               ))}
+              <Link to={`/blog`}>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="bg-white/20 dark:bg-zinc-900/50 border-white dark:border-zinc-600 hover:bg-white/30 hover:text-white dark:hover:bg-zinc-500/40 transition-colors"
+                >
+                  View All Posts
+                </Button>
+              </Link>
             </div>
           </div>
           <div className="flex justify-end mt-12 md:mt-0">
