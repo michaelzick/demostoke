@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
+import { Search } from "lucide-react";
 import { Snowflake, Mountains, Waves, Fish, Bicycle } from "@phosphor-icons/react";
 import { useAuth } from "@/helpers";
 import { getVideoUrl } from "@/utils/videoUpload";
 
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -32,11 +35,16 @@ const HeroSection = () => {
     return () => clearInterval(interval);
   }, [backgrounds.length]);
 
-  const handleListGearClick = () => {
-    if (isAuthenticated) {
-      navigate("/list-your-gear");
-    } else {
-      navigate("/auth/signin");
+  const handleSearch = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
     }
   };
 
@@ -76,18 +84,27 @@ const HeroSection = () => {
           <h2 className="text-xl sm:text-3xl mb-8 max-w-2xl mx-auto text-shop">
             Ride what makes you feel alive.
           </h2>
-          <div className="flex flex-wrap gap-4 justify-center mb-8">
-            <Button size="lg" asChild className='bg-primary'>
-              <Link to="/explore">Show Me The Gear</Link>
-            </Button>
-            {/* <Button
-              size="lg"
-              variant="outline"
-              className="bg-white/20 dark:bg-zinc-800/40 border-white dark:border-zinc-700"
-              onClick={handleListGearClick}
-            >
-              List Your Gear
-            </Button> */}
+          <div className="w-full max-w-2xl mx-auto mb-8">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                <Input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="What are you looking for?"
+                  className="pl-10 h-12 text-base bg-white/90 dark:bg-zinc-900/90 border-white/20 dark:border-zinc-700/50 text-foreground"
+                />
+              </div>
+              <Button 
+                size="lg" 
+                onClick={() => handleSearch()}
+                disabled={!searchQuery.trim()}
+                className="bg-primary hover:bg-primary/90 h-12 px-6"
+              >
+                Search
+              </Button>
+            </div>
           </div>
           <div className="flex flex-wrap gap-8 justify-center">
             <Link
