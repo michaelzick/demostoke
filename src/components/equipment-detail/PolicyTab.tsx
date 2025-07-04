@@ -6,16 +6,14 @@ const PolicyTab = () => {
         <div>
           <h3 className="font-medium mb-2">Cancellation Policy</h3>
           <p className="text-sm text-muted-foreground">
-            Full refund if canceled at least 24 hours before the scheduled demo time.
-            50% refund if canceled between 12-24 hours before the demo.
-            No refund for cancellations less than 12 hours before.
+            Cancellations may be subject to the owner's specific terms.
+            Please contact the owner directly.
           </p>
         </div>
         <div>
           <h3 className="font-medium mb-2">Insurance</h3>
           <p className="text-sm text-muted-foreground">
-            Equipment is covered under DemoStoke's insurance policy during the demo period.
-            Renters are responsible for any damage beyond normal wear and tear.
+            Please contact the gear owner to discuss insurance options.
           </p>
         </div>
         <div>
