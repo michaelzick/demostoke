@@ -14,12 +14,40 @@ export const searchWithAI = async (query: string, equipmentData: Equipment[], us
     return equipmentData as AISearchResult[];
   }
 
+  // Auto-detect location need
+  let finalUserLocation = userLocation;
+  const queryLower = query.toLowerCase();
+  const needsLocation = !userLocation && !queryLower.includes('near me') && 
+    !['hawaii', 'california', 'lake tahoe', 'tahoe', 'los angeles', 'san francisco', 'san diego'].some(loc => queryLower.includes(loc));
+
+  // Try to get user location if not provided and search would benefit from it
+  if (needsLocation) {
+    console.log('🌍 Auto-detecting location for better search results...');
+    try {
+      const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, { 
+          timeout: 3000,
+          enableHighAccuracy: false,
+          maximumAge: 300000 // 5 minutes cache
+        });
+      });
+      finalUserLocation = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+      console.log('✅ Auto-detected user location:', finalUserLocation);
+    } catch (locationError) {
+      console.log('📍 Could not auto-detect location:', locationError);
+      // Continue without location - AI will handle this gracefully
+    }
+  }
+
   try {
     const { data, error } = await supabase.functions.invoke('ai-search', {
       body: {
         query: query.trim(),
         equipment: equipmentData,
-        userLocation
+        userLocation: finalUserLocation
       }
     });
 

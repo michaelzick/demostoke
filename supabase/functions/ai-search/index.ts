@@ -74,63 +74,102 @@ serve(async (req) => {
       rating: item.rating
     }));
 
-    // Enhanced location context with radius specification
+    // Comprehensive location detection
+    const locationTerms = [
+      // Hawaii
+      'hawaii', 'hawaiian', 'maui', 'oahu', 'big island', 'kauai', 'molokai', 'lanai', 'honolulu', 'waikiki', 'north shore', 'hilo', 'kona',
+      // California
+      'california', 'ca', 'los angeles', 'la', 'san francisco', 'sf', 'san diego', 'orange county', 'oc', 'malibu', 'huntington beach', 
+      'santa monica', 'venice', 'manhattan beach', 'hermosa beach', 'redondo beach', 'santa barbara', 'carmel', 'monterey', 'big sur', 
+      'santa cruz', 'half moon bay', 'pacifica', 'berkeley', 'oakland', 'san jose', 'sacramento', 'fresno',
+      // Lake Tahoe
+      'lake tahoe', 'tahoe', 'south lake tahoe', 'north lake tahoe', 'truckee', 'heavenly', 'northstar', 'kirkwood',
+      // Oregon/Washington
+      'oregon', 'portland', 'bend', 'mount hood', 'crater lake', 'washington', 'seattle', 'tacoma', 'spokane', 'mount rainier',
+      // Colorado
+      'colorado', 'denver', 'boulder', 'aspen', 'vail', 'telluride', 'breckenridge', 'keystone', 'copper mountain',
+      // Utah
+      'utah', 'salt lake city', 'park city', 'alta', 'snowbird', 'deer valley', 'sundance',
+      // Other major locations
+      'new york', 'ny', 'florida', 'fl', 'texas', 'tx', 'nevada', 'nv', 'arizona', 'az'
+    ];
+
+    // Enhanced surfboard term recognition
+    const surfboardTerms = ['shortboard', 'longboard', 'funboard', 'fish', 'gun', 'step-up', 'groveler', 'hybrid', 'performance board', 'beginner board'];
+    const snowboardTerms = ['snowboard', 'freestyle', 'all-mountain', 'freeride', 'splitboard', 'powder board'];
+    const bikeTerms = ['mountain bike', 'mtb', 'road bike', 'gravel bike', 'fat bike', 'e-bike', 'electric bike'];
+
+    // Detect equipment type from query
+    const queryLower = query.toLowerCase();
+    let equipmentTypeContext = '';
+    
+    if (surfboardTerms.some(term => queryLower.includes(term))) {
+      equipmentTypeContext = 'EQUIPMENT TYPE: User is searching for SURFBOARDS specifically. Only return surfboard results from the surfboards category.';
+    } else if (snowboardTerms.some(term => queryLower.includes(term))) {
+      equipmentTypeContext = 'EQUIPMENT TYPE: User is searching for SNOWBOARDS specifically. Only return snowboard results from the snowboards category.';
+    } else if (bikeTerms.some(term => queryLower.includes(term))) {
+      equipmentTypeContext = 'EQUIPMENT TYPE: User is searching for BIKES specifically. Only return bike results from the mountain-bikes category.';
+    }
+
+    // Location detection and context
+    const mentionedLocation = locationTerms.find(term => queryLower.includes(term));
     let locationContext = 'USER LOCATION: Not provided';
     let locationInstructions = '';
 
     if (userLocation) {
-      locationContext = `USER LOCATION: Latitude ${userLocation.lat}, Longitude ${userLocation.lng}`;
+      locationContext = `USER LOCATION: Exact coordinates - Latitude ${userLocation.lat}, Longitude ${userLocation.lng}`;
       locationInstructions = `
-LOCATION PRIORITY: User's exact location is provided. Prioritize equipment within 30 miles of the user's coordinates. Consider distance as the PRIMARY factor for scoring.`;
-    } else if (query.toLowerCase().includes('near me')) {
+🎯 CRITICAL LOCATION FILTERING: User's precise location provided. Apply STRICT 30-mile radius filtering. Equipment outside this radius should receive score 0.`;
+    } else if (mentionedLocation) {
+      locationContext = `USER LOCATION: "${mentionedLocation}" mentioned in search query`;
       locationInstructions = `
-LOCATION PRIORITY: User searched for "near me" but location unavailable. Try to infer location from other context clues in the query.`;
-    }
-
-    // Check if query contains specific location names
-    const locationTerms = ['los angeles', 'la', 'lake tahoe', 'tahoe', 'san francisco', 'sf', 'san diego', 'orange county', 'oc', 'malibu', 'huntington beach', 'santa monica', 'venice', 'manhattan beach', 'hermosa beach', 'redondo beach', 'santa barbara', 'carmel', 'monterey', 'big sur', 'santa cruz', 'half moon bay', 'pacifica', 'berkeley', 'oakland', 'san jose', 'sacramento', 'fresno'];
-    const mentionedLocation = locationTerms.find(term => query.toLowerCase().includes(term));
-
-    if (mentionedLocation && !userLocation) {
+🎯 CRITICAL LOCATION FILTERING: User specified "${mentionedLocation}" location. ONLY return equipment located in or very near ${mentionedLocation}. Equipment from other states/regions should receive score 0.`;
+    } else if (queryLower.includes('near me')) {
       locationInstructions = `
-LOCATION PRIORITY: User mentioned "${mentionedLocation}" in their search. Prioritize equipment located in or near ${mentionedLocation}. Match against equipment zip codes, addresses, and location descriptions.`;
+🎯 LOCATION PRIORITY: User searched "near me" but no coordinates available. This is a location-based search that cannot be fulfilled properly.`;
+    } else {
+      // Auto-fallback to location-based search for better relevance
+      locationInstructions = `
+🎯 LOCATION AWARENESS: No specific location mentioned. Prefer equipment from major population centers and popular recreation areas.`;
     }
 
     const prompt = `You are an expert outdoor gear search assistant. Analyze the following search query and equipment inventory to determine relevance scores.
 
 SEARCH QUERY: "${query}"
 ${locationContext}${locationInstructions}
+${equipmentTypeContext}
 
 EQUIPMENT INVENTORY:
 ${JSON.stringify(equipmentSummary, null, 2)}
 
-INSTRUCTIONS:
-1. Score each equipment item from 0-100 based on relevance to the search query
-2. Consider these factors in order of importance:
-   - **LOCATION PROXIMITY** (HIGHEST PRIORITY when location is specified)
-     * If user location provided: Prioritize items within 30-mile radius, score based on distance
-     * If specific location mentioned: Match against equipment zip codes and location descriptions
-     * If "near me": Try to infer location context from other query terms
-   - Exact category matching (e.g., "mountain bikes" for mountain-bikes category)
-   - Skill level matching (e.g., "beginner" must match "suitable for beginners")
-   - Name and description content matching (search for keywords in both name and description)
-   - Brand name matching (e.g., "DHD" should match DHD surfboards)
-   - Equipment attributes (size, material, style, powder conditions)
-   - Semantic understanding (e.g., "bikes" = mountain bikes, "boards" = surfboards/snowboards)
+🎯 CRITICAL SCORING RULES (IN ORDER OF PRIORITY):
 
-3. ENHANCED LOCATION MATCHING:
-   - Calculate approximate distance when user coordinates are provided
-   - Match location names against zip codes and equipment addresses
-   - Consider regional preferences (beach gear near coasts, mountain gear near mountains)
-   - For California locations: LA area (90210-90899, 91000-91799), SF Bay (94000-95199), San Diego (92000-92199)
-   - For Lake Tahoe: Nevada side (89400-89499), California side (95700-96199)
+1. **LOCATION FILTERING (TOP PRIORITY)** - This is the most important factor:
+   - If user coordinates provided: Equipment outside 30-mile radius gets score 0
+   - If specific location mentioned: Equipment from different regions gets score 0  
+   - Match location names to addresses, zip codes, and geographic regions
+   - Geographic logic: surfboards near coasts, snowboards near mountains
 
-4. STRICT FILTERING RULES:
-   - If query specifies a category (like "mountain bike"), ONLY return items from that category
-   - If query specifies skill level (like "beginner"), ONLY return items suitable for that level
-   - Items that don't match both category AND skill level (when specified) should get score 0
+2. **EQUIPMENT TYPE MATCHING** - Second priority:
+   - If "shortboard", "longboard", "funboard" mentioned: ONLY return surfboards
+   - If "snowboard" mentioned: ONLY return snowboards
+   - If "mountain bike", "bike", "mtb" mentioned: ONLY return mountain-bikes
+   - Wrong equipment type gets score 0
 
-5. Provide brief reasoning for scores above 25
+3. **SKILL LEVEL MATCHING** - Third priority:
+   - "beginner" searches: ONLY return beginner-suitable equipment
+   - "advanced" searches: ONLY return advanced equipment
+   - Mismatched skill level gets score 0
+
+4. **CONTENT RELEVANCE** - Final consideration:
+   - Name matching, description keywords, brand names
+   - Equipment specifications and attributes
+
+🚫 ABSOLUTE REQUIREMENTS:
+- Equipment outside specified location = score 0
+- Wrong equipment category when specified = score 0  
+- Wrong skill level when specified = score 0
+- Use EXACT equipment IDs from the data, never make up IDs
 
 RESPOND WITH VALID JSON ONLY in this exact format:
 {
