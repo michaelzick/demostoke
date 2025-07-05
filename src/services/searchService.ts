@@ -2,13 +2,13 @@
 import { Equipment } from "@/types";
 import { getEquipmentData } from "./equipment/equipmentDataService";
 import { searchWithAI, fallbackSearch, AISearchResult } from "./equipment/aiSearchService";
-import { getUseAISearchSetting } from "./equipment/appSettingsService";
+import { getUseAISearchPreference } from "./userPreferencesService";
 
 // AI-enhanced search function with location support
 export const searchEquipmentWithNLP = async (query: string, userLocation?: { lat: number; lng: number }): Promise<AISearchResult[]> => {
   console.log(`🔍 Starting AI-enhanced search for query: "${query}"`);
 
-  const useAISearch = await getUseAISearchSetting();
+  const useAISearch = await getUseAISearchPreference();
   
   // Get the appropriate dataset based on global setting
   const equipmentData = await getEquipmentData();
