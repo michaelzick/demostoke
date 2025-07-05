@@ -56,7 +56,24 @@ const SearchResultsPage = () => {
       setIsLoading(true);
       setIsAISearch(true);
       try {
-        const equipmentResults = await searchEquipmentWithNLP(query);
+        // Get user location if query contains "near me"
+        let userLocation;
+        if (query.toLowerCase().includes('near me')) {
+          try {
+            const position = await new Promise<GeolocationPosition>((resolve, reject) => {
+              navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+            });
+            userLocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+            console.log('🌍 User location obtained for "near me" search:', userLocation);
+          } catch (locationError) {
+            console.log('📍 Could not get user location for "near me" search:', locationError);
+          }
+        }
+
+        const equipmentResults = await searchEquipmentWithNLP(query, userLocation);
         setResults(equipmentResults);
       } catch (error) {
         console.error("Search failed:", error);

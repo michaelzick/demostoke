@@ -39,7 +39,7 @@ serve(async (req) => {
   }
 
   try {
-    const { query, equipment } = await req.json();
+    const { query, equipment, userLocation } = await req.json();
     
     if (!query || !equipment || !Array.isArray(equipment)) {
       return new Response(
@@ -74,9 +74,14 @@ serve(async (req) => {
       rating: item.rating
     }));
 
+    const locationContext = userLocation ? 
+      `USER LOCATION: Latitude ${userLocation.lat}, Longitude ${userLocation.lng}` : 
+      'USER LOCATION: Not provided';
+
     const prompt = `You are an expert outdoor gear search assistant. Analyze the following search query and equipment inventory to determine relevance scores.
 
 SEARCH QUERY: "${query}"
+${locationContext}
 
 EQUIPMENT INVENTORY:
 ${JSON.stringify(equipmentSummary, null, 2)}
@@ -84,20 +89,25 @@ ${JSON.stringify(equipmentSummary, null, 2)}
 INSTRUCTIONS:
 1. Score each equipment item from 0-100 based on relevance to the search query
 2. Consider these factors in order of importance:
+   - Location proximity (if user query mentions locations like "Los Angeles", "Lake Tahoe", "near me")
    - Exact category matching (e.g., "mountain bikes" for mountain-bikes category)
    - Skill level matching (e.g., "beginner" must match "suitable for beginners")
    - Name and description content matching (search for keywords in both name and description)
    - Brand name matching (e.g., "DHD" should match DHD surfboards)
-   - Equipment attributes (size, material, style)
+   - Equipment attributes (size, material, style, powder conditions)
    - Semantic understanding (e.g., "bikes" = mountain bikes, "boards" = surfboards/snowboards)
-   - Location relevance if mentioned
 
-3. STRICT FILTERING RULES:
+3. LOCATION MATCHING:
+   - If query contains "near me" and user location is provided, prioritize items geographically closer
+   - If query mentions specific locations (cities, regions), match against equipment zip codes and descriptions
+   - Consider regional gear preferences (e.g., powder boards for mountain areas, longboards for beaches)
+
+4. STRICT FILTERING RULES:
    - If query specifies a category (like "mountain bike"), ONLY return items from that category
    - If query specifies skill level (like "beginner"), ONLY return items suitable for that level
    - Items that don't match both category AND skill level (when specified) should get score 0
 
-4. Provide brief reasoning for scores above 25
+5. Provide brief reasoning for scores above 25
 
 RESPOND WITH VALID JSON ONLY in this exact format:
 {
