@@ -64,6 +64,8 @@ const RealUserProfilePage = () => {
       about: ownProfileData.about,
       phone: ownProfileData.phone,
       address: ownProfileData.address,
+      location_lat: ownProfileData.location_lat,
+      location_lng: ownProfileData.location_lng,
       website: ownProfileData.website, // Include website field
       member_since: new Date().toISOString(),
       created_at: new Date().toISOString(),
