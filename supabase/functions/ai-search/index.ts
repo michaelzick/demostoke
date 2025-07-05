@@ -79,8 +79,8 @@ serve(async (req) => {
       // Hawaii
       'hawaii', 'hawaiian', 'maui', 'oahu', 'big island', 'kauai', 'molokai', 'lanai', 'honolulu', 'waikiki', 'north shore', 'hilo', 'kona',
       // California
-      'california', 'ca', 'los angeles', 'la', 'san francisco', 'sf', 'san diego', 'orange county', 'oc', 'malibu', 'huntington beach', 
-      'santa monica', 'venice', 'manhattan beach', 'hermosa beach', 'redondo beach', 'santa barbara', 'carmel', 'monterey', 'big sur', 
+      'california', 'ca', 'los angeles', 'la', 'san francisco', 'sf', 'san diego', 'orange county', 'oc', 'malibu', 'huntington beach',
+      'santa monica', 'venice', 'manhattan beach', 'hermosa beach', 'redondo beach', 'santa barbara', 'carmel', 'monterey', 'big sur',
       'santa cruz', 'half moon bay', 'pacifica', 'berkeley', 'oakland', 'san jose', 'sacramento', 'fresno',
       // Lake Tahoe
       'lake tahoe', 'tahoe', 'south lake tahoe', 'north lake tahoe', 'truckee', 'heavenly', 'northstar', 'kirkwood',
@@ -102,7 +102,7 @@ serve(async (req) => {
     // Detect equipment type from query
     const queryLower = query.toLowerCase();
     let equipmentTypeContext = '';
-    
+
     if (surfboardTerms.some(term => queryLower.includes(term))) {
       equipmentTypeContext = 'EQUIPMENT TYPE: User is searching for SURFBOARDS specifically. Only return surfboard results from the surfboards category.';
     } else if (snowboardTerms.some(term => queryLower.includes(term))) {
@@ -146,7 +146,7 @@ ${JSON.stringify(equipmentSummary, null, 2)}
 
 1. **LOCATION FILTERING (TOP PRIORITY)** - This is the most important factor:
    - If user coordinates provided: Equipment outside 30-mile radius gets score 0
-   - If specific location mentioned: Equipment from different regions gets score 0  
+   - If specific location mentioned: Equipment from different regions gets score 0
    - Match location names to addresses, zip codes, and geographic regions
    - Geographic logic: surfboards near coasts, snowboards near mountains
 
@@ -167,7 +167,7 @@ ${JSON.stringify(equipmentSummary, null, 2)}
 
 🚫 ABSOLUTE REQUIREMENTS:
 - Equipment outside specified location = score 0
-- Wrong equipment category when specified = score 0  
+- Wrong equipment category when specified = score 0
 - Wrong skill level when specified = score 0
 - Use EXACT equipment IDs from the data, never make up IDs
 
@@ -189,7 +189,7 @@ RESPOND WITH VALID JSON ONLY in this exact format:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-nano',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',
