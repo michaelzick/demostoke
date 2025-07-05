@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useSearchParams } from "react-router-dom";
-import { searchEquipmentWithNLP, getEquipmentData } from "@/services/searchService";
+import { searchEquipmentWithNLP, searchEquipmentWithNLPWithSummary, getEquipmentData } from "@/services/searchService";
 import { AISearchResult } from "@/services/equipment/aiSearchService";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import EquipmentCard from "@/components/EquipmentCard";
 import MapComponent from "@/components/MapComponent";
 import MapLegend from "@/components/map/MapLegend";
@@ -28,6 +29,8 @@ const SearchResultsPage = () => {
   const [sortBy, setSortBy] = useState<string>("relevance");
   const [searchInput, setSearchInput] = useState(query);
   const [isAISearch, setIsAISearch] = useState(false);
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const { latitude, longitude } = useGeolocation();
   const { toast } = useToast();
   const { showMockData } = useMockData();
 
@@ -56,8 +59,10 @@ const SearchResultsPage = () => {
       setIsLoading(true);
       setIsAISearch(true);
       try {
-        const equipmentResults = await searchEquipmentWithNLP(query);
+        const loc = latitude != null && longitude != null ? { lat: latitude, lng: longitude } : undefined;
+        const { results: equipmentResults, summary } = await searchEquipmentWithNLPWithSummary(query, loc);
         setResults(equipmentResults);
+        setAiSummary(summary || null);
       } catch (error) {
         console.error("Search failed:", error);
         toast({
@@ -66,13 +71,14 @@ const SearchResultsPage = () => {
           variant: "destructive",
         });
         setResults([]);
+        setAiSummary(null);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchResults();
-  }, [query, toast]);
+  }, [query, toast, latitude, longitude]);
 
   // Get equipment with dynamic distances
   const { equipment: equipmentWithDynamicDistances, isLocationBased } = useEquipmentWithDynamicDistance(results);
@@ -200,6 +206,12 @@ const SearchResultsPage = () => {
                 <p className="text-sm">
                   Found {filteredResults.length} {filteredResults.length === 1 ? "item" : "items"}
                   {/* {showMockData ? " (mock data)" : " (real data)"} */}
+                </p>
+              )}
+              {aiSummary && !isLoading && (
+                <p className="text-sm mt-2 flex items-start gap-1">
+                  <Sparkles className="h-4 w-4 text-primary mt-0.5" />
+                  {aiSummary}
                 </p>
               )}
             </div>

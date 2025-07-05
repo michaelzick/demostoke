@@ -1,7 +1,7 @@
 
 import { Equipment } from "@/types";
 import { getEquipmentData } from "./equipment/equipmentDataService";
-import { searchWithAI, AISearchResult } from "./equipment/aiSearchService";
+import { searchWithAI, AISearchResult, AISearchResponse } from "./equipment/aiSearchService";
 
 // AI-enhanced search function
 export const searchEquipmentWithNLP = async (query: string): Promise<AISearchResult[]> => {
@@ -17,10 +17,28 @@ export const searchEquipmentWithNLP = async (query: string): Promise<AISearchRes
   }
   
   // Use AI-powered search
-  const results = await searchWithAI(query, equipmentData);
+  const { results } = await searchWithAI(query, equipmentData);
   console.log(`✅ AI search completed. Found ${results.length} results`);
-  
+
   return results;
+};
+
+export const searchEquipmentWithNLPWithSummary = async (
+  query: string,
+  userLocation?: { lat: number; lng: number }
+): Promise<AISearchResponse> => {
+  console.log(`🔍 Starting AI-enhanced search for query: "${query}" with summary`);
+
+  const equipmentData = await getEquipmentData();
+  if (equipmentData.length === 0) {
+    console.log('⚠️ No equipment data available for search');
+    return { results: [], summary: '' };
+  }
+
+  const response = await searchWithAI(query, equipmentData, userLocation);
+  console.log(`✅ AI search completed. Found ${response.results.length} results`);
+
+  return response;
 };
 
 // Export the equipment data fetcher for use in other components

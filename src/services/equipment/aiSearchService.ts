@@ -7,46 +7,47 @@ export interface AISearchResult extends Equipment {
   ai_reasoning?: string;
 }
 
-export const searchWithAI = async (query: string, equipmentData: Equipment[]): Promise<AISearchResult[]> => {
+export interface AISearchResponse {
+  results: AISearchResult[];
+  summary?: string;
+}
+
+export const searchWithAI = async (
+  query: string,
+  equipmentData: Equipment[],
+  userLocation?: { lat: number; lng: number }
+): Promise<AISearchResponse> => {
   console.log(`🤖 Starting AI search for: "${query}"`);
 
   if (!query.trim() || equipmentData.length === 0) {
-    return equipmentData as AISearchResult[];
+    return { results: equipmentData as AISearchResult[] };
   }
 
   try {
-    console.log('equipmentData', equipmentData);
-    return fallbackSearch(query, equipmentData);
+    const { data, error } = await supabase.functions.invoke("ai-search", {
+      body: {
+        query: query.trim(),
+        equipment: equipmentData,
+        userLocation,
+      },
+    });
+
+    if (error || !data) {
+      console.error("❌ AI search error:", error);
+      return { results: fallbackSearch(query, equipmentData) };
+    }
+
+    if (data.fallback) {
+      console.log("🔄 AI search failed, using fallback");
+      return { results: fallbackSearch(query, equipmentData) };
+    }
+
+    console.log(`✅ AI search successful: ${data.results?.length || 0} results`);
+    return { results: data.results || [], summary: data.summary };
   } catch (error) {
-    console.error('❌ Fallback search error:', error);
+    console.error("❌ AI search exception:", error);
+    return { results: fallbackSearch(query, equipmentData) };
   }
-
-  // >>>>>>>>>>>> COMMENTING OUT AI SEARCH FUNCTIONALITY FOR NOW <<<<<<<<<<<<
-  // try {
-  //   const { data, error } = await supabase.functions.invoke('ai-search', {
-  //     body: {
-  //       query: query.trim(),
-  //       equipment: equipmentData
-  //     }
-  //   });
-
-  //   if (error) {
-  //     console.error('❌ AI search error:', error);
-  //     return fallbackSearch(query, equipmentData);
-  //   }
-
-  //   if (data?.fallback) {
-  //     console.log('🔄 AI search failed, using fallback');
-  //     return fallbackSearch(query, equipmentData);
-  //   }
-
-  //   console.log(`✅ AI search successful: ${data?.results?.length || 0} results`);
-  //   return data?.results || [];
-
-  // } catch (error) {
-  //   console.error('❌ AI search exception:', error);
-  //   return fallbackSearch(query, equipmentData);
-  // }
 };
 
 // Fallback to the original search logic if AI fails
