@@ -155,10 +155,21 @@ RESPOND WITH VALID JSON ONLY in this exact format:
     // Parse AI response
     let searchResults: SearchAnalysis[];
     try {
-      const parsedResponse = JSON.parse(aiContent);
+      // Handle markdown-wrapped JSON responses
+      let jsonContent = aiContent.trim();
+      if (jsonContent.startsWith('```json') && jsonContent.endsWith('```')) {
+        // Extract JSON from markdown code blocks
+        jsonContent = jsonContent.slice(7, -3).trim(); // Remove ```json and ```
+      } else if (jsonContent.startsWith('```') && jsonContent.endsWith('```')) {
+        // Handle generic code blocks
+        jsonContent = jsonContent.slice(3, -3).trim();
+      }
+      
+      const parsedResponse = JSON.parse(jsonContent);
       searchResults = parsedResponse.results || [];
     } catch (parseError) {
       console.error('Failed to parse AI response:', parseError);
+      console.error('Raw AI content:', aiContent);
       // Fallback to empty results if AI response is malformed
       searchResults = [];
     }
