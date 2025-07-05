@@ -369,24 +369,24 @@ export type Database = {
           created_at: string | null
           id: string
           show_mock_data: boolean | null
-          use_ai_search: boolean | null
           updated_at: string | null
+          use_ai_search: boolean
           user_id: string | null
         }
         Insert: {
           created_at?: string | null
           id?: string
           show_mock_data?: boolean | null
-          use_ai_search?: boolean | null
           updated_at?: string | null
+          use_ai_search?: boolean
           user_id?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
           show_mock_data?: boolean | null
-          use_ai_search?: boolean | null
           updated_at?: string | null
+          use_ai_search?: boolean
           user_id?: string | null
         }
         Relationships: []
