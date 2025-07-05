@@ -50,8 +50,8 @@ const AdminPage = () => {
         </TabsList>
 
         <TabsContent value="users" className="space-y-6">
-          <UserManagementSection />
           <ManualUserCreationSection />
+          <UserManagementSection />
         </TabsContent>
 
         <TabsContent value="content" className="space-y-6">

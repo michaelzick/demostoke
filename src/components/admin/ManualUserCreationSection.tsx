@@ -8,16 +8,15 @@ import UserCreationFormActions from "./UserCreationFormActions";
 
 const ManualUserCreationSection = () => {
   const { user } = useAuth();
-  const { 
-    formData, 
-    isCreating, 
-    isFormValid, 
+  const {
+    formData,
+    isCreating,
+    isFormValid,
     captchaToken,
     shouldResetCaptcha,
-    handleInputChange, 
-    handleCaptchaVerify, 
+    handleInputChange,
+    handleCaptchaVerify,
     createUser,
-    resetCaptcha
   } = useManualUserCreation();
 
   const handleCreateUser = async (e: React.FormEvent) => {
@@ -40,19 +39,19 @@ const ManualUserCreationSection = () => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleCreateUser} className="space-y-4">
-          <UserBasicInfoFields 
+          <UserBasicInfoFields
             formData={formData}
             isCreating={isCreating}
             onInputChange={handleInputChange}
           />
 
-          <UserContactFields 
+          <UserContactFields
             formData={formData}
             isCreating={isCreating}
             onInputChange={handleInputChange}
           />
 
-          <UserCreationFormActions 
+          <UserCreationFormActions
             isCreating={isCreating}
             isFormValid={isFormValid}
             onSubmit={() => createUser()}
