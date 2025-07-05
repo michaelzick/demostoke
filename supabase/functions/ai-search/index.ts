@@ -74,14 +74,32 @@ serve(async (req) => {
       rating: item.rating
     }));
 
-    const locationContext = userLocation ? 
-      `USER LOCATION: Latitude ${userLocation.lat}, Longitude ${userLocation.lng}` : 
-      'USER LOCATION: Not provided';
+    // Enhanced location context with radius specification
+    let locationContext = 'USER LOCATION: Not provided';
+    let locationInstructions = '';
+    
+    if (userLocation) {
+      locationContext = `USER LOCATION: Latitude ${userLocation.lat}, Longitude ${userLocation.lng}`;
+      locationInstructions = `
+LOCATION PRIORITY: User's exact location is provided. Prioritize equipment within 30 miles of the user's coordinates. Consider distance as the PRIMARY factor for scoring.`;
+    } else if (query.toLowerCase().includes('near me')) {
+      locationInstructions = `
+LOCATION PRIORITY: User searched for "near me" but location unavailable. Try to infer location from other context clues in the query.`;
+    }
+    
+    // Check if query contains specific location names
+    const locationTerms = ['los angeles', 'la', 'lake tahoe', 'tahoe', 'san francisco', 'sf', 'san diego', 'orange county', 'oc', 'malibu', 'huntington beach', 'santa monica', 'venice', 'manhattan beach', 'hermosa beach', 'redondo beach', 'santa barbara', 'carmel', 'monterey', 'big sur', 'santa cruz', 'half moon bay', 'pacifica', 'berkeley', 'oakland', 'san jose', 'sacramento', 'fresno'];
+    const mentionedLocation = locationTerms.find(term => query.toLowerCase().includes(term));
+    
+    if (mentionedLocation && !userLocation) {
+      locationInstructions = `
+LOCATION PRIORITY: User mentioned "${mentionedLocation}" in their search. Prioritize equipment located in or near ${mentionedLocation}. Match against equipment zip codes, addresses, and location descriptions.`;
+    }
 
     const prompt = `You are an expert outdoor gear search assistant. Analyze the following search query and equipment inventory to determine relevance scores.
 
 SEARCH QUERY: "${query}"
-${locationContext}
+${locationContext}${locationInstructions}
 
 EQUIPMENT INVENTORY:
 ${JSON.stringify(equipmentSummary, null, 2)}
@@ -89,7 +107,10 @@ ${JSON.stringify(equipmentSummary, null, 2)}
 INSTRUCTIONS:
 1. Score each equipment item from 0-100 based on relevance to the search query
 2. Consider these factors in order of importance:
-   - Location proximity (if user query mentions locations like "Los Angeles", "Lake Tahoe", "near me")
+   - **LOCATION PROXIMITY** (HIGHEST PRIORITY when location is specified)
+     * If user location provided: Prioritize items within 30-mile radius, score based on distance
+     * If specific location mentioned: Match against equipment zip codes and location descriptions
+     * If "near me": Try to infer location context from other query terms
    - Exact category matching (e.g., "mountain bikes" for mountain-bikes category)
    - Skill level matching (e.g., "beginner" must match "suitable for beginners")
    - Name and description content matching (search for keywords in both name and description)
@@ -97,10 +118,12 @@ INSTRUCTIONS:
    - Equipment attributes (size, material, style, powder conditions)
    - Semantic understanding (e.g., "bikes" = mountain bikes, "boards" = surfboards/snowboards)
 
-3. LOCATION MATCHING:
-   - If query contains "near me" and user location is provided, prioritize items geographically closer
-   - If query mentions specific locations (cities, regions), match against equipment zip codes and descriptions
-   - Consider regional gear preferences (e.g., powder boards for mountain areas, longboards for beaches)
+3. ENHANCED LOCATION MATCHING:
+   - Calculate approximate distance when user coordinates are provided
+   - Match location names against zip codes and equipment addresses
+   - Consider regional preferences (beach gear near coasts, mountain gear near mountains)
+   - For California locations: LA area (90210-90899, 91000-91799), SF Bay (94000-95199), San Diego (92000-92199)
+   - For Lake Tahoe: Nevada side (89400-89499), California side (95700-96199)
 
 4. STRICT FILTERING RULES:
    - If query specifies a category (like "mountain bike"), ONLY return items from that category
