@@ -1,27 +1,27 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { useSearchPreference, useUpdateSearchPreference } from "@/hooks/useSearchPreference";
+import { useAppSettings, useUpdateAppSettings } from "@/hooks/useAppSettings";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 
 const GlobalSearchSettings = () => {
-  const { data: preference } = useSearchPreference();
-  const updatePreference = useUpdateSearchPreference();
+  const { data: appSettings } = useAppSettings();
+  const updateAppSettings = useUpdateAppSettings();
   const { toast } = useToast();
 
-  const [enabled, setEnabled] = useState(true);
+  const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
-    if (preference) {
-      setEnabled(preference.use_ai_search);
+    if (appSettings) {
+      setEnabled(appSettings.use_ai_search);
     }
-  }, [preference]);
+  }, [appSettings]);
 
   const handleToggle = async (checked: boolean) => {
     try {
       setEnabled(checked);
-      await updatePreference.mutateAsync(checked);
+      await updateAppSettings.mutateAsync({ useAISearch: checked });
       toast({
         title: "Settings Updated",
         description: `AI search is now ${checked ? 'enabled' : 'disabled'} for all users.`,
@@ -60,7 +60,7 @@ const GlobalSearchSettings = () => {
             id="ai-search-toggle"
             checked={enabled}
             onCheckedChange={handleToggle}
-            disabled={updatePreference.isPending}
+            disabled={updateAppSettings.isPending}
           />
         </div>
       </CardContent>

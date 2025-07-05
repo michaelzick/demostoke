@@ -1,12 +1,38 @@
 import { supabase } from "@/integrations/supabase/client";
 
-// Fetch the AI search preference for the current user
+// Fetch the AI search preference with proper hierarchy:
+// 1. Check global app settings first - if false, return false (admin override)
+// 2. If global setting is true, check user preference
+// 3. Default to false (non-AI search) for safety
 export const getUseAISearchPreference = async (): Promise<boolean> => {
   try {
+    // First, check global app setting
+    const { data: globalSetting, error: globalError } = await supabase
+      .from('app_settings')
+      .select('setting_value')
+      .eq('setting_key', 'use_ai_search')
+      .single();
+
+    if (globalError) {
+      console.error('❌ Error fetching global app setting:', globalError);
+      return false; // Default to non-AI search if error
+    }
+
+    const globalAIEnabled = globalSetting?.setting_value === true;
+    
+    // If global setting is false, return false regardless of user preference
+    if (!globalAIEnabled) {
+      console.log('🔒 Global AI search is disabled by admin');
+      return false;
+    }
+
+    // Global setting allows AI search, now check user preference
     const { data: { user } } = await supabase.auth.getUser();
     const userId = user?.id;
+    
     if (!userId) {
-      return true; // default when not logged in
+      // For logged-out users, use global setting
+      return globalAIEnabled;
     }
 
     const { data, error } = await supabase
@@ -17,13 +43,15 @@ export const getUseAISearchPreference = async (): Promise<boolean> => {
 
     if (error) {
       console.error('❌ Error fetching user preference:', error);
-      return true;
+      // If user preference doesn't exist, default to false for safety
+      return false;
     }
 
-    return data?.use_ai_search ?? true;
+    // Return user preference (defaults to false if null/undefined)
+    return data?.use_ai_search ?? false;
   } catch (error) {
-    console.error('❌ Exception fetching user preference:', error);
-    return true;
+    console.error('❌ Exception fetching AI search preference:', error);
+    return false; // Default to non-AI search on any error
   }
 };
 

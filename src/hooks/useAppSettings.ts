@@ -18,13 +18,13 @@ export const useAppSettings = () => {
         console.log('🔄 Using default fallback values');
         return {
           show_mock_data: true,
-          use_ai_search: true
+          use_ai_search: false
         };
       }
 
       const settings = {
         show_mock_data: true, // default
-        use_ai_search: true
+        use_ai_search: false
       };
 
       data?.forEach(setting => {
@@ -56,7 +56,7 @@ export const useUpdateAppSettings = () => {
 
       console.log('🔧 Admin updating app settings:', settings);
 
-      const updates = [] as Promise<any>[];
+      const updates = [];
 
       if (settings.showMockData !== undefined) {
         updates.push(
