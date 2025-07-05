@@ -3,14 +3,24 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useAppSettings, useUpdateAppSettings } from "@/hooks/useAppSettings";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
 
 const GlobalSearchSettings = () => {
   const { data: appSettings } = useAppSettings();
   const updateSettings = useUpdateAppSettings();
   const { toast } = useToast();
 
+  const [enabled, setEnabled] = useState(true);
+
+  useEffect(() => {
+    if (appSettings) {
+      setEnabled(appSettings.use_ai_search);
+    }
+  }, [appSettings]);
+
   const handleToggle = async (checked: boolean) => {
     try {
+      setEnabled(checked);
       await updateSettings.mutateAsync({ useAISearch: checked });
       toast({
         title: "Settings Updated",
@@ -23,6 +33,8 @@ const GlobalSearchSettings = () => {
         description: "Failed to update settings. Please try again.",
         variant: "destructive"
       });
+      // revert toggle on error
+      setEnabled(prev => !prev);
     }
   };
 
@@ -46,7 +58,7 @@ const GlobalSearchSettings = () => {
           </div>
           <Switch
             id="ai-search-toggle"
-            checked={appSettings?.use_ai_search ?? true}
+            checked={enabled}
             onCheckedChange={handleToggle}
             disabled={updateSettings.isPending}
           />

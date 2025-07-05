@@ -16,8 +16,9 @@ export const useAppSettings = () => {
       if (error) {
         console.error('❌ Error fetching app settings:', error);
         console.log('🔄 Using default fallback values');
-        return { 
-          show_mock_data: true
+        return {
+          show_mock_data: true,
+          use_ai_search: true
         };
       }
 
