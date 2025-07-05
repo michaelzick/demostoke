@@ -38,7 +38,8 @@ const HeroSection = () => {
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      const search = new URLSearchParams({ q: searchQuery.trim() }).toString();
+      navigate(`/search?${search}`);
     }
   };
 

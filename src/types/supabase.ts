@@ -66,6 +66,7 @@ export interface Database {
           id: string;
           user_id: string;
           show_mock_data: boolean;
+          use_ai_search: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -73,6 +74,7 @@ export interface Database {
           id?: string;
           user_id: string;
           show_mock_data?: boolean;
+          use_ai_search?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -80,6 +82,7 @@ export interface Database {
           id?: string;
           user_id?: string;
           show_mock_data?: boolean;
+          use_ai_search?: boolean;
           created_at?: string;
           updated_at?: string;
         };

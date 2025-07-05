@@ -35,8 +35,9 @@ const SearchDialog = ({ isOpen, onClose }: SearchDialogProps) => {
     setIsLoading(true);
 
     try {
-      // Perform the search
-      navigate(`/search?q=${encodeURIComponent(query)}`);
+      // Perform the search using consistent query param formatting
+      const search = new URLSearchParams({ q: query }).toString();
+      navigate(`/search?${search}`);
       onClose();
     } catch (error) {
       console.error("Search error:", error);
