@@ -328,7 +328,7 @@ RESPOND WITH VALID JSON ONLY in this exact format:
     });
 
     // Filter and sort equipment based on AI analysis
-    const filteredEquipment = equipment
+    let filteredEquipment = equipment
       .map((item: Equipment) => {
         const aiResult = scoreMap.get(item.id);
         return {
@@ -337,7 +337,7 @@ RESPOND WITH VALID JSON ONLY in this exact format:
           ai_reasoning: aiResult?.reasoning || ''
         };
       })
-      .filter((item: any) => item.ai_relevance_score > 25) // Only include items with reasonable relevance
+      .filter((item: any) => item.ai_relevance_score > 10) // Only include items with reasonable relevance
       .sort((a: any, b: any) => {
         // Primary sort: AI relevance score
         if (b.ai_relevance_score !== a.ai_relevance_score) {
@@ -346,6 +346,15 @@ RESPOND WITH VALID JSON ONLY in this exact format:
         // Secondary sort: rating
         return b.rating - a.rating;
       });
+
+    if (filteredEquipment.length === 0) {
+      console.log('⚠️ AI returned no relevant results, falling back');
+      filteredEquipment = fallbackSearch(query, equipment).map(item => ({
+        ...item,
+        ai_relevance_score: 0,
+        ai_reasoning: ''
+      }));
+    }
 
     console.log(`✅ AI Search complete: ${filteredEquipment.length} relevant items found`);
 
