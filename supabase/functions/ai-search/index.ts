@@ -113,7 +113,7 @@ RESPOND WITH VALID JSON ONLY in this exact format:
 {
   "results": [
     {
-      "equipment_id": "item_id",
+      "equipment_id": "use_the_exact_id_field_from_equipment_data_NOT_the_name",
       "relevance_score": 85,
       "reasoning": "Perfect match for beginner mountain bike - category and skill level both match"
     }
