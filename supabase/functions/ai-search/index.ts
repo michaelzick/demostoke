@@ -40,7 +40,7 @@ serve(async (req) => {
 
   try {
     const { query, equipment, userLocation } = await req.json();
-    
+
     if (!query || !equipment || !Array.isArray(equipment)) {
       return new Response(
         JSON.stringify({ error: 'Invalid request format' }),
@@ -77,7 +77,7 @@ serve(async (req) => {
     // Enhanced location context with radius specification
     let locationContext = 'USER LOCATION: Not provided';
     let locationInstructions = '';
-    
+
     if (userLocation) {
       locationContext = `USER LOCATION: Latitude ${userLocation.lat}, Longitude ${userLocation.lng}`;
       locationInstructions = `
@@ -86,11 +86,11 @@ LOCATION PRIORITY: User's exact location is provided. Prioritize equipment withi
       locationInstructions = `
 LOCATION PRIORITY: User searched for "near me" but location unavailable. Try to infer location from other context clues in the query.`;
     }
-    
+
     // Check if query contains specific location names
     const locationTerms = ['los angeles', 'la', 'lake tahoe', 'tahoe', 'san francisco', 'sf', 'san diego', 'orange county', 'oc', 'malibu', 'huntington beach', 'santa monica', 'venice', 'manhattan beach', 'hermosa beach', 'redondo beach', 'santa barbara', 'carmel', 'monterey', 'big sur', 'santa cruz', 'half moon bay', 'pacifica', 'berkeley', 'oakland', 'san jose', 'sacramento', 'fresno'];
     const mentionedLocation = locationTerms.find(term => query.toLowerCase().includes(term));
-    
+
     if (mentionedLocation && !userLocation) {
       locationInstructions = `
 LOCATION PRIORITY: User mentioned "${mentionedLocation}" in their search. Prioritize equipment located in or near ${mentionedLocation}. Match against equipment zip codes, addresses, and location descriptions.`;
@@ -154,7 +154,9 @@ RESPOND WITH VALID JSON ONLY in this exact format:
         messages: [
           {
             role: 'system',
-            content: 'You are a search relevance expert. Always respond with valid JSON only. Pay special attention to category and skill level matching.'
+            content: 'You are a search relevance expert. Always respond with valid JSON only. \
+            Pay special attention to category, skill level matching, and anything related to \
+            location such as proximity, regional preferences, and specific location mentions.'
           },
           {
             role: 'user',
@@ -187,7 +189,7 @@ RESPOND WITH VALID JSON ONLY in this exact format:
         // Handle generic code blocks
         jsonContent = jsonContent.slice(3, -3).trim();
       }
-      
+
       const parsedResponse = JSON.parse(jsonContent);
       searchResults = parsedResponse.results || [];
     } catch (parseError) {
@@ -198,7 +200,7 @@ RESPOND WITH VALID JSON ONLY in this exact format:
     }
 
     // Create a map for quick lookup
-    const scoreMap = new Map<string, { score: number; reasoning: string }>();
+    const scoreMap = new Map<string, { score: number; reasoning: string; }>();
     searchResults.forEach(result => {
       scoreMap.set(result.equipment_id, {
         score: result.relevance_score,
@@ -241,12 +243,12 @@ RESPOND WITH VALID JSON ONLY in this exact format:
 
   } catch (error) {
     console.error('AI Search error:', error);
-    
+
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: 'AI search failed',
         details: error.message,
-        fallback: true 
+        fallback: true
       }),
       {
         status: 500,
