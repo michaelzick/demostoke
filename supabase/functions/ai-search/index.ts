@@ -22,7 +22,7 @@ interface Equipment {
     size?: string;
   };
   location: {
-    zip: string;
+    address: string;
   };
 }
 
@@ -69,7 +69,7 @@ serve(async (req) => {
       suitable: item.specifications?.suitable || 'All levels',
       material: item.specifications?.material || '',
       size: item.specifications?.size || '',
-      location: item.location?.zip || '',
+      location: item.location?.address || '',
       price: item.price_per_day,
       rating: item.rating
     }));
@@ -150,13 +150,14 @@ RESPOND WITH VALID JSON ONLY in this exact format:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4.1-nano',
         messages: [
           {
             role: 'system',
             content: 'You are a search relevance expert. Always respond with valid JSON only. \
-            Pay special attention to category, skill level matching, and anything related to \
-            location such as proximity, regional preferences, and specific location mentions.'
+            Pay special attention to location such as proximity, regional preferences, and specific \
+            location mentions. Also consider category, skill level matching, and anything related to \
+            equipment attributes. Do not show any results that do not match the location, if provided.'
           },
           {
             role: 'user',
