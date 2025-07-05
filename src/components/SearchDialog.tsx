@@ -63,7 +63,7 @@ const SearchDialog = ({ isOpen, onClose }: SearchDialogProps) => {
       <div className="flex items-center border-b px-3 w-full">
         <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
         <CommandInput
-          placeholder="What do you want to ride?"
+          placeholder="What can I help you find?"
           value={query}
           onValueChange={setQuery}
           onKeyDown={handleKeyDown}

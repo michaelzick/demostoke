@@ -93,14 +93,13 @@ const HeroSection = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="What are you looking for?"
+                  placeholder="What can I help you find?"
                   className="pl-10 h-12 text-base bg-white/90 dark:bg-zinc-900/90 border-white/20 dark:border-zinc-700/50 text-foreground"
                 />
               </div>
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 onClick={() => handleSearch()}
-                disabled={!searchQuery.trim()}
                 className="bg-primary hover:bg-primary/90 h-12 px-6"
               >
                 Search
