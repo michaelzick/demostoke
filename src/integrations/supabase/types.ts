@@ -369,6 +369,7 @@ export type Database = {
           created_at: string | null
           id: string
           show_mock_data: boolean | null
+          use_ai_search: boolean | null
           updated_at: string | null
           user_id: string | null
         }
@@ -376,6 +377,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           show_mock_data?: boolean | null
+          use_ai_search?: boolean | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -383,6 +385,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           show_mock_data?: boolean | null
+          use_ai_search?: boolean | null
           updated_at?: string | null
           user_id?: string | null
         }

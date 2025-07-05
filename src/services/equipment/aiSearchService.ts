@@ -71,7 +71,7 @@ export const searchWithAI = async (query: string, equipmentData: Equipment[], us
 };
 
 // Fallback to the original search logic if AI fails
-const fallbackSearch = (query: string, equipmentData: Equipment[]): AISearchResult[] => {
+export const fallbackSearch = (query: string, equipmentData: Equipment[]): AISearchResult[] => {
   console.log('🔄 Using fallback search logic');
 
   const lowerQuery = query.toLowerCase();
