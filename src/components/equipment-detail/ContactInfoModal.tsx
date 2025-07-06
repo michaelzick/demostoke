@@ -22,7 +22,7 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
         <DialogHeader>
           <DialogTitle>Contact {displayName}</DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-4">
           {hasContactInfo ? (
             <div className="space-y-3">
@@ -36,13 +36,14 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
                       rel="noopener noreferrer"
                       className="text-sm text-muted-foreground hover:text-primary underline"
                       data-tracking={trackingData}
+                      id={trackingData}
                     >
                       {profile.address}
                     </a>
                   </div>
                 </div>
               )}
-              
+
               {profile?.phone && (
                 <div className="flex items-start gap-3">
                   <PhoneIcon className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
@@ -51,13 +52,14 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
                       href={`tel:${profile.phone}`}
                       className="text-sm text-muted-foreground hover:text-primary underline"
                       data-tracking={trackingData}
+                      id={trackingData}
                     >
                       {profile.phone}
                     </a>
                   </div>
                 </div>
               )}
-              
+
               {profile?.website && (
                 <div className="flex items-start gap-3">
                   <GlobeIcon className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
@@ -68,6 +70,7 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
                       rel="noopener noreferrer"
                       className="text-sm text-muted-foreground hover:text-primary underline"
                       data-tracking={trackingData}
+                      id={trackingData}
                     >
                       {profile.website}
                     </a>

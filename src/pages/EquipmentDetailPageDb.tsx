@@ -121,7 +121,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
                   <CarouselContent>
                     {images.map((imageUrl, index) => (
                       <CarouselItem key={index}>
-                        <div 
+                        <div
                           className="cursor-pointer hover:opacity-90 transition-opacity"
                           onClick={() => handleImageClick(index)}
                         >
@@ -138,7 +138,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
                   <CarouselNext className="right-2" />
                 </Carousel>
               ) : (
-                <div 
+                <div
                   className="cursor-pointer hover:opacity-90 transition-opacity"
                   onClick={() => handleImageClick(0)}
                 >
@@ -200,14 +200,20 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
         <div className="space-y-6">
           {/* Booking Card */}
           <Card className="p-6" ref={bookingCardRef}>
-            <h3 className="text-lg font-semibold mb-4">The ability to book here is coming soon.
-              Please contact <button 
-                onClick={() => setShowContactModal(true)} 
-                className="text-primary underline underline-offset-4 hover:underline hover:text-primary/80 transition-colors bg-transparent border-none p-0 font-inherit cursor-pointer"
-                data-tracking={trackingData}
-              >
-                {equipment.owner.name}
-              </button> to book.</h3>
+            <h3 className="text-lg font-semibold mb-4">The ability to book here is coming soon. Please contact {equipment.owner.name}.</h3>
+            <button
+              onClick={() => setShowContactModal(true)}
+              className="text-primary
+              underline underline-offset-4
+              hover:underline hover:text-primary/80
+              transition-colors bg-transparent
+              border-none p-0 font-inherit
+              cursor-pointer"
+              data-tracking={trackingData}
+              id={trackingData}
+            >
+              {equipment.owner.name}
+            </button>
           </Card>
           {/* Similar Equipment */}
           <SimilarEquipment similarEquipment={similarEquipment} />

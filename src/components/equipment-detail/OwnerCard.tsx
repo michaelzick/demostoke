@@ -72,15 +72,17 @@ const OwnerCard = ({ owner, trackingData }: OwnerCardProps) => {
             Member since {memberSince}
           </p>
         </div>
-        <Button variant="outline" className="w-full" asChild>
-          <Link to={profileLinkPath} data-tracking={trackingData}
-            id="view-profile-link">View Profile</Link>
+        <Button variant="outline" className="w-full view-profile-link" asChild>
+          <Link to={profileLinkPath} data-tracking={trackingData} id={trackingData}>
+            View Profile
+          </Link>
         </Button>
         <Button
           variant="outline"
           className="w-full mt-4"
           onClick={() => setShowContactModal(true)}
           data-tracking={trackingData}
+          id={trackingData}
         >
           <MessageSquare className="h-4 w-4 mr-2" />
           Contact Owner
