@@ -58,11 +58,11 @@ Slater ended the chat by inviting Beato to surf his wave pool—a reminder that 
     category: "stories that stoke",
     publishedAt: "2025-07-10",
     readTime: 4,
-    videoEmbed: `<iframe width="560" height="315" src="https://www.youtube.com/embed/ndDacdpg2xA?si=XAqOwTUTgikDH0Bi" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`,
+    videoEmbed: `<iframe src="https://www.youtube.com/embed/ndDacdpg2xA?si=XAqOwTUTgikDH0Bi" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="w-full h-full"></iframe>`,
     heroImage: "https://img.youtube.com/vi/ndDacdpg2xA/maxresdefault.jpg",
     thumbnail: "https://img.youtube.com/vi/ndDacdpg2xA/hqdefault.jpg",
     tags: ["kelly slater", "surfing", "music", "stories that stoke"],
-    author: "Michael Zick",
-    authorId: "98f914a6-2a72-455d-aa4b-41b081f4014d"
+    author: "Generative AI",
+    authorId: "generative-ai"
   }
 ];
