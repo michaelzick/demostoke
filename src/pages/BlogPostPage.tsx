@@ -2,7 +2,8 @@ import { useParams, Link } from "react-router-dom";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Clock, User, Calendar, Share2, ArrowUp } from "lucide-react";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { Clock, User, Calendar, Share2, ArrowUp } from "lucide-react";
 import { blogPosts } from "@/lib/blog";
 import { useEffect, useState } from "react";
 import { useRelatedGear } from "@/hooks/useRelatedGear";
@@ -95,14 +96,6 @@ const BlogPostPage = () => {
       {/* Hero Image */}
       <div className="relative h-96 bg-cover bg-center" style={{ backgroundImage: `url(${post.heroImage})` }}>
         <div className="absolute inset-0 bg-black/40" />
-        <div className="absolute top-8 left-8">
-          <Button asChild>
-            <Link to="/blog">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Blog
-            </Link>
-          </Button>
-        </div>
       </div>
 
       {/* Article Content */}
@@ -111,15 +104,24 @@ const BlogPostPage = () => {
           <article>
             {/* Article Header */}
             <header className="mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <Link to={`/blog?category=${encodeURIComponent(post.category)}`}> 
-                  <Badge className={`${getCategoryColor(post.category)} transition-colors cursor-pointer`}>
-                    {post.category}
-                  </Badge>
-                </Link>
-                <div className="flex items-center text-sm text-muted-foreground">
-                  <Calendar className="h-3 w-3 mr-1" />
-                  {formatDate(post.publishedAt)}
+              <div className="flex items-center justify-between mb-4">
+                <Breadcrumbs
+                  items={[
+                    { label: "Blog", path: "/blog" },
+                    { label: post.category, path: `/blog?category=${encodeURIComponent(post.category)}` },
+                    { label: post.title, path: `/blog/${post.id}` },
+                  ]}
+                />
+                <div className="flex items-center gap-2">
+                  <Link to={`/blog?category=${encodeURIComponent(post.category)}`}>
+                    <Badge className={`${getCategoryColor(post.category)} transition-colors cursor-pointer`}>
+                      {post.category}
+                    </Badge>
+                  </Link>
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Calendar className="h-3 w-3 mr-1" />
+                    {formatDate(post.publishedAt)}
+                  </div>
                 </div>
               </div>
 
