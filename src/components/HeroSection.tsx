@@ -101,6 +101,7 @@ const HeroSection = () => {
                 size="lg"
                 onClick={() => handleSearch()}
                 className="bg-primary hover:bg-primary/90 h-12 px-6"
+                disabled={!searchQuery.trim()}
               >
                 Search
               </Button>
