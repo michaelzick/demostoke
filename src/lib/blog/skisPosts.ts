@@ -124,7 +124,7 @@ Remember, consistency is more important than perfection. Regular waxing with bas
     readTime: 9,
     heroImage: "https://shop-raze-cat.com/cdn/shop/articles/warum-ski-wachsen-und-welches-wachs-sollte-ich-benutzen-raze-cat.jpg?v=1712086056",
     thumbnail: "https://shop-raze-cat.com/cdn/shop/articles/warum-ski-wachsen-und-welches-wachs-sollte-ich-benutzen-raze-cat.jpg?v=1712086056",
-    tags: ["skis", "maintenance", "waxing", "diy", "performance", "guides"],
+    tags: ["skis", "maintenance", "waxing", "diy", "guides"],
     author: "Generative AI",
     authorId: "generative-ai"
   },
