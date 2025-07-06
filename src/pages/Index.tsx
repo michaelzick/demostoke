@@ -3,8 +3,8 @@ import usePageMetadata from "@/hooks/usePageMetadata";
 
 const Index = () => {
   usePageMetadata({
-    title: 'DemoStoke',
-    description: 'Ride what makes you feel alive.'
+    title: 'DemoStoke - Ride What Makes You Feel Alive',
+    description: 'DemoStoke is the go-to platform to find, try, and buy the gear you eventually fall in love with.'
   });
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">

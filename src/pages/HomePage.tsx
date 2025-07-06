@@ -28,7 +28,7 @@ import HCaptcha from "@/components/HCaptcha";
 const HomePage = () => {
   usePageMetadata({
     title: 'DemoStoke - Ride What Makes You Feel Alive',
-    description: 'Discover and demo outdoor gear from local riders on DemoStoke.'
+    description: 'DemoStoke is the go-to platform to find, try, and buy the gear you eventually fall in love with.'
   });
   // Scroll to top on page load
   useEffect(() => {
