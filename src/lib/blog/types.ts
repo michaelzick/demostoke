@@ -11,5 +11,6 @@ export interface BlogPost {
   readTime: number;
   heroImage: string;
   thumbnail: string;
+  videoEmbed?: string;
   tags: string[];
 }
