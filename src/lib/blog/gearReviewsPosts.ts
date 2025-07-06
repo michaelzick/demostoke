@@ -192,7 +192,7 @@ The Pyzel Gremlin is a standout choice for surfers who want one board that can h
   },
   {
     id: "firewire-sci-fi-2-surfboard-review",
-    title: "Firewire Sci-Fi 2.0 Surfboard Review: Space-Age Performance for Modern Surfers",
+    title: "Firewire Sci-Fi 2.0 Surfboard Review",
     excerpt: "A look at why the Firewire Sci-Fi 2.0 is a favorite for progressive surfers seeking speed, versatility, and innovation.",
     content: `The Firewire Sci-Fi 2.0, designed by Daniel "Tomo" Thomson in collaboration with Kelly Slater, is frequently praised for its futuristic outline and advanced construction. The board uses Firewire’s Helium construction, combining lightweight EPS foam with parabolic carbon rails for a lively, responsive feel.
 
