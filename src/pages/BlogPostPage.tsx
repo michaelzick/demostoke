@@ -119,7 +119,7 @@ const BlogPostPage = () => {
                     { label: capitalizeWords(post.category), path: `/blog?category=${encodeURIComponent(post.category)}` },
                     { label: post.title, path: `/blog/${post.id}` },
                   ]}
-                  lastItemClassName="inline-block max-w-[470px] truncate"
+                  lastItemClassName="inline-block lg:max-w-[470px] lg:truncate"
                 />
                 <div className="flex items-center gap-2">
                   <Link to={`/blog?category=${encodeURIComponent(post.category)}`}>
