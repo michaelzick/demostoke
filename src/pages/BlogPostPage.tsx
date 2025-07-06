@@ -107,7 +107,9 @@ const BlogPostPage = () => {
           <article>
             {/* Article Header */}
             <header className="mb-8">
-              <div className="flex items-center justify-between mb-4">
+              <div
+                className="flex flex-col items-start gap-2 mb-4 lg:flex-row lg:items-center lg:justify-between"
+              >
                 <Breadcrumbs
                   items={[
                     { label: "Blog", path: "/blog" },
