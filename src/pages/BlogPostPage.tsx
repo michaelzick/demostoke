@@ -91,6 +91,9 @@ const BlogPostPage = () => {
     return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800 hover:bg-gray-200";
   };
 
+  const capitalizeWords = (str: string) =>
+    str.replace(/\b\w/g, (c) => c.toUpperCase());
+
   return (
     <div className="min-h-screen">
       {/* Hero Image */}
@@ -108,7 +111,7 @@ const BlogPostPage = () => {
                 <Breadcrumbs
                   items={[
                     { label: "Blog", path: "/blog" },
-                    { label: post.category, path: `/blog?category=${encodeURIComponent(post.category)}` },
+                    { label: capitalizeWords(post.category), path: `/blog?category=${encodeURIComponent(post.category)}` },
                     { label: post.title, path: `/blog/${post.id}` },
                   ]}
                 />
