@@ -56,12 +56,12 @@ Beyond technique, Slater spoke about the joy of staying curious. From experiment
 Slater ended the chat by inviting Beato to surf his wave pool—a reminder that the best stories are born from shared experiences.
 `,
     category: "stories that stoke",
-    publishedAt: "2025-07-10",
+    publishedAt: "2025-07-06",
     readTime: 4,
     videoEmbed: `<iframe src="https://www.youtube.com/embed/ndDacdpg2xA?si=XAqOwTUTgikDH0Bi" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="w-full h-full"></iframe>`,
     heroImage: "https://img.youtube.com/vi/ndDacdpg2xA/maxresdefault.jpg",
     thumbnail: "https://img.youtube.com/vi/ndDacdpg2xA/hqdefault.jpg",
-    tags: ["kelly slater", "surfing", "music", "stories that stoke"],
+    tags: ["kelly slater", "surfing", "surfboards", "music", "stories that stoke"],
     author: "Generative AI",
     authorId: "generative-ai"
   }
