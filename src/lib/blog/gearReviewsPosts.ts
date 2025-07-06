@@ -141,7 +141,7 @@ The Firewire Seaside is a standout for surfers who want a board that combines cl
     readTime: 7,
     heroImage: "https://www.warmwinds.com/web/image/5141-09f89d26/robs-seaside.jpg",
     thumbnail: "https://www.warmwinds.com/web/image/5142-fe25b03c/rob-with-seaside.jpg",
-    tags: ["gear reviews", "surfboards", "firewire", "seaside", "rob machado", "review"],
+    tags: ["gear reviews", "firewire", "seaside", "rob machado", "review"],
     author: 'Generative AI',
     authorId: 'generative-ai',
   },
@@ -192,7 +192,7 @@ The Pyzel Gremlin is a standout choice for surfers who want one board that can h
   },
   {
     id: "firewire-sci-fi-2-surfboard-review",
-    title: "Firewire Sci-Fi 2.0 Surfboard Review",
+    title: "Firewire Sci-Fi 2.0 Surfboard Review: Space-Age Performance for Modern Surfers",
     excerpt: "A look at why the Firewire Sci-Fi 2.0 is a favorite for progressive surfers seeking speed, versatility, and innovation.",
     content: `The Firewire Sci-Fi 2.0, designed by Daniel "Tomo" Thomson in collaboration with Kelly Slater, is frequently praised for its futuristic outline and advanced construction. The board uses Firewire’s Helium construction, combining lightweight EPS foam with parabolic carbon rails for a lively, responsive feel.
 
@@ -234,9 +234,9 @@ The Firewire Sci-Fi 2.0 is a standout for surfers who want to blend futuristic d
     readTime: 7,
     heroImage: "https://surfd.com/wp-content/uploads/2017/01/sci-fi-black-white.jpg",
     thumbnail: "https://images.squarespace-cdn.com/content/v1/5cab83fed7819e643e146c9b/1699999900037-NP11JSF8T78LRTJQEHF1/_KAI5089.JPG?format=1000w",
-    tags: ["gear reviews", "surfboards", "firewire", "sci-fi 2.0", "tomo", "kelly slater", "review"],
-    author: 'Generative AI',
-    authorId: 'generative-ai',
+    tags: ["gear reviews", "firewire", "sci-fi 2.0", "tomo", "kelly slater", "review"],
+    author: "Generative AI",
+    authorId: "generative-ai",
   },
   {
     id: "tom-wallisch-pro-skis-2025-review",
@@ -286,7 +286,7 @@ The Line Tom Wallisch Pro 2025 is a standout for freestyle skiers who want a ski
     heroImage: "https://www.backcountry.com/images/items/1200/LIN/LINH05R/ONECOL_D4.jpg",
     thumbnail: "https://m.media-amazon.com/images/I/51s++VpbszL._UF1000,1000_QL80_.jpg",
     tags: ["gear reviews", "skis", "tom wallisch", "park", "freestyle"],
-    author: 'Generative AI',
-    authorId: 'generative-ai',
+    author: "Generative AI",
+    authorId: "generative-ai",
   }
 ];

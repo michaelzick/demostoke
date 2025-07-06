@@ -177,7 +177,7 @@ Start with a shape that's forgiving and appropriate for your level, then experim
     readTime: 11,
     heroImage: "https://lushpalm.com/wp-content/uploads/2018/07/beginner-surfboards-13.jpg",
     thumbnail: "https://lushpalm.com/wp-content/uploads/2018/07/beginner-surfboards-13.jpg",
-    tags: ["surfboards", "shapes", "guides", "design", "performance"],
+    tags: ["surfboards", "shapes", "guides", "surfing"],
     author: "Generative AI",
     authorId: "generative-ai"
   },
@@ -438,13 +438,13 @@ The best surfers combine technical forecast reading with intuitive understanding
 - Placing your hands too far forward, causing the board to stall.
 
 Practice the pop-up on land before heading into the water, and remember that fluidity comes with repetition. With time, you’ll move from wobbly first attempts to confident takeoffs on any wave.`,
-    category: 'surfboards',
-    publishedAt: '2025-07-02',
+    category: "surfboards",
+    publishedAt: "2025-07-02",
     readTime: 5,
-    heroImage: 'https://live.staticflickr.com/65535/52323073938_344a33aeef_b.jpg',
-    thumbnail: 'https://live.staticflickr.com/65535/52323073938_344a33aeef_b.jpg',
-    tags: ['guides', 'surfing', 'pop up', 'technique', 'beginner', 'surfboards'],
-    author: 'Generative AI',
-    authorId: 'generative-ai'
+    heroImage: "https://live.staticflickr.com/65535/52323073938_344a33aeef_b.jpg",
+    thumbnail: "https://live.staticflickr.com/65535/52323073938_344a33aeef_b.jpg",
+    tags: ["guides", "surfing", "pop up", "technique", "beginner"],
+    author: "Generative AI",
+    authorId: "generative-ai"
   }
 ];

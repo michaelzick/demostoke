@@ -37,7 +37,7 @@ When you get that gear that feels like it was made for you, the whole experience
     readTime: 2.5,
     heroImage: "https://www.theinertia.com/wp-content/uploads/2020/07/SurfCare1200.jpg",
     thumbnail: "https://www.theinertia.com/wp-content/uploads/2020/07/SurfCare1200.jpg",
-    tags: ["surfing", "snowboarding", "demo gear", "stories that stoke", "soft-top"],
+    tags: ["surfing", "snowboarding", "surfing", "stories that stoke", "soft-top", "snowboards",],
     author: "Michael Zick",
     authorId: "98f914a6-2a72-455d-aa4b-41b081f4014d",
   },
@@ -61,7 +61,7 @@ Slater ended the chat by inviting Beato to surf his wave pool—a reminder that 
     videoEmbed: `<iframe src="https://www.youtube.com/embed/ndDacdpg2xA?si=XAqOwTUTgikDH0Bi" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="w-full h-full"></iframe>`,
     heroImage: "https://img.youtube.com/vi/ndDacdpg2xA/maxresdefault.jpg",
     thumbnail: "https://img.youtube.com/vi/ndDacdpg2xA/hqdefault.jpg",
-    tags: ["kelly slater", "surfing", "surfboards", "music", "stories that stoke", "firewire"],
+    tags: ["kelly slater", "surfing", "music", "stories that stoke", "firewire"],
     author: "Generative AI",
     authorId: "generative-ai"
   }
