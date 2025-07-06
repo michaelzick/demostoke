@@ -2,6 +2,23 @@
 import { Equipment } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
 
+// Simple map of singular/plural synonyms for gear types
+const SEARCH_SYNONYMS: { [key: string]: string[] } = {
+  surfboards: ["surfboard"],
+  surfboard: ["surfboards"],
+  snowboards: ["snowboard"],
+  snowboard: ["snowboards"],
+  skis: ["ski"],
+  ski: ["skis"],
+  "mountain-bikes": ["mountain-bike"],
+  "mountain-bike": ["mountain-bikes"],
+};
+
+const expandSearchVariants = (term: string): string[] => {
+  const variants = SEARCH_SYNONYMS[term] || [];
+  return [term, ...variants];
+};
+
 export interface AISearchResult extends Equipment {
   ai_relevance_score?: number;
   ai_reasoning?: string;
@@ -75,6 +92,7 @@ export const fallbackSearch = (query: string, equipmentData: Equipment[]): AISea
   console.log('🔄 Using fallback search logic');
 
   const lowerQuery = query.toLowerCase();
+  const queryVariants = expandSearchVariants(lowerQuery);
 
   // Extract search criteria
   const categoryMatches = extractCategoryMatches(lowerQuery);
@@ -90,15 +108,17 @@ export const fallbackSearch = (query: string, equipmentData: Equipment[]): AISea
     skillLevelKeywords.isAdvancedSearch;
 
   return equipmentData.filter(item => {
-    // Enhanced text matching including description
-    const nameMatch = item.name.toLowerCase().includes(lowerQuery);
-    const descriptionMatch = item.description?.toLowerCase().includes(lowerQuery) || false;
+    // Enhanced text matching including description with synonym support
+    const itemName = item.name.toLowerCase();
+    const itemDescription = item.description?.toLowerCase() || "";
+    const nameMatch = queryVariants.some(v => itemName.includes(v));
+    const descriptionMatch = queryVariants.some(v => itemDescription.includes(v));
 
     // Check for individual words in description for better matching
     const queryWords = lowerQuery.split(' ').filter(word => word.length > 2); // Skip short words
-    const descriptionWordMatch = queryWords.some(word =>
-      item.description?.toLowerCase().includes(word) ||
-      item.name.toLowerCase().includes(word)
+    const wordVariants = queryWords.flatMap(w => expandSearchVariants(w));
+    const descriptionWordMatch = wordVariants.some(word =>
+      itemDescription.includes(word) || itemName.includes(word)
     );
 
     // Category matching - if categories were specified, item must match one of them
@@ -114,7 +134,8 @@ export const fallbackSearch = (query: string, equipmentData: Equipment[]): AISea
     }
 
     // Owner name matching for brand searches
-    const ownerNameMatch = item.owner?.name?.toLowerCase().includes(lowerQuery) || false;
+    const ownerName = item.owner?.name?.toLowerCase() || "";
+    const ownerNameMatch = queryVariants.some(v => ownerName.includes(v));
 
     // Combined text matching
     const textMatch = nameMatch || descriptionMatch || descriptionWordMatch || ownerNameMatch;
@@ -144,16 +165,19 @@ export const fallbackSearch = (query: string, equipmentData: Equipment[]): AISea
 // Calculate relevance score for better sorting
 const calculateRelevanceScore = (query: string, item: Equipment, categoryMatches: { [key: string]: number; }): number => {
   let score = 0;
+  const queryVariants = expandSearchVariants(query.toLowerCase());
 
   // Exact name match gets highest score
-  if (item.name.toLowerCase() === query.toLowerCase()) {
+  const itemName = item.name.toLowerCase();
+  if (queryVariants.some(v => itemName === v)) {
     score += 10;
-  } else if (item.name.toLowerCase().includes(query.toLowerCase())) {
+  } else if (queryVariants.some(v => itemName.includes(v))) {
     score += 5;
   }
 
   // Description matches
-  if (item.description?.toLowerCase().includes(query.toLowerCase())) {
+  const itemDescription = item.description?.toLowerCase() || "";
+  if (queryVariants.some(v => itemDescription.includes(v))) {
     score += 3;
   }
 
@@ -166,7 +190,8 @@ const calculateRelevanceScore = (query: string, item: Equipment, categoryMatches
   }
 
   // Owner/brand matches
-  if (item.owner?.name?.toLowerCase().includes(query.toLowerCase())) {
+  const ownerName = item.owner?.name?.toLowerCase() || "";
+  if (queryVariants.some(v => ownerName.includes(v))) {
     score += 2;
   }
 
