@@ -27,9 +27,6 @@ const LocationTab = ({ equipment }: LocationTabProps) => {
           interactive={false}
         />
       </div>
-      <p className="text-sm text-muted-foreground">
-        Equipment location - exact address provided after booking confirmation.
-      </p>
     </div>
   );
 };
