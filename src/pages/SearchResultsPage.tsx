@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useMockData } from "@/hooks/useMockData";
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
+import { parseQueryForLocation } from "@/utils/queryParsing";
 
 const SearchResultsPage = () => {
   usePageMetadata({
@@ -25,7 +26,10 @@ const SearchResultsPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [viewMode, setViewMode] = useState<"map" | "list">("list");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<string>("relevance");
+  const parsedQuery = parseQueryForLocation(query);
+  const [sortBy, setSortBy] = useState<string>(
+    parsedQuery.location || parsedQuery.nearMe ? "relevance" : "distance"
+  );
   const [searchInput, setSearchInput] = useState(query);
   const [isAISearch, setIsAISearch] = useState(false);
   const { toast } = useToast();
@@ -56,9 +60,11 @@ const SearchResultsPage = () => {
       setIsLoading(true);
       setIsAISearch(true);
       try {
-        // Get user location if query contains "near me"
+        // Get user location if query contains "near me" or lacks an explicit location
         let userLocation;
-        if (query.toLowerCase().includes('near me')) {
+        const needsLocation =
+          query.toLowerCase().includes('near me') || !/\bin\s+/i.test(query);
+        if (needsLocation) {
           try {
             const position = await new Promise<GeolocationPosition>((resolve, reject) => {
               navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
@@ -67,9 +73,9 @@ const SearchResultsPage = () => {
               lat: position.coords.latitude,
               lng: position.coords.longitude
             };
-            console.log('🌍 User location obtained for "near me" search:', userLocation);
+            console.log('🌍 User location obtained for search:', userLocation);
           } catch (locationError) {
-            console.log('📍 Could not get user location for "near me" search:', locationError);
+            console.log('📍 Could not get user location:', locationError);
           }
         }
 
@@ -90,6 +96,12 @@ const SearchResultsPage = () => {
 
     fetchResults();
   }, [query, toast]);
+
+  // Update default sorting when query changes
+  useEffect(() => {
+    const parsed = parseQueryForLocation(query);
+    setSortBy(parsed.location || parsed.nearMe ? "relevance" : "distance");
+  }, [query]);
 
   // Get equipment with dynamic distances
   const { equipment: equipmentWithDynamicDistances, isLocationBased } = useEquipmentWithDynamicDistance(results);
