@@ -364,33 +364,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_preferences: {
-        Row: {
-          created_at: string | null
-          id: string
-          show_mock_data: boolean | null
-          updated_at: string | null
-          use_ai_search: boolean
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          show_mock_data?: boolean | null
-          updated_at?: string | null
-          use_ai_search?: boolean
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          show_mock_data?: boolean | null
-          updated_at?: string | null
-          use_ai_search?: boolean
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       user_roles: {
         Row: {
           assigned_at: string | null
