@@ -39,44 +39,45 @@ const OwnerCard = ({ owner, trackingData }: OwnerCardProps) => {
         owner={owner}
         trackingData={trackingData}
       />
-      
+
       <div className="p-6">
-      <div className="flex items-center gap-4 mb-4">
-        <Avatar className="h-12 w-12 flex-shrink-0">
-          <AvatarImage src={displayImage} alt={displayName} />
-          <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
-        </Avatar>
-        <div className="min-w-0">
-          <h3 className="font-medium truncate">{displayName}</h3>
-          <div className="flex items-center text-sm">
-            {stats && stats.totalReviews > 0 ? (
-              <>
-                <StarIcon className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1 flex-shrink-0" />
-                <span>{displayRating}</span>
-              </>
-            ) : (
-              <span className="text-muted-foreground">No reviews yet</span>
-            )}
-            {owner.personality && (
-              <span className="ml-2 text-xs px-2 py-0.5 bg-slate-100 rounded-full truncate owner-personality">
-                {owner.personality}
-              </span>
-            )}
+        <div className="flex items-center gap-4 mb-4">
+          <Avatar className="h-12 w-12 flex-shrink-0">
+            <AvatarImage src={displayImage} alt={displayName} />
+            <AvatarFallback>{displayName.charAt(0)}</AvatarFallback>
+          </Avatar>
+          <div className="min-w-0">
+            <h3 className="font-medium truncate">{displayName}</h3>
+            <div className="flex items-center text-sm">
+              {stats && stats.totalReviews > 0 ? (
+                <>
+                  <StarIcon className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1 flex-shrink-0" />
+                  <span>{displayRating}</span>
+                </>
+              ) : (
+                <span className="text-muted-foreground">No reviews yet</span>
+              )}
+              {owner.personality && (
+                <span className="ml-2 text-xs px-2 py-0.5 bg-slate-100 rounded-full truncate owner-personality">
+                  {owner.personality}
+                </span>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-      <div className="text-sm mb-4">
-        {/* ADD THIS IN WHEN IT'S WORKING */}
-        {/* <p className="mb-2">Response rate: {displayResponseRate}%</p> */}
-        <p className="text-muted-foreground">
-          Member since {memberSince}
-        </p>
-      </div>
+        <div className="text-sm mb-4">
+          {/* ADD THIS IN WHEN IT'S WORKING */}
+          {/* <p className="mb-2">Response rate: {displayResponseRate}%</p> */}
+          <p className="text-muted-foreground">
+            Member since {memberSince}
+          </p>
+        </div>
         <Button variant="outline" className="w-full" asChild>
-          <Link to={profileLinkPath} data-tracking={trackingData}>View Profile</Link>
+          <Link to={profileLinkPath} data-tracking={trackingData}
+            id="view-profile-link">View Profile</Link>
         </Button>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           className="w-full mt-4"
           onClick={() => setShowContactModal(true)}
           data-tracking={trackingData}
