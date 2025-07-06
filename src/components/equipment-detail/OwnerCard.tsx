@@ -6,12 +6,16 @@ import { StarIcon, MessageSquare } from "lucide-react";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useUserStats } from "@/hooks/useUserStats";
 import { GearOwner } from "@/types";
+import ContactInfoModal from "./ContactInfoModal";
+import { useState } from "react";
 
 interface OwnerCardProps {
   owner: GearOwner;
+  trackingData?: string;
 }
 
-const OwnerCard = ({ owner }: OwnerCardProps) => {
+const OwnerCard = ({ owner, trackingData }: OwnerCardProps) => {
+  const [showContactModal, setShowContactModal] = useState(false);
   const { data: profile } = useUserProfile(owner.id);
   const { data: stats } = useUserStats(owner.id);
 
@@ -28,7 +32,15 @@ const OwnerCard = ({ owner }: OwnerCardProps) => {
   const memberSince = profile?.member_since ? new Date(profile.member_since).getFullYear() : owner.memberSince;
 
   return (
-    <div className="p-6">
+    <>
+      <ContactInfoModal
+        isOpen={showContactModal}
+        onClose={() => setShowContactModal(false)}
+        owner={owner}
+        trackingData={trackingData}
+      />
+      
+      <div className="p-6">
       <div className="flex items-center gap-4 mb-4">
         <Avatar className="h-12 w-12 flex-shrink-0">
           <AvatarImage src={displayImage} alt={displayName} />
@@ -60,14 +72,20 @@ const OwnerCard = ({ owner }: OwnerCardProps) => {
           Member since {memberSince}
         </p>
       </div>
-      <Button variant="outline" className="w-full" asChild>
-        <Link to={profileLinkPath}>View Profile</Link>
-      </Button>
-      <Button variant="outline" className="w-full mt-4">
-        <MessageSquare className="h-4 w-4 mr-2" />
-        Contact Owner
-      </Button>
-    </div>
+        <Button variant="outline" className="w-full" asChild>
+          <Link to={profileLinkPath} data-tracking={trackingData}>View Profile</Link>
+        </Button>
+        <Button 
+          variant="outline" 
+          className="w-full mt-4"
+          onClick={() => setShowContactModal(true)}
+          data-tracking={trackingData}
+        >
+          <MessageSquare className="h-4 w-4 mr-2" />
+          Contact Owner
+        </Button>
+      </div>
+    </>
   );
 };
 

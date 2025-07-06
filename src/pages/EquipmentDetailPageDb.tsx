@@ -13,6 +13,7 @@ import PolicyTab from "@/components/equipment-detail/PolicyTab";
 import OwnerCard from "@/components/equipment-detail/OwnerCard";
 import SimilarEquipment from "@/components/equipment-detail/SimilarEquipment";
 import GearImageModal from "@/components/equipment-detail/GearImageModal";
+import ContactInfoModal from "@/components/equipment-detail/ContactInfoModal";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { getCategoryDisplayName } from "@/helpers";
 import { Equipment } from "@/types";
@@ -41,6 +42,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
 }) => {
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [showContactModal, setShowContactModal] = useState(false);
 
   // Handle both single image_url and multiple images array - ensure we always have an array
   const images = equipment.images && equipment.images.length > 0
@@ -56,6 +58,9 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
     setSelectedImageIndex(index);
     setShowImageModal(true);
   };
+
+  // Create tracking data for analytics
+  const trackingData = `${equipment.owner.name} - ${equipment.name}`;
 
   return (
     <div className="container px-4 md:px-6 py-8">
@@ -74,6 +79,14 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
         images={images}
         initialIndex={selectedImageIndex}
         equipmentName={equipment.name}
+      />
+
+      {/* Contact Info Modal */}
+      <ContactInfoModal
+        isOpen={showContactModal}
+        onClose={() => setShowContactModal(false)}
+        owner={equipment.owner}
+        trackingData={trackingData}
       />
 
       {/* Waiver Form Modal */}
@@ -180,7 +193,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
           </Tabs>
           {/* Owner Info */}
           <Card>
-            <OwnerCard owner={equipment.owner} />
+            <OwnerCard owner={equipment.owner} trackingData={trackingData} />
           </Card>
         </div>
         {/* Sidebar */}
@@ -188,7 +201,13 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
           {/* Booking Card */}
           <Card className="p-6" ref={bookingCardRef}>
             <h3 className="text-lg font-semibold mb-4">The ability to book here is coming soon.
-              Please contact <a href={`/user-profile/${equipment.owner.id}`} className="text-primary underline underline-offset-4 hover:underline hover:text-primary/80 transition-colors">{equipment.owner.name}</a> to book.</h3>
+              Please contact <button 
+                onClick={() => setShowContactModal(true)} 
+                className="text-primary underline underline-offset-4 hover:underline hover:text-primary/80 transition-colors bg-transparent border-none p-0 font-inherit cursor-pointer"
+                data-tracking={trackingData}
+              >
+                {equipment.owner.name}
+              </button> to book.</h3>
           </Card>
           {/* Similar Equipment */}
           <SimilarEquipment similarEquipment={similarEquipment} />
