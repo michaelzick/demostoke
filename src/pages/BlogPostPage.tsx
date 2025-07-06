@@ -112,7 +112,7 @@ const BlogPostPage = () => {
             {/* Article Header */}
             <header className="mb-8">
               <div className="flex items-center gap-2 mb-4">
-                <Link to={`/blog?category=${encodeURIComponent(post.category)}`}>
+                <Link to={`/blog?category=${encodeURIComponent(post.category)}`}> 
                   <Badge className={`${getCategoryColor(post.category)} transition-colors cursor-pointer`}>
                     {post.category}
                   </Badge>
@@ -154,6 +154,15 @@ const BlogPostPage = () => {
                 </Button>
               </div>
             </header>
+
+            {post.videoEmbed && (
+              <div className="mb-8">
+                <div
+                  className="aspect-video w-full"
+                  dangerouslySetInnerHTML={{ __html: post.videoEmbed }}
+                />
+              </div>
+            )}
 
             {/* Article Body */}
             <div className="prose prose-lg max-w-none mb-8">

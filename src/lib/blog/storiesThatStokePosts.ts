@@ -39,6 +39,30 @@ When you get that gear that feels like it was made for you, the whole experience
     thumbnail: "https://www.theinertia.com/wp-content/uploads/2020/07/SurfCare1200.jpg",
     tags: ["surfing", "snowboarding", "demo gear", "stories that stoke", "soft-top"],
     author: "Michael Zick",
-    authorId: "98f914a6-2a72-455d-aa4b-41b081f4014d"
+    authorId: "98f914a6-2a72-455d-aa4b-41b081f4014d",
+  },
+  {
+    id: "kelly-slater-on-music-and-surfing",
+    title: "Kelly Slater on Music, Surfing and the Power of Flow",
+    excerpt: "Highlights from Kelly Slater's conversation with Rick Beato about how music and surfing intersect and why staying curious keeps him stoked.",
+    content: `Rick Beato recently sat down with 11-time world surf champion Kelly Slater to explore how a life spent chasing waves blends with a passion for music.
+
+Slater recalled singing for relatives as a kid and learning guitar alongside friends like Rob Machado and Jack Johnson. Despite never taking formal lessons, he said songwriting became a creative outlet much like finding the rhythm of a wave. Working with producer T-Bone Burnett in the 1990s pushed him to refine his vocal chops and approach recording the same way he approaches surfing—by trusting feel over perfection.
+
+The two discussed how every wave has a cadence that dictates your movements, similar to how a melody suggests certain chords. Slater sees both pursuits as exercises in timing, balance and flow. He also shared stories about building artificial waves and teaching beginners, noting that understanding body mechanics is key whether you're strumming a guitar or dropping into a barrel.
+
+Beyond technique, Slater spoke about the joy of staying curious. From experimenting with different surfboard designs to jamming with friends on stage, he believes cross-training your mind and body leads to breakthroughs. It's a philosophy that has kept him competing into his fifties and still excited to chase the next swell.
+
+Slater ended the chat by inviting Beato to surf his wave pool—a reminder that the best stories are born from shared experiences.
+`,
+    category: "stories that stoke",
+    publishedAt: "2025-07-10",
+    readTime: 4,
+    videoEmbed: `<iframe src="https://www.youtube.com/embed/ndDacdpg2xA?si=XAqOwTUTgikDH0Bi" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="w-full h-full"></iframe>`,
+    heroImage: "https://img.youtube.com/vi/ndDacdpg2xA/maxresdefault.jpg",
+    thumbnail: "https://img.youtube.com/vi/ndDacdpg2xA/hqdefault.jpg",
+    tags: ["kelly slater", "surfing", "music", "stories that stoke"],
+    author: "Generative AI",
+    authorId: "generative-ai"
   }
 ];
