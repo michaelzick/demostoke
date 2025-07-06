@@ -121,11 +121,11 @@ const SearchResultsPage = () => {
   // Add debug logging for distance sorting
   useEffect(() => {
     if (sortBy === "distance") {
-      console.log('Sorting by distance. First 5 items:', 
-        sortedResults.slice(0, 5).map(item => ({ 
-          name: item.name, 
+      console.log('Sorting by distance. First 5 items:',
+        sortedResults.slice(0, 5).map(item => ({
+          name: item.name,
           distance: item.distance,
-          category: item.category 
+          category: item.category
         }))
       );
     }
@@ -199,7 +199,7 @@ const SearchResultsPage = () => {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 className="pl-10"
-                placeholder="Search using natural language..."
+                placeholder="What can I help you find?"
               />
             </div>
             <Button type="submit" disabled={isLoading || !searchInput.trim()}>
