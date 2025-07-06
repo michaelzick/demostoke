@@ -79,7 +79,7 @@ const HeroSection = () => {
       <div className="absolute inset-0 bg-black bg-opacity-40" />
       <div className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 text-white">
         <div className="max-w-3xl text-center">
-          <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 text-primary" style={{ fontFamily: 'Tahoma, sans-serif' }}>
+          <h1 className="text-6xl sm:text-8xl md:text-9xl font-bold mb-4 text-primary" style={{ fontFamily: 'Tahoma, sans-serif' }}>
             DemoStoke
           </h1>
           <h2 className="text-xl sm:text-3xl mb-8 max-w-2xl mx-auto text-shop">
