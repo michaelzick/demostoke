@@ -45,6 +45,25 @@ function handleClick(event: MouseEvent) {
   }
 }
 
-document.addEventListener('click', handleClick, true);
+function isAmplitudeReady(): boolean {
+  return !!window.amplitude &&
+    typeof window.amplitude.getInstance === 'function';
+}
+
+function registerClickListener() {
+  document.addEventListener('click', handleClick, true);
+}
+
+if (isAmplitudeReady()) {
+  registerClickListener();
+} else {
+  const start = Date.now();
+  const interval = setInterval(() => {
+    if (isAmplitudeReady() || Date.now() - start > 5000) {
+      clearInterval(interval);
+      registerClickListener();
+    }
+  }, 100);
+}
 
 export {}; // Ensures this file is treated as a module
