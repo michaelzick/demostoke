@@ -1,5 +1,5 @@
 
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +12,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import AddGearForm from './pages/AddGearForm';
 import LightspeedPOSPage from './pages/LightspeedPOSPage';
 import LoadingSpinner from './components/LoadingSpinner';
+import { initializeAmplitudeClickTracking } from "./utils/amplitudeClickTracking";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
@@ -47,6 +48,10 @@ const queryClient = new QueryClient({
 });
 
 const App = () => {
+  useEffect(() => {
+    initializeAmplitudeClickTracking();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
