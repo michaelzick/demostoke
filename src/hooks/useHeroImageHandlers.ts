@@ -2,9 +2,10 @@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadProfileImage, deleteProfileImage } from "@/utils/profileImageUpload";
+import type { User } from "@/types";
 
 interface UseHeroImageHandlersProps {
-  user: any;
+  user: User | null;
   heroImage: string | null;
   setHeroImage: (url: string | null) => void;
   setIsUploadingHeroImage: (loading: boolean) => void;

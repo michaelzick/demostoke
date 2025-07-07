@@ -1,7 +1,7 @@
 declare global {
   interface Window {
     amplitude: {
-      track: (eventType: string, eventProperties?: any) => void;
+      track: (eventType: string, eventProperties?: Record<string, unknown>) => void;
     };
   }
 }

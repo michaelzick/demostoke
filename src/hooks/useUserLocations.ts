@@ -49,8 +49,8 @@ export const useUserLocations = () => {
         .filter(profile => profile.location_lat && profile.location_lng)
         .map(profile => {
           // Extract unique categories from user's VISIBLE equipment only
-          const visibleEquipment = profile.equipment?.filter((eq: any) => eq.visible_on_map) || [];
-          const equipmentCategories = Array.from(new Set(visibleEquipment.map((eq: any) => eq.category)));
+          const visibleEquipment = profile.equipment?.filter((eq: { category: string; visible_on_map?: boolean }) => eq.visible_on_map) || [];
+          const equipmentCategories = Array.from(new Set(visibleEquipment.map((eq) => eq.category)));
 
           return {
             id: profile.id,

@@ -2,7 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { PricingOption } from "@/hooks/gear-form/types";
 
-export const createEquipmentInDatabase = async (equipmentData: any) => {
+export const createEquipmentInDatabase = async (equipmentData: Record<string, unknown>) => {
   console.log('Submitting equipment data:', equipmentData);
 
   const { data: equipmentResult, error: equipmentError } = await supabase

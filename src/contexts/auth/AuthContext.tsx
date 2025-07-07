@@ -90,10 +90,11 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
         title: "Logged in successfully",
         description: "Welcome back to DemoStoke!",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Invalid email or password";
       toast({
         title: "Login failed",
-        description: error.message || "Invalid email or password",
+        description: message,
         variant: "destructive",
       });
       // Make sure we reset loading state on error
@@ -111,10 +112,11 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
         title: "Account created",
         description: "Welcome to DemoStoke!",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "There was an error creating your account";
       toast({
         title: "Signup failed",
-        description: error.message || "There was an error creating your account",
+        description: message,
         variant: "destructive",
       });
       // Make sure we reset loading state on error
@@ -136,10 +138,11 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
         title: "Logged out",
         description: "You've been logged out successfully",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "There was a problem logging out";
       toast({
         title: "Error logging out",
-        description: error.message || "There was a problem logging out",
+        description: message,
         variant: "destructive",
       });
     } finally {
