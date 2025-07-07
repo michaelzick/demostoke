@@ -515,10 +515,9 @@ No matter where you paddle out, always show aloha. Wait your turn, respect the l
     publishedAt: "2025-08-20",
     readTime: 8,
     heroImage: "https://www.hawaiiactivities.com/travelguide/wp-content/uploads/ehukai01.jpg",
-    thumbnail: "https://www.hawaiiactivities.com/travelguide/wp-content/uploads/ehukai01.jpg",
+    thumbnail: "https://briantissot.com/wp-content/uploads/2020/04/pipelines-hungry-reef-sean-davey.jpg",
     tags: ["surfing", "surf breaks", "guides", "localism", "hawaii", "channel islands", "pyzel", "tokoro", "firewire"],
     author: "Generative AI",
     authorId: "generative-ai"
   }
-
 ];
