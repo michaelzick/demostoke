@@ -458,56 +458,65 @@ Practice the pop-up on land before heading into the water, and remember that flu
 - World-famous for its heavy left and right barrels.
 - Breaks over shallow reef – expert only.
 - Popular boards: Pyzel, Tokoro, Channel Islands.
-- **Localism:** 9/10 – respect the lineup and the locals.
+
+Localism 9/10 – respect the lineup and the locals.
 
 **Waimea Bay**
 
 - Big-wave arena that comes alive in winter.
 - Requires large swells to break; tow or paddle depending on size.
 - Boards range from 9- to 11-foot guns by shapers like Arakawa and Rawson.
-- **Localism:** 7/10 – serious watermen dominate on big days.
+
+Localism 7/10 – serious watermen dominate on big days.
 
 **Sunset Beach**
 
 - Long, powerful walls with shifting peaks.
 - Works on a variety of swell directions and sizes.
 - Boards often in the 6'6"–7'6" range from brands like DHD and Lost.
-- **Localism:** 7/10 – less intense than Pipe but still respected.
+
+Localism 7/10 – less intense than Pipe but still respected.
 
 **Rocky Point**
 
 - High-performance lefts and rights with playful sections.
 - Popular for shortboarders honing maneuvers.
 - Many riders favor versatile boards from Firewire or Sharp Eye.
-- **Localism:** 6/10 – usually friendly but can get competitive.
+
+Localism 6/10 – usually friendly but can get competitive.
 
 **Haleiwa (Ali'i Beach)**
 
 - The gateway to the North Shore and a quality reef break.
 - Steep drops and rippable faces that hold serious size.
 - Locals often ride everything from Pyzel Ghost models to Tokoro step‑ups.
-- **Localism:** 8/10 – locals run the peak when it's on.
+
+Localism 8/10 – locals run the peak when it's on.
 
 **Laniakea**
 
 - Long right-hand walls ideal for carving.
 - More approachable crowd with plenty of visiting surfers.
 - Boards: mid-lengths or shortboards from brands like Channel Islands and Lost.
-- **Localism:** 5/10 – still respect the vibe, but generally mellow.
+
+Localism 5/10 – still respect the vibe, but generally mellow.
 
 **Chun's Reef**
 
 - Fun, user-friendly waves for all levels.
 - Great spot for longboards and hybrids, including soft-tops.
-- **Localism:** 3/10 – relaxed lineup, though it gets crowded with learners.
+
+Localism 3/10 – relaxed lineup, though it gets crowded with learners.
+
+**Final Thoughts**
 
 No matter where you paddle out, always show aloha. Wait your turn, respect the locals, and ride equipment suited for the conditions.`,
     category: "surfboards",
     publishedAt: "2025-08-20",
     readTime: 8,
-    heroImage: "https://upload.wikimedia.org/wikipedia/commons/6/60/Banzai_Pipeline.jpg",
-    thumbnail: "https://upload.wikimedia.org/wikipedia/commons/6/60/Banzai_Pipeline.jpg",
-    tags: ["surfing", "surf breaks", "guides", "localism", "hawaii"],
+    heroImage: "https://www.hawaiiactivities.com/travelguide/wp-content/uploads/ehukai01.jpg",
+    thumbnail: "https://www.hawaiiactivities.com/travelguide/wp-content/uploads/ehukai01.jpg",
+    tags: ["surfing", "surf breaks", "guides", "localism", "hawaii", "channel islands", "pyzel", "tokoro", "firewire"],
     author: "Generative AI",
     authorId: "generative-ai"
   }
