@@ -208,7 +208,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
               hover:underline hover:text-primary/80
               transition-colors bg-transparent
               border-none p-0 font-inherit
-              cursor-pointer"
+              cursor-pointer owner-name-button"
               data-tracking={trackingData}
               id={trackingData}
             >

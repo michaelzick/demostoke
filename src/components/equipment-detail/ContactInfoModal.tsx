@@ -34,7 +34,7 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(profile.address)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-muted-foreground hover:text-primary underline"
+                      className="text-sm text-muted-foreground hover:text-primary underline profile-address"
                       data-tracking={trackingData}
                       id={trackingData}
                     >
@@ -50,7 +50,7 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
                   <div>
                     <a
                       href={`tel:${profile.phone}`}
-                      className="text-sm text-muted-foreground hover:text-primary underline"
+                      className="text-sm text-muted-foreground hover:text-primary underline profile-phone"
                       data-tracking={trackingData}
                       id={trackingData}
                     >
@@ -68,7 +68,7 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
                       href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-muted-foreground hover:text-primary underline"
+                      className="text-sm text-muted-foreground hover:text-primary underline profile-website"
                       data-tracking={trackingData}
                       id={trackingData}
                     >
