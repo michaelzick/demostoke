@@ -6,13 +6,19 @@ declare global {
   }
 }
 
+let isInitialized = false;
+
 export const initializeAmplitudeClickTracking = () => {
+  if (isInitialized) return;
+  
   // Wait for DOM to be ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', setupClickTracking);
   } else {
     setupClickTracking();
   }
+  
+  isInitialized = true;
 };
 
 const setupClickTracking = () => {
