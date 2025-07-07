@@ -36,7 +36,7 @@ export const prepareEquipmentData = ({
   const parsedPricePerWeek = pricePerWeek && pricePerWeek.trim() ? parseFloat(pricePerWeek) : null;
   const parsedDamageDeposit = damageDeposit && damageDeposit.trim() ? parseFloat(damageDeposit) : null;
 
-  const equipmentData: any = {
+  const equipmentData: Record<string, unknown> = {
     name: gearName,
     category: gearType,
     description: description,

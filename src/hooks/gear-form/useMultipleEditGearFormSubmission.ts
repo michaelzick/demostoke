@@ -8,6 +8,7 @@ import { useEditGearFormValidation } from "./useEditGearFormValidation";
 import { useEditGearLocationHandling } from "./useEditGearLocationHandling";
 import { useEditGearDatabaseUpdate } from "./useEditGearDatabaseUpdate";
 import { uploadMultipleGearImages, updateEquipmentImages } from "@/utils/multipleImageHandling";
+import type { FormData } from "./types";
 
 interface UseMultipleEditGearFormSubmissionProps {
   equipment: UserEquipment | null | undefined;
@@ -80,7 +81,7 @@ export const useMultipleEditGearFormSubmission = ({
     const isBikeType = gearType === "mountain-bike" || gearType === "e-bike";
 
     // Use the validation hook to validate the form
-    const formData: any = {
+    const formData: FormData & { selectedSizes: string[] } = {
       gearName,
       gearType,
       description,

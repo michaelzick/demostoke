@@ -7,8 +7,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { StarIcon } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
+import type { UserEquipment } from "@/types/equipment";
+
 interface UserEquipmentGridProps {
-  userEquipment: any[] | undefined;
+  userEquipment: UserEquipment[] | undefined;
   stats?: {
     averageRating: number;
     totalReviews: number;
@@ -43,7 +45,7 @@ export const UserEquipmentGrid = ({ userEquipment, stats, isLoading, isMockUser 
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {userEquipment.map((item: any) => {
+      {userEquipment.map((item: UserEquipment) => {
         // Handle both single image_url and multiple images array - ensure we always have an array
         const images = item.images && item.images.length > 0
           ? item.images

@@ -11,7 +11,15 @@ interface ReviewsTabProps {
   reviewCount: number;
 }
 
-const ReviewItem = ({ review }: { review: any }) => {
+interface Review {
+  id: string;
+  reviewer_id: string;
+  rating: number;
+  review_text?: string;
+  created_at: string;
+}
+
+const ReviewItem = ({ review }: { review: Review }) => {
   const { data: reviewerProfile } = useUserProfile(review.reviewer_id);
 
   return (

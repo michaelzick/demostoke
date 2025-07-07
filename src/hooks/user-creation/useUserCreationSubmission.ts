@@ -189,24 +189,26 @@ export const useUserCreationSubmission = () => {
 
       resetForm();
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error in user creation process:', error);
-      
+
       resetCaptcha();
-      
-      if (error.message?.includes('User already registered')) {
+
+      const message = error instanceof Error ? error.message : '';
+
+      if (message.includes('User already registered')) {
         toast({
           title: "User Already Exists",
           description: "A user with this email address already exists.",
           variant: "destructive"
         });
-      } else if (error.message?.includes('Password should be at least 6 characters')) {
+      } else if (message.includes('Password should be at least 6 characters')) {
         toast({
           title: "Password Too Short",
           description: "Password must be at least 6 characters long.",
           variant: "destructive"
         });
-      } else if (error.message?.includes('captcha')) {
+      } else if (message.includes('captcha')) {
         toast({
           title: "Captcha Verification Failed",
           description: "Please complete the captcha verification and try again.",
@@ -215,7 +217,7 @@ export const useUserCreationSubmission = () => {
       } else {
         toast({
           title: "Error Creating User",
-          description: error.message || "Failed to create user account. Check the console for details.",
+          description: message || "Failed to create user account. Check the console for details.",
           variant: "destructive"
         });
       }

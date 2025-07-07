@@ -1,7 +1,7 @@
 
 import type { Equipment } from "@/types";
 
-export const convertDbEquipmentToFrontend = (dbEquipment: any): Equipment => {
+export const convertDbEquipmentToFrontend = (dbEquipment: Record<string, unknown>): Equipment => {
   // Handle images array - prioritize all_images if available, fallback to images, then image_url
   let imagesArray: string[] = [];
   
@@ -62,6 +62,6 @@ export const convertDbEquipmentToFrontend = (dbEquipment: any): Equipment => {
 };
 
 // Export the function with the expected name for backward compatibility
-export const convertSupabaseToEquipment = async (dbEquipment: any): Promise<Equipment> => {
+export const convertSupabaseToEquipment = async (dbEquipment: Record<string, unknown>): Promise<Equipment> => {
   return convertDbEquipmentToFrontend(dbEquipment);
 };

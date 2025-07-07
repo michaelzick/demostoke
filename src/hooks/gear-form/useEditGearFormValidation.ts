@@ -1,10 +1,12 @@
 
 import { useToast } from "@/hooks/use-toast";
 import { PricingOption } from "./types";
+import type { User } from "@/types";
+import type { UserEquipment } from "@/types/equipment";
 
 interface ValidationParams {
-  user: any;
-  equipment: any;
+  user: User | null;
+  equipment: UserEquipment | null | undefined;
   pricingOptions: PricingOption[];
   damageDeposit: string;
 }

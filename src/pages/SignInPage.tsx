@@ -40,9 +40,10 @@ const SignInPage = () => {
       await login(email, password, captchaToken);
       setIsLoading(false);
       navigate("/");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Login error:", err);
-      setError(err.message || "Invalid email or password");
+      const message = err instanceof Error ? err.message : "Invalid email or password";
+      setError(message);
       setIsLoading(false);
     }
   };

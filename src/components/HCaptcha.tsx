@@ -9,7 +9,10 @@ interface HCaptchaProps {
 
 declare global {
   interface Window {
-    hcaptcha: any;
+    hcaptcha: {
+      render: (...args: unknown[]) => string;
+      reset: (id: string) => void;
+    } | undefined;
     onloadHcaptchaCallback: () => void;
   }
 }

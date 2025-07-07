@@ -116,7 +116,7 @@ const GeocodingRecoverySection = () => {
             {checkResults.items.length > 0 && (
               <div className="mt-2 max-h-32 overflow-y-auto">
                 <div className="text-xs space-y-1">
-                  {checkResults.items.map((item: any) => (
+                  {checkResults.items.map((item: { id: string; name: string; location_zip?: string }) => (
                     <div key={item.id} className="flex justify-between">
                       <span>{item.name}</span>
                       <span className="text-muted-foreground">{item.location_zip}</span>
@@ -149,7 +149,7 @@ const GeocodingRecoverySection = () => {
             {recoveryResults.results.length > 0 && (
               <div className="mt-2 max-h-40 overflow-y-auto">
                 <div className="text-xs space-y-1">
-                  {recoveryResults.results.map((result: any) => (
+                  {recoveryResults.results.map((result: { id: string; name: string; success?: boolean; error?: string }) => (
                     <div key={result.id} className="flex items-center gap-2">
                       {result.success ? (
                         <CheckCircle className="h-3 w-3 text-green-600" />

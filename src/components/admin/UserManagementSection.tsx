@@ -32,7 +32,7 @@ const UserManagementSection = () => {
         throw new Error("Unable to fetch users");
       }
 
-      const targetUser = userData.users.find((user: any) => user.email === userEmail.trim());
+      const targetUser = userData.users.find((user: { id: string; email: string }) => user.email === userEmail.trim());
       
       if (!targetUser) {
         toast({
@@ -79,11 +79,12 @@ const UserManagementSection = () => {
       });
 
       setUserEmail('');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error granting admin role:', error);
+      const message = error instanceof Error ? error.message : "Failed to grant admin role. Please try again.";
       toast({
         title: "Error",
-        description: error.message || "Failed to grant admin role. Please try again.",
+        description: message,
         variant: "destructive"
       });
     } finally {

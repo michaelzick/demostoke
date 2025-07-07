@@ -44,8 +44,9 @@ const SignUpPage = () => {
     try {
       await signup(name, email, password, captchaToken);
       // We don't navigate here as the auth state change will trigger automatically
-    } catch (err: any) {
-      setError(err.message || "Failed to create account");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to create account";
+      setError(message);
     }
   };
 

@@ -8,6 +8,7 @@ import { geocodeAddress } from "@/utils/geocoding";
 import { uploadMultipleGearImages, saveEquipmentImages } from "@/utils/multipleImageHandling";
 import { prepareEquipmentData } from "@/utils/equipmentDataPreparation";
 import { createEquipmentInDatabase } from "@/utils/gearDatabaseOperations";
+import type { FormData } from "./types";
 
 interface UseMultipleGearFormSubmissionProps {
   gearName: string;
@@ -80,7 +81,7 @@ export const useMultipleGearFormSubmission = ({
     const selectedSizes = isBikeType ? size.split(", ").filter(s => s.trim()) : [];
 
     // Use the validation hook to validate the form
-    const formData: any = {
+    const formData: FormData & { selectedSizes: string[] } = {
       gearName,
       gearType,
       description,

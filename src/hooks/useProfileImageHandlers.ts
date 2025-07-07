@@ -3,9 +3,10 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadProfileImage, deleteProfileImage, generateDicebearAvatar } from "@/utils/profileImageUpload";
 import { useQueryClient } from "@tanstack/react-query";
+import type { User } from "@/types";
 
 interface UseProfileImageHandlersProps {
-  user: any;
+  user: User | null;
   profileImage: string | null;
   setProfileImage: (url: string) => void;
   setIsUploadingImage: (loading: boolean) => void;

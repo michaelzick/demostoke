@@ -4,7 +4,7 @@ import { UserEquipment } from "@/types/equipment";
 
 export const updateEquipmentInDatabase = async (
   equipment: UserEquipment,
-  equipmentData: any,
+  equipmentData: Record<string, unknown>,
   userId: string
 ) => {
   console.log('=== EQUIPMENT UPDATE SERVICE ===');

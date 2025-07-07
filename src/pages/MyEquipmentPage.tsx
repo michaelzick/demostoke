@@ -27,6 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useUserEquipment, useDeleteEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useAuth } from "@/helpers";
+import type { UserEquipment } from "@/types/equipment";
 
 const MyEquipmentPage = () => {
   usePageMetadata({
@@ -85,7 +86,7 @@ const MyEquipmentPage = () => {
     }
   };
 
-  const handleDuplicate = (equipmentItem: any) => {
+  const handleDuplicate = (equipmentItem: UserEquipment) => {
     const duplicateData = {
       name: equipmentItem.name,
       category: equipmentItem.category,
