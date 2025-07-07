@@ -101,7 +101,7 @@ const BlogPostPage = () => {
     <div className="min-h-screen">
       {/* Hero Image */}
       <div className="relative h-96 bg-cover bg-center" style={{ backgroundImage: `url(${post.heroImage})` }}>
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0" />
       </div>
 
       {/* Article Content */}
