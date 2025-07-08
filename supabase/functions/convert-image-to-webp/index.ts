@@ -55,7 +55,7 @@ serve(async (req) => {
 
     // Step 5: Generate file path for storage
     const timestamp = Date.now();
-    const fileName = `${sourceTable}/${sourceRecordId || 'unknown'}/${timestamp}.webp`;
+    const fileName = `equipment_images/${sourceRecordId || 'unknown'}/${timestamp}.webp`;
 
     // Step 6: Upload to Supabase storage
     console.log('Uploading to storage:', fileName);
@@ -106,6 +106,22 @@ serve(async (req) => {
       .from(sourceTable)
       .update({ [sourceColumn]: webpUrl })
       .eq('id', sourceRecordId);
+
+    if (!updateError && sourceTable === 'equipment' && sourceColumn === 'image_url') {
+      // Also store the converted primary image in the equipment_images table
+      const { error: insertError } = await supabase
+        .from('equipment_images')
+        .insert({
+          equipment_id: sourceRecordId,
+          image_url: webpUrl,
+          display_order: 0,
+          is_primary: true,
+        });
+
+      if (insertError) {
+        console.error('Failed to insert converted image into equipment_images:', insertError);
+      }
+    }
 
     if (updateError) {
       throw new Error(`Failed to update original record: ${updateError.message}`);
