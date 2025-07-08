@@ -47,25 +47,38 @@ const ImageConversionSection = () => {
                url.includes('photo');
       };
 
-      // Scan equipment table - primary images
+      // Scan equipment table - images array
       console.log('Scanning equipment table...');
       const { data: equipmentData } = await supabase
         .from('equipment')
-        .select('id, image_url')
-        .not('image_url', 'is', null);
+        .select('id, images')
+        .not('images', 'is', null);
 
       equipmentData?.forEach(item => {
-        if (item.image_url && isConvertibleImage(item.image_url)) {
-          foundImages.push({
-            id: `equipment-${item.id}`,
-            url: item.image_url,
-            source_table: 'equipment',
-            source_column: 'image_url',
-            source_record_id: item.id
+        if (Array.isArray(item.images)) {
+          item.images.forEach((imgUrl: string, idx: number) => {
+            if (isConvertibleImage(imgUrl)) {
+              foundImages.push({
+                id: `equipment-${item.id}-${idx}`,
+                url: imgUrl,
+                source_table: 'equipment',
+                source_column: 'images',
+                source_record_id: item.id,
+              });
+            }
           });
         }
       });
-      console.log(`Found ${equipmentData?.filter(item => item.image_url && isConvertibleImage(item.image_url)).length || 0} equipment images`);
+      const equipmentImagesCount = equipmentData?.reduce((count, item) => {
+        if (Array.isArray(item.images)) {
+          return (
+            count +
+            item.images.filter((url: string) => isConvertibleImage(url)).length
+          );
+        }
+        return count;
+      }, 0) || 0;
+      console.log(`Found ${equipmentImagesCount} equipment images`);
 
       // Scan equipment_images table - gallery images
       console.log('Scanning equipment_images table...');
@@ -204,6 +217,7 @@ const ImageConversionSection = () => {
   const getSourceDisplayName = (table: string, column: string) => {
     const mapping: Record<string, string> = {
       'equipment.image_url': 'Equipment Primary Image',
+      'equipment.images': 'Equipment Images',
       'equipment_images.image_url': 'Equipment Gallery Image',
       'profiles.avatar_url': 'Profile Avatar',
       'profiles.hero_image_url': 'Profile Hero Image',
