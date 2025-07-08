@@ -49,8 +49,8 @@ export const UserEquipmentGrid = ({ userEquipment, stats, isLoading, isMockUser 
         // Handle both single image_url and multiple images array - ensure we always have an array
         const images = item.images && item.images.length > 0
           ? item.images
-          : item.image_url || item.imageUrl
-            ? [item.image_url || item.imageUrl]
+          : item.image_url
+            ? [item.image_url]
             : [];
 
         const hasMultipleImages = images.length > 1;
@@ -92,7 +92,7 @@ export const UserEquipmentGrid = ({ userEquipment, stats, isLoading, isMockUser 
             <CardContent className="p-4">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="font-medium dark:text-white">{item.name}</h3>
-                <span className="font-medium text-primary">${item.price_per_day || item.pricePerDay}/day</span>
+                <span className="font-medium text-primary">${item.price_per_day}/day</span>
               </div>
               <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
                 {item.description}

@@ -31,7 +31,7 @@ export const updateEquipmentInDatabase = async (
     }
     
     // Validate it's a valid number
-    if (isNaN(equipmentData.damage_deposit) || equipmentData.damage_deposit < 0) {
+    if (isNaN(equipmentData.damage_deposit as number) || (equipmentData.damage_deposit as number) < 0) {
       throw new Error('Damage deposit must be a valid positive number');
     }
   }

@@ -17,6 +17,7 @@ import { UserEquipmentGrid } from "@/components/profile/UserEquipmentGrid";
 import { UserProfileLoading } from "@/components/profile/UserProfileLoading";
 import { UserProfileNotFound } from "@/components/profile/UserProfileNotFound";
 import type { UserProfile } from "@/types";
+import type { UserEquipment } from "@/types/equipment";
 
 const RealUserProfilePage = () => {
   useEffect(() => {
@@ -127,7 +128,7 @@ const RealUserProfilePage = () => {
             </div>
             
             <UserEquipmentGrid 
-              userEquipment={userEquipment} 
+              userEquipment={userEquipment as UserEquipment[]} 
               stats={stats} 
               isLoading={equipmentLoading} 
               isMockUser={isMockUser} 
