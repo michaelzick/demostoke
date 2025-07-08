@@ -28,46 +28,54 @@ const ImageConversionSection = () => {
     setScanComplete(false);
     
     try {
-      // Query to find all non-WebP images across tables
-      const { data, error } = await supabase.rpc('scan_non_webp_images');
+      const foundImages: ImageRecord[] = [];
       
-      if (error) {
-        // Fallback to manual queries if RPC doesn't exist
-        const foundImages: ImageRecord[] = [];
-        
-        // Scan equipment table
-        const { data: equipmentData } = await supabase
-          .from('equipment')
-          .select('id, image_url')
-          .not('image_url', 'is', null)
-          .not('image_url', 'ilike', '%.webp%')
-          .not('image_url', 'ilike', '%supabase%')
-          .not('image_url', 'ilike', '%dicebear%')
-          .not('image_url', 'ilike', '/img/%');
+      console.log('Starting comprehensive image scan...');
+      
+      // Helper function to check if URL is convertible
+      const isConvertibleImage = (url: string): boolean => {
+        if (!url || url.trim() === '') return false;
+        // Skip if already WebP
+        if (url.toLowerCase().includes('.webp')) return false;
+        // Skip internal/generated images
+        if (url.includes('supabase') || url.includes('dicebear') || url.startsWith('/img/')) return false;
+        // Only include common image formats
+        return /\.(jpg|jpeg|png|gif|bmp|tiff)(\?.*)?$/i.test(url) || 
+               url.includes('unsplash') || 
+               url.includes('pexels') || 
+               url.includes('images') ||
+               url.includes('photo');
+      };
 
-        equipmentData?.forEach(item => {
-          if (item.image_url) {
-            foundImages.push({
-              id: `equipment-${item.id}`,
-              url: item.image_url,
-              source_table: 'equipment',
-              source_column: 'image_url',
-              source_record_id: item.id
-            });
-          }
-        });
+      // Scan equipment table - primary images
+      console.log('Scanning equipment table...');
+      const { data: equipmentData } = await supabase
+        .from('equipment')
+        .select('id, image_url')
+        .not('image_url', 'is', null);
 
-        // Scan equipment_images table
-        const { data: equipmentImagesData } = await supabase
-          .from('equipment_images')
-          .select('id, image_url, equipment_id')
-          .not('image_url', 'is', null)
-          .not('image_url', 'ilike', '%.webp%')
-          .not('image_url', 'ilike', '%supabase%')
-          .not('image_url', 'ilike', '%dicebear%')
-          .not('image_url', 'ilike', '/img/%');
+      equipmentData?.forEach(item => {
+        if (item.image_url && isConvertibleImage(item.image_url)) {
+          foundImages.push({
+            id: `equipment-${item.id}`,
+            url: item.image_url,
+            source_table: 'equipment',
+            source_column: 'image_url',
+            source_record_id: item.id
+          });
+        }
+      });
+      console.log(`Found ${equipmentData?.filter(item => item.image_url && isConvertibleImage(item.image_url)).length || 0} equipment images`);
 
-        equipmentImagesData?.forEach(item => {
+      // Scan equipment_images table - gallery images
+      console.log('Scanning equipment_images table...');
+      const { data: equipmentImagesData } = await supabase
+        .from('equipment_images')
+        .select('id, image_url, equipment_id')
+        .not('image_url', 'is', null);
+
+      equipmentImagesData?.forEach(item => {
+        if (isConvertibleImage(item.image_url)) {
           foundImages.push({
             id: `equipment_images-${item.id}`,
             url: item.image_url,
@@ -75,61 +83,62 @@ const ImageConversionSection = () => {
             source_column: 'image_url',
             source_record_id: item.id
           });
-        });
+        }
+      });
+      console.log(`Found ${equipmentImagesData?.filter(item => isConvertibleImage(item.image_url)).length || 0} equipment gallery images`);
 
-        // Scan profiles table for avatars
-        const { data: profileAvatars } = await supabase
-          .from('profiles')
-          .select('id, avatar_url')
-          .not('avatar_url', 'is', null)
-          .not('avatar_url', 'ilike', '%.webp%')
-          .not('avatar_url', 'ilike', '%supabase%')
-          .not('avatar_url', 'ilike', '%dicebear%')
-          .not('avatar_url', 'ilike', '/img/%');
+      // Scan profiles table for avatars
+      console.log('Scanning profile avatars...');
+      const { data: profileAvatars } = await supabase
+        .from('profiles')
+        .select('id, avatar_url')
+        .not('avatar_url', 'is', null);
 
-        profileAvatars?.forEach(item => {
-          if (item.avatar_url) {
-            foundImages.push({
-              id: `profiles-avatar-${item.id}`,
-              url: item.avatar_url,
-              source_table: 'profiles',
-              source_column: 'avatar_url',
-              source_record_id: item.id
-            });
-          }
-        });
+      profileAvatars?.forEach(item => {
+        if (item.avatar_url && isConvertibleImage(item.avatar_url)) {
+          foundImages.push({
+            id: `profiles-avatar-${item.id}`,
+            url: item.avatar_url,
+            source_table: 'profiles',
+            source_column: 'avatar_url',
+            source_record_id: item.id
+          });
+        }
+      });
+      console.log(`Found ${profileAvatars?.filter(item => item.avatar_url && isConvertibleImage(item.avatar_url)).length || 0} profile avatars`);
 
-        // Scan profiles table for hero images
-        const { data: profileHeros } = await supabase
-          .from('profiles')
-          .select('id, hero_image_url')
-          .not('hero_image_url', 'is', null)
-          .not('hero_image_url', 'ilike', '%.webp%')
-          .not('hero_image_url', 'ilike', '%supabase%')
-          .not('hero_image_url', 'ilike', '%dicebear%')
-          .not('hero_image_url', 'ilike', '/img/%');
+      // Scan profiles table for hero images
+      console.log('Scanning profile hero images...');
+      const { data: profileHeros } = await supabase
+        .from('profiles')
+        .select('id, hero_image_url')
+        .not('hero_image_url', 'is', null);
 
-        profileHeros?.forEach(item => {
-          if (item.hero_image_url) {
-            foundImages.push({
-              id: `profiles-hero-${item.id}`,
-              url: item.hero_image_url,
-              source_table: 'profiles',
-              source_column: 'hero_image_url',
-              source_record_id: item.id
-            });
-          }
-        });
+      profileHeros?.forEach(item => {
+        if (item.hero_image_url && isConvertibleImage(item.hero_image_url)) {
+          foundImages.push({
+            id: `profiles-hero-${item.id}`,
+            url: item.hero_image_url,
+            source_table: 'profiles',
+            source_column: 'hero_image_url',
+            source_record_id: item.id
+          });
+        }
+      });
+      console.log(`Found ${profileHeros?.filter(item => item.hero_image_url && isConvertibleImage(item.hero_image_url)).length || 0} profile hero images`);
 
-        setImages(foundImages);
-      } else {
-        setImages(data || []);
-      }
+      // Log final results
+      console.log(`Total convertible images found: ${foundImages.length}`);
+      foundImages.forEach(img => {
+        console.log(`- ${img.source_table}.${img.source_column}: ${img.url}`);
+      });
 
+      setImages(foundImages);
       setScanComplete(true);
+      
       toast({
         title: "Scan Complete",
-        description: `Found ${images.length} images that can be converted to WebP`,
+        description: `Found ${foundImages.length} images that can be converted to WebP`,
       });
     } catch (error) {
       console.error('Error scanning images:', error);
