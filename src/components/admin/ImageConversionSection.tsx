@@ -52,7 +52,7 @@ const ImageConversionSection = () => {
       const { data: equipmentData } = await supabase
         .from('equipment')
         .select('id, image_url, images')
-        .not('image_url', 'is', null);
+        .range(0, 9999);
 
       equipmentData?.forEach(item => {
         if (item.image_url && isConvertibleImage(item.image_url)) {
@@ -95,7 +95,8 @@ const ImageConversionSection = () => {
       const { data: equipmentImagesData } = await supabase
         .from('equipment_images')
         .select('id, image_url, equipment_id')
-        .not('image_url', 'is', null);
+        .not('image_url', 'is', null)
+        .range(0, 9999);
 
       equipmentImagesData?.forEach(item => {
         if (isConvertibleImage(item.image_url)) {
@@ -115,7 +116,8 @@ const ImageConversionSection = () => {
       const { data: profileAvatars } = await supabase
         .from('profiles')
         .select('id, avatar_url')
-        .not('avatar_url', 'is', null);
+        .not('avatar_url', 'is', null)
+        .range(0, 9999);
 
       profileAvatars?.forEach(item => {
         if (item.avatar_url && isConvertibleImage(item.avatar_url)) {
@@ -135,7 +137,8 @@ const ImageConversionSection = () => {
       const { data: profileHeros } = await supabase
         .from('profiles')
         .select('id, hero_image_url')
-        .not('hero_image_url', 'is', null);
+        .not('hero_image_url', 'is', null)
+        .range(0, 9999);
 
       profileHeros?.forEach(item => {
         if (item.hero_image_url && isConvertibleImage(item.hero_image_url)) {
