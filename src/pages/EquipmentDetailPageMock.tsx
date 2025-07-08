@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -13,7 +12,13 @@ import PolicyTab from "@/components/equipment-detail/PolicyTab";
 import OwnerCard from "@/components/equipment-detail/OwnerCard";
 import SimilarEquipment from "@/components/equipment-detail/SimilarEquipment";
 import GearImageModal from "@/components/equipment-detail/GearImageModal";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { getCategoryDisplayName } from "@/helpers";
 import { Equipment } from "@/types";
 import React, { useState } from "react";
@@ -42,12 +47,9 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  // Handle both single image_url and multiple images array - ensure we always have an array
-  const images = equipment.images && equipment.images.length > 0
-    ? equipment.images
-    : equipment.image_url
-      ? [equipment.image_url]
-      : [];
+  // Use images array from equipment_images table
+  const images =
+    equipment.images && equipment.images.length > 0 ? equipment.images : [];
 
   const hasMultipleImages = images.length > 1;
   const hasImages = images.length > 0;
@@ -62,7 +64,10 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
       <Breadcrumbs
         items={[
           { label: "Home", path: "/" },
-          { label: getCategoryDisplayName(equipment.category), path: `/explore?category=${equipment.category}` },
+          {
+            label: getCategoryDisplayName(equipment.category),
+            path: `/explore?category=${equipment.category}`,
+          },
           { label: equipment.name, path: `/equipment/${equipment.id}` },
         ]}
       />
@@ -81,7 +86,9 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">{waiverCompleted ? "Edit" : "Complete"} Waiver</h2>
+              <h2 className="text-2xl font-bold">
+                {waiverCompleted ? "Edit" : "Complete"} Waiver
+              </h2>
               <Button
                 variant="outline"
                 onClick={() => setShowWaiver(false)}
@@ -108,7 +115,7 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
                   <CarouselContent>
                     {images.map((imageUrl, index) => (
                       <CarouselItem key={index}>
-                        <div 
+                        <div
                           className="cursor-pointer hover:opacity-90 transition-opacity"
                           onClick={() => handleImageClick(index)}
                         >
@@ -125,7 +132,7 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
                   <CarouselNext className="right-2" />
                 </Carousel>
               ) : (
-                <div 
+                <div
                   className="cursor-pointer hover:opacity-90 transition-opacity"
                   onClick={() => handleImageClick(0)}
                 >
@@ -168,7 +175,11 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
               <LocationTab equipment={equipment} />
             </TabsContent>
             <TabsContent value="reviews">
-              <ReviewsTab equipmentId={equipment.id} rating={equipment.rating} reviewCount={equipment.review_count} />
+              <ReviewsTab
+                equipmentId={equipment.id}
+                rating={equipment.rating}
+                reviewCount={equipment.review_count}
+              />
             </TabsContent>
             <TabsContent value="policy">
               <PolicyTab />

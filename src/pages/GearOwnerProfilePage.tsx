@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useParams } from "react-router-dom";
@@ -6,14 +5,20 @@ import { Link } from "react-router-dom";
 import { mockEquipment, ownerPersonas } from "@/lib/mockData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { StarIcon, MapPinIcon, CalendarIcon, UsersIcon, GlobeIcon } from "lucide-react";
+import {
+  StarIcon,
+  MapPinIcon,
+  CalendarIcon,
+  UsersIcon,
+  GlobeIcon,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 
 const GearOwnerProfilePage = () => {
   usePageMetadata({
-    title: 'Gear Owner Profile | DemoStoke',
-    description: 'View information about this gear owner on DemoStoke.'
+    title: "Gear Owner Profile | DemoStoke",
+    description: "View information about this gear owner on DemoStoke.",
   });
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -55,10 +60,16 @@ const GearOwnerProfilePage = () => {
               {/* Increased spacing with padding-top instead of margin-top */}
               <div className="pt-16">
                 <div className="flex justify-between items-start">
-                  <div className="max-w-[80%]"> {/* Constrain width to prevent overflow */}
-                    <h1 className="text-2xl font-bold truncate dark:text-white">{owner.name}</h1>
+                  <div className="max-w-[80%]">
+                    {" "}
+                    {/* Constrain width to prevent overflow */}
+                    <h1 className="text-2xl font-bold truncate dark:text-white">
+                      {owner.name}
+                    </h1>
                     {owner.personality && (
-                      <span className={`inline-block text-xs px-2 py-1 rounded-full mt-1 ${personalityBadgeColor}`}>
+                      <span
+                        className={`inline-block text-xs px-2 py-1 rounded-full mt-1 ${personalityBadgeColor}`}
+                      >
                         {owner.personality}
                       </span>
                     )}
@@ -89,9 +100,13 @@ const GearOwnerProfilePage = () => {
                   {owner.website && (
                     <div className="flex items-center">
                       <GlobeIcon className="h-4 w-4 text-slate-500 mr-2 flex-shrink-0" />
-                      <a 
-                        href={owner.website.startsWith('http') ? owner.website : `https://${owner.website}`}
-                        target="_blank" 
+                      <a
+                        href={
+                          owner.website.startsWith("http")
+                            ? owner.website
+                            : `https://${owner.website}`
+                        }
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm hover:text-primary underline truncate"
                       >
@@ -110,7 +125,8 @@ const GearOwnerProfilePage = () => {
           <Card>
             <CardContent className="p-6">
               <div className="whitespace-pre-line text-sm text-muted-foreground leading-relaxed">
-                {owner.bio || `Hi, I'm ${owner.name.split(" ")[0]}! I love sharing my gear with others and helping them enjoy their adventures. Feel free to reach out if you have any questions!`}
+                {owner.bio ||
+                  `Hi, I'm ${owner.name.split(" ")[0]}! I love sharing my gear with others and helping them enjoy their adventures. Feel free to reach out if you have any questions!`}
               </div>
             </CardContent>
           </Card>
@@ -120,16 +136,20 @@ const GearOwnerProfilePage = () => {
       <Separator className="my-8" />
 
       <div>
-        <h2 className="text-xl font-medium mb-6 dark:text-white">Available Gear</h2>
+        <h2 className="text-xl font-medium mb-6 dark:text-white">
+          Available Gear
+        </h2>
         {ownerEquipment.length === 0 ? (
-          <p className="text-muted-foreground dark:text-white">No gear currently listed.</p>
+          <p className="text-muted-foreground dark:text-white">
+            No gear currently listed.
+          </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {ownerEquipment.map((item) => (
               <Card key={item.id} className="overflow-hidden">
                 <div className="h-48 overflow-hidden">
                   <img
-                    src={item.image_url}
+                    src={item.images?.[0]}
                     alt={item.name}
                     className="h-full w-full object-cover"
                   />
@@ -137,7 +157,9 @@ const GearOwnerProfilePage = () => {
                 <CardContent className="p-4">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-medium dark:text-white">{item.name}</h3>
-                    <span className="font-medium text-primary">${item.price_per_day}/day</span>
+                    <span className="font-medium text-primary">
+                      ${item.price_per_day}/day
+                    </span>
                   </div>
                   <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
                     {item.description}
@@ -145,9 +167,16 @@ const GearOwnerProfilePage = () => {
                   <div className="flex items-center justify-between mt-2">
                     <div className="flex items-center text-xs">
                       <StarIcon className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
-                      <span>{item.rating} ({item.review_count})</span>
+                      <span>
+                        {item.rating} ({item.review_count})
+                      </span>
                     </div>
-                    <Button variant="outline" size="sm" asChild className="text-xs h-8">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      asChild
+                      className="text-xs h-8"
+                    >
                       <Link to={`/equipment/${item.id}`}>View Details</Link>
                     </Button>
                   </div>

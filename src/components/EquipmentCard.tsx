@@ -1,10 +1,15 @@
-
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StarIcon, StoreIcon, UsersIcon, EditIcon } from "lucide-react";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { getCategoryDisplayName } from "@/helpers";
 import { Equipment } from "@/types";
 import { useAuth } from "@/contexts/auth";
@@ -16,9 +21,12 @@ interface EquipmentCardProps {
 
 const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
   const { user } = useAuth();
-  
+
   // Debug logging
-  console.log(`Equipment ${equipment.name} subcategory:`, equipment.subcategory);
+  console.log(
+    `Equipment ${equipment.name} subcategory:`,
+    equipment.subcategory,
+  );
 
   // Determine if this is from a shop or private party based on owner
   const isShop = equipment.owner.shopId;
@@ -31,12 +39,9 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
     ? `/shop/${equipment.owner.shopId}`
     : `/user-profile/${equipment.owner.id}`;
 
-  // Handle both single image_url and multiple images array - ensure we always have an array
-  const images = equipment.images && equipment.images.length > 0
-    ? equipment.images
-    : equipment.image_url
-      ? [equipment.image_url]
-      : [];
+  // Use images array from equipment_images table
+  const images =
+    equipment.images && equipment.images.length > 0 ? equipment.images : [];
 
   const hasMultipleImages = images.length > 1;
   const hasImages = images.length > 0;
@@ -76,17 +81,12 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
 
         {/* Subcategory badge in upper left */}
         {equipment.subcategory && (
-          <Badge
-            className="absolute top-2 left-2 z-20 bg-white text-gray-900 border shadow-sm"
-          >
+          <Badge className="absolute top-2 left-2 z-20 bg-white text-gray-900 border shadow-sm">
             {equipment.subcategory}
           </Badge>
         )}
 
-        <Badge
-          className="absolute top-2 right-2 z-10"
-          variant="secondary"
-        >
+        <Badge className="absolute top-2 right-2 z-10" variant="secondary">
           {getCategoryDisplayName(equipment.category)}
         </Badge>
 
@@ -109,11 +109,17 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
             <span>{equipment.rating}</span>
           </div>
         </div>
-        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{equipment.description}</p>
+        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+          {equipment.description}
+        </p>
         <div className="flex items-center justify-between mb-2">
           <div>
-            <p className="text-sm font-medium">${equipment.price_per_day}/day</p>
-            <p className="text-xs text-muted-foreground">{equipment.location.address}</p>
+            <p className="text-sm font-medium">
+              ${equipment.price_per_day}/day
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {equipment.location.address}
+            </p>
           </div>
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <DistanceDisplay equipment={equipment} showUnit={false} />
