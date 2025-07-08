@@ -47,50 +47,7 @@ const ImageConversionSection = () => {
                url.includes('photo');
       };
 
-      // Scan equipment table - primary images and images array
-      console.log('Scanning equipment table...');
-      const { data: equipmentData } = await supabase
-        .from('equipment')
-        .select('id, image_url, images')
-        .range(0, 9999);
-
-      equipmentData?.forEach(item => {
-        if (item.image_url && isConvertibleImage(item.image_url)) {
-          foundImages.push({
-            id: `equipment-${item.id}`,
-            url: item.image_url,
-            source_table: 'equipment',
-            source_column: 'image_url',
-            source_record_id: item.id
-          });
-        }
-
-        if (Array.isArray((item as any).images)) {
-          (item as any).images.forEach((url: string, idx: number) => {
-            if (isConvertibleImage(url)) {
-              foundImages.push({
-                id: `equipment-${item.id}-img-${idx}`,
-                url,
-                source_table: 'equipment',
-                source_column: 'images',
-                source_record_id: item.id
-              });
-            }
-          });
-        }
-      });
-      const equipmentImageCount =
-        equipmentData?.filter(item => item.image_url && isConvertibleImage(item.image_url)).length || 0;
-      const equipmentArrayCount =
-        equipmentData?.reduce((acc, item) => {
-          if (Array.isArray((item as any).images)) {
-            acc += (item as any).images.filter((url: string) => isConvertibleImage(url)).length;
-          }
-          return acc;
-        }, 0) || 0;
-      console.log(`Found ${equipmentImageCount} equipment images and ${equipmentArrayCount} images in arrays`);
-
-      // Scan equipment_images table - gallery images
+      // Scan equipment_images table - all gear images
       console.log('Scanning equipment_images table...');
       const { data: equipmentImagesData } = await supabase
         .from('equipment_images')
@@ -109,7 +66,8 @@ const ImageConversionSection = () => {
           });
         }
       });
-      console.log(`Found ${equipmentImagesData?.filter(item => isConvertibleImage(item.image_url)).length || 0} equipment gallery images`);
+      console.log(`Found ${equipmentImagesData?.filter(item => isConvertibleImage(item.image_url)).length || 0} equipment images`);
+
 
       // Scan profiles table for avatars
       console.log('Scanning profile avatars...');
@@ -229,8 +187,7 @@ const ImageConversionSection = () => {
 
   const getSourceDisplayName = (table: string, column: string) => {
     const mapping: Record<string, string> = {
-      'equipment.image_url': 'Equipment Primary Image',
-      'equipment_images.image_url': 'Equipment Gallery Image',
+      'equipment_images.image_url': 'Equipment Image',
       'profiles.avatar_url': 'Profile Avatar',
       'profiles.hero_image_url': 'Profile Hero Image',
     };
