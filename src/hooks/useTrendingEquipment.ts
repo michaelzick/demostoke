@@ -69,12 +69,18 @@ export const useTrendingEquipment = () => {
 
         // Convert and sort equipment to maintain trending order
         const { convertSupabaseToEquipment } = await import('@/services/equipment/equipmentConverter');
-        
+        const { fetchEquipmentImages } = await import('@/utils/multipleImageHandling');
+
         const equipmentPromises = equipmentDetails.map(async (item) => {
+          // Fetch any gallery images and combine with the primary image
+          const galleryImages = await fetchEquipmentImages(item.id);
+          const allImages = Array.from(new Set([item.image_url, ...galleryImages].filter(Boolean)));
+
           const flatItem = {
             ...item,
             profile_name: item.profiles?.name,
-            profile_avatar_url: item.profiles?.avatar_url
+            profile_avatar_url: item.profiles?.avatar_url,
+            all_images: allImages,
           };
           return await convertSupabaseToEquipment(flatItem);
         });
