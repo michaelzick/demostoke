@@ -1,11 +1,16 @@
-
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StarIcon } from "lucide-react";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 import type { UserEquipment } from "@/types/equipment";
 
@@ -19,7 +24,12 @@ interface UserEquipmentGridProps {
   isMockUser?: boolean;
 }
 
-export const UserEquipmentGrid = ({ userEquipment, stats, isLoading, isMockUser }: UserEquipmentGridProps) => {
+export const UserEquipmentGrid = ({
+  userEquipment,
+  stats,
+  isLoading,
+  isMockUser,
+}: UserEquipmentGridProps) => {
   if (isLoading && !isMockUser) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -39,19 +49,17 @@ export const UserEquipmentGrid = ({ userEquipment, stats, isLoading, isMockUser 
 
   if (!userEquipment || userEquipment.length === 0) {
     return (
-      <p className="text-muted-foreground dark:text-white">No gear currently listed.</p>
+      <p className="text-muted-foreground dark:text-white">
+        No gear currently listed.
+      </p>
     );
   }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {userEquipment.map((item: UserEquipment) => {
-        // Handle both single image_url and multiple images array - ensure we always have an array
-        const images = item.images && item.images.length > 0
-          ? item.images
-          : item.image_url
-            ? [item.image_url]
-            : [];
+        // Use images array from equipment_images table
+        const images = item.images && item.images.length > 0 ? item.images : [];
 
         const hasMultipleImages = images.length > 1;
         const hasImages = images.length > 0;
@@ -92,7 +100,9 @@ export const UserEquipmentGrid = ({ userEquipment, stats, isLoading, isMockUser 
             <CardContent className="p-4">
               <div className="flex justify-between items-start mb-2">
                 <h3 className="font-medium dark:text-white">{item.name}</h3>
-                <span className="font-medium text-primary">${item.price_per_day}/day</span>
+                <span className="font-medium text-primary">
+                  ${item.price_per_day}/day
+                </span>
               </div>
               <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
                 {item.description}
@@ -101,10 +111,14 @@ export const UserEquipmentGrid = ({ userEquipment, stats, isLoading, isMockUser 
                 {stats && stats.totalReviews > 0 ? (
                   <div className="flex items-center text-xs">
                     <StarIcon className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
-                    <span>{stats.averageRating} ({stats.totalReviews})</span>
+                    <span>
+                      {stats.averageRating} ({stats.totalReviews})
+                    </span>
                   </div>
                 ) : (
-                  <div className="text-xs text-muted-foreground">No reviews yet</div>
+                  <div className="text-xs text-muted-foreground">
+                    No reviews yet
+                  </div>
                 )}
                 <Button size="sm" asChild className="text-xs h-8">
                   <Link to={`/equipment/${item.id}`}>View Details</Link>

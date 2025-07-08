@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/helpers";
@@ -14,7 +13,7 @@ interface UserEquipment {
   images: string[]; // Add images array
   rating: number;
   review_count: number;
-  status: 'available' | 'booked' | 'unavailable';
+  status: "available" | "booked" | "unavailable";
   created_at: string;
   updated_at: string;
   visible_on_map: boolean;
@@ -34,20 +33,24 @@ interface UserEquipment {
   };
 }
 
-export const useUserEquipment = (userId?: string, visibleOnly: boolean = false) => {
+export const useUserEquipment = (
+  userId?: string,
+  visibleOnly: boolean = false,
+) => {
   const { user } = useAuth();
   const effectiveUserId = userId || user?.id;
 
   return useQuery({
-    queryKey: ['userEquipment', effectiveUserId, visibleOnly],
+    queryKey: ["userEquipment", effectiveUserId, visibleOnly],
     queryFn: async (): Promise<UserEquipment[]> => {
       if (!effectiveUserId) {
-        throw new Error('User ID is required');
+        throw new Error("User ID is required");
       }
 
       let query = supabase
-        .from('equipment')
-        .select(`
+        .from("equipment")
+        .select(
+          `
           id,
           name,
           category,
@@ -67,66 +70,71 @@ export const useUserEquipment = (userId?: string, visibleOnly: boolean = false) 
           weight,
           material,
           suitable_skill_level
-        `)
-        .eq('user_id', effectiveUserId);
+        `,
+        )
+        .eq("user_id", effectiveUserId);
 
       // If visibleOnly is true, only return equipment that's visible on map
       if (visibleOnly) {
-        query = query.eq('visible_on_map', true);
+        query = query.eq("visible_on_map", true);
       }
 
-      const { data, error } = await query.order('created_at', { ascending: false });
+      const { data, error } = await query.order("created_at", {
+        ascending: false,
+      });
 
       if (error) {
-        console.error('Error fetching user equipment:', error);
+        console.error("Error fetching user equipment:", error);
         throw error;
       }
 
       // Fetch additional images for each equipment item
       const equipmentWithImages = await Promise.all(
         (data || []).map(async (item) => {
-          console.log(`=== FETCHING IMAGES FOR USER EQUIPMENT ${item.name} ===`);
-          console.log('Equipment ID:', item.id);
-          
+          console.log(
+            `=== FETCHING IMAGES FOR USER EQUIPMENT ${item.name} ===`,
+          );
+          console.log("Equipment ID:", item.id);
+
           // Fetch additional images from equipment_images table
           const additionalImages = await fetchEquipmentImages(item.id);
-          console.log('Additional images fetched:', additionalImages);
-          
-          // Create combined images array
-          const allImages = additionalImages.length > 0 ? additionalImages : (item.image_url ? [item.image_url] : []);
-          console.log('Final combined images array:', allImages);
-          console.log('=== END USER EQUIPMENT IMAGES FETCH ===');
+          console.log("Additional images fetched:", additionalImages);
+
+          // Use images from equipment_images table only
+          const allImages = additionalImages;
+          console.log("Images array:", allImages);
+          console.log("=== END USER EQUIPMENT IMAGES FETCH ===");
 
           return {
             id: item.id,
             name: item.name,
             category: item.category,
-            description: item.description || '',
+            description: item.description || "",
             price_per_day: item.price_per_day,
             image_url: item.image_url,
             images: allImages, // Include all images
             rating: item.rating || 0,
             review_count: item.review_count || 0,
-            status: item.status as 'available' | 'booked' | 'unavailable',
+            status: item.status as "available" | "booked" | "unavailable",
             created_at: item.created_at,
             updated_at: item.updated_at,
             visible_on_map: item.visible_on_map,
             location: {
               lat: item.location_lat || 0,
               lng: item.location_lng || 0,
-              address: item.location_address || '' // Changed from zip to address
+              address: item.location_address || "", // Changed from zip to address
             },
             specifications: {
-              size: item.size || '',
-              weight: item.weight || '',
-              material: item.material || '',
-              suitable: item.suitable_skill_level || ''
+              size: item.size || "",
+              weight: item.weight || "",
+              material: item.material || "",
+              suitable: item.suitable_skill_level || "",
             },
             availability: {
-              available: item.status === 'available'
-            }
+              available: item.status === "available",
+            },
           };
-        })
+        }),
       );
 
       return equipmentWithImages;
@@ -141,16 +149,16 @@ export const useDeleteEquipment = () => {
   return useMutation({
     mutationFn: async (equipmentId: string) => {
       const { error } = await supabase
-        .from('equipment')
+        .from("equipment")
         .delete()
-        .eq('id', equipmentId);
+        .eq("id", equipmentId);
 
       if (error) {
         throw error;
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['userEquipment'] });
+      queryClient.invalidateQueries({ queryKey: ["userEquipment"] });
     },
   });
 };
@@ -159,18 +167,24 @@ export const useUpdateEquipmentVisibility = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ equipmentId, visible }: { equipmentId: string; visible: boolean }) => {
+    mutationFn: async ({
+      equipmentId,
+      visible,
+    }: {
+      equipmentId: string;
+      visible: boolean;
+    }) => {
       const { error } = await supabase
-        .from('equipment')
+        .from("equipment")
         .update({ visible_on_map: visible })
-        .eq('id', equipmentId);
+        .eq("id", equipmentId);
 
       if (error) {
         throw error;
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['userEquipment'] });
+      queryClient.invalidateQueries({ queryKey: ["userEquipment"] });
     },
   });
 };

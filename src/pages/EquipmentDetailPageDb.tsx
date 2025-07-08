@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,13 @@ import OwnerCard from "@/components/equipment-detail/OwnerCard";
 import SimilarEquipment from "@/components/equipment-detail/SimilarEquipment";
 import GearImageModal from "@/components/equipment-detail/GearImageModal";
 import ContactInfoModal from "@/components/equipment-detail/ContactInfoModal";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { getCategoryDisplayName } from "@/helpers";
 import { Equipment } from "@/types";
 import React, { useState } from "react";
@@ -44,12 +49,9 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showContactModal, setShowContactModal] = useState(false);
 
-  // Handle both single image_url and multiple images array - ensure we always have an array
-  const images = equipment.images && equipment.images.length > 0
-    ? equipment.images
-    : equipment.image_url
-      ? [equipment.image_url]
-      : [];
+  // Use images array from equipment_images table
+  const images =
+    equipment.images && equipment.images.length > 0 ? equipment.images : [];
 
   const hasMultipleImages = images.length > 1;
   const hasImages = images.length > 0;
@@ -67,7 +69,10 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
       <Breadcrumbs
         items={[
           { label: "Home", path: "/" },
-          { label: getCategoryDisplayName(equipment.category), path: `/explore?category=${equipment.category}` },
+          {
+            label: getCategoryDisplayName(equipment.category),
+            path: `/explore?category=${equipment.category}`,
+          },
           { label: equipment.name, path: `/equipment/${equipment.id}` },
         ]}
       />
@@ -94,7 +99,9 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
           <div className="bg-white dark:bg-zinc-900 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">{waiverCompleted ? "Edit" : "Complete"} Waiver</h2>
+              <h2 className="text-2xl font-bold">
+                {waiverCompleted ? "Edit" : "Complete"} Waiver
+              </h2>
               <Button
                 variant="outline"
                 onClick={() => setShowWaiver(false)}
@@ -200,7 +207,10 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
         <div className="space-y-6">
           {/* Booking Card */}
           <Card className="p-6" ref={bookingCardRef}>
-            <h3 className="text-lg font-semibold mb-4">The ability to book here is coming soon. Please contact {equipment.owner.name}.</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              The ability to book here is coming soon. Please contact{" "}
+              {equipment.owner.name}.
+            </h3>
             <button
               onClick={() => setShowContactModal(true)}
               className="text-primary

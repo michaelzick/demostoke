@@ -1,9 +1,14 @@
-
 import { Link } from "react-router-dom";
 import { StarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { Equipment } from "@/types";
 
 interface RelatedGearProps {
@@ -21,13 +26,16 @@ const RelatedGear = ({ relatedGear }: RelatedGearProps) => {
       <h4 className="text-lg font-semibold mb-4">Related Gear</h4>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {relatedGear.map((item) => {
-          // Handle both single image_url and multiple images array
-          const images = item.images || (item.image_url ? [item.image_url] : []);
+          // Use images array from equipment_images table
+          const images = item.images || [];
           const hasMultipleImages = images.length > 1;
           const hasImages = images.length > 0;
 
           return (
-            <Card key={item.id} className="overflow-hidden hover:shadow-md transition-shadow">
+            <Card
+              key={item.id}
+              className="overflow-hidden hover:shadow-md transition-shadow"
+            >
               <div className="flex h-24">
                 <div className="w-1/3 relative">
                   {hasImages ? (
@@ -49,7 +57,7 @@ const RelatedGear = ({ relatedGear }: RelatedGearProps) => {
                       </Carousel>
                     ) : (
                       <img
-                        src={images[0] || item.image_url}
+                        src={images[0]}
                         alt={item.name}
                         className="h-full w-full object-cover"
                       />
@@ -62,14 +70,18 @@ const RelatedGear = ({ relatedGear }: RelatedGearProps) => {
                 </div>
                 <div className="w-2/3 p-3 flex flex-col justify-between">
                   <div>
-                    <h5 className="font-medium text-sm mb-1 line-clamp-2">{item.name}</h5>
+                    <h5 className="font-medium text-sm mb-1 line-clamp-2">
+                      {item.name}
+                    </h5>
                     <div className="flex items-center text-xs mb-1">
                       <StarIcon className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
                       <span>{item.rating}</span>
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-xs text-muted-foreground">${item.price_per_day}/day</span>
+                    <span className="text-xs text-muted-foreground">
+                      ${item.price_per_day}/day
+                    </span>
                     <Button size="sm" asChild className="text-xs h-6">
                       <Link to={`/equipment/${item.id}`}>View</Link>
                     </Button>

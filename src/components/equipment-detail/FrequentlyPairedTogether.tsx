@@ -1,8 +1,13 @@
-
 import { useState } from "react";
 import { AddOn, calculateTotalPrice, getAddOnsForCategory } from "@/lib/addOns";
 import { Equipment } from "@/types";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -18,17 +23,22 @@ const FrequentlyPairedTogether = ({
   equipment,
   onDemoRequest,
   selectedRange,
-  isDateSelected
+  isDateSelected,
 }: FrequentlyBoughtTogetherProps) => {
   const addOns = getAddOnsForCategory(equipment.category);
   const [selectedAddOns, setSelectedAddOns] = useState<AddOn[]>([...addOns]);
-  const totalPrice = calculateTotalPrice(equipment.price_per_day, selectedAddOns);
+  const totalPrice = calculateTotalPrice(
+    equipment.price_per_day,
+    selectedAddOns,
+  );
 
   const handleAddOnToggle = (addOn: AddOn, checked: boolean) => {
     if (checked) {
       setSelectedAddOns([...selectedAddOns, addOn]);
     } else {
-      setSelectedAddOns(selectedAddOns.filter(item => item.name !== addOn.name));
+      setSelectedAddOns(
+        selectedAddOns.filter((item) => item.name !== addOn.name),
+      );
     }
   };
 
@@ -47,29 +57,40 @@ const FrequentlyPairedTogether = ({
             <div className="w-16 h-16 overflow-hidden rounded-md mb-2">
               <AspectRatio ratio={1}>
                 <img
-                  src={equipment.image_url}
+                  src={equipment.images?.[0]}
                   alt={equipment.name}
                   className="w-full h-full object-cover"
                 />
               </AspectRatio>
             </div>
-            <span className="text-xs text-center font-medium">{equipment.name}</span>
+            <span className="text-xs text-center font-medium">
+              {equipment.name}
+            </span>
           </div>
 
           {/* Add-on items */}
           {addOns.map((addOn) => {
-            const isSelected = selectedAddOns.some(item => item.name === addOn.name);
+            const isSelected = selectedAddOns.some(
+              (item) => item.name === addOn.name,
+            );
 
             return (
-              <div key={addOn.name} className="relative flex flex-col items-center w-24">
+              <div
+                key={addOn.name}
+                className="relative flex flex-col items-center w-24"
+              >
                 <div className="absolute -left-2 z-10">
                   <Checkbox
                     checked={isSelected}
-                    onCheckedChange={(checked) => handleAddOnToggle(addOn, checked === true)}
+                    onCheckedChange={(checked) =>
+                      handleAddOnToggle(addOn, checked === true)
+                    }
                     className="absolute"
                   />
                 </div>
-                <div className={`w-16 h-16 overflow-hidden rounded-md mb-2 ${!isSelected ? 'opacity-50' : ''}`}>
+                <div
+                  className={`w-16 h-16 overflow-hidden rounded-md mb-2 ${!isSelected ? "opacity-50" : ""}`}
+                >
                   <AspectRatio ratio={1}>
                     <img
                       src={addOn.imageUrl}
@@ -78,10 +99,14 @@ const FrequentlyPairedTogether = ({
                     />
                   </AspectRatio>
                 </div>
-                <span className={`text-xs text-center font-medium ${!isSelected ? 'text-gray-400' : ''}`}>
+                <span
+                  className={`text-xs text-center font-medium ${!isSelected ? "text-gray-400" : ""}`}
+                >
                   {addOn.name}
                 </span>
-                <span className="text-xs text-muted-foreground">${addOn.price_per_day}/day</span>
+                <span className="text-xs text-muted-foreground">
+                  ${addOn.price_per_day}/day
+                </span>
               </div>
             );
           })}

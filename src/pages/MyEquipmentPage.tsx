@@ -21,18 +21,28 @@ import {
   DollarSign,
   BarChart3,
 } from "lucide-react";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { useUserEquipment, useDeleteEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
+import {
+  useUserEquipment,
+  useDeleteEquipment,
+  useUpdateEquipmentVisibility,
+} from "@/hooks/useUserEquipment";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useAuth } from "@/helpers";
 import type { UserEquipment } from "@/types/equipment";
 
 const MyEquipmentPage = () => {
   usePageMetadata({
-    title: 'My Equipment | DemoStoke',
-    description: 'Manage your equipment listings on DemoStoke.'
+    title: "My Equipment | DemoStoke",
+    description: "Manage your equipment listings on DemoStoke.",
   });
 
   const navigate = useNavigate();
@@ -47,7 +57,11 @@ const MyEquipmentPage = () => {
   const updateVisibilityMutation = useUpdateEquipmentVisibility();
 
   const handleDelete = async (equipmentId: string, equipmentName: string) => {
-    if (window.confirm(`Are you sure you want to delete "${equipmentName}"? This action cannot be undone.`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete "${equipmentName}"? This action cannot be undone.`,
+      )
+    ) {
       try {
         await deleteEquipmentMutation.mutateAsync(equipmentId);
         toast({
@@ -55,7 +69,7 @@ const MyEquipmentPage = () => {
           description: `${equipmentName} has been successfully deleted.`,
         });
       } catch (error) {
-        console.error('Delete error:', error);
+        console.error("Delete error:", error);
         toast({
           title: "Error",
           description: "Failed to delete equipment. Please try again.",
@@ -65,19 +79,23 @@ const MyEquipmentPage = () => {
     }
   };
 
-  const handleVisibilityToggle = async (equipmentId: string, currentVisibility: boolean, equipmentName: string) => {
+  const handleVisibilityToggle = async (
+    equipmentId: string,
+    currentVisibility: boolean,
+    equipmentName: string,
+  ) => {
     try {
       await updateVisibilityMutation.mutateAsync({
         equipmentId,
-        visible: !currentVisibility
+        visible: !currentVisibility,
       });
 
       toast({
         title: "Visibility Updated",
-        description: `${equipmentName} is now ${!currentVisibility ? 'visible' : 'hidden'} on the map.`,
+        description: `${equipmentName} is now ${!currentVisibility ? "visible" : "hidden"} on the map.`,
       });
     } catch (error) {
-      console.error('Visibility toggle error:', error);
+      console.error("Visibility toggle error:", error);
       toast({
         title: "Error",
         description: "Failed to update visibility. Please try again.",
@@ -91,18 +109,18 @@ const MyEquipmentPage = () => {
       name: equipmentItem.name,
       category: equipmentItem.category,
       description: equipmentItem.description,
-      location_address: equipmentItem.location?.address || '', // Changed from zip to address
-      size: equipmentItem.specifications?.size || '',
-      weight: equipmentItem.specifications?.weight || '',
-      material: equipmentItem.specifications?.material || '',
-      suitable_skill_level: equipmentItem.specifications?.suitable || '',
+      location_address: equipmentItem.location?.address || "", // Changed from zip to address
+      size: equipmentItem.specifications?.size || "",
+      weight: equipmentItem.specifications?.weight || "",
+      material: equipmentItem.specifications?.material || "",
+      suitable_skill_level: equipmentItem.specifications?.suitable || "",
       price_per_day: equipmentItem.price_per_day,
       damage_deposit: equipmentItem.damage_deposit || 0,
-      image_url: equipmentItem.image_url
+      image_url: equipmentItem.image_url,
     };
 
-    sessionStorage.setItem('duplicateGearData', JSON.stringify(duplicateData));
-    navigate('/list-your-gear/add-gear-form');
+    sessionStorage.setItem("duplicateGearData", JSON.stringify(duplicateData));
+    navigate("/list-your-gear/add-gear-form");
   };
 
   if (!user) {
@@ -162,18 +180,24 @@ const MyEquipmentPage = () => {
     );
   }
 
-  const filteredEquipment = equipment?.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.category.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
-    const matchesVisibility = visibilityFilter === "all" ||
-      (visibilityFilter === "visible" && item.visible_on_map) ||
-      (visibilityFilter === "hidden" && !item.visible_on_map);
+  const filteredEquipment =
+    equipment?.filter((item) => {
+      const matchesSearch =
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory =
+        selectedCategory === "all" || item.category === selectedCategory;
+      const matchesVisibility =
+        visibilityFilter === "all" ||
+        (visibilityFilter === "visible" && item.visible_on_map) ||
+        (visibilityFilter === "hidden" && !item.visible_on_map);
 
-    return matchesSearch && matchesCategory && matchesVisibility;
-  }) || [];
+      return matchesSearch && matchesCategory && matchesVisibility;
+    }) || [];
 
-  const categories = [...new Set(equipment?.map(item => item.category) || [])];
+  const categories = [
+    ...new Set(equipment?.map((item) => item.category) || []),
+  ];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -218,7 +242,7 @@ const MyEquipmentPage = () => {
                 className="px-3 py-2 border border-input bg-background rounded-md text-sm"
               >
                 <option value="all">All Categories</option>
-                {categories.map(category => (
+                {categories.map((category) => (
                   <option key={category} value={category}>
                     {category.charAt(0).toUpperCase() + category.slice(1)}
                   </option>
@@ -244,8 +268,7 @@ const MyEquipmentPage = () => {
               <p className="text-muted-foreground mb-6">
                 {equipment?.length === 0
                   ? "You haven't added any equipment yet. Start by adding your first item!"
-                  : "No equipment matches your current filters."
-                }
+                  : "No equipment matches your current filters."}
               </p>
               {equipment?.length === 0 && (
                 <Button asChild>
@@ -259,23 +282,26 @@ const MyEquipmentPage = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredEquipment.map((item) => {
-                // Handle both single image_url and multiple images array - ensure we always have an array
-                const images = item.images && item.images.length > 0
-                  ? item.images
-                  : item.image_url
-                    ? [item.image_url]
-                    : [];
+                // Use images array from equipment_images table
+                const images =
+                  item.images && item.images.length > 0 ? item.images : [];
 
                 const hasMultipleImages = images.length > 1;
                 const hasImages = images.length > 0;
 
                 return (
-                  <Card key={item.id} className="group hover:shadow-lg transition-shadow">
+                  <Card
+                    key={item.id}
+                    className="group hover:shadow-lg transition-shadow"
+                  >
                     <CardHeader className="pb-2">
                       <div className="aspect-square relative overflow-hidden rounded-md mb-4">
                         {hasImages ? (
                           hasMultipleImages ? (
-                            <Carousel className="w-full h-full" opts={{ loop: true }}>
+                            <Carousel
+                              className="w-full h-full"
+                              opts={{ loop: true }}
+                            >
                               <CarouselContent>
                                 {images.map((imageUrl, index) => (
                                   <CarouselItem key={index}>
@@ -299,11 +325,20 @@ const MyEquipmentPage = () => {
                           )
                         ) : (
                           <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                            <span className="text-gray-500">No image available</span>
+                            <span className="text-gray-500">
+                              No image available
+                            </span>
                           </div>
                         )}
                         <div className="absolute top-2 right-2 flex gap-1">
-                          <Badge variant={item.status === 'available' ? 'default' : 'secondary'} className="text-xs">
+                          <Badge
+                            variant={
+                              item.status === "available"
+                                ? "default"
+                                : "secondary"
+                            }
+                            className="text-xs"
+                          >
                             {item.status}
                           </Badge>
                           {!item.visible_on_map && (
@@ -317,7 +352,9 @@ const MyEquipmentPage = () => {
 
                       <div className="space-y-1">
                         <Link to={`/equipment/${item.id}`}>
-                          <CardTitle className="text-lg line-clamp-1 hover:text-primary transition-colors">{item.name}</CardTitle>
+                          <CardTitle className="text-lg line-clamp-1 hover:text-primary transition-colors">
+                            {item.name}
+                          </CardTitle>
                         </Link>
                         <div className="flex items-center justify-between text-sm text-muted-foreground">
                           <span className="capitalize">{item.category}</span>
@@ -343,7 +380,9 @@ const MyEquipmentPage = () => {
                         {/* Location */}
                         <div className="flex items-center gap-1 text-sm text-muted-foreground">
                           <MapPin className="h-3 w-3" />
-                          <span className="line-clamp-1">{item.location.address}</span>
+                          <span className="line-clamp-1">
+                            {item.location.address}
+                          </span>
                         </div>
 
                         {/* Actions */}
@@ -353,7 +392,13 @@ const MyEquipmentPage = () => {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleVisibilityToggle(item.id, item.visible_on_map, item.name)}
+                              onClick={() =>
+                                handleVisibilityToggle(
+                                  item.id,
+                                  item.visible_on_map,
+                                  item.name,
+                                )
+                              }
                               disabled={updateVisibilityMutation.isPending}
                             >
                               {item.visible_on_map ? (
@@ -372,11 +417,7 @@ const MyEquipmentPage = () => {
                              <Copy className="h-4 w-4" />
                            </Button> */}
 
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              asChild
-                            >
+                            <Button variant="ghost" size="sm" asChild>
                               <Link to={`/edit-gear/${item.id}`}>
                                 <Edit className="h-4 w-4" />
                               </Link>
@@ -411,7 +452,8 @@ const MyEquipmentPage = () => {
           <div className="py-6">
             <h3 className="text-lg font-semibold mb-4">Analytics Dashboard</h3>
             <p className="text-muted-foreground">
-              Here you can view detailed analytics about your equipment listings.
+              Here you can view detailed analytics about your equipment
+              listings.
             </p>
             <Separator className="my-4" />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -424,7 +466,9 @@ const MyEquipmentPage = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold">0</p>
-                  <p className="text-sm text-muted-foreground">No data available</p>
+                  <p className="text-sm text-muted-foreground">
+                    No data available
+                  </p>
                 </CardContent>
               </Card>
 
@@ -437,7 +481,9 @@ const MyEquipmentPage = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold">0</p>
-                  <p className="text-sm text-muted-foreground">No data available</p>
+                  <p className="text-sm text-muted-foreground">
+                    No data available
+                  </p>
                 </CardContent>
               </Card>
 
@@ -450,13 +496,14 @@ const MyEquipmentPage = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold">$0</p>
-                  <p className="text-sm text-muted-foreground">No data available</p>
+                  <p className="text-sm text-muted-foreground">
+                    No data available
+                  </p>
                 </CardContent>
               </Card>
             </div>
           </div>
         </TabsContent>
-
       </Tabs>
     </div>
   );
