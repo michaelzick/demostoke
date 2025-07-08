@@ -369,6 +369,33 @@ export type Database = {
         }
         Relationships: []
       }
+      temp_images: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: string
+          original_url: string
+          status: string | null
+          temp_file_path: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          original_url: string
+          status?: string | null
+          temp_file_path?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          original_url?: string
+          status?: string | null
+          temp_file_path?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           assigned_at: string | null
@@ -390,6 +417,57 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      webp_images: {
+        Row: {
+          created_at: string
+          id: string
+          original_height: number | null
+          original_size: number | null
+          original_url: string
+          original_width: number | null
+          source_column: string
+          source_record_id: string | null
+          source_table: string
+          updated_at: string
+          webp_height: number | null
+          webp_size: number | null
+          webp_url: string
+          webp_width: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          original_height?: number | null
+          original_size?: number | null
+          original_url: string
+          original_width?: number | null
+          source_column: string
+          source_record_id?: string | null
+          source_table: string
+          updated_at?: string
+          webp_height?: number | null
+          webp_size?: number | null
+          webp_url: string
+          webp_width?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          original_height?: number | null
+          original_size?: number | null
+          original_url?: string
+          original_width?: number | null
+          source_column?: string
+          source_record_id?: string | null
+          source_table?: string
+          updated_at?: string
+          webp_height?: number | null
+          webp_size?: number | null
+          webp_url?: string
+          webp_width?: number | null
         }
         Relationships: []
       }

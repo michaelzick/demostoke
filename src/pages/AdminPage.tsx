@@ -8,6 +8,7 @@ import VideoUploadSection from "@/components/admin/VideoUploadSection";
 import DataDisplaySettings from "@/components/admin/DataDisplaySettings";
 import GlobalSearchSettings from "@/components/admin/GlobalSearchSettings";
 import GeocodingRecoverySection from "@/components/admin/GeocodingRecoverySection";
+import ImageConversionSection from "@/components/admin/ImageConversionSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -66,6 +67,7 @@ const AdminPage = () => {
         </TabsContent>
 
         <TabsContent value="tools" className="space-y-6">
+          <ImageConversionSection />
           <GeocodingRecoverySection />
         </TabsContent>
       </Tabs>
