@@ -1,4 +1,6 @@
 
+import { mapGearTypeToCategory } from "@/utils/gearTypeMapping";
+
 interface PrepareEquipmentDataParams {
   userId?: string;
   gearName: string;
@@ -38,7 +40,7 @@ export const prepareEquipmentData = ({
 
   const equipmentData: Record<string, unknown> = {
     name: gearName,
-    category: gearType,
+    category: mapGearTypeToCategory(gearType),
     description: description,
     image_url: finalImageUrl,
     location_address: address, // Changed from location_zip to location_address
