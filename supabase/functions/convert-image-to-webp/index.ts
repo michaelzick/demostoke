@@ -102,10 +102,34 @@ serve(async (req) => {
 
     // Step 9: Update the original record with new WebP URL
     console.log('Updating original record...');
-    const { error: updateError } = await supabase
-      .from(sourceTable)
-      .update({ [sourceColumn]: webpUrl })
-      .eq('id', sourceRecordId);
+    let updateError;
+    if (sourceColumn === 'images') {
+      const { data: current, error: fetchError } = await supabase
+        .from(sourceTable)
+        .select('images')
+        .eq('id', sourceRecordId)
+        .single();
+
+      if (fetchError) {
+        console.error('Failed to fetch current images array:', fetchError);
+        updateError = fetchError;
+      } else if (current && Array.isArray(current.images)) {
+        const newImages = current.images.map((url: string) =>
+          url === imageUrl ? webpUrl : url
+        );
+        const { error } = await supabase
+          .from(sourceTable)
+          .update({ images: newImages })
+          .eq('id', sourceRecordId);
+        updateError = error;
+      }
+    } else {
+      const { error } = await supabase
+        .from(sourceTable)
+        .update({ [sourceColumn]: webpUrl })
+        .eq('id', sourceRecordId);
+      updateError = error;
+    }
 
     if (!updateError && sourceTable === 'equipment' && sourceColumn === 'image_url') {
       // Also store the converted primary image in the equipment_images table

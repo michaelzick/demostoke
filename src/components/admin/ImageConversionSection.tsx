@@ -47,11 +47,11 @@ const ImageConversionSection = () => {
                url.includes('photo');
       };
 
-      // Scan equipment table - primary images
+      // Scan equipment table - primary images and images array
       console.log('Scanning equipment table...');
       const { data: equipmentData } = await supabase
         .from('equipment')
-        .select('id, image_url')
+        .select('id, image_url, images')
         .not('image_url', 'is', null);
 
       equipmentData?.forEach(item => {
@@ -64,8 +64,31 @@ const ImageConversionSection = () => {
             source_record_id: item.id
           });
         }
+
+        if (Array.isArray((item as any).images)) {
+          (item as any).images.forEach((url: string, idx: number) => {
+            if (isConvertibleImage(url)) {
+              foundImages.push({
+                id: `equipment-${item.id}-img-${idx}`,
+                url,
+                source_table: 'equipment',
+                source_column: 'images',
+                source_record_id: item.id
+              });
+            }
+          });
+        }
       });
-      console.log(`Found ${equipmentData?.filter(item => item.image_url && isConvertibleImage(item.image_url)).length || 0} equipment images`);
+      const equipmentImageCount =
+        equipmentData?.filter(item => item.image_url && isConvertibleImage(item.image_url)).length || 0;
+      const equipmentArrayCount =
+        equipmentData?.reduce((acc, item) => {
+          if (Array.isArray((item as any).images)) {
+            acc += (item as any).images.filter((url: string) => isConvertibleImage(url)).length;
+          }
+          return acc;
+        }, 0) || 0;
+      console.log(`Found ${equipmentImageCount} equipment images and ${equipmentArrayCount} images in arrays`);
 
       // Scan equipment_images table - gallery images
       console.log('Scanning equipment_images table...');
