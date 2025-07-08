@@ -54,12 +54,17 @@ export const useRecentEquipment = () => {
 
         // Convert equipment details
         const { convertSupabaseToEquipment } = await import('@/services/equipment/equipmentConverter');
-        
+        const { fetchEquipmentImages } = await import('@/utils/multipleImageHandling');
+
         const equipmentPromises = equipmentData.map(async (item) => {
+          const galleryImages = await fetchEquipmentImages(item.id);
+          const allImages = Array.from(new Set([item.image_url, ...galleryImages].filter(Boolean)));
+
           const flatItem = {
             ...item,
             profile_name: item.profiles?.name,
-            profile_avatar_url: item.profiles?.avatar_url
+            profile_avatar_url: item.profiles?.avatar_url,
+            all_images: allImages,
           };
           return await convertSupabaseToEquipment(flatItem);
         });
