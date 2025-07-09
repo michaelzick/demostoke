@@ -13,14 +13,21 @@ export const deduplicateImages = async (imageUrls: string[]): Promise<string[]> 
   if (imageUrls.length <= 1) return imageUrls;
 
   console.log('🔍 Starting image deduplication for:', imageUrls.length, 'images');
+  console.log('🔗 Original URLs:', imageUrls);
 
-  // Get WebP metadata to help with deduplication
-  const webpMetadata = await getWebPMetadata(imageUrls);
+  // First, remove exact URL duplicates using Set
+  const exactDeduped = [...new Set(imageUrls.filter(Boolean))];
+  console.log('🔗 After exact URL deduplication:', exactDeduped.length, 'images');
+
+  if (exactDeduped.length <= 1) return exactDeduped;
+
+  // Get WebP metadata to help with visual duplicate detection
+  const webpMetadata = await getWebPMetadata(exactDeduped);
   
   const uniqueImages: string[] = [];
   const processedImages = new Set<string>();
 
-  for (const url of imageUrls) {
+  for (const url of exactDeduped) {
     if (processedImages.has(url)) continue;
 
     // Check if this image has a WebP equivalent or original
@@ -53,6 +60,7 @@ export const deduplicateImages = async (imageUrls: string[]): Promise<string[]> 
   }
 
   console.log('✅ Deduplication complete:', imageUrls.length, '→', uniqueImages.length, 'images');
+  console.log('🎯 Final unique URLs:', uniqueImages);
   return uniqueImages;
 };
 
