@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/pagination';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, Loader2, X } from 'lucide-react';
+import { Search, Loader2 } from 'lucide-react';
 
 interface SearchResult {
   url: string;
@@ -44,7 +44,6 @@ const ImageSearchDialog = ({
   const [results, setResults] = useState<SearchResult[]>([]);
   const [selectedImages, setSelectedImages] = useState<Set<string>>(new Set());
   const [isSearching, setIsSearching] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const RESULTS_PER_PAGE = 10;
   const { toast } = useToast();
@@ -82,7 +81,6 @@ const ImageSearchDialog = ({
       setResults(data.results || []);
       setSelectedImages(new Set());
       setCurrentPage(1);
-      setPreviewUrl(null);
       
       if (data.results?.length === 0) {
         toast({
@@ -108,7 +106,6 @@ const ImageSearchDialog = ({
       newSelected.delete(imageUrl);
     } else {
       newSelected.add(imageUrl);
-      setPreviewUrl(imageUrl);
     }
     setSelectedImages(newSelected);
   };
@@ -177,15 +174,6 @@ const ImageSearchDialog = ({
             </Button>
           </div>
 
-          {previewUrl && (
-            <div className="flex justify-center">
-              <img
-                src={previewUrl}
-                alt="Selected preview"
-                className="max-h-64 object-contain"
-              />
-            </div>
-          )}
 
           {/* Results Grid */}
           {results.length > 0 && (
