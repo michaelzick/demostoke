@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Equipment } from "@/types";
 import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
+import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 
 export const useEquipmentById = (id: string) => {
   return useQuery({
@@ -48,11 +49,13 @@ export const useEquipmentById = (id: string) => {
 
       // Fetch additional images from equipment_images table
       console.log("Fetching additional images for equipment ID:", data.id);
-      const additionalImages = await fetchEquipmentImages(data.id);
+      const additionalImages = await fetchEquipmentImages(
+        data.id,
+        data.image_url || undefined,
+      );
       console.log("Additional images fetched:", additionalImages);
 
-      // Use images from equipment_images table only
-      const allImages = additionalImages;
+      const allImages = deduplicateImageUrls(additionalImages);
       console.log("Images array:", allImages);
 
       // Convert to Equipment type with proper location mapping
