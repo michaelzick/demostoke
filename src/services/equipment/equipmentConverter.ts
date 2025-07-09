@@ -3,17 +3,23 @@ import type { Equipment } from "@/types";
 export const convertDbEquipmentToFrontend = (
   dbEquipment: Record<string, unknown>,
 ): Equipment => {
-  // Handle images array - prioritize all_images if available, then images, and
-  // finally fall back to the single image_url field if provided. This ensures
-  // cards always have at least one image for the carousel component.
+  // Handle images array - use all_images if available (already deduplicated),
+  // otherwise fall back to combining image_url with images array
   let imagesArray: string[] = [];
 
   if (dbEquipment.all_images && Array.isArray(dbEquipment.all_images)) {
+    // all_images is already deduplicated by the data service
     imagesArray = dbEquipment.all_images as string[];
-  } else if (dbEquipment.images && Array.isArray(dbEquipment.images)) {
-    imagesArray = dbEquipment.images as string[];
-  } else if (typeof dbEquipment.image_url === "string" && dbEquipment.image_url) {
-    imagesArray = [dbEquipment.image_url];
+  } else {
+    // Fallback: combine image_url and images array, filter out nulls
+    const combinedImages: string[] = [];
+    if (typeof dbEquipment.image_url === "string" && dbEquipment.image_url) {
+      combinedImages.push(dbEquipment.image_url);
+    }
+    if (dbEquipment.images && Array.isArray(dbEquipment.images)) {
+      combinedImages.push(...(dbEquipment.images as string[]));
+    }
+    imagesArray = combinedImages.filter(Boolean);
   }
 
   // Determine the primary image URL, falling back to the image_url field when
