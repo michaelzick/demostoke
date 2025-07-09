@@ -4,9 +4,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, Loader2, X } from 'lucide-react';
+import { Search, Loader2 } from 'lucide-react';
 
 interface SearchResult {
   url: string;
@@ -36,6 +44,8 @@ const ImageSearchDialog = ({
   const [results, setResults] = useState<SearchResult[]>([]);
   const [selectedImages, setSelectedImages] = useState<Set<string>>(new Set());
   const [isSearching, setIsSearching] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const RESULTS_PER_PAGE = 10;
   const { toast } = useToast();
 
   // Pre-populate the search field when dialog opens or defaultQuery changes
@@ -61,7 +71,8 @@ const ImageSearchDialog = ({
         body: {
           query: query.trim(),
           gearType,
-          count: 20
+          count: 30,
+          size: 'large'
         }
       });
 
@@ -69,6 +80,7 @@ const ImageSearchDialog = ({
 
       setResults(data.results || []);
       setSelectedImages(new Set());
+      setCurrentPage(1);
       
       if (data.results?.length === 0) {
         toast({
@@ -126,6 +138,12 @@ const ImageSearchDialog = ({
     }
   };
 
+  const totalPages = Math.ceil(results.length / RESULTS_PER_PAGE);
+  const paginatedResults = results.slice(
+    (currentPage - 1) * RESULTS_PER_PAGE,
+    currentPage * RESULTS_PER_PAGE
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden flex flex-col">
@@ -156,11 +174,12 @@ const ImageSearchDialog = ({
             </Button>
           </div>
 
+
           {/* Results Grid */}
           {results.length > 0 && (
             <div className="flex-1 overflow-auto">
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 pb-4">
-                {results.map((result, index) => (
+                {paginatedResults.map((result, index) => (
                   <div
                     key={index}
                     className={`relative border rounded-lg overflow-hidden cursor-pointer transition-all ${
@@ -172,7 +191,7 @@ const ImageSearchDialog = ({
                   >
                     <div className="aspect-square">
                       <img
-                        src={result.thumbnail}
+                        src={result.url}
                         alt={result.title}
                         className="w-full h-full object-cover"
                         loading="lazy"
@@ -194,6 +213,47 @@ const ImageSearchDialog = ({
                 ))}
               </div>
             </div>
+          )}
+
+          {totalPages > 1 && (
+            <Pagination className="mt-2">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage((p) => Math.max(1, p - 1));
+                    }}
+                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPages }).map((_, i) => (
+                  <PaginationItem key={i}>
+                    <PaginationLink
+                      href="#"
+                      isActive={currentPage === i + 1}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(i + 1);
+                      }}
+                    >
+                      {i + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentPage((p) => Math.min(totalPages, p + 1));
+                    }}
+                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           )}
 
           {/* Action Buttons */}

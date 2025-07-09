@@ -10,6 +10,7 @@ interface SearchRequest {
   query: string;
   gearType?: string;
   count?: number;
+  size?: string;
 }
 
 interface SearchResult {
@@ -28,7 +29,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { query, gearType, count = 10 }: SearchRequest = await req.json();
+    const { query, gearType, count = 30, size = 'large' }: SearchRequest = await req.json();
     
     const apiKey = Deno.env.get('GOOGLE_SEARCH_API_KEY');
     const searchEngineId = Deno.env.get('GOOGLE_SEARCH_ENGINE_ID');
@@ -43,34 +44,49 @@ const handler = async (req: Request): Promise<Response> => {
       searchQuery = `${query} ${gearType} product`;
     }
 
-    const searchUrl = new URL('https://www.googleapis.com/customsearch/v1');
-    searchUrl.searchParams.set('key', apiKey);
-    searchUrl.searchParams.set('cx', searchEngineId);
-    searchUrl.searchParams.set('q', searchQuery);
-    searchUrl.searchParams.set('searchType', 'image');
-    searchUrl.searchParams.set('num', Math.min(count, 10).toString());
-    searchUrl.searchParams.set('imgSize', 'large');
-    searchUrl.searchParams.set('imgType', 'photo');
-    searchUrl.searchParams.set('safe', 'active');
+    const resultsPerPage = 10;
+    const pages = Math.ceil(count / resultsPerPage);
+    const results: SearchResult[] = [];
 
-    console.log('Searching for:', searchQuery);
+    for (let page = 0; page < pages; page++) {
+      const start = page * resultsPerPage + 1;
 
-    const response = await fetch(searchUrl.toString());
-    
-    if (!response.ok) {
-      throw new Error(`Google Search API error: ${response.status}`);
+      const searchUrl = new URL('https://www.googleapis.com/customsearch/v1');
+      searchUrl.searchParams.set('key', apiKey);
+      searchUrl.searchParams.set('cx', searchEngineId);
+      searchUrl.searchParams.set('q', searchQuery);
+      searchUrl.searchParams.set('searchType', 'image');
+      searchUrl.searchParams.set('num', resultsPerPage.toString());
+      searchUrl.searchParams.set('start', start.toString());
+      searchUrl.searchParams.set('imgSize', size);
+      searchUrl.searchParams.set('imgType', 'photo');
+      searchUrl.searchParams.set('safe', 'active');
+
+      console.log(`Searching for: ${searchQuery} (start=${start})`);
+
+      const response = await fetch(searchUrl.toString());
+
+      if (!response.ok) {
+        throw new Error(`Google Search API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      results.push(
+        ...(data.items || []).map((item: any) => ({
+          url: item.link,
+          thumbnail: item.image?.thumbnailLink || item.link,
+          title: item.title,
+          source: item.displayLink || 'Unknown',
+          width: item.image?.width,
+          height: item.image?.height,
+        }))
+      );
+
+      if (results.length >= count) {
+        break;
+      }
     }
-
-    const data = await response.json();
-    
-    const results: SearchResult[] = (data.items || []).map((item: any) => ({
-      url: item.link,
-      thumbnail: item.image?.thumbnailLink || item.link,
-      title: item.title,
-      source: item.displayLink || 'Unknown',
-      width: item.image?.width,
-      height: item.image?.height,
-    }));
 
     console.log(`Found ${results.length} images for query: ${searchQuery}`);
 
