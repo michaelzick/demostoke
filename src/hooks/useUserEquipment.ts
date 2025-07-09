@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/helpers";
 import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
+import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 
 interface UserEquipment {
   id: string;
@@ -96,12 +97,15 @@ export const useUserEquipment = (
           );
           console.log("Equipment ID:", item.id);
 
-          // Fetch additional images from equipment_images table
-          const additionalImages = await fetchEquipmentImages(item.id);
+          // Fetch images from equipment_images table; fall back to primary URL
+          const additionalImages = await fetchEquipmentImages(
+            item.id,
+            item.image_url || undefined,
+          );
           console.log("Additional images fetched:", additionalImages);
 
-          // Use images from equipment_images table only
-          const allImages = additionalImages;
+          // Use images from equipment_images table or fallback to primary
+          const allImages = deduplicateImageUrls(additionalImages);
           console.log("Images array:", allImages);
           console.log("=== END USER EQUIPMENT IMAGES FETCH ===");
 

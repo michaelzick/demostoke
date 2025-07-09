@@ -1,7 +1,10 @@
 
 import { supabase } from "@/integrations/supabase/client";
 
-export const fetchEquipmentImages = async (equipmentId: string): Promise<string[]> => {
+export const fetchEquipmentImages = async (
+  equipmentId: string,
+  fallbackUrl?: string,
+): Promise<string[]> => {
   console.log('=== FETCHING EQUIPMENT IMAGES ===');
   console.log('Equipment ID for image fetch:', equipmentId);
 
@@ -10,6 +13,7 @@ export const fetchEquipmentImages = async (equipmentId: string): Promise<string[
       .from('equipment_images')
       .select('image_url, display_order, is_primary')
       .eq('equipment_id', equipmentId)
+      .order('is_primary', { ascending: false })
       .order('display_order', { ascending: true });
 
     if (error) {
@@ -22,10 +26,10 @@ export const fetchEquipmentImages = async (equipmentId: string): Promise<string[
 
     if (!data || data.length === 0) {
       console.log('No additional images found in equipment_images table');
-      return [];
+      return fallbackUrl ? [fallbackUrl] : [];
     }
 
-    const imageUrls = data.map(img => img.image_url);
+    const imageUrls = data.map((img) => img.image_url);
     console.log('Extracted image URLs:', imageUrls);
     console.log('=== END EQUIPMENT IMAGES FETCH ===');
     
