@@ -52,12 +52,13 @@ export const useRecentEquipment = () => {
 
         console.log(`📅 Found ${equipmentData.length} recent equipment items:`, equipmentData);
 
-        // Convert equipment details with unified image handling
+        // Convert equipment details
         const { convertSupabaseToEquipment } = await import('@/services/equipment/equipmentConverter');
-        const { fetchEquipmentImagesUnified } = await import('@/utils/imageDeduplication');
+        const { fetchEquipmentImages } = await import('@/utils/multipleImageHandling');
 
         const equipmentPromises = equipmentData.map(async (item) => {
-          const allImages = await fetchEquipmentImagesUnified(item.id);
+          const galleryImages = await fetchEquipmentImages(item.id);
+          const allImages = Array.from(new Set([item.image_url, ...galleryImages].filter(Boolean)));
 
           const flatItem = {
             ...item,

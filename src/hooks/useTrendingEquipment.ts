@@ -67,12 +67,14 @@ export const useTrendingEquipment = () => {
           return [];
         }
 
-        // Convert and sort equipment to maintain trending order with unified image handling
+        // Convert and sort equipment to maintain trending order
         const { convertSupabaseToEquipment } = await import('@/services/equipment/equipmentConverter');
-        const { fetchEquipmentImagesUnified } = await import('@/utils/imageDeduplication');
+        const { fetchEquipmentImages } = await import('@/utils/multipleImageHandling');
 
         const equipmentPromises = equipmentDetails.map(async (item) => {
-          const allImages = await fetchEquipmentImagesUnified(item.id);
+          // Fetch any gallery images and combine with the primary image
+          const galleryImages = await fetchEquipmentImages(item.id);
+          const allImages = Array.from(new Set([item.image_url, ...galleryImages].filter(Boolean)));
 
           const flatItem = {
             ...item,
