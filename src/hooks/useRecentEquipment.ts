@@ -4,6 +4,7 @@ import { Equipment } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
 import { getShowMockDataSetting } from "@/services/equipment/appSettingsService";
 import { mockEquipment } from "@/lib/mockData";
+import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 
 export const useRecentEquipment = () => {
   return useQuery({
@@ -58,7 +59,10 @@ export const useRecentEquipment = () => {
 
         const equipmentPromises = equipmentData.map(async (item) => {
           const galleryImages = await fetchEquipmentImages(item.id);
-          const allImages = Array.from(new Set([item.image_url, ...galleryImages].filter(Boolean)));
+          const allImages = deduplicateImageUrls([
+            item.image_url,
+            ...galleryImages,
+          ]);
 
           const flatItem = {
             ...item,
