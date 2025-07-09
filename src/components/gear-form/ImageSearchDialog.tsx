@@ -61,7 +61,7 @@ const ImageSearchDialog = ({
         body: {
           query: query.trim(),
           gearType,
-          count: 20
+          count: 30
         }
       });
 
