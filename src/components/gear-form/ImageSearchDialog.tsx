@@ -72,7 +72,8 @@ const ImageSearchDialog = ({
         body: {
           query: query.trim(),
           gearType,
-          count: 30
+          count: 30,
+          size: 'large'
         }
       });
 
@@ -202,7 +203,7 @@ const ImageSearchDialog = ({
                   >
                     <div className="aspect-square">
                       <img
-                        src={result.thumbnail}
+                        src={result.url}
                         alt={result.title}
                         className="w-full h-full object-cover"
                         loading="lazy"

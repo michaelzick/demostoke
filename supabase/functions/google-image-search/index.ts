@@ -10,6 +10,7 @@ interface SearchRequest {
   query: string;
   gearType?: string;
   count?: number;
+  size?: string;
 }
 
 interface SearchResult {
@@ -28,7 +29,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { query, gearType, count = 30 }: SearchRequest = await req.json();
+    const { query, gearType, count = 30, size = 'large' }: SearchRequest = await req.json();
     
     const apiKey = Deno.env.get('GOOGLE_SEARCH_API_KEY');
     const searchEngineId = Deno.env.get('GOOGLE_SEARCH_ENGINE_ID');
@@ -57,7 +58,7 @@ const handler = async (req: Request): Promise<Response> => {
       searchUrl.searchParams.set('searchType', 'image');
       searchUrl.searchParams.set('num', resultsPerPage.toString());
       searchUrl.searchParams.set('start', start.toString());
-      searchUrl.searchParams.set('imgSize', 'large');
+      searchUrl.searchParams.set('imgSize', size);
       searchUrl.searchParams.set('imgType', 'photo');
       searchUrl.searchParams.set('safe', 'active');
 
