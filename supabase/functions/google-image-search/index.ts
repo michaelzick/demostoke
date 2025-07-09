@@ -28,7 +28,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { query, gearType, count = 10 }: SearchRequest = await req.json();
+    const { query, gearType, count = 30 }: SearchRequest = await req.json();
     
     const apiKey = Deno.env.get('GOOGLE_SEARCH_API_KEY');
     const searchEngineId = Deno.env.get('GOOGLE_SEARCH_ENGINE_ID');
