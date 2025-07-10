@@ -289,6 +289,57 @@ export type Database = {
           },
         ]
       }
+      jpeg_images: {
+        Row: {
+          created_at: string
+          id: string
+          jpeg_height: number | null
+          jpeg_size: number | null
+          jpeg_url: string
+          jpeg_width: number | null
+          original_height: number | null
+          original_size: number | null
+          original_url: string
+          original_width: number | null
+          source_column: string
+          source_record_id: string | null
+          source_table: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          jpeg_height?: number | null
+          jpeg_size?: number | null
+          jpeg_url: string
+          jpeg_width?: number | null
+          original_height?: number | null
+          original_size?: number | null
+          original_url: string
+          original_width?: number | null
+          source_column: string
+          source_record_id?: string | null
+          source_table: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          jpeg_height?: number | null
+          jpeg_size?: number | null
+          jpeg_url?: string
+          jpeg_width?: number | null
+          original_height?: number | null
+          original_size?: number | null
+          original_url?: string
+          original_width?: number | null
+          source_column?: string
+          source_record_id?: string | null
+          source_table?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       pricing_options: {
         Row: {
           created_at: string

@@ -1,1 +1,4 @@
 project_id = "qtlhqsqanbxgfbcjigrl"
+
+[functions.convert-to-jpeg]
+verify_jwt = false
