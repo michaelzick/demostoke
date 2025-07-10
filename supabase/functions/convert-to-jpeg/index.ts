@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { ImageMagick, initialize, MagickFormat } from "https://deno.land/x/imagemagick@0.0.26/mod.ts";
+import { Image } from "https://deno.land/x/imagescript@1.2.15/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -15,8 +15,6 @@ const MAX_WIDTH = 2000;
 const JPEG_QUALITY = 70;
 const BUCKET = "jpeg-images";
 
-// Initialize ImageMagick WASM
-await initialize();
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -61,63 +59,63 @@ serve(async (req) => {
       );
     }
 
-    // Step 3: Process the image with ImageMagick
-    console.log('Processing image with ImageMagick...');
+    // Step 3: Process the image with ImageScript
+    console.log('Processing image...');
     
-    let jpegBuffer: Uint8Array;
-    let originalWidth: number;
-    let originalHeight: number;
-    let newWidth: number;
-    let newHeight: number;
-
+    let originalImage;
     try {
-      ImageMagick.read(new Uint8Array(imageBuffer), (img) => {
-        originalWidth = img.width;
-        originalHeight = img.height;
-        
-        console.log('Original dimensions:', originalWidth, 'x', originalHeight);
+      originalImage = await Image.decode(new Uint8Array(imageBuffer));
+    } catch (decodeError) {
+      console.error('Failed to decode image:', decodeError);
+      throw new Error(`Failed to decode image: ${decodeError.message}`);
+    }
+    
+    const originalWidth = originalImage.width;
+    const originalHeight = originalImage.height;
+    
+    console.log('Original dimensions:', originalWidth, 'x', originalHeight);
 
-        // Calculate new dimensions if resizing is needed
-        newWidth = originalWidth;
-        newHeight = originalHeight;
+    // Step 4: Resize if necessary (maintain aspect ratio)
+    let processedImage = originalImage;
+    let newWidth = originalWidth;
+    let newHeight = originalHeight;
 
-        if (originalWidth > MAX_WIDTH) {
-          const aspectRatio = originalHeight / originalWidth;
-          newWidth = MAX_WIDTH;
-          newHeight = Math.round(MAX_WIDTH * aspectRatio);
-          
-          console.log('Resizing to:', newWidth, 'x', newHeight);
-          img.resize(newWidth, newHeight);
-        }
+    if (originalWidth > MAX_WIDTH) {
+      const aspectRatio = originalHeight / originalWidth;
+      newWidth = MAX_WIDTH;
+      newHeight = Math.round(MAX_WIDTH * aspectRatio);
+      
+      console.log('Resizing to:', newWidth, 'x', newHeight);
+      try {
+        processedImage = originalImage.resize(newWidth, newHeight);
+      } catch (resizeError) {
+        console.error('Failed to resize image:', resizeError);
+        throw new Error(`Failed to resize image: ${resizeError.message}`);
+      }
+    }
 
-        // Strip all metadata
-        img.strip();
-        
-        // Set JPEG quality
-        img.quality = JPEG_QUALITY;
-        
-        // Set progressive encoding (interlace Plane)
-        img.interlace = 'Plane' as any;
-        
-        // Convert to JPEG
-        jpegBuffer = img.write(MagickFormat.Jpeg);
-      });
-    } catch (processError) {
-      console.error('Failed to process image:', processError);
-      throw new Error(`Failed to process image: ${processError.message}`);
+    // Step 5: Convert to JPEG
+    console.log('Converting to JPEG...');
+    let jpegBuffer;
+    try {
+      // Use ImageScript encode method with JPEG format (2) and quality
+      jpegBuffer = await processedImage.encode(2, JPEG_QUALITY); // 2 = JPEG format
+    } catch (encodeError) {
+      console.error('Failed to encode JPEG:', encodeError);
+      throw new Error(`Failed to encode JPEG: ${encodeError.message}`);
     }
     
     const jpegSize = jpegBuffer.byteLength;
     console.log('JPEG size:', jpegSize, 'bytes', 'Compression ratio:', Math.round((1 - jpegSize / originalSize) * 100) + '%');
     
-    // Step 4: Create JPEG blob
+    // Step 6: Create JPEG blob
     const jpegBlob = new Blob([jpegBuffer], { type: 'image/jpeg' });
 
-    // Step 5: Generate file path for storage
+    // Step 7: Generate file path for storage
     const timestamp = Date.now();
     const fileName = `${sourceTable}/${sourceRecordId || 'unknown'}/${timestamp}.jpg`;
 
-    // Step 6: Upload to Supabase storage
+    // Step 8: Upload to Supabase storage
     console.log('Uploading to storage:', fileName);
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from(BUCKET)
@@ -130,7 +128,7 @@ serve(async (req) => {
       throw new Error(`Failed to upload JPEG image: ${uploadError.message}`);
     }
 
-    // Step 7: Get public URL
+    // Step 9: Get public URL
     const { data: urlData } = supabase.storage
       .from(BUCKET)
       .getPublicUrl(uploadData.path);
@@ -138,7 +136,7 @@ serve(async (req) => {
     const jpegUrl = urlData.publicUrl;
     console.log('JPEG uploaded to:', jpegUrl);
 
-    // Step 8: Save conversion record to database
+    // Step 10: Save conversion record to database
     const { error: dbError } = await supabase
       .from('jpeg_images')
       .insert({
@@ -160,7 +158,7 @@ serve(async (req) => {
       // Continue even if logging fails
     }
 
-    // Step 9: Update the original record with new JPEG URL
+    // Step 11: Update the original record with new JPEG URL
     console.log('Updating original record...');
     const { error: updateError } = await supabase
       .from(sourceTable)
@@ -171,7 +169,7 @@ serve(async (req) => {
       throw new Error(`Failed to update original record: ${updateError.message}`);
     }
 
-    // Step 10: Clean up any temp records
+    // Step 12: Clean up any temp records
     await supabase
       .from('temp_images')
       .delete()
