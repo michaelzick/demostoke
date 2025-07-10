@@ -1,5 +1,6 @@
 export interface Equipment {
   id: string;
+  user_id?: string; // Add user_id for admin editing functionality
   name: string;
   category: string;
   subcategory?: string;

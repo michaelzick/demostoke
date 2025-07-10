@@ -6,10 +6,14 @@ import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 
 interface UserEquipment {
   id: string;
+  user_id: string;
   name: string;
   category: string;
   description: string;
   price_per_day: number;
+  price_per_hour?: number;
+  price_per_week?: number;
+  damage_deposit?: number;
   image_url: string | null;
   images: string[]; // Add images array
   rating: number;
@@ -53,10 +57,14 @@ export const useUserEquipment = (
         .select(
           `
           id,
+          user_id,
           name,
           category,
           description,
           price_per_day,
+          price_per_hour,
+          price_per_week,
+          damage_deposit,
           image_url,
           rating,
           review_count,
@@ -111,10 +119,14 @@ export const useUserEquipment = (
 
           return {
             id: item.id,
+            user_id: item.user_id,
             name: item.name,
             category: item.category,
             description: item.description || "",
             price_per_day: item.price_per_day,
+            price_per_hour: item.price_per_hour,
+            price_per_week: item.price_per_week,
+            damage_deposit: item.damage_deposit,
             image_url: item.image_url,
             images: allImages, // Include all images
             rating: item.rating || 0,

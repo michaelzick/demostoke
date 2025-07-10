@@ -23,6 +23,10 @@ import {
 import { getCategoryDisplayName } from "@/helpers";
 import { Equipment } from "@/types";
 import React, { useState } from "react";
+import { useAuth } from "@/contexts/auth";
+import { useIsAdmin } from "@/hooks/useUserRole";
+import { Link } from "react-router-dom";
+import { Edit } from "lucide-react";
 
 interface EquipmentDetailPageDbProps {
   equipment: Equipment;
@@ -48,6 +52,8 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showContactModal, setShowContactModal] = useState(false);
+  const { user } = useAuth();
+  const { isAdmin } = useIsAdmin();
 
   // Use images array from equipment_images table
   const images =
@@ -63,6 +69,9 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
 
   // Create tracking data for analytics
   const trackingData = `${equipment.owner.name} - ${equipment.name}`;
+
+  // Check if current user can edit this equipment
+  const canEdit = user && (equipment.owner.id === user.id || isAdmin);
 
   return (
     <div className="container px-4 md:px-6 py-8">
@@ -164,7 +173,19 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
           </div>
           {/* Equipment Info */}
           <div>
-            <EquipmentHeader equipment={equipment} />
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex-1">
+                <EquipmentHeader equipment={equipment} />
+              </div>
+              {canEdit && (
+                <Link to={`/edit-gear/${equipment.id}`}>
+                  <Button variant="outline" size="sm" className="ml-4">
+                    <Edit className="w-4 h-4 mr-2" />
+                    {isAdmin && equipment.owner.id !== user?.id ? 'Edit (Admin)' : 'Edit'}
+                  </Button>
+                </Link>
+              )}
+            </div>
             {/* Book Now button: only visible on mobile (columns stacked) */}
             <Button
               className="block lg:hidden fixed left-0 bottom-0 w-full z-40 rounded-none bg-primary text-white font-semibold hover:bg-primary hover:opacity-100 hover:shadow-none focus:outline-none h-12"

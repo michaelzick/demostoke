@@ -1,6 +1,7 @@
 
 export interface UserEquipment {
   id: string;
+  user_id?: string; // Add user_id for ownership validation
   name: string;
   category: string;
   description: string;

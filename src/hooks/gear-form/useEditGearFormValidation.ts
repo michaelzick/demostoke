@@ -3,6 +3,7 @@ import { useToast } from "@/hooks/use-toast";
 import { PricingOption } from "./types";
 import type { User } from "@/types";
 import type { UserEquipment } from "@/types/equipment";
+import { useIsAdmin } from "@/hooks/useUserRole";
 
 interface ValidationParams {
   user: User | null;
@@ -13,6 +14,7 @@ interface ValidationParams {
 
 export const useEditGearFormValidation = () => {
   const { toast } = useToast();
+  const { isAdmin } = useIsAdmin();
 
   const validateSubmission = ({ user, equipment, pricingOptions, damageDeposit }: ValidationParams): boolean => {
     console.log('=== FORM VALIDATION START ===');
@@ -23,6 +25,17 @@ export const useEditGearFormValidation = () => {
       toast({
         title: "Error",
         description: "Authentication error or equipment not found.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Check if user owns equipment or is admin
+    if (equipment.user_id !== user.id && !isAdmin) {
+      console.error('User does not own equipment and is not admin');
+      toast({
+        title: "Access Denied", 
+        description: "You don't have permission to edit this equipment.",
         variant: "destructive",
       });
       return false;

@@ -61,6 +61,7 @@ export const prepareEquipmentData = ({
   }
 
   // Add user_id only if provided (for creation, not updates)
+  // For updates, we never modify user_id to preserve original ownership
   if (userId) {
     equipmentData.user_id = userId;
   }

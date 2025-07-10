@@ -33,6 +33,7 @@ const EditGearForm = () => {
   useEquipmentDataLoader({
     equipment: equipment ? {
       ...equipment,
+      user_id: (equipment as any).user_id || equipment.owner?.id, // Include user_id from either field
       status: (equipment.status as 'available' | 'booked' | 'unavailable') || 'available',
       created_at: equipment.created_at || new Date().toISOString(),
       updated_at: equipment.updated_at || new Date().toISOString(),
@@ -78,6 +79,7 @@ const EditGearForm = () => {
   const { handleSubmit, handleCancel, isSubmitting } = useMultipleEditGearFormSubmission({
     equipment: equipment ? {
       ...equipment,
+      user_id: (equipment as any).user_id || equipment.owner?.id, // Include user_id from either field
       status: (equipment.status as 'available' | 'booked' | 'unavailable') || 'available',
       created_at: equipment.created_at || new Date().toISOString(),
       updated_at: equipment.updated_at || new Date().toISOString(),

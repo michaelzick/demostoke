@@ -113,6 +113,7 @@ export const useEquipmentById = (id: string) => {
         updated_at: data.updated_at,
         visible_on_map:
           data.visible_on_map !== undefined ? data.visible_on_map : true,
+        user_id: data.user_id, // Include user_id for ownership validation
       };
 
       console.log("Mapped equipment object:", equipment);

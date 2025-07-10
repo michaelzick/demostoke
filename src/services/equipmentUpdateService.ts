@@ -9,8 +9,16 @@ export const updateEquipmentInDatabase = async (
 ) => {
   console.log('=== EQUIPMENT UPDATE SERVICE ===');
   console.log('Equipment ID:', equipment.id);
-  console.log('User ID:', userId);
+  console.log('Current User ID (editor):', userId);
+  console.log('Original Equipment Owner ID:', equipment.user_id);
   console.log('Equipment data to update:', equipmentData);
+
+  // CRITICAL: Never update user_id to preserve original ownership
+  // Remove user_id from equipmentData if it exists to ensure we don't change ownership
+  if ('user_id' in equipmentData) {
+    delete equipmentData.user_id;
+    console.log('Removed user_id from update data to preserve original ownership');
+  }
 
   // Validate that we have required data
   if (!equipment.id) {
@@ -38,11 +46,12 @@ export const updateEquipmentInDatabase = async (
 
   console.log('Final equipment data after validation:', equipmentData);
 
+  // For updates, we only filter by equipment ID since RLS policies will handle access control
+  // Admin users can update any equipment, regular users can only update their own
   const { data, error } = await supabase
     .from('equipment')
     .update(equipmentData)
     .eq('id', equipment.id)
-    .eq('user_id', userId)
     .select()
     .single();
 
