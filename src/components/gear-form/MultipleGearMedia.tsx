@@ -1,4 +1,3 @@
-
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -79,7 +78,7 @@ const MultipleGearMedia = ({
     const existingUrls = imageUrls.filter(url => url.trim() !== '');
     const newUrls = [...existingUrls, ...selectedImageUrls];
     setImageUrls(newUrls);
-    
+
     // Enable image URLs if not already enabled
     if (!useImageUrls) {
       setUseImageUrls(true);
@@ -105,7 +104,7 @@ const MultipleGearMedia = ({
             Use image URLs instead of uploaded files
           </Label>
         </div>
-        
+
         {useImageUrls && (
           <div className="space-y-2">
             {imageUrls.map((url, index) => (
@@ -159,7 +158,7 @@ const MultipleGearMedia = ({
           </p>
           <div className="grid grid-cols-3 gap-2">
             {displayImages.map((imageUrl, index) => (
-              <div key={index} className="relative group">
+              <div key={index} className="relative group w-24">
                 <img
                   src={imageUrl}
                   alt={`Gear image ${index + 1}`}
@@ -190,7 +189,7 @@ const MultipleGearMedia = ({
           onChange={handleMultipleImageUpload}
           disabled={useImageUrls}
         />
-        
+
         {/* Show selected files */}
         {selectedFiles.length > 0 && (
           <div className="space-y-2">
@@ -212,7 +211,7 @@ const MultipleGearMedia = ({
             </div>
           </div>
         )}
-        
+
         <p className="text-sm text-muted-foreground">
           {useImageUrls ?
             "File upload is disabled while using image URLs" :
