@@ -1,6 +1,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 import { StarIcon, CalendarIcon } from "lucide-react";
 
 interface UserProfileHeaderProps {
@@ -90,9 +91,9 @@ export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfi
             <div>
               <div>This is an unclaimed profile for {profile.name || "this user"}.</div>
               <div>
-                <a href="/contact-us" className="text-primary hover:underline">
+                <Link to="/contact-us" className="text-primary hover:underline">
                   Contact us
-                </a> if you are the owner and want to claim this profile.
+                </Link> if you are the owner and want to claim this profile.
               </div>
             </div>
           </div>

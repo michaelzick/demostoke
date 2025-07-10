@@ -26,7 +26,6 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>
-            Contact{' '}
             <Link
               to={profileLinkPath}
               className="text-primary underline hover:text-primary/80 transition-colors view-profile-link"
