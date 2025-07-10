@@ -80,9 +80,19 @@ export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfi
               <div className="flex flex-wrap gap-2">
                 <Badge variant="secondary" className="capitalize">
                   {profile.role === 'retail-store' ? 'Retail Store' :
-                   profile.role === 'builder' ? 'Builder' :
-                   profile.role === 'retail-website' ? 'Retail Website' : 'Business'}
+                    profile.role === 'builder' ? 'Builder' :
+                      profile.role === 'retail-website' ? 'Retail Website' : 'Business'}
                 </Badge>
+              </div>
+            </div>
+          </div>
+          <div className="absolute bottom-4 left-4 text-white">
+            <div>
+              <div>This is an unclaimed profile for {profile.name || "this user"}.</div>
+              <div>
+                <a href="/contact-us" className="text-primary hover:underline">
+                  Contact us
+                </a> if you are the owner and want to claim this profile.
               </div>
             </div>
           </div>
@@ -111,8 +121,8 @@ export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfi
             <div className="flex flex-wrap gap-2">
               <Badge variant="secondary" className="capitalize">
                 {profile.role === 'retail-store' ? 'Retail Store' :
-                 profile.role === 'builder' ? 'Builder' :
-                 profile.role === 'retail-website' ? 'Retail Website' : 'Business'}
+                  profile.role === 'builder' ? 'Builder' :
+                    profile.role === 'retail-website' ? 'Retail Website' : 'Business'}
               </Badge>
             </div>
           </div>
