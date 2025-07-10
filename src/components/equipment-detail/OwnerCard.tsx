@@ -6,6 +6,7 @@ import { StarIcon, MessageSquare } from "lucide-react";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useUserStats } from "@/hooks/useUserStats";
 import { GearOwner } from "@/types";
+import { slugify } from "@/utils/slugify";
 import ContactInfoModal from "./ContactInfoModal";
 import { useState } from "react";
 
@@ -22,7 +23,7 @@ const OwnerCard = ({ owner, trackingData }: OwnerCardProps) => {
   // Determine the correct profile link - use real user profile for DB users
   const profileLinkPath = owner.shopId
     ? `/shop/${owner.shopId}`
-    : `/user-profile/${owner.id}`;
+    : `/user-profile/${slugify(owner.name)}`;
 
   // Use real data if available, fallback to mock data
   const displayName = profile?.name || owner.name;

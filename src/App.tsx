@@ -83,7 +83,7 @@ const App = () => {
                     <Route path="analytics" element={<AnalyticsPage />} />
                     <Route path="bookings" element={<BookingsPage />} />
                     <Route path="admin" element={<AdminPage />} />
-                    <Route path="user-profile/:id" element={<RealUserProfilePage />} />
+                    <Route path="user-profile/:slug" element={<RealUserProfilePage />} />
                     <Route path="owner/:id" element={<GearOwnerProfilePage />} />
                     <Route path="shop/:shopId" element={<ShopPage />} />
                     <Route path="private-party/:partyId" element={<PrivatePartyPage />} />

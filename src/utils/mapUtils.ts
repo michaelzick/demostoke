@@ -99,7 +99,7 @@ export const createPopupContent = (item: {
     <div>
       <h3 class="text-base font-medium">${item.name}</h3>
       <p class="text-sm text-gray-500">
-        <a href="/user-profile/${item.ownerId}" class="underline underline-offset-2 hover:text-blue-600">${item.ownerName}</a>
+        <a href="/user-profile/${slugify(item.ownerName)}" class="underline underline-offset-2 hover:text-blue-600">${item.ownerName}</a>
       </p>
       <p class="text-sm text-gray-500">${item.category}</p>
       <p class="text-sm mt-1">$${item.price_per_day}/day</p>
@@ -122,7 +122,7 @@ export const createUserLocationPopupContent = (user: { id: string; name: string;
       <p class="text-sm mt-1">${user.address}</p>
       <button
         class="mt-2 px-2 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
-        onclick="window.location.href='/user-profile/${user.id}'"
+        onclick="window.location.href='/user-profile/${slugify(user.name)}'"
       >
         View Profile
       </button>
