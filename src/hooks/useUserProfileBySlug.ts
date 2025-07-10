@@ -26,12 +26,14 @@ export const useUserProfileBySlug = (slug: string) => {
       }
 
       const name = unslugify(slug);
+      const pattern = `%${name.split(/\s+/).join('%')}%`;
 
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
-        .ilike('name', name)
-        .single();
+        .ilike('name', pattern)
+        .limit(1)
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching user profile by slug:', error);
