@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/carousel";
 
 import type { UserEquipment } from "@/types/equipment";
+import { slugify } from "@/utils/slugify";
 
 interface UserEquipmentGridProps {
   userEquipment: UserEquipment[] | undefined;
@@ -121,7 +122,7 @@ export const UserEquipmentGrid = ({
                   </div>
                 )}
                 <Button size="sm" asChild className="text-xs h-8">
-                  <Link to={`/equipment/${item.id}`}>View Details</Link>
+                  <Link to={`/${item.category}/${slugify(item.name)}`}>View Details</Link>
                 </Button>
               </div>
             </CardContent>

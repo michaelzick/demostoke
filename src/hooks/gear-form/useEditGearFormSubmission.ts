@@ -10,6 +10,7 @@ import { useEditGearFormValidation } from "./useEditGearFormValidation";
 import { useEditGearImageHandling } from "./useEditGearImageHandling";
 import { useEditGearLocationHandling } from "./useEditGearLocationHandling";
 import { useEditGearDatabaseUpdate } from "./useEditGearDatabaseUpdate";
+import { slugify } from "@/utils/slugify";
 
 interface UseEditGearFormSubmissionProps {
   equipment: UserEquipment | null | undefined;
@@ -136,7 +137,7 @@ export const useEditGearFormSubmission = ({
         description: `${gearName} has been successfully updated.`,
       });
 
-      navigate(`/equipment/${equipment!.id}`);
+      navigate(`/${equipment!.category}/${slugify(equipment!.name)}`);
 
     } catch (error) {
       console.error('=== FORM SUBMISSION ERROR ===');
@@ -161,7 +162,7 @@ export const useEditGearFormSubmission = ({
   };
 
   const handleCancel = () => {
-    navigate(`/equipment/${equipment!.id}`);
+    navigate(`/${equipment!.category}/${slugify(equipment!.name)}`);
   };
 
   return {

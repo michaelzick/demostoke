@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/carousel";
 import { getCategoryDisplayName } from "@/helpers";
 import { Equipment } from "@/types";
+import { slugify } from "@/utils/slugify";
 import React, { useState } from "react";
 
 interface EquipmentDetailPageMockProps {
@@ -68,7 +69,7 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
             label: getCategoryDisplayName(equipment.category),
             path: `/explore?category=${equipment.category}`,
           },
-          { label: equipment.name, path: `/equipment/${equipment.id}` },
+          { label: equipment.name, path: `/${equipment.category}/${slugify(equipment.name)}` },
         ]}
       />
 

@@ -13,6 +13,7 @@ import {
 import { getCategoryDisplayName } from "@/helpers";
 import { Equipment } from "@/types";
 import { useAuth } from "@/contexts/auth";
+import { slugify } from "@/utils/slugify";
 import DistanceDisplay from "./DistanceDisplay";
 
 interface EquipmentCardProps {
@@ -140,7 +141,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
 
       <CardFooter className="p-4 pt-0 flex justify-between">
         <Button asChild size="sm">
-          <Link to={`/equipment/${equipment.id}`}>View Details</Link>
+          <Link to={`/${equipment.category}/${slugify(equipment.name)}`}>View Details</Link>
         </Button>
         {isOwner && (
           <Button asChild size="sm" variant="outline">

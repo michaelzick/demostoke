@@ -13,6 +13,7 @@ import OwnerCard from "@/components/equipment-detail/OwnerCard";
 import SimilarEquipment from "@/components/equipment-detail/SimilarEquipment";
 import GearImageModal from "@/components/equipment-detail/GearImageModal";
 import ContactInfoModal from "@/components/equipment-detail/ContactInfoModal";
+import { slugify } from "@/utils/slugify";
 import {
   Carousel,
   CarouselContent,
@@ -82,7 +83,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
             label: getCategoryDisplayName(equipment.category),
             path: `/explore?category=${equipment.category}`,
           },
-          { label: equipment.name, path: `/equipment/${equipment.id}` },
+          { label: equipment.name, path: `/${equipment.category}/${slugify(equipment.name)}` },
         ]}
       />
 

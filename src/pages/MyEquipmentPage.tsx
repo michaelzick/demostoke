@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { slugify } from "@/utils/slugify";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -351,7 +352,7 @@ const MyEquipmentPage = () => {
                       </div>
 
                       <div className="space-y-1">
-                        <Link to={`/equipment/${item.id}`}>
+                        <Link to={`/${item.category}/${slugify(item.name)}`}>
                           <CardTitle className="text-lg line-clamp-1 hover:text-primary transition-colors">
                             {item.name}
                           </CardTitle>
@@ -434,7 +435,7 @@ const MyEquipmentPage = () => {
                           </div>
 
                           <Button size="sm" asChild>
-                            <Link to={`/equipment/${item.id}`}>
+                            <Link to={`/${item.category}/${slugify(item.name)}`}>
                               View Details
                             </Link>
                           </Button>
