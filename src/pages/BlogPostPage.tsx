@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Clock, User, Calendar, Share2, ArrowUp } from "lucide-react";
 import { blogPosts } from "@/lib/blog";
+import { slugify } from "@/utils/slugify";
 import { useEffect, useState } from "react";
 import { useRelatedGear } from "@/hooks/useRelatedGear";
 import RelatedGear from "@/components/equipment-detail/RelatedGear";
@@ -147,7 +148,7 @@ const BlogPostPage = () => {
                   <div className="flex items-center">
                     <User className="h-4 w-4 mr-1" />
                     <Link
-                      to={post.authorId !== 'generative-ai' ? `/user-profile/${post.authorId}` : '#'}
+                      to={post.authorId !== 'generative-ai' ? `/user-profile/${slugify(post.author)}` : '#'}
                       className="hover:text-primary transition-colors"
                     >
                       {post.author}

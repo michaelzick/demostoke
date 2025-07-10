@@ -2,10 +2,10 @@
 import { useEffect } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useParams } from "react-router-dom";
-import { useUserProfile } from "@/hooks/useUserProfile";
+import { useUserProfileBySlug } from "@/hooks/useUserProfileBySlug";
 import { useUserStats } from "@/hooks/useUserStats";
 import { useUserEquipment } from "@/hooks/useUserEquipment";
-import { useMockUserProfile } from "@/hooks/useMockUserProfile";
+import { useMockUserProfileBySlug } from "@/hooks/useMockUserProfileBySlug";
 import { useMockUserStats } from "@/hooks/useMockUserStats";
 import { useMockData } from "@/hooks/useMockData";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
@@ -16,6 +16,7 @@ import { UserProfileSidebar } from "@/components/profile/UserProfileSidebar";
 import { UserEquipmentGrid } from "@/components/profile/UserEquipmentGrid";
 import { UserProfileLoading } from "@/components/profile/UserProfileLoading";
 import { UserProfileNotFound } from "@/components/profile/UserProfileNotFound";
+import { slugify } from "@/utils/slugify";
 import type { UserProfile } from "@/types";
 import type { UserEquipment } from "@/types/equipment";
 
@@ -24,22 +25,23 @@ const RealUserProfilePage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const { id } = useParams();
+  const { slug } = useParams();
   const { user } = useAuth();
   
   // Use React Query profile data if viewing own profile
-  const isOwnProfile = user?.id === id;
+  const { data: dbProfile, isLoading: profileLoading, error: profileError } = useUserProfileBySlug(slug || "");
+  const profileId = dbProfile?.id;
+  const isOwnProfile = user?.id === profileId;
   const { data: ownProfileData, refetch: refetchOwnProfile } = useProfileQuery();
 
-  // Try to fetch from database first
-  const { data: dbProfile, isLoading: profileLoading, error: profileError } = useUserProfile(id || "");
-  const { data: dbStats, isLoading: statsLoading } = useUserStats(id || "");
+  // Fetch stats and equipment once we know the profile ID
+  const { data: dbStats, isLoading: statsLoading } = useUserStats(profileId || "");
   // Only show visible equipment on public profiles (visibleOnly = true for other users, false for own profile)
-  const { data: dbUserEquipment, isLoading: equipmentLoading } = useUserEquipment(id || "", !isOwnProfile);
+  const { data: dbUserEquipment, isLoading: equipmentLoading } = useUserEquipment(profileId || "", !isOwnProfile);
 
   // Fallback to mock data if database query fails or returns null
-  const mockProfile = useMockUserProfile(id || "");
-  const mockStats = useMockUserStats(id || "");
+  const mockProfile = useMockUserProfileBySlug(slug || "");
+  const mockStats = useMockUserStats(profileId || slug || "");
   const { mockEquipment } = useMockData();
 
   // Refetch own profile data when navigating to own profile page
@@ -47,7 +49,7 @@ const RealUserProfilePage = () => {
     if (isOwnProfile && ownProfileData) {
       refetchOwnProfile();
     }
-  }, [isOwnProfile, id, refetchOwnProfile]);
+  }, [isOwnProfile, profileId, refetchOwnProfile]);
 
   // Determine if we should use mock data
   const isMockUser = !profileLoading && (profileError || !dbProfile) && !!mockProfile;
@@ -81,7 +83,7 @@ const RealUserProfilePage = () => {
   
   // For mock users, filter visible equipment; for real users, visibility is already handled by the hook
   const userEquipment = isMockUser
-    ? mockEquipment.filter(item => item.owner.id === id) // Mock data doesn't have visibility field, so show all
+    ? mockEquipment.filter(item => slugify(item.owner.name) === slug) // Mock data doesn't have visibility field, so show all
     : dbUserEquipment;
 
   const isLoading = isMockUser ? false : (profileLoading || statsLoading);
