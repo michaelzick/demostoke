@@ -13,7 +13,8 @@ interface ImageRecord {
   source_table: string;
   source_column: string;
   source_record_id?: string;
-  already_converted?: boolean;
+  file_type?: string;
+  already_processed?: boolean;
 }
 
 const ImageConversionSection = () => {
@@ -32,19 +33,26 @@ const ImageConversionSection = () => {
       
       console.log('Starting comprehensive image scan...');
       
-      // Helper function to check if URL is convertible
-      const isConvertibleImage = (url: string): boolean => {
+      // Helper function to check if URL can be processed
+      const isProcessableImage = (url: string): boolean => {
         if (!url || url.trim() === '') return false;
-        // Skip if already JPEG
-        if (url.toLowerCase().includes('.jpg') || url.toLowerCase().includes('.jpeg')) return false;
         // Skip internal/generated images
         if (url.includes('supabase') || url.includes('dicebear') || url.startsWith('/img/')) return false;
-        // Only include common image formats (excluding JPEG)
-        return /\.(png|gif|bmp|tiff|webp)(\?.*)?$/i.test(url) || 
+        // Include all common image formats
+        return /\.(jpg|jpeg|png|gif|bmp|tiff|webp)(\?.*)?$/i.test(url) || 
                url.includes('unsplash') || 
                url.includes('pexels') || 
                url.includes('images') ||
                url.includes('photo');
+      };
+
+      // Helper function to detect file type from URL
+      const getFileType = (url: string): string => {
+        const match = url.toLowerCase().match(/\.(jpg|jpeg|png|gif|bmp|tiff|webp)(\?.*)?$/i);
+        if (match) return match[1].toUpperCase();
+        if (url.includes('unsplash')) return 'JPG';
+        if (url.includes('pexels')) return 'JPG';
+        return 'UNKNOWN';
       };
 
       // Scan equipment table - primary images
@@ -55,17 +63,18 @@ const ImageConversionSection = () => {
         .not('image_url', 'is', null);
 
       equipmentData?.forEach(item => {
-        if (item.image_url && isConvertibleImage(item.image_url)) {
+        if (item.image_url && isProcessableImage(item.image_url)) {
           foundImages.push({
             id: `equipment-${item.id}`,
             url: item.image_url,
             source_table: 'equipment',
             source_column: 'image_url',
-            source_record_id: item.id
+            source_record_id: item.id,
+            file_type: getFileType(item.image_url)
           });
         }
       });
-      console.log(`Found ${equipmentData?.filter(item => item.image_url && isConvertibleImage(item.image_url)).length || 0} equipment images`);
+      console.log(`Found ${equipmentData?.filter(item => item.image_url && isProcessableImage(item.image_url)).length || 0} equipment images`);
 
       // Scan equipment_images table - gallery images
       console.log('Scanning equipment_images table...');
@@ -75,17 +84,18 @@ const ImageConversionSection = () => {
         .not('image_url', 'is', null);
 
       equipmentImagesData?.forEach(item => {
-        if (isConvertibleImage(item.image_url)) {
+        if (isProcessableImage(item.image_url)) {
           foundImages.push({
             id: `equipment_images-${item.id}`,
             url: item.image_url,
             source_table: 'equipment_images',
             source_column: 'image_url',
-            source_record_id: item.id
+            source_record_id: item.id,
+            file_type: getFileType(item.image_url)
           });
         }
       });
-      console.log(`Found ${equipmentImagesData?.filter(item => isConvertibleImage(item.image_url)).length || 0} equipment gallery images`);
+      console.log(`Found ${equipmentImagesData?.filter(item => isProcessableImage(item.image_url)).length || 0} equipment gallery images`);
 
       // Scan profiles table for avatars
       console.log('Scanning profile avatars...');
@@ -95,17 +105,18 @@ const ImageConversionSection = () => {
         .not('avatar_url', 'is', null);
 
       profileAvatars?.forEach(item => {
-        if (item.avatar_url && isConvertibleImage(item.avatar_url)) {
+        if (item.avatar_url && isProcessableImage(item.avatar_url)) {
           foundImages.push({
             id: `profiles-avatar-${item.id}`,
             url: item.avatar_url,
             source_table: 'profiles',
             source_column: 'avatar_url',
-            source_record_id: item.id
+            source_record_id: item.id,
+            file_type: getFileType(item.avatar_url)
           });
         }
       });
-      console.log(`Found ${profileAvatars?.filter(item => item.avatar_url && isConvertibleImage(item.avatar_url)).length || 0} profile avatars`);
+      console.log(`Found ${profileAvatars?.filter(item => item.avatar_url && isProcessableImage(item.avatar_url)).length || 0} profile avatars`);
 
       // Scan profiles table for hero images
       console.log('Scanning profile hero images...');
@@ -115,22 +126,23 @@ const ImageConversionSection = () => {
         .not('hero_image_url', 'is', null);
 
       profileHeros?.forEach(item => {
-        if (item.hero_image_url && isConvertibleImage(item.hero_image_url)) {
+        if (item.hero_image_url && isProcessableImage(item.hero_image_url)) {
           foundImages.push({
             id: `profiles-hero-${item.id}`,
             url: item.hero_image_url,
             source_table: 'profiles',
             source_column: 'hero_image_url',
-            source_record_id: item.id
+            source_record_id: item.id,
+            file_type: getFileType(item.hero_image_url)
           });
         }
       });
-      console.log(`Found ${profileHeros?.filter(item => item.hero_image_url && isConvertibleImage(item.hero_image_url)).length || 0} profile hero images`);
+      console.log(`Found ${profileHeros?.filter(item => item.hero_image_url && isProcessableImage(item.hero_image_url)).length || 0} profile hero images`);
 
       // Log final results
-      console.log(`Total convertible images found: ${foundImages.length}`);
+      console.log(`Total processable images found: ${foundImages.length}`);
       foundImages.forEach(img => {
-        console.log(`- ${img.source_table}.${img.source_column}: ${img.url}`);
+        console.log(`- ${img.source_table}.${img.source_column}: ${img.url} (${img.file_type})`);
       });
 
       setImages(foundImages);
@@ -138,7 +150,7 @@ const ImageConversionSection = () => {
       
       toast({
         title: "Scan Complete",
-        description: `Found ${foundImages.length} images that can be converted to JPEG`,
+        description: `Found ${foundImages.length} images that can be downloaded and resized`,
       });
     } catch (error) {
       console.error('Error scanning images:', error);
@@ -152,11 +164,11 @@ const ImageConversionSection = () => {
     }
   };
 
-  const convertImage = async (imageRecord: ImageRecord) => {
+  const processImage = async (imageRecord: ImageRecord) => {
     setConverting(prev => new Set([...prev, imageRecord.id]));
     
     try {
-      const { data, error } = await supabase.functions.invoke('convert-to-jpeg', {
+      const { data, error } = await supabase.functions.invoke('download-resize-image', {
         body: {
           imageUrl: imageRecord.url,
           sourceTable: imageRecord.source_table,
@@ -168,18 +180,18 @@ const ImageConversionSection = () => {
       if (error) throw error;
 
       toast({
-        title: "Conversion Successful",
-        description: `Image converted and saved as JPEG`,
+        title: "Processing Successful",
+        description: `Image downloaded and resized`,
       });
 
-      // Remove the converted image from the list
+      // Remove the processed image from the list
       setImages(prev => prev.filter(img => img.id !== imageRecord.id));
       
     } catch (error) {
-      console.error('Error converting image:', error);
+      console.error('Error processing image:', error);
       toast({
-        title: "Conversion Failed",
-        description: "Failed to convert image to JPEG",
+        title: "Processing Failed",
+        description: "Failed to download and resize image",
         variant: "destructive",
       });
     } finally {
@@ -191,11 +203,11 @@ const ImageConversionSection = () => {
     }
   };
 
-  const convertAllImages = async () => {
+  const processAllImages = async () => {
     for (const image of images) {
       if (!converting.has(image.id)) {
-        await convertImage(image);
-        // Add small delay between conversions to avoid overwhelming the server
+        await processImage(image);
+        // Add small delay between operations to avoid overwhelming the server
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
@@ -216,10 +228,10 @@ const ImageConversionSection = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Download className="h-5 w-5" />
-          Image JPEG Conversion Utility
+          Image Download & Resize Utility
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Find and convert external images to optimized JPEG format. This will improve loading times and reduce bandwidth usage.
+          Find and download external images with optional resizing to 2000px width. This will improve loading times and reduce bandwidth usage.
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -239,7 +251,7 @@ const ImageConversionSection = () => {
           
           {scanComplete && images.length > 0 && (
             <Button
-              onClick={convertAllImages}
+              onClick={processAllImages}
               variant="outline"
               disabled={converting.size > 0}
               className="flex items-center gap-2"
@@ -249,7 +261,7 @@ const ImageConversionSection = () => {
               ) : (
                 <CheckCircle className="h-4 w-4" />
               )}
-              Convert All ({images.length})
+              Process All ({images.length})
             </Button>
           )}
         </div>
@@ -258,7 +270,7 @@ const ImageConversionSection = () => {
           <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
             <AlertCircle className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              Found {images.length} images that can be converted to JPEG format
+              Found {images.length} images that can be downloaded and resized
             </span>
           </div>
         )}
@@ -271,6 +283,7 @@ const ImageConversionSection = () => {
                   <TableHead>Preview</TableHead>
                   <TableHead>URL</TableHead>
                   <TableHead>Source</TableHead>
+                  <TableHead>File Type</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -299,10 +312,15 @@ const ImageConversionSection = () => {
                       </Badge>
                     </TableCell>
                     <TableCell>
+                      <Badge variant="secondary">
+                        {image.file_type || 'UNKNOWN'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
                       {converting.has(image.id) ? (
                         <Badge variant="secondary" className="flex items-center gap-1">
                           <Loader2 className="h-3 w-3 animate-spin" />
-                          Converting...
+                          Processing...
                         </Badge>
                       ) : (
                         <Badge variant="outline">Ready</Badge>
@@ -311,13 +329,13 @@ const ImageConversionSection = () => {
                     <TableCell>
                       <Button
                         size="sm"
-                        onClick={() => convertImage(image)}
+                        onClick={() => processImage(image)}
                         disabled={converting.has(image.id)}
                       >
                         {converting.has(image.id) ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
-                          "Convert & Resize"
+                          "Download & Resize"
                         )}
                       </Button>
                     </TableCell>
