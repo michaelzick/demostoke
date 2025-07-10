@@ -1,6 +1,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MapPinIcon, PhoneIcon, GlobeIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { slugify } from "@/utils/slugify";
 import { GearOwner } from "@/types";
 
 interface ContactInfoModalProps {
@@ -15,12 +17,25 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
 
   const displayName = profile?.name || owner.name;
   const hasContactInfo = profile?.address || profile?.phone || profile?.website;
+  const profileLinkPath = owner.shopId
+    ? `/shop/${owner.shopId}`
+    : `/user-profile/${slugify(owner.name)}`;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Contact {displayName}</DialogTitle>
+          <DialogTitle>
+            Contact{' '}
+            <Link
+              to={profileLinkPath}
+              className="text-primary underline hover:text-primary/80 transition-colors view-profile-link"
+              data-tracking={trackingData}
+              id={trackingData}
+            >
+              {displayName}
+            </Link>
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
