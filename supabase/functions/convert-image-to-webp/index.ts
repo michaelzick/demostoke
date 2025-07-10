@@ -1,7 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { Image } from "https://deno.land/x/imagescript@1.2.15/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -42,16 +41,27 @@ serve(async (req) => {
     const originalSize = imageBuffer.byteLength;
     console.log('Downloaded image size:', originalSize, 'bytes');
 
-    // Step 2: Process the image with ImageScript
+    // Step 2: Use Web APIs to get image dimensions and convert to WebP
     console.log('Processing image...');
-    const originalImage = await Image.decode(new Uint8Array(imageBuffer));
-    const originalWidth = originalImage.width;
-    const originalHeight = originalImage.height;
+    
+    // Create a canvas to process the image
+    const canvas = new OffscreenCanvas(1, 1);
+    const ctx = canvas.getContext('2d');
+    
+    if (!ctx) {
+      throw new Error('Failed to create canvas context');
+    }
+
+    // Create ImageBitmap from the buffer
+    const blob = new Blob([imageBuffer]);
+    const imageBitmap = await createImageBitmap(blob);
+    
+    const originalWidth = imageBitmap.width;
+    const originalHeight = imageBitmap.height;
     
     console.log('Original dimensions:', originalWidth, 'x', originalHeight);
 
-    // Step 3: Resize if necessary (maintain aspect ratio)
-    let processedImage = originalImage;
+    // Step 3: Calculate new dimensions if resizing is needed
     let newWidth = originalWidth;
     let newHeight = originalHeight;
 
@@ -59,24 +69,33 @@ serve(async (req) => {
       const aspectRatio = originalHeight / originalWidth;
       newWidth = MAX_WIDTH;
       newHeight = Math.round(MAX_WIDTH * aspectRatio);
-      
       console.log('Resizing to:', newWidth, 'x', newHeight);
-      processedImage = originalImage.resize(newWidth, newHeight);
     }
 
-    // Step 4: Convert to WebP
+    // Step 4: Resize canvas and draw image
+    canvas.width = newWidth;
+    canvas.height = newHeight;
+    
+    ctx.drawImage(imageBitmap, 0, 0, newWidth, newHeight);
+    
+    // Step 5: Convert to WebP
     console.log('Converting to WebP...');
-    const webpBuffer = await processedImage.encodeWebP(WEBP_QUALITY);
+    const webpBlob = await canvas.convertToBlob({ 
+      type: 'image/webp', 
+      quality: WEBP_QUALITY / 100 
+    });
+    
+    const webpBuffer = await webpBlob.arrayBuffer();
     const webpSize = webpBuffer.byteLength;
     
     console.log('WebP size:', webpSize, 'bytes', 'Compression ratio:', Math.round((1 - webpSize / originalSize) * 100) + '%');
+    
+    // Clean up
+    imageBitmap.close();
 
-    // Step 5: Generate file path for storage
+    // Step 6: Generate file path for storage
     const timestamp = Date.now();
     const fileName = `${sourceTable}/${sourceRecordId || 'unknown'}/${timestamp}.webp`;
-
-    // Step 5: Create WebP blob
-    const webpBlob = new Blob([webpBuffer], { type: 'image/webp' });
 
     // Step 6: Upload to Supabase storage
     console.log('Uploading to storage:', fileName);
