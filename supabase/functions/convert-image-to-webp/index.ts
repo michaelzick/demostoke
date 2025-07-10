@@ -81,7 +81,8 @@ serve(async (req) => {
     console.log('Converting to WebP...');
     let webpBuffer;
     try {
-      webpBuffer = await processedImage.encodeWebP(WEBP_QUALITY);
+      // Use the correct ImageScript encode method with WebP format
+      webpBuffer = await processedImage.encode(1, WEBP_QUALITY); // 1 = WebP format
     } catch (encodeError) {
       console.error('Failed to encode WebP:', encodeError);
       throw new Error(`Failed to encode WebP: ${encodeError.message}`);
