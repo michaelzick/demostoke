@@ -136,7 +136,7 @@ export const useEditGearFormSubmission = ({
         description: `${gearName} has been successfully updated.`,
       });
 
-      navigate("/my-gear");
+      navigate(`/equipment/${equipment!.id}`);
 
     } catch (error) {
       console.error('=== FORM SUBMISSION ERROR ===');
@@ -161,7 +161,7 @@ export const useEditGearFormSubmission = ({
   };
 
   const handleCancel = () => {
-    navigate("/my-gear");
+    navigate(`/equipment/${equipment!.id}`);
   };
 
   return {
