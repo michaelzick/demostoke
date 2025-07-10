@@ -180,35 +180,41 @@ const ImageSearchDialog = ({
             <div className="flex-1 overflow-auto">
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 pb-4">
                 {paginatedResults.map((result, index) => (
-                  <div
-                    key={index}
-                    className={`relative border rounded-lg overflow-hidden cursor-pointer transition-all ${
-                      selectedImages.has(result.url)
-                        ? 'ring-2 ring-primary border-primary'
-                        : 'hover:border-gray-400'
-                    }`}
-                    onClick={() => toggleImageSelection(result.url)}
-                  >
-                    <div className="aspect-square">
-                      <img
-                        src={result.url}
-                        alt={result.title}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    </div>
-                    <div className="absolute top-1 right-1">
-                      <Checkbox
-                        checked={selectedImages.has(result.url)}
-                        onChange={() => toggleImageSelection(result.url)}
-                        className="bg-white shadow-sm"
-                      />
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs p-1">
-                      <div className="truncate" title={result.source}>
-                        {result.source}
+                  <div key={index} className="space-y-1">
+                    <div
+                      className={`relative border rounded-lg overflow-hidden cursor-pointer transition-all ${
+                        selectedImages.has(result.url)
+                          ? 'ring-2 ring-primary border-primary'
+                          : 'hover:border-gray-400'
+                      }`}
+                      onClick={() => toggleImageSelection(result.url)}
+                    >
+                      <div className="aspect-square">
+                        <img
+                          src={result.url}
+                          alt={result.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div className="absolute top-1 right-1">
+                        <Checkbox
+                          checked={selectedImages.has(result.url)}
+                          onChange={() => toggleImageSelection(result.url)}
+                          className="bg-white shadow-sm"
+                        />
+                      </div>
+                      <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-70 text-white text-xs p-1">
+                        <div className="truncate" title={result.source}>
+                          {result.source}
+                        </div>
                       </div>
                     </div>
+                    {result.width && result.height && (
+                      <div className="text-xs text-muted-foreground text-center">
+                        {result.width}×{result.height}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
