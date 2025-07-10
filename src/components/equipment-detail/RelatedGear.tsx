@@ -10,6 +10,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Equipment } from "@/types";
+import { slugify } from "@/utils/slugify";
 
 interface RelatedGearProps {
   relatedGear: Equipment[];
@@ -83,7 +84,7 @@ const RelatedGear = ({ relatedGear }: RelatedGearProps) => {
                       ${item.price_per_day}/day
                     </span>
                     <Button size="sm" asChild className="text-xs h-6">
-                      <Link to={`/equipment/${item.id}`}>View</Link>
+                      <Link to={`/${item.category}/${slugify(item.name)}`}>View</Link>
                     </Button>
                   </div>
                 </div>

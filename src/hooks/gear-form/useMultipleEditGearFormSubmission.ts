@@ -8,6 +8,7 @@ import { useEditGearFormValidation } from "./useEditGearFormValidation";
 import { useEditGearLocationHandling } from "./useEditGearLocationHandling";
 import { useEditGearDatabaseUpdate } from "./useEditGearDatabaseUpdate";
 import { uploadMultipleGearImages, updateEquipmentImages } from "@/utils/multipleImageHandling";
+import { slugify } from "@/utils/slugify";
 import type { FormData } from "./types";
 
 interface UseMultipleEditGearFormSubmissionProps {
@@ -171,7 +172,7 @@ export const useMultipleEditGearFormSubmission = ({
         description: `${gearName} has been successfully updated.`,
       });
 
-      navigate(`/equipment/${equipment!.id}`);
+      navigate(`/${equipment!.category}/${slugify(equipment!.name)}`);
 
     } catch (error) {
       console.error('=== FORM SUBMISSION ERROR ===');
@@ -196,7 +197,7 @@ export const useMultipleEditGearFormSubmission = ({
   };
 
   const handleCancel = () => {
-    navigate(`/equipment/${equipment!.id}`);
+    navigate(`/${equipment!.category}/${slugify(equipment!.name)}`);
   };
 
   return {

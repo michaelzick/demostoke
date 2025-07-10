@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { mockEquipment, ownerPersonas } from "@/lib/mockData";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { slugify } from "@/utils/slugify";
 import {
   StarIcon,
   MapPinIcon,
@@ -177,7 +178,7 @@ const GearOwnerProfilePage = () => {
                       asChild
                       className="text-xs h-8"
                     >
-                      <Link to={`/equipment/${item.id}`}>View Details</Link>
+                      <Link to={`/${item.category}/${slugify(item.name)}`}>View Details</Link>
                     </Button>
                   </div>
                 </CardContent>

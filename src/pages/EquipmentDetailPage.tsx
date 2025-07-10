@@ -3,41 +3,34 @@ import { useParams } from "react-router-dom";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState, useRef } from "react";
-import { useEquipmentById } from "@/hooks/useEquipmentById";
+import { useEquipmentBySlug } from "@/hooks/useEquipmentBySlug";
 import { useSimilarEquipment } from "@/hooks/useSimilarEquipment";
 import { Skeleton } from "@/components/ui/skeleton";
-import { mockEquipment } from "@/lib/mockData";
 import { Card } from "@/components/ui/card";
 import { trackEquipmentView } from "@/services/viewTrackingService";
 
 // Import component modules
 import EquipmentDetailPageDb from "./EquipmentDetailPageDb";
-import EquipmentDetailPageMock from "./EquipmentDetailPageMock";
-
-// Helper to check for valid UUID
-function isValidUUID(id: string) {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
-}
 
 const EquipmentDetailPage = () => {
-  const { id } = useParams<{ id: string; }>();
+  const { category = "", slug = "" } = useParams<{ category: string; slug: string }>();
   const [waiverCompleted, setWaiverCompleted] = useState(false);
   const [showWaiver, setShowWaiver] = useState(false);
   const bookingCardRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to top and track view on page load
+  const { data: equipment, isLoading, error } = useEquipmentBySlug(category, slug);
+
+  // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
 
-    // Track equipment view if we have a valid ID
-    if (id) {
-      trackEquipmentView(id);
+  // Track view when equipment is loaded
+  useEffect(() => {
+    if (equipment) {
+      trackEquipmentView(equipment.id);
     }
-  }, [id]);
-
-  // Only fetch from DB if id is a valid UUID
-  const shouldFetchFromDb = id && isValidUUID(id);
-  const { data: equipment, isLoading, error } = useEquipmentById(shouldFetchFromDb ? id : "");
+  }, [equipment]);
 
   // Helper to ensure pricing_options is a tuple
   const ensurePricingOptionsTuple = (options: unknown, fallbackPrice: number): [import("@/types").PricingOption] => {
@@ -92,29 +85,7 @@ const EquipmentDetailPage = () => {
     return null;
   }, [equipment]);
 
-  // Mock equipment mapping
-  const equipmentForDisplayMock = useMemo(() => {
-    if (id) {
-      const mock = mockEquipment.find(e => e.id === id);
-      if (mock) {
-        console.log('=== MOCK EQUIPMENT IMAGE DEBUG ===');
-        console.log('Mock equipment data:', mock);
-        console.log('Mock image_url:', mock.image_url);
-        console.log('Mock images array:', mock.images);
-        console.log('Mock images array length:', mock.images?.length || 0);
-        console.log('=== END MOCK IMAGE DEBUG ===');
-
-        return {
-          ...mock,
-          pricingOptions: ensurePricingOptionsTuple(mock.pricing_options, mock.price_per_day),
-        };
-      }
-    }
-    return null;
-  }, [id]);
-
-  // Fetch similar equipment using the new hook
-  const currentEquipment = equipmentForDisplayDb || equipmentForDisplayMock;
+  const currentEquipment = equipmentForDisplayDb;
   const { data: similarEquipmentFromDb, isLoading: similarLoading } = useSimilarEquipment(
     currentEquipment?.category || '',
     currentEquipment?.id || '',
@@ -188,27 +159,11 @@ const EquipmentDetailPage = () => {
     );
   }
 
-  // DB equipment found
-  if (shouldFetchFromDb && equipmentForDisplayDb) {
+  // Equipment found
+  if (equipmentForDisplayDb) {
     return (
       <EquipmentDetailPageDb
         equipment={equipmentForDisplayDb}
-        similarEquipment={similarEquipment}
-        waiverCompleted={waiverCompleted}
-        showWaiver={showWaiver}
-        setShowWaiver={setShowWaiver}
-        handleWaiverComplete={handleWaiverComplete}
-        handleBookNowClick={handleBookNowClick}
-        bookingCardRef={bookingCardRef}
-      />
-    );
-  }
-
-  // Mock equipment fallback
-  if (equipmentForDisplayMock) {
-    return (
-      <EquipmentDetailPageMock
-        equipment={equipmentForDisplayMock}
         similarEquipment={similarEquipment}
         waiverCompleted={waiverCompleted}
         showWaiver={showWaiver}

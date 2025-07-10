@@ -16,6 +16,7 @@ import { useAuth } from "@/helpers";
 import { useUserEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { slugify } from "@/utils/slugify";
 import { fetchMockLightspeedInventory, ingestLightspeedInventory } from "@/services/lightspeed/lightspeedService";
 
 const LightspeedPOSPage = () => {
@@ -66,8 +67,8 @@ const LightspeedPOSPage = () => {
     });
   };
 
-  const handleViewDetails = (id: string) => {
-    navigate(`/equipment/${id}`);
+  const handleViewDetails = (id: string, name: string, category: string) => {
+    navigate(`/${category}/${slugify(name)}`);
   };
 
   const totalPages = Math.ceil(inventory.length / itemsPerPage) || 1;
@@ -353,7 +354,7 @@ const LightspeedPOSPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {paginatedItems.map(item => (
                         <Card key={item.id} className="overflow-hidden">
-                          <div className="relative h-32 cursor-pointer" onClick={() => handleViewDetails(item.id)}>
+                          <div className="relative h-32 cursor-pointer" onClick={() => handleViewDetails(item.id, item.name, item.category)}>
                             <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
                             <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
                               {item.visible_on_map ? (
@@ -363,7 +364,7 @@ const LightspeedPOSPage = () => {
                               )}
                             </div>
                           </div>
-                          <CardHeader className="p-4 cursor-pointer" onClick={() => handleViewDetails(item.id)}>
+                          <CardHeader className="p-4 cursor-pointer" onClick={() => handleViewDetails(item.id, item.name, item.category)}>
                             <CardTitle className="text-base line-clamp-1">{item.name}</CardTitle>
                             <CardDescription>${item.price_per_day}/day</CardDescription>
                           </CardHeader>
