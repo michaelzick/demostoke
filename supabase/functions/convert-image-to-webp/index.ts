@@ -1,6 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { Image } from "https://deno.land/x/imagescript@1.2.15/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -9,6 +10,9 @@ const corsHeaders = {
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+const MAX_WIDTH = 2000;
+const WEBP_QUALITY = 85;
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -38,24 +42,41 @@ serve(async (req) => {
     const originalSize = imageBuffer.byteLength;
     console.log('Downloaded image size:', originalSize, 'bytes');
 
-    // Step 2: For now, just re-upload the original image with WebP extension
-    // This is a simplified version - in production you'd want proper image processing
-    const webpBlob = new Blob([imageBuffer], { 
-      type: imageResponse.headers.get('content-type') || 'image/jpeg'
-    });
-
-    const webpSize = webpBlob.size;
+    // Step 2: Process the image with ImageScript
+    console.log('Processing image...');
+    const originalImage = await Image.decode(new Uint8Array(imageBuffer));
+    const originalWidth = originalImage.width;
+    const originalHeight = originalImage.height;
     
-    // Set dimensions as unknown for now since we can't process in Deno easily
-    const originalWidth = 1920; // Default values
-    const originalHeight = 1080;
-    const newWidth = originalWidth;
-    const newHeight = originalHeight;
+    console.log('Original dimensions:', originalWidth, 'x', originalHeight);
+
+    // Step 3: Resize if necessary (maintain aspect ratio)
+    let processedImage = originalImage;
+    let newWidth = originalWidth;
+    let newHeight = originalHeight;
+
+    if (originalWidth > MAX_WIDTH) {
+      const aspectRatio = originalHeight / originalWidth;
+      newWidth = MAX_WIDTH;
+      newHeight = Math.round(MAX_WIDTH * aspectRatio);
+      
+      console.log('Resizing to:', newWidth, 'x', newHeight);
+      processedImage = originalImage.resize(newWidth, newHeight);
+    }
+
+    // Step 4: Convert to WebP
+    console.log('Converting to WebP...');
+    const webpBuffer = await processedImage.encodeWebP(WEBP_QUALITY);
+    const webpSize = webpBuffer.byteLength;
+    
     console.log('WebP size:', webpSize, 'bytes', 'Compression ratio:', Math.round((1 - webpSize / originalSize) * 100) + '%');
 
     // Step 5: Generate file path for storage
     const timestamp = Date.now();
     const fileName = `${sourceTable}/${sourceRecordId || 'unknown'}/${timestamp}.webp`;
+
+    // Step 5: Create WebP blob
+    const webpBlob = new Blob([webpBuffer], { type: 'image/webp' });
 
     // Step 6: Upload to Supabase storage
     console.log('Uploading to storage:', fileName);
