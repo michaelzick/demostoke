@@ -162,6 +162,7 @@ const EditGearForm = () => {
         <MultipleGearMedia
           handleMultipleImageUpload={formState.handleMultipleImageUpload}
           currentImages={currentImages}
+          setCurrentImages={setCurrentImages}
           imageUrls={formState.imageUrls}
           setImageUrls={formState.setImageUrls}
           useImageUrls={formState.useImageUrls}

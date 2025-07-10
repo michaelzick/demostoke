@@ -6,11 +6,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { X, Search } from "lucide-react";
 import { useState } from "react";
+import { deleteEquipmentImage } from "@/utils/multipleImageHandling";
 import ImageSearchDialog from "./ImageSearchDialog";
 
 interface MultipleGearMediaProps {
   handleMultipleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   currentImages?: string[];
+  setCurrentImages?: (images: string[]) => void;
   duplicatedImageUrls?: string[];
   imageUrls: string[];
   setImageUrls: (urls: string[]) => void;
@@ -25,6 +27,7 @@ interface MultipleGearMediaProps {
 const MultipleGearMedia = ({
   handleMultipleImageUpload,
   currentImages,
+  setCurrentImages,
   duplicatedImageUrls,
   imageUrls,
   setImageUrls,
@@ -45,6 +48,19 @@ const MultipleGearMedia = ({
   const removeImageUrl = (index: number) => {
     const newUrls = imageUrls.filter((_, i) => i !== index);
     setImageUrls(newUrls);
+  };
+
+  const handleRemoveImage = async (index: number) => {
+    const imageUrl = displayImages[index];
+
+    if (!useImageUrls && currentImages) {
+      // Remove image from database and state
+      await deleteEquipmentImage(imageUrl);
+      setCurrentImages?.(currentImages.filter((_, i) => i !== index));
+    } else {
+      // Removing URL from input-based images
+      removeImageUrl(index);
+    }
   };
 
   const updateImageUrl = (index: number, url: string) => {
@@ -143,12 +159,22 @@ const MultipleGearMedia = ({
           </p>
           <div className="grid grid-cols-3 gap-2">
             {displayImages.map((imageUrl, index) => (
-              <img
-                key={index}
-                src={imageUrl}
-                alt={`Gear image ${index + 1}`}
-                className="w-24 h-24 object-cover rounded-md border"
-              />
+              <div key={index} className="relative group">
+                <img
+                  src={imageUrl}
+                  alt={`Gear image ${index + 1}`}
+                  className="w-24 h-24 object-cover rounded-md border"
+                />
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="destructive"
+                  onClick={() => handleRemoveImage(index)}
+                  className="absolute top-0 right-0 m-1 h-5 w-5 opacity-80 group-hover:opacity-100"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
             ))}
           </div>
         </div>
