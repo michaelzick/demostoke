@@ -38,7 +38,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
 
   const ownerLinkPath = isShop
     ? `/shop/${equipment.owner.shopId}`
-    : `/user-profile/${equipment.owner.id}`;
+    : `/user-profile/${slugify(equipment.owner.name)}`;
 
   // Use images array from equipment_images table
   const images =

@@ -3,6 +3,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { User, Upload, Trash2, Eye } from "lucide-react";
+import { slugify } from "@/utils/slugify";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -118,7 +119,7 @@ export const ProfileImageSection = ({
           </AlertDialog>
           {userId && (
             <Button type="button" size="sm" asChild>
-              <Link to={`/user-profile/${userId}`}>
+              <Link to={`/user-profile/${slugify(name)}`}>
                 <Eye className="h-4 w-4 mr-2" />
                 View Profile
               </Link>
