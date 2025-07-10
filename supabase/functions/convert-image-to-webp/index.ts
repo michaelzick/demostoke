@@ -11,7 +11,7 @@ const corsHeaders = {
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 const MAX_WIDTH = 2000;
-const WEBP_QUALITY = 85;
+const WEBP_QUALITY = 60;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -27,7 +27,7 @@ serve(async (req) => {
     console.log('Starting conversion:', { imageUrl, sourceTable, sourceColumn, sourceRecordId });
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Step 1: Download
+    // 1️⃣ Download the original image
     const imageResponse = await fetch(imageUrl, {
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; ImageConverter/1.0)' }
     });
@@ -36,13 +36,15 @@ serve(async (req) => {
     }
     const imageBuffer = new Uint8Array(await imageResponse.arrayBuffer());
     const originalSize = imageBuffer.byteLength;
+    console.log(`Original size: ${originalSize} bytes`);
 
-    // Step 2: Decode
+    // 2️⃣ Decode the image
     const originalImage = await Image.decode(imageBuffer);
     let width = originalImage.width;
     let height = originalImage.height;
+    console.log(`Original dimensions: ${width}x${height}`);
 
-    // Step 3: Resize if needed
+    // 3️⃣ Resize if needed
     let processedImage = originalImage;
     if (width > MAX_WIDTH) {
       const aspectRatio = height / width;
@@ -52,12 +54,35 @@ serve(async (req) => {
       console.log(`Resized to: ${width}x${height}`);
     }
 
-    // Step 4: Encode to true WebP
-    const webpBuffer = await processedImage.encodeWEBP(WEBP_QUALITY);
+    // 4️⃣ Encode to WebP
+    console.log('Encoding to WebP...');
+    const webpBuffer = await processedImage.encode(Image.TYPE_WEBP, WEBP_QUALITY);
     const webpSize = webpBuffer.byteLength;
-    console.log(`WebP size: ${webpSize} bytes (original was ${originalSize} bytes)`);
+    console.log(`WebP size: ${webpSize} bytes`);
 
-    // Step 5: Upload to Supabase Storage
+    // 5️⃣ Check if WebP is actually smaller
+    if (webpSize >= originalSize) {
+      console.log('WebP is larger than original. Using original image URL.');
+      // Update source record with original image URL
+      const { error: updateError } = await supabase
+        .from(sourceTable)
+        .update({ [sourceColumn]: imageUrl })
+        .eq('id', sourceRecordId);
+
+      if (updateError) throw new Error(`Failed to update record: ${updateError.message}`);
+
+      return new Response(JSON.stringify({
+        success: true,
+        webpUrl: imageUrl,
+        note: 'WebP was larger than original; original image URL used instead.',
+        originalSize,
+        webpSize
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    // 6️⃣ Upload the WebP to Supabase Storage
     const timestamp = Date.now();
     const fileName = `${sourceTable}/${sourceRecordId}/${timestamp}.webp`;
     const webpBlob = new Blob([webpBuffer], { type: 'image/webp' });
@@ -80,7 +105,7 @@ serve(async (req) => {
     const webpUrl = urlData.publicUrl;
     console.log(`WebP stored at: ${webpUrl}`);
 
-    // Step 6: Log conversion in webp_images table
+    // 7️⃣ Log the conversion
     const { error: logError } = await supabase.from('webp_images').insert({
       original_url: imageUrl,
       webp_url: webpUrl,
@@ -96,7 +121,7 @@ serve(async (req) => {
     });
     if (logError) console.warn('Warning: Failed to log conversion record', logError);
 
-    // Step 7: Update source record with new WebP URL
+    // 8️⃣ Update the source record with the new WebP URL
     const { error: updateError } = await supabase
       .from(sourceTable)
       .update({ [sourceColumn]: webpUrl })
@@ -109,6 +134,8 @@ serve(async (req) => {
       success: true,
       webpUrl,
       compressionRatio: Math.round((1 - webpSize / originalSize) * 100),
+      originalSize,
+      webpSize,
       dimensions: {
         original: { width: originalImage.width, height: originalImage.height },
         webp: { width, height }
