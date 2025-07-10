@@ -58,8 +58,8 @@ const handler = async (req: Request): Promise<Response> => {
       searchUrl.searchParams.set('searchType', 'image');
       searchUrl.searchParams.set('num', resultsPerPage.toString());
       searchUrl.searchParams.set('start', start.toString());
-      searchUrl.searchParams.set('imgSize', size);
-      searchUrl.searchParams.set('imgType', 'photo');
+      searchUrl.searchParams.set('imageSize', size);
+      searchUrl.searchParams.set('imageType', 'photo');
       searchUrl.searchParams.set('safe', 'active');
 
       console.log(`Searching for: ${searchQuery} (start=${start})`);
