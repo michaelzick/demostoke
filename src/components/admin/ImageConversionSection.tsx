@@ -35,12 +35,12 @@ const ImageConversionSection = () => {
       // Helper function to check if URL is convertible
       const isConvertibleImage = (url: string): boolean => {
         if (!url || url.trim() === '') return false;
-        // Skip if already WebP
-        if (url.toLowerCase().includes('.webp')) return false;
+        // Skip if already JPEG
+        if (url.toLowerCase().includes('.jpg') || url.toLowerCase().includes('.jpeg')) return false;
         // Skip internal/generated images
         if (url.includes('supabase') || url.includes('dicebear') || url.startsWith('/img/')) return false;
-        // Only include common image formats
-        return /\.(jpg|jpeg|png|gif|bmp|tiff)(\?.*)?$/i.test(url) || 
+        // Only include common image formats (excluding JPEG)
+        return /\.(png|gif|bmp|tiff|webp)(\?.*)?$/i.test(url) || 
                url.includes('unsplash') || 
                url.includes('pexels') || 
                url.includes('images') ||
@@ -138,7 +138,7 @@ const ImageConversionSection = () => {
       
       toast({
         title: "Scan Complete",
-        description: `Found ${foundImages.length} images that can be converted to WebP`,
+        description: `Found ${foundImages.length} images that can be converted to JPEG`,
       });
     } catch (error) {
       console.error('Error scanning images:', error);
@@ -156,7 +156,7 @@ const ImageConversionSection = () => {
     setConverting(prev => new Set([...prev, imageRecord.id]));
     
     try {
-      const { data, error } = await supabase.functions.invoke('convert-image-to-webp', {
+      const { data, error } = await supabase.functions.invoke('convert-to-jpeg', {
         body: {
           imageUrl: imageRecord.url,
           sourceTable: imageRecord.source_table,
@@ -169,7 +169,7 @@ const ImageConversionSection = () => {
 
       toast({
         title: "Conversion Successful",
-        description: `Image converted and saved as WebP`,
+        description: `Image converted and saved as JPEG`,
       });
 
       // Remove the converted image from the list
@@ -179,7 +179,7 @@ const ImageConversionSection = () => {
       console.error('Error converting image:', error);
       toast({
         title: "Conversion Failed",
-        description: "Failed to convert image to WebP",
+        description: "Failed to convert image to JPEG",
         variant: "destructive",
       });
     } finally {
@@ -216,10 +216,10 @@ const ImageConversionSection = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Download className="h-5 w-5" />
-          Image WebP Conversion Utility
+          Image JPEG Conversion Utility
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Find and convert external images to optimized WebP format. This will improve loading times and reduce bandwidth usage.
+          Find and convert external images to optimized JPEG format. This will improve loading times and reduce bandwidth usage.
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -258,7 +258,7 @@ const ImageConversionSection = () => {
           <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
             <AlertCircle className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              Found {images.length} images that can be converted to WebP format
+              Found {images.length} images that can be converted to JPEG format
             </span>
           </div>
         )}
