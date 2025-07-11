@@ -257,11 +257,7 @@ const HomePage = () => {
         </DialogContent>
       </Dialog>
       <HeroSection />
-      <div className="container px-4 md:px-6 py-8 text-center">
-        <p className="text-lg max-w-2xl mx-auto">
-          DemoStoke connects action sports enthusiasts with local snowboards, surfboards, mountain bikes and more. Rent or demo gear from nearby riders so you can try before you buy.
-        </p>
-      </div>
+      <HowItWorksSection />
 
       {/* Conditionally render trending section only if we have trending data */}
       {!trendingLoading && trendingEquipment && trendingEquipment.length > 0 && (
@@ -281,7 +277,6 @@ const HomePage = () => {
       )}
 
       <CategoriesSection />
-      <HowItWorksSection />
       <FeaturedPostsSection />
     </div>
   );
