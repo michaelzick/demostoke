@@ -10,6 +10,7 @@ import FilterBar from "@/components/FilterBar";
 import { Equipment } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
+import useScrollToTop from "@/hooks/useScrollToTop";
 
 const ExplorePage = () => {
   usePageMetadata({
@@ -27,6 +28,9 @@ const ExplorePage = () => {
   const [allEquipment, setAllEquipment] = useState<Equipment[]>([]);
   const [isEquipmentLoading, setIsEquipmentLoading] = useState(true);
   const [hasShownNoEquipmentToast, setHasShownNoEquipmentToast] = useState(false);
+
+  // Scroll to top on mount
+  useScrollToTop();
 
   // Load equipment data using global app settings
   useEffect(() => {
@@ -124,10 +128,6 @@ const ExplorePage = () => {
     });
   };
 
-  // Scroll to top on page load
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   return (
     <div className="min-h-screen">

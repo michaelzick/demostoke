@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMockData } from "@/hooks/useMockData";
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
 import { parseQueryForLocation } from "@/utils/queryParsing";
+import useScrollToTop from "@/hooks/useScrollToTop";
 
 const SearchResultsPage = () => {
   usePageMetadata({
@@ -168,10 +169,8 @@ const SearchResultsPage = () => {
     setSearchParams({ q: searchQuery });
   };
 
-  // Scroll to top on page load
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  // Scroll to top on mount
+  useScrollToTop();
 
   // Convert AISearchResult[] to MapEquipment[] for the map component
   const mapEquipment = sortedResults
