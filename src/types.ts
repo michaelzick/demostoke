@@ -1,6 +1,7 @@
 
 export interface Equipment {
   id: string;
+  user_id?: string; // Add user_id property
   name: string;
   category: string;
   subcategory?: string; // Add optional subcategory field
