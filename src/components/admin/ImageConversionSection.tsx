@@ -2,18 +2,21 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Search, Download, CheckCircle, AlertCircle, ExternalLink } from "lucide-react";
+import { Loader2, Search, Download, CheckCircle, AlertCircle } from "lucide-react";
+import { slugify } from "@/utils/slugify";
+import ImageResultsTable from "./ImageResultsTable";
 
-interface ImageRecord {
+export interface ImageRecord {
   id: string;
   url: string;
   source_table: string;
   source_column: string;
   source_record_id?: string;
   equipment_id?: string; // For equipment_images table
+  category?: string;
+  name?: string;
   file_type?: string;
   dimensions?: { width: number; height: number };
   already_processed?: boolean;
@@ -61,7 +64,7 @@ const ImageConversionSection = () => {
       console.log('Scanning equipment table...');
       const { data: equipmentData } = await supabase
         .from('equipment')
-        .select('id, image_url')
+        .select('id, image_url, category, name')
         .not('image_url', 'is', null);
 
       equipmentData?.forEach(item => {
@@ -72,6 +75,9 @@ const ImageConversionSection = () => {
             source_table: 'equipment',
             source_column: 'image_url',
             source_record_id: item.id,
+            equipment_id: item.id,
+            category: item.category,
+            name: item.name,
             file_type: getFileType(item.image_url)
           });
         }
@@ -82,7 +88,7 @@ const ImageConversionSection = () => {
       console.log('Scanning equipment_images table...');
       const { data: equipmentImagesData } = await supabase
         .from('equipment_images')
-        .select('id, image_url, equipment_id')
+        .select('id, image_url, equipment_id, equipment(category, name)')
         .not('image_url', 'is', null);
 
       equipmentImagesData?.forEach(item => {
@@ -94,6 +100,8 @@ const ImageConversionSection = () => {
             source_column: 'image_url',
             source_record_id: item.id,
             equipment_id: item.equipment_id,
+            category: item.equipment?.category,
+            name: item.equipment?.name,
             file_type: getFileType(item.image_url)
           });
         }
@@ -240,11 +248,8 @@ const ImageConversionSection = () => {
   };
 
   const getGearDetailLink = (image: ImageRecord): string | null => {
-    if (image.source_table === 'equipment') {
-      return `/equipment/${image.source_record_id}`;
-    }
-    if (image.source_table === 'equipment_images' && image.equipment_id) {
-      return `/equipment/${image.equipment_id}`;
+    if (image.category && image.name) {
+      return `/${image.category}/${slugify(image.name)}`;
     }
     return null;
   };
@@ -330,98 +335,13 @@ const ImageConversionSection = () => {
         )}
 
         {images.length > 0 && (
-          <div className="border rounded-lg">
-            <Table>
-               <TableHeader>
-                 <TableRow>
-                   <TableHead>Preview</TableHead>
-                   <TableHead>URL</TableHead>
-                   <TableHead>Source</TableHead>
-                   <TableHead>File Type</TableHead>
-                   <TableHead>Gear Detail</TableHead>
-                   <TableHead>Actions</TableHead>
-                 </TableRow>
-               </TableHeader>
-              <TableBody>
-                 {images.map((image) => {
-                   const gearDetailLink = getGearDetailLink(image);
-                   
-                   return (
-                     <TableRow key={image.id}>
-                       <TableCell>
-                         <div className="flex flex-col items-center">
-                           <img
-                             src={image.url}
-                             alt="Preview"
-                             className="h-16 w-16 object-cover rounded border"
-                             onError={(e) => {
-                               e.currentTarget.src = '/img/demostoke-logo-ds-transparent-cropped.webp';
-                             }}
-                           />
-                           {image.dimensions && (
-                             <div className="text-xs text-muted-foreground mt-1">
-                               {image.dimensions.width} × {image.dimensions.height}
-                             </div>
-                           )}
-                         </div>
-                       </TableCell>
-                       <TableCell className="max-w-xs">
-                         <a
-                           href={image.url}
-                           target="_blank"
-                           rel="noopener noreferrer"
-                           className="flex items-center gap-1 text-primary hover:underline"
-                           title={image.url}
-                         >
-                           <div className="truncate">
-                             {image.url}
-                           </div>
-                           <ExternalLink className="h-3 w-3 flex-shrink-0" />
-                         </a>
-                       </TableCell>
-                       <TableCell>
-                         <Badge variant="outline">
-                           {getSourceDisplayName(image.source_table, image.source_column)}
-                         </Badge>
-                       </TableCell>
-                       <TableCell>
-                         <Badge variant="secondary">
-                           {image.file_type || 'UNKNOWN'}
-                         </Badge>
-                       </TableCell>
-                       <TableCell>
-                         {gearDetailLink ? (
-                           <a
-                             href={gearDetailLink}
-                             target="_blank"
-                             rel="noopener noreferrer"
-                             className="text-primary hover:underline"
-                           >
-                             View Gear
-                           </a>
-                         ) : (
-                           <span className="text-muted-foreground">N/A</span>
-                         )}
-                       </TableCell>
-                       <TableCell>
-                         <Button
-                           size="sm"
-                           onClick={() => processImage(image)}
-                           disabled={converting.has(image.id)}
-                         >
-                           {converting.has(image.id) ? (
-                             <Loader2 className="h-4 w-4 animate-spin" />
-                           ) : (
-                             "Download"
-                           )}
-                         </Button>
-                       </TableCell>
-                     </TableRow>
-                   );
-                 })}
-              </TableBody>
-            </Table>
-          </div>
+          <ImageResultsTable
+            images={images}
+            converting={converting}
+            processImage={processImage}
+            getGearDetailLink={getGearDetailLink}
+            getSourceDisplayName={getSourceDisplayName}
+          />
         )}
       </CardContent>
     </Card>
