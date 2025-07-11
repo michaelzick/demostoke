@@ -42,6 +42,7 @@ const FeaturedPostsSection = () => {
                     <img
                       src={post.thumbnail}
                       alt={post.title}
+                      loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                     />
                   </div>
@@ -68,6 +69,7 @@ const FeaturedPostsSection = () => {
               <img
                 src="https://images.unsplash.com/photo-1616449973117-0e1d99c56ed3?auto=format&fit=crop&w=600&q=80"
                 alt="Person on surfboard"
+                loading="lazy"
                 className="rounded-lg relative z-10 max-h-80 object-cover"
               />
             </div>

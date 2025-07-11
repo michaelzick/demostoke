@@ -8,6 +8,7 @@ import { useSimilarEquipment } from "@/hooks/useSimilarEquipment";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import { trackEquipmentView } from "@/services/viewTrackingService";
+import { getCategoryDisplayName } from "@/helpers";
 
 // Import component modules
 import EquipmentDetailPageDb from "./EquipmentDetailPageDb";
@@ -97,11 +98,42 @@ const EquipmentDetailPage = () => {
   const similarEquipment = similarEquipmentFromDb || [];
 
   const equipmentName = currentEquipment?.name;
+  const categoryDisplay = currentEquipment ? getCategoryDisplayName(currentEquipment.category) : '';
 
   usePageMetadata({
-    title: equipmentName ? `Gear Details | ${equipmentName}` : 'Gear Details | DemoStoke',
-    description: 'View detailed information about this gear listing.',
-    type: 'product'
+    title: equipmentName
+      ? `Rent ${equipmentName} – ${categoryDisplay} Demo | DemoStoke`
+      : 'Gear Details | DemoStoke',
+    description: equipmentName
+      ? `Demo and rent a ${equipmentName} ${categoryDisplay ? `(${categoryDisplay})` : ''} on DemoStoke – try before you buy!`
+      : 'View detailed information about this gear listing.',
+    image: currentEquipment?.images?.[0] || currentEquipment?.image_url,
+    type: 'product',
+    schema: currentEquipment
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: currentEquipment.name,
+          description: currentEquipment.description,
+          image:
+            currentEquipment.images && currentEquipment.images.length > 0
+              ? currentEquipment.images
+              : [currentEquipment.image_url],
+          offers: {
+            '@type': 'Offer',
+            priceCurrency: 'USD',
+            price: currentEquipment.price_per_day,
+            availability: currentEquipment.availability.available
+              ? 'https://schema.org/InStock'
+              : 'https://schema.org/OutOfStock'
+          },
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: currentEquipment.rating,
+            reviewCount: currentEquipment.review_count
+          }
+        }
+      : undefined
   });
 
   // Shared handlers

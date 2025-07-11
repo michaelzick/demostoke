@@ -145,6 +145,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
                           <img
                             src={imageUrl}
                             alt={`${equipment.name} - Image ${index + 1}`}
+                            loading="lazy"
                             className="w-full h-96 object-cover"
                           />
                         </div>
@@ -162,6 +163,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
                   <img
                     src={images[0]}
                     alt={equipment.name}
+                    loading="lazy"
                     className="w-full h-96 object-cover"
                   />
                 </div>
