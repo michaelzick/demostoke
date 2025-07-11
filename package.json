@@ -9,12 +9,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:ssr": "vite build --ssr src/entry-server.tsx",
-    "build:all": "npm run build && npm run build:ssr",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "node server.js"
+    "start": "serve -s dist"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -55,7 +53,6 @@
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.3.0",
-    "express": "^4.19.2",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.462.0",
     "mapbox-gl": "^3.11.1",
