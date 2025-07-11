@@ -288,5 +288,40 @@ The Line Tom Wallisch Pro 2025 is a standout for freestyle skiers who want a ski
     tags: ["gear reviews", "skis", "tom wallisch", "park", "freestyle"],
     author: "Generative AI",
     authorId: "generative-ai",
+  },
+  {
+    id: "ibis-oso-2025-review",
+    title: "First Ride on the Revamped Ibis Oso",
+    excerpt: "We test the updated 2025 Ibis Oso e‑bike with its new look, lower price and surprisingly playful ride.",
+    content: `
+
+**First Ride on the Revamped Ibis Oso**
+
+The latest Oso keeps its carbon frame but drops the price to about $6,000. Sizes small and medium use a mullet setup while large and extra‑large are full 29er. A Bosch CX motor and 750 Wh battery provide the power, and the cockpit is tidied up with wireless controls.
+
+**Key Specs**
+
+- 170 mm fork travel and 155 mm in the rear (upgradable to 170 mm rear/190 mm front)
+- Bronze or gloss black color options
+- Shimano XT four‑piston brakes with massive 220 mm rotors
+- Maxxis DH‑casing tires on 35 mm wide alloy rims
+
+**On the Trail**
+
+Our tester rode everything from rocky climbs in Arkansas to jump lines in Texas. The motor is fairly quiet and delivers smooth power. The Oso felt direct and responsive through tight singletrack, and once the shock was tuned with a volume spacer it soaked up chunky hits with ease.
+
+Even at around 54 lb the bike handled jumps well, carrying speed through lips and landing confidently. Those downhill tires add security when things get rough, though they do make the bike feel a bit heavy on mellow terrain.
+
+Overall this refreshed Oso offers impressive parts for the money and rides more playfully than its weight suggests. Riders looking for a durable full‑power e‑bike should give it a serious look.
+    `,
+    publishedAt: "2025-07-07",
+    readTime: 7,
+    category: "gear reviews",
+    tags: ["ibis", "oso", "e-bikes", "reviews"],
+    author: "Generative AI",
+    authorId: "generative-ai",
+    heroImage: "https://img.youtube.com/vi/VECiNIRQ_HQ/maxresdefault.jpg",
+    thumbnail: "https://img.youtube.com/vi/VECiNIRQ_HQ/hqdefault.jpg",
+    videoEmbed: `<iframe src="https://www.youtube.com/embed/VECiNIRQ_HQ?si=67JrtjZ4oB01-Yn_" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="w-full h-full"></iframe>`
   }
 ];
