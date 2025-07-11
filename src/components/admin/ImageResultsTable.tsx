@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ExternalLink, Loader2 } from "lucide-react";
+import { ExternalLink, Loader2, CheckCircle } from "lucide-react";
 import { ImageRecord } from "./ImageConversionSection";
 
 interface Props {
@@ -89,17 +89,21 @@ const ImageResultsTable: FC<Props> = ({
                 )}
               </TableCell>
               <TableCell>
-                <Button
-                  size="sm"
-                  onClick={() => processImage(image)}
-                  disabled={converting.has(image.id)}
-                >
-                  {converting.has(image.id) ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    'Download'
-                  )}
-                </Button>
+                {image.already_processed ? (
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                ) : (
+                  <Button
+                    size="sm"
+                    onClick={() => processImage(image)}
+                    disabled={converting.has(image.id)}
+                  >
+                    {converting.has(image.id) ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      'Download'
+                    )}
+                  </Button>
+                )}
               </TableCell>
             </TableRow>
           );
