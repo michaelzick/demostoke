@@ -22,10 +22,6 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
   // Check if current user is the owner of this gear
   const isOwner = user?.id === equipment.owner.id;
 
-  const handleUpdate = () => {
-    navigate(`/edit-gear/${equipment.id}`);
-  };
-
   return (
     <div className="flex justify-between items-start mb-4">
       <div className="flex-1">
