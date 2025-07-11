@@ -512,7 +512,7 @@ Localism 3/10 – relaxed lineup, though it gets crowded with learners.
 
 No matter where you paddle out, always show aloha. Wait your turn, respect the locals, and ride equipment suited for the conditions.`,
     category: "surfboards",
-    publishedAt: "2025-08-20",
+    publishedAt: "2025-07-05",
     readTime: 8,
     heroImage: "https://www.hawaiiactivities.com/travelguide/wp-content/uploads/ehukai01.jpg",
     thumbnail: "https://briantissot.com/wp-content/uploads/2020/04/pipelines-hungry-reef-sean-davey.jpg",
