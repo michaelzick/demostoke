@@ -31,16 +31,6 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
       <div className="flex-1">
         <div className="flex items-center gap-4 mb-2">
           <h1 className="text-3xl font-bold">{equipment.name}</h1>
-          {isOwner && (
-            <Button
-              variant="default"
-              onClick={handleUpdate}
-              className="flex items-center gap-2"
-            >
-              <Edit className="h-4 w-4" />
-              Update
-            </Button>
-          )}
         </div>
         <div className="flex items-center gap-2 mb-2">
           <Badge>{equipment.category}</Badge>
