@@ -83,6 +83,48 @@ export type Database = {
         }
         Relationships: []
       }
+      downloaded_images: {
+        Row: {
+          created_at: string
+          downloaded_size: number | null
+          downloaded_url: string
+          file_type: string | null
+          id: string
+          original_size: number | null
+          original_url: string
+          source_column: string
+          source_record_id: string | null
+          source_table: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          downloaded_size?: number | null
+          downloaded_url: string
+          file_type?: string | null
+          id?: string
+          original_size?: number | null
+          original_url: string
+          source_column: string
+          source_record_id?: string | null
+          source_table: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          downloaded_size?: number | null
+          downloaded_url?: string
+          file_type?: string | null
+          id?: string
+          original_size?: number | null
+          original_url?: string
+          source_column?: string
+          source_record_id?: string | null
+          source_table?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       equipment: {
         Row: {
           category: string

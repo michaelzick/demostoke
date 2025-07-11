@@ -3,5 +3,5 @@ project_id = "qtlhqsqanbxgfbcjigrl"
 [functions.convert-to-jpeg]
 verify_jwt = false
 
-[functions.download-resize-image]
+[functions.download-store-image]
 verify_jwt = false

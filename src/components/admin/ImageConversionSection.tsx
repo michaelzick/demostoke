@@ -150,7 +150,7 @@ const ImageConversionSection = () => {
       
       toast({
         title: "Scan Complete",
-        description: `Found ${foundImages.length} images that can be downloaded and resized`,
+        description: `Found ${foundImages.length} images that can be downloaded and stored`,
       });
     } catch (error) {
       console.error('Error scanning images:', error);
@@ -168,7 +168,7 @@ const ImageConversionSection = () => {
     setConverting(prev => new Set([...prev, imageRecord.id]));
     
     try {
-      const { data, error } = await supabase.functions.invoke('download-resize-image', {
+      const { data, error } = await supabase.functions.invoke('download-store-image', {
         body: {
           imageUrl: imageRecord.url,
           sourceTable: imageRecord.source_table,
@@ -180,8 +180,8 @@ const ImageConversionSection = () => {
       if (error) throw error;
 
       toast({
-        title: "Processing Successful",
-        description: `Image downloaded and resized`,
+        title: "Download Successful",
+        description: `Image downloaded and stored`,
       });
 
       // Remove the processed image from the list
@@ -190,8 +190,8 @@ const ImageConversionSection = () => {
     } catch (error) {
       console.error('Error processing image:', error);
       toast({
-        title: "Processing Failed",
-        description: "Failed to download and resize image",
+        title: "Download Failed",
+        description: "Failed to download and store image",
         variant: "destructive",
       });
     } finally {
@@ -228,10 +228,10 @@ const ImageConversionSection = () => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Download className="h-5 w-5" />
-          Image Download & Resize Utility
+          Image Download & Store Utility
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Find and download external images with optional resizing to 2000px width. This will improve loading times and reduce bandwidth usage.
+          Find and download external images to store them in Supabase. This will improve loading times and reduce external dependencies.
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -270,7 +270,7 @@ const ImageConversionSection = () => {
           <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
             <AlertCircle className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              Found {images.length} images that can be downloaded and resized
+              Found {images.length} images that can be downloaded and stored
             </span>
           </div>
         )}
@@ -335,7 +335,7 @@ const ImageConversionSection = () => {
                         {converting.has(image.id) ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
-                          "Download & Resize"
+                          "Download"
                         )}
                       </Button>
                     </TableCell>
