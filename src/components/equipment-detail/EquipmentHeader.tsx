@@ -1,10 +1,8 @@
 
 import { Badge } from "@/components/ui/badge";
-import { StarIcon, MapPin, Edit } from "lucide-react";
+import { StarIcon, MapPin } from "lucide-react";
 import { Equipment } from "@/types";
 import PriceDisplay from "./PriceDisplay";
-import { useAuth } from "@/helpers";
-import { useNavigate } from "react-router-dom";
 import DistanceDisplay from "@/components/DistanceDisplay";
 
 interface EquipmentHeaderProps {
@@ -12,14 +10,8 @@ interface EquipmentHeaderProps {
 }
 
 const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-
   // Debug logging
   console.log(`Equipment detail ${equipment.name} subcategory:`, equipment.subcategory);
-
-  // Check if current user is the owner of this gear
-  const isOwner = user?.id === equipment.owner.id;
 
   return (
     <div className="flex justify-between items-start mb-4">
