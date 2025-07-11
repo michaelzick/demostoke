@@ -195,8 +195,12 @@ const ImageConversionSection = () => {
         description: `Image downloaded and stored`,
       });
 
-      // Remove the processed image from the list
-      setImages(prev => prev.filter(img => img.id !== imageRecord.id));
+      // Mark the processed image as completed
+      setImages(prev =>
+        prev.map(img =>
+          img.id === imageRecord.id ? { ...img, already_processed: true } : img
+        )
+      );
       
     } catch (error) {
       console.error('Error processing image:', error);
@@ -216,7 +220,7 @@ const ImageConversionSection = () => {
 
   const processAllImages = async () => {
     for (const image of images) {
-      if (!converting.has(image.id)) {
+      if (!converting.has(image.id) && !image.already_processed) {
         await processImage(image);
         // Add small delay between operations to avoid overwhelming the server
         await new Promise(resolve => setTimeout(resolve, 1000));
