@@ -1,6 +1,5 @@
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { StarIcon, MapPin, Edit } from "lucide-react";
 import { Equipment } from "@/types";
 import PriceDisplay from "./PriceDisplay";
