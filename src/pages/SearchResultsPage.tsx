@@ -7,6 +7,7 @@ import EquipmentCard from "@/components/EquipmentCard";
 import MapComponent from "@/components/MapComponent";
 import MapLegend from "@/components/map/MapLegend";
 import FilterBar from "@/components/FilterBar";
+import HybridView from "@/components/HybridView";
 import { Button } from "@/components/ui/button";
 import { Loader2, Search, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -25,7 +26,7 @@ const SearchResultsPage = () => {
   const query = searchParams.get("q") || "";
   const [results, setResults] = useState<AISearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [viewMode, setViewMode] = useState<"map" | "list">("list");
+  const [viewMode, setViewMode] = useState<"map" | "list" | "hybrid">("list");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const parsedQuery = parseQueryForLocation(query);
   const [sortBy, setSortBy] = useState<string>(
@@ -270,6 +271,12 @@ const SearchResultsPage = () => {
           />
           <MapLegend activeCategory={activeCategory} />
         </div>
+      ) : viewMode === "hybrid" ? (
+        <HybridView
+          filteredEquipment={sortedResults}
+          activeCategory={activeCategory}
+          isLocationBased={isLocationBased}
+        />
       ) : (
         <div className="container px-4 md:px-6 py-8">
           {isLocationBased && sortBy === "distance" && (
