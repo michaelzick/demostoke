@@ -34,15 +34,40 @@ const FilterBar = ({
     onSortChange(value);
   };
 
+  const categoryLabels: Record<string, string> = {
+    "snowboards": "Snowboards",
+    "skis": "Skis",
+    "surfboards": "Surfboards",
+    "mountain-bikes": "Mountain Bikes",
+  };
+
+  const viewLabels: Record<'map' | 'list' | 'hybrid', string> = {
+    map: "Map View",
+    list: "List View",
+    hybrid: "Hybrid View",
+  };
+
+  const categoryText =
+    activeCategory === null ? "All Equipment" : categoryLabels[activeCategory];
+  const viewText = viewLabels[viewMode];
+  const sortText =
+    sortBy === "distance"
+      ? "Nearest"
+      : sortBy === "price_asc"
+      ? "Price: Low to High"
+      : "Price: High to Low";
+
   return (
     <div className="border-b sticky top-16 z-30 bg-background pb-2">
       <div className="container px-4 md:px-6 py-4">
         {/* Mobile layout */}
         <div className="flex flex-col gap-2 lg:hidden">
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">Category</Button>
+                <Button variant="outline" size="sm" className="flex-1 text-left">
+                  {`Category: ${categoryText}`}
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => setActiveCategory(null)}>All Equipment</DropdownMenuItem>
@@ -54,7 +79,9 @@ const FilterBar = ({
             </DropdownMenu>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">View</Button>
+                <Button variant="outline" size="sm" className="flex-1 text-left">
+                  {`View: ${viewText}`}
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => setViewMode('map')}>Map View</DropdownMenuItem>
@@ -63,20 +90,25 @@ const FilterBar = ({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full">
             <Button
               variant="outline"
               size="sm"
               onClick={onReset}
-              className="flex items-center gap-1"
+              className="flex-1 flex items-center gap-1"
             >
               <RefreshCw size={14} />
               Reset
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" disabled={viewMode === 'map'}>
-                  Sort
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={viewMode === 'map'}
+                  className="flex-1 text-left"
+                >
+                  {`Sort: ${sortText}`}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -168,7 +200,7 @@ const FilterBar = ({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" disabled={viewMode === 'map'}>
-                  Sort: {sortBy === 'distance' ? 'Nearest' : sortBy === 'price_asc' ? 'Price: Low to High' : 'Price: High to Low'}
+                  {`Sort: ${sortText}`}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
