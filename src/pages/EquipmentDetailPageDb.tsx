@@ -248,7 +248,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
               border-none p-0 font-inherit
               cursor-pointer owner-name-button"
               data-tracking={trackingData}
-              id={trackingData}
+              id={`${equipment.owner.name} - ${equipment.owner.name} - button`}
             >
               {equipment.owner.name}
             </button>

@@ -44,7 +44,7 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
               hover:underline hover:text-white/80
               transition-colors"
             data-tracking={trackingData}
-            id={trackingData}
+            id={`${equipment.owner.name} - ${equipment.owner.name} - a`}
           >
             {equipment.owner.name}
           </Link>

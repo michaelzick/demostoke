@@ -30,7 +30,7 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
               to={profileLinkPath}
               className="text-primary underline hover:text-primary/80 transition-colors view-profile-link"
               data-tracking={trackingData}
-              id={trackingData}
+              id={`${owner.name} - ${displayName} - a`}
             >
               {displayName}
             </Link>
@@ -50,7 +50,7 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
                       rel="noopener noreferrer"
                       className="text-sm text-muted-foreground hover:text-primary underline profile-address"
                       data-tracking={trackingData}
-                      id={trackingData}
+                      id={`${owner.name} - ${profile?.address} - a`}
                     >
                       {profile.address}
                     </a>
@@ -66,7 +66,7 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
                       href={`tel:${profile.phone}`}
                       className="text-sm text-muted-foreground hover:text-primary underline profile-phone"
                       data-tracking={trackingData}
-                      id={trackingData}
+                      id={`${owner.name} - ${profile?.phone} - a`}
                     >
                       {profile.phone}
                     </a>
@@ -84,7 +84,7 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
                       rel="noopener noreferrer"
                       className="text-sm text-muted-foreground hover:text-primary underline profile-website"
                       data-tracking={trackingData}
-                      id={trackingData}
+                      id={`${owner.name} - ${profile?.website} - a`}
                     >
                       {profile.website}
                     </a>
