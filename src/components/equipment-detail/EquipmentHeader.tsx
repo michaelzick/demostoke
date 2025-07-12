@@ -44,7 +44,7 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
               hover:underline hover:text-white/80
               transition-colors"
             data-tracking={trackingData}
-            id={`${equipment.owner.name} - ${equipment.owner.name} - a`}
+            id={`${equipment.owner.name} - View Profile Link - Gear Header`}
           >
             {equipment.owner.name}
           </Link>
