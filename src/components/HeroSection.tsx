@@ -83,7 +83,7 @@ const HeroSection = () => {
             DemoStoke
           </h1>
           <h2 className="text-xl sm:text-3xl mb-8 max-w-2xl mx-auto text-shop">
-            Ride What Makes You Feel Alive
+            Find it. Ride it. Love it? Buy it.
           </h2>
           <div className="w-full max-w-2xl mx-auto mb-8">
             <div className="flex gap-2">

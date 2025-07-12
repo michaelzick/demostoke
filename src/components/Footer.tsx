@@ -16,8 +16,6 @@ const Footer = () => {
             </div>
             <p className="text-sm text-muted-foreground max-w-xs mb-4">
               Find it. Ride it. Love it? Buy it.
-              <br />
-              Ride what makes you feel alive.
             </p>
             <Button asChild>
               <Link to="/contact-us">Contact Us</Link>
