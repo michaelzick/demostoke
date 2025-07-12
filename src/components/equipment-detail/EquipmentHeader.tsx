@@ -4,6 +4,8 @@ import { StarIcon, MapPin } from "lucide-react";
 import { Equipment } from "@/types";
 import PriceDisplay from "./PriceDisplay";
 import DistanceDisplay from "@/components/DistanceDisplay";
+import { Link } from "react-router-dom";
+import { slugify } from "@/utils/slugify";
 
 interface EquipmentHeaderProps {
   equipment: Equipment;
@@ -31,6 +33,14 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
             <span>{equipment.rating}</span>
             <span className="text-muted-foreground ml-1">({equipment.review_count} reviews)</span>
           </div>
+        </div>
+        <div className="text-sm mb-2">
+          <Link
+            to={`/user-profile/${slugify(equipment.owner.name)}`}
+            className="hover:underline"
+          >
+            {equipment.owner.name}
+          </Link>
         </div>
         <div className="flex items-center text-sm text-muted-foreground">
           <MapPin className="h-4 w-4 mr-1" />

@@ -83,6 +83,10 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
             label: getCategoryDisplayName(equipment.category),
             path: `/explore?category=${equipment.category}`,
           },
+          {
+            label: equipment.owner.name,
+            path: `/user-profile/${slugify(equipment.owner.name)}`,
+          },
           { label: equipment.name, path: `/${equipment.category}/${slugify(equipment.name)}` },
         ]}
       />
