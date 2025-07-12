@@ -4,6 +4,8 @@ import { StarIcon, MapPin } from "lucide-react";
 import { Equipment } from "@/types";
 import PriceDisplay from "./PriceDisplay";
 import DistanceDisplay from "@/components/DistanceDisplay";
+import { Link } from "react-router-dom";
+import { slugify } from "@/utils/slugify";
 
 interface EquipmentHeaderProps {
   equipment: Equipment;
@@ -12,6 +14,9 @@ interface EquipmentHeaderProps {
 const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
   // Debug logging
   console.log(`Equipment detail ${equipment.name} subcategory:`, equipment.subcategory);
+
+  // Create tracking data for analytics
+  const trackingData = `${equipment.owner.name} - ${equipment.name}`;
 
   return (
     <div className="flex justify-between items-start mb-4">
@@ -31,6 +36,18 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
             <span>{equipment.rating}</span>
             <span className="text-muted-foreground ml-1">({equipment.review_count} reviews)</span>
           </div>
+        </div>
+        <div className="mb-2">
+          <Link
+            to={`/user-profile/${slugify(equipment.owner.name)}`}
+            className="text-lg underline underline-offset-4
+              hover:underline hover:text-white/80
+              transition-colors"
+            data-tracking={trackingData}
+            id={trackingData}
+          >
+            {equipment.owner.name}
+          </Link>
         </div>
         <div className="flex items-center text-sm text-muted-foreground">
           <MapPin className="h-4 w-4 mr-1" />
