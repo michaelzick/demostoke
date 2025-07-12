@@ -65,7 +65,7 @@ const CompactEquipmentCard = ({ equipment }: CompactEquipmentCardProps) => {
               {equipment.rating} ({equipment.review_count})
             </span>
           </div>
-          <Button variant="outline" size="sm" asChild className="text-xs h-8">
+          <Button size="sm" asChild className="text-xs h-8">
             <Link to={`/${equipment.category}/${slugify(equipment.name)}`}>View Details</Link>
           </Button>
         </div>

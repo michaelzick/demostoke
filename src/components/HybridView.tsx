@@ -193,9 +193,9 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased, userLo
               <div
                 key={equipment.id}
                 id={`equipment-card-${equipment.id}`}
-                className={`transition-all duration-300 ${
-                  selectedEquipmentId === equipment.id 
-                    ? 'ring-2 ring-primary ring-offset-2' 
+                className={`transition-all duration-300 rounded-lg ${
+                  selectedEquipmentId === equipment.id
+                    ? 'ring-2 ring-primary ring-offset-2'
                     : ''
                 }`}
                 onClick={(e) => handleCardWrapperClick(e, equipment.id)}
@@ -224,9 +224,9 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased, userLo
             <div
               key={equipment.id}
               id={`equipment-card-${equipment.id}`}
-              className={`transition-all duration-300 cursor-pointer ${
-                selectedEquipmentId === equipment.id 
-                  ? 'ring-2 ring-primary ring-offset-2' 
+              className={`transition-all duration-300 cursor-pointer rounded-lg ${
+                selectedEquipmentId === equipment.id
+                  ? 'ring-2 ring-primary ring-offset-2'
                   : ''
               }`}
               onClick={(e) => handleCardWrapperClick(e, equipment.id)}
