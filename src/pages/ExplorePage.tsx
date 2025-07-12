@@ -1,5 +1,6 @@
 
 import { useState, useEffect, useMemo } from "react";
+import { Loader2 } from "lucide-react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useLocation, useSearchParams, useMatch } from "react-router-dom";
 import { getEquipmentData } from "@/services/searchService";
@@ -149,7 +150,12 @@ const ExplorePage = () => {
         onReset={handleReset}
       />
 
-      {viewMode === "map" ? (
+      {isEquipmentLoading ? (
+        <div className="flex justify-center items-center py-20">
+          <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          <span className="ml-4 text-lg">Loading gear...</span>
+        </div>
+      ) : viewMode === "map" ? (
         <div className="h-[calc(100vh-12rem)] relative">
           <MapComponent
             activeCategory={activeCategory}
@@ -179,7 +185,7 @@ const ExplorePage = () => {
               <EquipmentCard key={equipment.id} equipment={equipment} />
             ))}
           </div>
-          {filteredEquipment.length === 0 && (
+          {filteredEquipment.length === 0 && !isEquipmentLoading && (
             <div className="text-center py-12">
               <h3 className="text-xl font-medium mb-2">No equipment found</h3>
               <p className="text-muted-foreground">
