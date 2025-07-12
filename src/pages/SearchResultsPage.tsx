@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useMockData } from "@/hooks/useMockData";
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
+import { useUserLocations } from "@/hooks/useUserLocations";
 import { parseQueryForLocation } from "@/utils/queryParsing";
 import useScrollToTop from "@/hooks/useScrollToTop";
 
@@ -36,6 +37,8 @@ const SearchResultsPage = () => {
   const [isAISearch, setIsAISearch] = useState(false);
   const { toast } = useToast();
   const { showMockData } = useMockData();
+  const { data: userLocations = [] } = useUserLocations();
+  const [resetCounter, setResetCounter] = useState(0);
 
   // Perform search when query changes
   useEffect(() => {
@@ -157,6 +160,7 @@ const SearchResultsPage = () => {
     setSearchParams({});
     setActiveCategory(null);
     setSortBy("relevance");
+    setResetCounter((c) => c + 1);
     toast({
       title: "Filters Reset",
       description: "All filters and search query have been cleared.",
@@ -188,6 +192,11 @@ const SearchResultsPage = () => {
       ownerId: item.owner.id,
       ownerName: item.owner.name,
     }));
+
+  const ownerIds = Array.from(new Set(mapEquipment.map(item => item.ownerId)));
+  const filteredUserLocations = userLocations.filter(user =>
+    ownerIds.includes(user.id) && (!activeCategory || user.equipment_categories.includes(activeCategory))
+  );
 
   return (
     <div className="min-h-screen">
@@ -264,18 +273,22 @@ const SearchResultsPage = () => {
       ) : viewMode === "map" ? (
         <div className="h-[calc(100vh-14rem)] relative">
           <MapComponent
-            initialEquipment={mapEquipment}
             activeCategory={activeCategory}
             searchQuery={query?.toLowerCase()}
             isEquipmentLoading={isLoading}
+            ownerIds={ownerIds}
+            viewMode={viewMode}
           />
-          <MapLegend activeCategory={activeCategory} />
+          <MapLegend activeCategory={activeCategory} viewMode={viewMode} />
         </div>
       ) : viewMode === "hybrid" ? (
         <HybridView
           filteredEquipment={sortedResults}
           activeCategory={activeCategory}
           isLocationBased={isLocationBased}
+          userLocations={filteredUserLocations}
+          viewMode={viewMode}
+          resetSignal={resetCounter}
         />
       ) : (
         <div className="container px-4 md:px-6 py-8">

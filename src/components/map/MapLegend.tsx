@@ -16,15 +16,12 @@ const profileLegendItems = [
 
 interface MapLegendProps {
   activeCategory?: string | null;
+  viewMode?: 'map' | 'list' | 'hybrid';
 }
 
-const MapLegend = ({ activeCategory }: MapLegendProps) => {
+const MapLegend = ({ activeCategory, viewMode }: MapLegendProps) => {
   const isSearchRoute = !!useMatch("/search");
   const isExploreRoute = !!useMatch("/explore");
-  
-  // Check if we're in hybrid view mode by looking at URL params
-  const urlParams = new URLSearchParams(window.location.search);
-  const viewMode = urlParams.get('view');
   const isHybridView = viewMode === 'hybrid';
 
   // Determine which legend to show:

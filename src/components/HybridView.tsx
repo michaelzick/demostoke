@@ -1,18 +1,21 @@
 import { useState, useRef, useEffect } from "react";
 import { Equipment } from "@/types";
 import EquipmentCard from "./EquipmentCard";
-import MapComponent from "./MapComponent";
 import MapLegend from "./map/MapLegend";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMapMarkers } from "@/hooks/useMapMarkers";
 import mapboxgl from "mapbox-gl";
 import { supabase } from "@/integrations/supabase/client";
 import { initializeMap, fitMapBounds } from "@/utils/mapUtils";
+import { UserLocation } from "@/hooks/useUserLocations";
 
 interface HybridViewProps {
   filteredEquipment: Equipment[];
   activeCategory: string | null;
   isLocationBased: boolean;
+  userLocations?: UserLocation[];
+  viewMode?: 'map' | 'list' | 'hybrid';
+  resetSignal?: number;
 }
 
 interface MapEquipment {
@@ -28,7 +31,7 @@ interface MapEquipment {
   ownerName: string;
 }
 
-const HybridView = ({ filteredEquipment, activeCategory, isLocationBased }: HybridViewProps) => {
+const HybridView = ({ filteredEquipment, activeCategory, isLocationBased, userLocations = [], viewMode = 'hybrid', resetSignal }: HybridViewProps) => {
   const isMobile = useIsMobile();
   const [selectedEquipmentId, setSelectedEquipmentId] = useState<string | null>(null);
   const [mapboxToken, setMapboxToken] = useState<string | null>(null);
@@ -52,6 +55,8 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased }: Hybr
       ownerId: item.owner.id,
       ownerName: item.owner.name,
     }));
+
+  const mapUserLocations = userLocations.filter(user => user.location?.lat && user.location?.lng);
 
   // Fetch Mapbox token
   useEffect(() => {
@@ -89,36 +94,42 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased }: Hybr
     };
   }, [mapboxToken]);
 
+  const selectedEquipment = selectedEquipmentId
+    ? mapEquipment.find(item => item.id === selectedEquipmentId)
+    : undefined;
+
   // Add markers with click handlers
   const markers = useMapMarkers({
     map: map.current,
     mapLoaded: isMapLoaded,
-    equipment: mapEquipment,
-    userLocations: [],
+    equipment: selectedEquipment ? [selectedEquipment] : [],
+    userLocations: selectedEquipment ? [] : mapUserLocations,
     isSingleView: false,
     activeCategory,
   });
 
-  // Add click handlers to markers
+  // Reset view when resetSignal changes
+  useEffect(() => {
+    if (!map.current || !isMapLoaded) return;
+    setSelectedEquipmentId(null);
+    if (mapUserLocations.length > 0) {
+      fitMapBounds(map.current, mapUserLocations);
+    }
+  }, [resetSignal]);
+
+  // Fit bounds when equipment or user locations change
   useEffect(() => {
     if (!map.current || !isMapLoaded) return;
 
-    markers.forEach((marker, index) => {
-      const equipment = mapEquipment[index];
+    if (selectedEquipmentId) {
+      const equipment = mapEquipment.find(e => e.id === selectedEquipmentId);
       if (equipment) {
-        marker.getElement().addEventListener('click', () => {
-          handleMapPinClick(equipment.id);
-        });
+        fitMapBounds(map.current, [equipment], true);
       }
-    });
-  }, [markers, mapEquipment, isMapLoaded]);
-
-  // Fit bounds when equipment changes (only on initial load)
-  useEffect(() => {
-    if (map.current && isMapLoaded && mapEquipment.length > 0 && !selectedEquipmentId) {
-      fitMapBounds(map.current, mapEquipment);
+    } else if (mapUserLocations.length > 0) {
+      fitMapBounds(map.current, mapUserLocations);
     }
-  }, [mapEquipment, isMapLoaded]);
+  }, [mapEquipment, mapUserLocations, isMapLoaded, selectedEquipmentId]);
 
   const handleEquipmentCardClick = (equipmentId: string) => {
     setSelectedEquipmentId(equipmentId);
@@ -167,7 +178,7 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased }: Hybr
         {/* Map at top for mobile */}
         <div className="h-[50vh] relative">
           <div ref={mapContainer} className="w-full h-full" />
-          <MapLegend activeCategory={activeCategory} />
+          <MapLegend activeCategory={activeCategory} viewMode={viewMode} />
         </div>
         
         {/* Equipment list below map */}
@@ -237,7 +248,7 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased }: Hybr
       {/* Map on right */}
       <div className="w-1/2 relative">
         <div ref={mapContainer} className="w-full h-full" />
-        <MapLegend activeCategory={activeCategory} />
+        <MapLegend activeCategory={activeCategory} viewMode={viewMode} />
       </div>
     </div>
   );
