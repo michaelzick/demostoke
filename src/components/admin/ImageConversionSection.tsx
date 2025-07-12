@@ -100,8 +100,8 @@ const ImageConversionSection = () => {
             source_column: 'image_url',
             source_record_id: item.id,
             equipment_id: item.equipment_id,
-            category: (item as any).equipment?.category,
-            name: (item as any).equipment?.name,
+            category: item.equipment?.category,
+            name: item.equipment?.name,
             file_type: getFileType(item.image_url)
           });
         }

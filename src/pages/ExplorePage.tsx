@@ -7,7 +7,6 @@ import MapComponent from "@/components/MapComponent";
 import MapLegend from "@/components/map/MapLegend";
 import EquipmentCard from "@/components/EquipmentCard";
 import FilterBar from "@/components/FilterBar";
-import HybridView from "@/components/HybridView";
 import { Equipment } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
@@ -25,7 +24,7 @@ const ExplorePage = () => {
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("distance");
-  const [viewMode, setViewMode] = useState<"map" | "list" | "hybrid">("list");
+  const [viewMode, setViewMode] = useState<"map" | "list">("list");
   const [allEquipment, setAllEquipment] = useState<Equipment[]>([]);
   const [isEquipmentLoading, setIsEquipmentLoading] = useState(true);
   const [hasShownNoEquipmentToast, setHasShownNoEquipmentToast] = useState(false);
@@ -149,12 +148,6 @@ const ExplorePage = () => {
           />
           <MapLegend activeCategory={activeCategory} />
         </div>
-      ) : viewMode === "hybrid" ? (
-        <HybridView
-          filteredEquipment={filteredEquipment}
-          activeCategory={activeCategory}
-          isLocationBased={isLocationBased}
-        />
       ) : (
         <div className="container px-4 md:px-6 py-8">
           {isLocationBased && (
