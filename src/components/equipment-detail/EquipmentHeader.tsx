@@ -15,6 +15,9 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
   // Debug logging
   console.log(`Equipment detail ${equipment.name} subcategory:`, equipment.subcategory);
 
+  // Create tracking data for analytics
+  const trackingData = `${equipment.owner.name} - ${equipment.name}`;
+
   return (
     <div className="flex justify-between items-start mb-4">
       <div className="flex-1">
@@ -34,10 +37,14 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
             <span className="text-muted-foreground ml-1">({equipment.review_count} reviews)</span>
           </div>
         </div>
-        <div className="text-sm mb-2">
+        <div className="mb-2">
           <Link
             to={`/user-profile/${slugify(equipment.owner.name)}`}
-            className="hover:underline"
+            className="text-lg underline underline-offset-4
+              hover:underline hover:text-white/80
+              transition-colors"
+            data-tracking={trackingData}
+            id={trackingData}
           >
             {equipment.owner.name}
           </Link>
