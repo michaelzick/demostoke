@@ -21,12 +21,18 @@ interface MapLegendProps {
 const MapLegend = ({ activeCategory }: MapLegendProps) => {
   const isSearchRoute = !!useMatch("/search");
   const isExploreRoute = !!useMatch("/explore");
+  
+  // Check if we're in hybrid view mode by looking at URL params
+  const urlParams = new URLSearchParams(window.location.search);
+  const viewMode = urlParams.get('view');
+  const isHybridView = viewMode === 'hybrid';
 
   // Determine which legend to show:
   // - Search route: always show gear legend
+  // - Hybrid view: always show gear legend
   // - Explore route: show gear legend when category is selected, profile legend when showing all
   // - Other routes: show profile legend
-  const showGearLegend = isSearchRoute || (isExploreRoute && activeCategory !== null);
+  const showGearLegend = isSearchRoute || isHybridView || (isExploreRoute && activeCategory !== null);
   const legendItems = showGearLegend ? gearLegendItems : profileLegendItems;
 
   return (

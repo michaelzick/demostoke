@@ -113,9 +113,9 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased }: Hybr
     });
   }, [markers, mapEquipment, isMapLoaded]);
 
-  // Fit bounds when equipment changes
+  // Fit bounds when equipment changes (only on initial load)
   useEffect(() => {
-    if (map.current && isMapLoaded && mapEquipment.length > 0) {
+    if (map.current && isMapLoaded && mapEquipment.length > 0 && !selectedEquipmentId) {
       fitMapBounds(map.current, mapEquipment);
     }
   }, [mapEquipment, isMapLoaded]);
