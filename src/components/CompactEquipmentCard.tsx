@@ -52,7 +52,9 @@ const CompactEquipmentCard = ({ equipment }: CompactEquipmentCardProps) => {
       </div>
       <CardContent className="p-4">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-medium dark:text-white">{equipment.name}</h3>
+          <h3 className="font-medium dark:text-white line-clamp-2 min-h-[3rem]">
+            {equipment.name}
+          </h3>
           <span className="font-medium text-primary">${equipment.price_per_day}/day</span>
         </div>
         <p className="text-xs text-muted-foreground line-clamp-2 mb-3">

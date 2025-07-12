@@ -27,7 +27,7 @@ const SearchResultsPage = () => {
   const query = searchParams.get("q") || "";
   const [results, setResults] = useState<AISearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [viewMode, setViewMode] = useState<"map" | "list" | "hybrid">("list");
+  const [viewMode, setViewMode] = useState<"map" | "list" | "hybrid">("hybrid");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const parsedQuery = parseQueryForLocation(query);
   const [sortBy, setSortBy] = useState<string>(
