@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Equipment } from "@/types";
-import EquipmentCard from "./EquipmentCard";
+import CompactEquipmentCard from "./CompactEquipmentCard";
 import MapLegend from "./map/MapLegend";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useMapMarkers } from "@/hooks/useMapMarkers";
@@ -188,19 +188,19 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased, userLo
               Distances calculated from your location
             </div>
           )}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEquipment.map((equipment) => (
               <div
                 key={equipment.id}
                 id={`equipment-card-${equipment.id}`}
-                className={`transition-all duration-300 ${
-                  selectedEquipmentId === equipment.id 
-                    ? 'ring-2 ring-primary ring-offset-2' 
+                className={`transition-all duration-300 rounded-lg ${
+                  selectedEquipmentId === equipment.id
+                    ? 'ring-2 ring-primary ring-offset-2'
                     : ''
                 }`}
                 onClick={(e) => handleCardWrapperClick(e, equipment.id)}
               >
-                <EquipmentCard equipment={equipment} />
+                <CompactEquipmentCard equipment={equipment} />
               </div>
             ))}
           </div>
@@ -213,25 +213,25 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased, userLo
   return (
     <div className="h-[calc(100vh-12rem)] flex">
       {/* Equipment list on left */}
-      <div className="w-1/2 overflow-y-auto p-4">
+      <div className="w-3/5 overflow-y-auto p-4">
         {isLocationBased && (
           <div className="mb-4 text-sm text-muted-foreground">
             Distances calculated from your location
           </div>
         )}
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredEquipment.map((equipment) => (
             <div
               key={equipment.id}
               id={`equipment-card-${equipment.id}`}
-              className={`transition-all duration-300 cursor-pointer ${
-                selectedEquipmentId === equipment.id 
-                  ? 'ring-2 ring-primary ring-offset-2' 
+              className={`transition-all duration-300 cursor-pointer rounded-lg ${
+                selectedEquipmentId === equipment.id
+                  ? 'ring-2 ring-primary ring-offset-2'
                   : ''
               }`}
               onClick={(e) => handleCardWrapperClick(e, equipment.id)}
             >
-              <EquipmentCard equipment={equipment} />
+              <CompactEquipmentCard equipment={equipment} />
             </div>
           ))}
           {filteredEquipment.length === 0 && (
@@ -246,7 +246,7 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased, userLo
       </div>
       
       {/* Map on right */}
-      <div className="w-1/2 relative">
+      <div className="w-2/5 relative">
         <div ref={mapContainer} className="w-full h-full" />
         <MapLegend activeCategory={activeCategory} viewMode={viewMode} />
       </div>

@@ -1,11 +1,9 @@
 import { useEffect } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
 import { mockEquipment, ownerPersonas } from "@/lib/mockData";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { slugify } from "@/utils/slugify";
+import CompactEquipmentCard from "@/components/CompactEquipmentCard";
 import {
   StarIcon,
   MapPinIcon,
@@ -147,42 +145,7 @@ const GearOwnerProfilePage = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {ownerEquipment.map((item) => (
-              <Card key={item.id} className="overflow-hidden">
-                <div className="h-48 overflow-hidden">
-                  <img
-                    src={item.images?.[0]}
-                    alt={item.name}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-medium dark:text-white">{item.name}</h3>
-                    <span className="font-medium text-primary">
-                      ${item.price_per_day}/day
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
-                    {item.description}
-                  </p>
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-center text-xs">
-                      <StarIcon className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
-                      <span>
-                        {item.rating} ({item.review_count})
-                      </span>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      asChild
-                      className="text-xs h-8"
-                    >
-                      <Link to={`/${item.category}/${slugify(item.name)}`}>View Details</Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <CompactEquipmentCard key={item.id} equipment={item} />
             ))}
           </div>
         )}

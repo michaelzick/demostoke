@@ -27,7 +27,7 @@ const ExplorePage = () => {
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("distance");
-  const [viewMode, setViewMode] = useState<"map" | "list" | "hybrid">("list");
+  const [viewMode, setViewMode] = useState<"map" | "list" | "hybrid">("hybrid");
   const [allEquipment, setAllEquipment] = useState<Equipment[]>([]);
   const [isEquipmentLoading, setIsEquipmentLoading] = useState(true);
   const [hasShownNoEquipmentToast, setHasShownNoEquipmentToast] = useState(false);
