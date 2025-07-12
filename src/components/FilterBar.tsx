@@ -13,8 +13,8 @@ interface FilterBarProps {
   activeCategory: string | null;
   setActiveCategory: (category: string | null) => void;
   onSortChange: (value: string) => void;
-  viewMode: 'map' | 'list';
-  setViewMode: (mode: 'map' | 'list') => void;
+  viewMode: 'map' | 'list' | 'hybrid';
+  setViewMode: (mode: 'map' | 'list' | 'hybrid') => void;
   onReset?: () => void;
 }
 
@@ -102,6 +102,13 @@ const FilterBar = ({
               onClick={() => setViewMode("list")}
             >
               List View
+            </Button>
+            <Button
+              variant={viewMode === "hybrid" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setViewMode("hybrid")}
+            >
+              Hybrid View
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
