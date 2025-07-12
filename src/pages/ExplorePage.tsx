@@ -12,6 +12,7 @@ import { Equipment } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
 import useScrollToTop from "@/hooks/useScrollToTop";
+import { useUserLocations } from "@/hooks/useUserLocations";
 
 const ExplorePage = () => {
   usePageMetadata({
@@ -29,6 +30,8 @@ const ExplorePage = () => {
   const [allEquipment, setAllEquipment] = useState<Equipment[]>([]);
   const [isEquipmentLoading, setIsEquipmentLoading] = useState(true);
   const [hasShownNoEquipmentToast, setHasShownNoEquipmentToast] = useState(false);
+  const { data: userLocations = [] } = useUserLocations();
+  const [resetCounter, setResetCounter] = useState(0);
 
   // Scroll to top on mount
   useScrollToTop();
@@ -61,6 +64,10 @@ const ExplorePage = () => {
 
   // Get equipment with dynamic distances
   const { equipment: equipmentWithDynamicDistances, isLocationBased } = useEquipmentWithDynamicDistance(allEquipment);
+
+  const filteredUserLocations = activeCategory
+    ? userLocations.filter(user => user.equipment_categories.includes(activeCategory))
+    : userLocations;
 
   // Apply filters, sorting, and search synchronously to avoid stale data when
   // switching categories
@@ -123,6 +130,7 @@ const ExplorePage = () => {
     setActiveCategory(null);
     setSortBy("distance");
     setHasShownNoEquipmentToast(false);
+    setResetCounter((c) => c + 1);
     toast({
       title: "Filters Reset",
       description: "All filters have been cleared.",
@@ -146,14 +154,18 @@ const ExplorePage = () => {
           <MapComponent
             activeCategory={activeCategory}
             searchQuery={searchParams.get("q")?.toLowerCase()}
+            viewMode={viewMode}
           />
-          <MapLegend activeCategory={activeCategory} />
+          <MapLegend activeCategory={activeCategory} viewMode={viewMode} />
         </div>
       ) : viewMode === "hybrid" ? (
         <HybridView
           filteredEquipment={filteredEquipment}
           activeCategory={activeCategory}
           isLocationBased={isLocationBased}
+          userLocations={filteredUserLocations}
+          viewMode={viewMode}
+          resetSignal={resetCounter}
         />
       ) : (
         <div className="container px-4 md:px-6 py-8">

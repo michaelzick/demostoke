@@ -83,7 +83,8 @@ export const useMapMarkers = ({ map, mapLoaded, equipment = [], userLocations = 
       }
 
       try {
-        const el = createUserLocationMarkerElement(user.role, activeCategory || undefined);
+        const categoryForMarker = activeCategory || user.equipment_categories?.[0];
+        const el = createUserLocationMarkerElement(user.role, categoryForMarker);
 
         const marker = new mapboxgl.Marker(el)
           .setLngLat([user.location.lng, user.location.lat]);

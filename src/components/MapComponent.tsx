@@ -30,6 +30,8 @@ interface MapProps {
   searchQuery?: string;
   isEquipmentLoading?: boolean;
   interactive?: boolean;
+  ownerIds?: string[];
+  viewMode?: 'map' | 'list' | 'hybrid';
 }
 
 const MapComponent = ({
@@ -38,7 +40,9 @@ const MapComponent = ({
   userRole,
   searchQuery,
   isEquipmentLoading = false,
-  interactive = true
+  interactive = true,
+  ownerIds,
+  viewMode
 }: MapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -106,6 +110,8 @@ const MapComponent = ({
     const existingMarkers = document.querySelectorAll('.mapboxgl-marker');
     existingMarkers.forEach(marker => marker.remove());
 
+    const showCategoryColors = isSearchRoute || viewMode === 'hybrid';
+
     if (isEquipmentDetailMode) {
       // Equipment detail mode: Show single gear item without popup
       console.log('🗺️ Equipment detail mode: Showing single gear item marker');
@@ -129,39 +135,42 @@ const MapComponent = ({
       if (validEquipment.length > 0) {
         fitMapBounds(map.current, validEquipment, validEquipment.length === 1);
       }
-    } else if (isSearchRoute && initialEquipment) {
-      // Search route: Show individual gear items with popups
-      console.log('🗺️ Search route: Showing gear item markers');
-      
-      const validEquipment = initialEquipment.filter(item => 
-        item.location && 
-        typeof item.location.lat === 'number' && 
-        typeof item.location.lng === 'number'
+    } else if (isSearchRoute) {
+      // Search route: Show user location markers based on results
+      console.log('🗺️ Search route: Showing user location markers');
+
+      const filteredUserLocations = userLocations.filter(user =>
+        (!ownerIds || ownerIds.includes(user.id)) &&
+        (!activeCategory || user.equipment_categories.includes(activeCategory))
       );
 
-      validEquipment.forEach((item) => {
-        const el = createMarkerElement(item.category);
-        
+      filteredUserLocations.forEach((user) => {
+        if (!user.location?.lat || !user.location?.lng) return;
+
+        const categoryForMarker =
+          activeCategory || (showCategoryColors ? user.equipment_categories[0] : undefined);
+        const el = createUserLocationMarkerElement(user.role, categoryForMarker);
+
         const marker = new mapboxgl.Marker(el)
-          .setLngLat([item.location.lng, item.location.lat])
+          .setLngLat([user.location.lng, user.location.lat])
           .setPopup(
             new mapboxgl.Popup({ offset: 25 }).setHTML(
-              createPopupContent(item)
+              createUserLocationPopupContent(user)
             )
           )
           .addTo(map.current!);
       });
 
-      if (validEquipment.length > 0) {
-        fitMapBounds(map.current, validEquipment, validEquipment.length === 1);
+      if (filteredUserLocations.length > 0) {
+        fitMapBounds(map.current, filteredUserLocations);
       }
     } else if (isExploreRoute) {
       // Explore route: Show user location markers
       console.log('🗺️ Explore route: Showing user location markers');
       
       // Filter user locations by category if specified
-      const filteredUserLocations = activeCategory 
-        ? userLocations.filter(user => 
+      const filteredUserLocations = activeCategory
+        ? userLocations.filter(user =>
             user.equipment_categories.includes(activeCategory)
           )
         : userLocations;
@@ -169,7 +178,9 @@ const MapComponent = ({
       filteredUserLocations.forEach((user) => {
         if (!user.location?.lat || !user.location?.lng) return;
 
-        const el = createUserLocationMarkerElement(user.role, activeCategory);
+        const categoryForMarker =
+          activeCategory || (showCategoryColors ? user.equipment_categories[0] : undefined);
+        const el = createUserLocationMarkerElement(user.role, categoryForMarker);
         
         const marker = new mapboxgl.Marker(el)
           .setLngLat([user.location.lng, user.location.lat])
@@ -185,7 +196,7 @@ const MapComponent = ({
         fitMapBounds(map.current, filteredUserLocations);
       }
     }
-  }, [isSearchRoute, isExploreRoute, isEquipmentDetailMode, initialEquipment, userLocations, activeCategory, isLoading]);
+  }, [isSearchRoute, isExploreRoute, isEquipmentDetailMode, initialEquipment, userLocations, activeCategory, isLoading, ownerIds, viewMode]);
 
   const showLoading = isLoading || 
     (isSearchRoute ? isEquipmentLoading : (isExploreRoute ? isUserLocationsLoading : false));
