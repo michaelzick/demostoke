@@ -73,16 +73,9 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased, userLo
     fetchMapboxToken();
   }, []);
 
-  // Initialize map and reinitialize when layout changes
+  // Initialize map
   useEffect(() => {
     if (!mapContainer.current || !mapboxToken) return;
-
-    // Remove existing map before creating a new one
-    if (map.current) {
-      map.current.remove();
-      map.current = null;
-      setIsMapLoaded(false);
-    }
 
     try {
       map.current = initializeMap(mapContainer.current, mapboxToken);
@@ -99,7 +92,14 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased, userLo
         map.current = null;
       }
     };
-  }, [mapboxToken, isMobile]);
+  }, [mapboxToken]);
+
+  // Resize map when layout changes to keep pins visible
+  useEffect(() => {
+    if (map.current) {
+      map.current.resize();
+    }
+  }, [isMobile]);
 
   const selectedEquipment = selectedEquipmentId
     ? mapEquipment.find(item => item.id === selectedEquipmentId)
