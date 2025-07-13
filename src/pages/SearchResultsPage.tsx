@@ -244,9 +244,9 @@ const SearchResultsPage = () => {
           )}
 
           {!query && !isLoading && (
-            <div className="mb-4">
+            <div className="mb-2">
               <p className="text-sm text-muted-foreground">
-                Showing all equipment ({showMockData ? "mock data" : "real data"})
+                Showing all equipment
               </p>
               <p className="text-sm">
                 Found {filteredResults.length} {filteredResults.length === 1 ? "item" : "items"}
