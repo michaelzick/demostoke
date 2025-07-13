@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from "react";
+import { FC, useMemo, useState, useRef, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   ExternalLink,
   Loader2,
@@ -24,6 +25,9 @@ interface Props {
   processImage: (image: ImageRecord) => void;
   getGearDetailLink: (image: ImageRecord) => string | null;
   getSourceDisplayName: (table: string, column: string) => string;
+  selectedIds: Set<string>;
+  toggleSelectOne: (id: string) => void;
+  toggleSelectAll: () => void;
 }
 
 const ImageResultsTable: FC<Props> = ({
@@ -32,9 +36,28 @@ const ImageResultsTable: FC<Props> = ({
   processImage,
   getGearDetailLink,
   getSourceDisplayName,
+  selectedIds,
+  toggleSelectOne,
+  toggleSelectAll,
 }) => {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
+  const selectAllRef = useRef<HTMLButtonElement>(null);
+  const allSelected = selectedIds.size === images.length && images.length > 0;
+  const someSelected =
+    selectedIds.size > 0 && selectedIds.size < images.length;
+
+  useEffect(() => {
+    if (selectAllRef.current) {
+      const checkbox = selectAllRef.current.querySelector(
+        'input[type="checkbox"]'
+      ) as HTMLInputElement;
+      if (checkbox) {
+        checkbox.indeterminate = someSelected;
+      }
+    }
+  }, [someSelected]);
 
   const sortedImages = useMemo(() => {
     if (!sortColumn) return images;
@@ -101,6 +124,13 @@ const ImageResultsTable: FC<Props> = ({
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-4">
+              <Checkbox
+                ref={selectAllRef}
+                checked={allSelected}
+                onCheckedChange={toggleSelectAll}
+              />
+            </TableHead>
             <TableHead
               className="cursor-pointer"
               onClick={() => handleSort("preview")}
@@ -139,6 +169,12 @@ const ImageResultsTable: FC<Props> = ({
             const gearDetailLink = getGearDetailLink(image);
             return (
               <TableRow key={image.id}>
+                <TableCell className="w-4">
+                  <Checkbox
+                    checked={selectedIds.has(image.id)}
+                    onCheckedChange={() => toggleSelectOne(image.id)}
+                  />
+                </TableCell>
                 <TableCell>
                   <div className="flex flex-col items-center">
                     <img
@@ -187,15 +223,16 @@ const ImageResultsTable: FC<Props> = ({
                     {image.file_type || "UNKNOWN"}
                   </Badge>
                 </TableCell>
-                <TableCell>
+                <TableCell className="max-w-xs">
                   {gearDetailLink ? (
                     <a
                       href={gearDetailLink}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary hover:underline"
+                      title={image.name}
                     >
-                      View Gear
+                      <div className="line-clamp-2">{image.name || 'View Gear'}</div>
                     </a>
                   ) : (
                     <span className="text-muted-foreground">N/A</span>

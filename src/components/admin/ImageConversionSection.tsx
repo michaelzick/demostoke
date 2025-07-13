@@ -27,7 +27,29 @@ const ImageConversionSection = () => {
   const [loading, setLoading] = useState(false);
   const [converting, setConverting] = useState<Set<string>>(new Set());
   const [scanComplete, setScanComplete] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();
+
+  const toggleSelectOne = (id: string) => {
+    setSelectedIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    setSelectedIds(prev => {
+      if (prev.size === images.length) {
+        return new Set();
+      }
+      return new Set(images.map(img => img.id));
+    });
+  };
 
   const scanForImages = async () => {
     setLoading(true);
@@ -157,6 +179,7 @@ const ImageConversionSection = () => {
       });
 
       setImages(foundImages);
+      setSelectedIds(new Set(foundImages.map(img => img.id)));
       setScanComplete(true);
       
       toast({
@@ -201,6 +224,11 @@ const ImageConversionSection = () => {
           img.id === imageRecord.id ? { ...img, already_processed: true } : img
         )
       );
+      setSelectedIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(imageRecord.id);
+        return newSet;
+      });
       
     } catch (error) {
       console.error('Error processing image:', error);
@@ -220,7 +248,11 @@ const ImageConversionSection = () => {
 
   const processAllImages = async () => {
     for (const image of images) {
-      if (!converting.has(image.id) && !image.already_processed) {
+      if (
+        selectedIds.has(image.id) &&
+        !converting.has(image.id) &&
+        !image.already_processed
+      ) {
         await processImage(image);
         // Add small delay between operations to avoid overwhelming the server
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -316,7 +348,7 @@ const ImageConversionSection = () => {
             <Button
               onClick={processAllImages}
               variant="outline"
-              disabled={converting.size > 0}
+              disabled={converting.size > 0 || selectedIds.size === 0}
               className="flex items-center gap-2"
             >
               {converting.size > 0 ? (
@@ -324,7 +356,7 @@ const ImageConversionSection = () => {
               ) : (
                 <CheckCircle className="h-4 w-4" />
               )}
-              Process All ({images.length})
+              Process Selected ({selectedIds.size})
             </Button>
           )}
         </div>
@@ -345,6 +377,9 @@ const ImageConversionSection = () => {
             processImage={processImage}
             getGearDetailLink={getGearDetailLink}
             getSourceDisplayName={getSourceDisplayName}
+            selectedIds={selectedIds}
+            toggleSelectOne={toggleSelectOne}
+            toggleSelectAll={toggleSelectAll}
           />
         )}
       </CardContent>
