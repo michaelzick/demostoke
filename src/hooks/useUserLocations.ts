@@ -67,7 +67,7 @@ export const useUserLocations = () => {
           return {
             id: profile.id,
             name: profile.name || 'Unknown User',
-            role: roleMap.get(profile.id) || 'private-party',
+            role: roleMap.get(profile.id) || 'retail-store',
             address: profile.address,
             location: {
               lat: Number(profile.location_lat),

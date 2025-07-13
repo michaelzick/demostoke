@@ -83,6 +83,7 @@ export interface UserProfile {
   created_at?: string;
   member_since?: string;
   website?: string | null; // Add website field
+  displayRole?: string;
 }
 
 // Add GearOwner interface (alias for Owner for backward compatibility)

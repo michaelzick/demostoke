@@ -27,7 +27,7 @@ export const useProfileQuery = () => {
         return {
           name: user.name || "",
           email: currentEmail,
-          displayRole: "private-party",
+          displayRole: "retail-store",
           phone: "",
           address: "",
           location_lat: null,
@@ -52,7 +52,7 @@ export const useProfileQuery = () => {
       return {
         name: profileData.name || "",
         email: currentEmail, // Use the current email from auth
-        displayRole: roleRow?.display_role || "private-party",
+        displayRole: roleRow?.display_role || "retail-store",
         phone: profileData.phone || "",
         address: profileData.address || "",
         location_lat: profileData.location_lat,
@@ -71,7 +71,7 @@ export const useProfileQuery = () => {
       return {
         name: user.name || "",
         email: currentEmail,
-        displayRole: "private-party",
+        displayRole: "retail-store",
         phone: "",
         address: "",
         location_lat: null,

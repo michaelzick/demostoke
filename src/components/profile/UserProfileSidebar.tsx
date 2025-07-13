@@ -14,6 +14,7 @@ interface UserProfileSidebarProps {
     location_lat?: number | null;
     location_lng?: number | null;
     website?: string | null;
+    displayRole?: string;
   };
   stats?: {
     averageRating: number;
@@ -24,8 +25,7 @@ interface UserProfileSidebarProps {
 }
 
 export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProfileSidebarProps) => {
-  // Determine if this is a private party based on lack of business info
-  const isPrivateParty = !profile.website;
+  const isPrivateParty = profile.displayRole === 'private-party';
   
   return (
     <>
@@ -161,7 +161,7 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
             }]}
             activeCategory={null}
             interactive={false}
-            userRole={isPrivateParty ? 'private-party' : 'business'}
+            userRole={profile.displayRole || 'private-party'}
           />
         </div>
       )}
