@@ -73,9 +73,16 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased, userLo
     fetchMapboxToken();
   }, []);
 
-  // Initialize map
+  // Initialize or reinitialize the map
   useEffect(() => {
     if (!mapContainer.current || !mapboxToken) return;
+
+    if (map.current) {
+      map.current.remove();
+      map.current = null;
+    }
+
+    setIsMapLoaded(false);
 
     try {
       map.current = initializeMap(mapContainer.current, mapboxToken);
@@ -92,7 +99,7 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased, userLo
         map.current = null;
       }
     };
-  }, [mapboxToken]);
+  }, [mapboxToken, isMobile]);
 
   const selectedEquipment = selectedEquipmentId
     ? mapEquipment.find(item => item.id === selectedEquipmentId)
