@@ -24,12 +24,11 @@ export const useUserLocations = () => {
       const { data, error } = await supabase
         .from('profiles')
         .select(`
-          id, 
-          name, 
-          role, 
-          address, 
-          location_lat, 
-          location_lng, 
+          id,
+          name,
+          address,
+          location_lat,
+          location_lng,
           avatar_url,
           equipment:equipment!equipment_user_id_fkey(category, visible_on_map)
         `)
@@ -45,6 +44,19 @@ export const useUserLocations = () => {
 
       console.log('📍 Raw profile data with equipment:', data);
 
+      const userIds = data.map(profile => profile.id);
+      const { data: roleData, error: roleError } = await supabase
+        .from('user_roles')
+        .select('user_id, role')
+        .in('user_id', userIds);
+
+      if (roleError) {
+        console.error('❌ Error fetching user roles:', roleError);
+        throw roleError;
+      }
+
+      const roleMap = new Map(roleData.map(item => [item.user_id, item.role]));
+
       const userLocations: UserLocation[] = data
         .filter(profile => profile.location_lat && profile.location_lng)
         .map(profile => {
@@ -55,7 +67,7 @@ export const useUserLocations = () => {
           return {
             id: profile.id,
             name: profile.name || 'Unknown User',
-            role: profile.role,
+            role: roleMap.get(profile.id) || 'user',
             address: profile.address,
             location: {
               lat: Number(profile.location_lat),
