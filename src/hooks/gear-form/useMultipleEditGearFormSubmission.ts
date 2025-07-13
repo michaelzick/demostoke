@@ -94,7 +94,7 @@ export const useMultipleEditGearFormSubmission = ({
       damageDeposit,
       imageUrl: useImageUrls ? imageUrls[0] : "",
       useImageUrl: useImageUrls,
-      role: user!.role || "private-party",
+      role: "private-party", // Default role for gear listing
       selectedSizes: isBikeType ? selectedSizes : [], // Use the actual selectedSizes state
     };
 

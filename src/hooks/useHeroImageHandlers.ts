@@ -67,8 +67,7 @@ export const useHeroImageHandlers = ({
         .upsert({ 
           id: user.id,
           hero_image_url: imageUrl,
-          name: user.name || '',
-          role: 'retail-store' // Default for business profiles
+          name: user.name || ''
         }, {
           onConflict: 'id'
         });
@@ -115,8 +114,7 @@ export const useHeroImageHandlers = ({
         .upsert({ 
           id: user.id,
           hero_image_url: null,
-          name: user.name || '',
-          role: 'retail-store'
+          name: user.name || ''
         }, {
           onConflict: 'id'
         });

@@ -88,7 +88,7 @@ export const useEditGearFormSubmission = ({
       damageDeposit,
       imageUrl,
       useImageUrl,
-      role: user!.role || "private-party",
+      role: "private-party", // Default role for gear listing
     };
 
     if (!validateForm(formData)) {

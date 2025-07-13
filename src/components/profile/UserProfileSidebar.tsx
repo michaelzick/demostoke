@@ -9,7 +9,6 @@ interface UserProfileSidebarProps {
   profile: {
     name: string;
     about?: string | null;
-    role: string;
     phone?: string | null;
     address?: string | null;
     location_lat?: number | null;
@@ -25,6 +24,9 @@ interface UserProfileSidebarProps {
 }
 
 export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProfileSidebarProps) => {
+  // Determine if this is a private party based on lack of business info
+  const isPrivateParty = !profile.website;
+  
   return (
     <>
       <Card>
@@ -37,7 +39,7 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
         <CardContent className="space-y-4">
         <div className="whitespace-pre-line text-sm text-muted-foreground leading-relaxed">
           {profile.about ||
-            (profile.role === 'private-party'
+            (isPrivateParty
               ? `Hi, I'm ${profile.name?.split(" ")[0] || 'User'}! I love sharing my gear with others and helping them enjoy their adventures.`
               : "This user has not provided an 'about' section.")}
         </div>
@@ -92,7 +94,7 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
         
         <Separator />
         <div className="space-y-3 pt-4">
-          {profile.role === 'private-party' ? (
+          {isPrivateParty ? (
             <>
               {stats && (
                 <div className="flex justify-between">
@@ -137,7 +139,7 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
             </>
           )}
         </div>
-        {profile.role === 'private-party' && (
+        {isPrivateParty && (
           <Button className="w-full" size="lg" disabled>
             <MessageCircleIcon className="h-4 w-4 mr-2" />
             Contact {profile.name}
@@ -159,7 +161,7 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
             }]}
             activeCategory={null}
             interactive={false}
-            userRole={profile.role}
+            userRole={isPrivateParty ? 'private-party' : 'business'}
           />
         </div>
       )}

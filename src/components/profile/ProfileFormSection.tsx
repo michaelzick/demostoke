@@ -10,7 +10,6 @@ interface ProfileFormSectionProps {
   profileImage: string | null;
   name: string;
   email: string;
-  role: string;
   phone: string;
   address: string;
   about: string;
@@ -21,7 +20,6 @@ interface ProfileFormSectionProps {
   userId?: string;
   onNameChange: (value: string) => void;
   onEmailChange: (value: string) => void;
-  onRoleChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
   onAddressChange: (value: string) => void;
   onAboutChange: (value: string) => void;
@@ -35,7 +33,6 @@ export const ProfileFormSection = ({
   profileImage,
   name,
   email,
-  role,
   phone,
   address,
   about,
@@ -46,7 +43,6 @@ export const ProfileFormSection = ({
   userId,
   onNameChange,
   onEmailChange,
-  onRoleChange,
   onPhoneChange,
   onAddressChange,
   onAboutChange,
@@ -79,14 +75,12 @@ export const ProfileFormSection = ({
           <ProfileForm
             name={name}
             email={email}
-            role={role}
             phone={phone}
             address={address}
             about={about}
             website={website}
             onNameChange={onNameChange}
             onEmailChange={onEmailChange}
-            onRoleChange={onRoleChange}
             onPhoneChange={onPhoneChange}
             onAddressChange={onAddressChange}
             onAboutChange={onAboutChange}

@@ -18,7 +18,6 @@ export const useProfileUpdate = () => {
   const handleUpdateProfile = async (profileData: {
     name: string;
     email: string;
-    role: string;
     phone: string;
     address: string;
     about: string;
@@ -59,7 +58,6 @@ export const useProfileUpdate = () => {
       // Prepare update data
       const updateData: Partial<UserProfile> = {
         name: profileData.name,
-        role: profileData.role,
         phone: profileData.phone,
         address: profileData.address,
         about: profileData.about,

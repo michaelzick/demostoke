@@ -17,7 +17,6 @@ import {
 
 interface HeroImageSectionProps {
   heroImage: string | null;
-  role: string;
   isUploadingHeroImage: boolean;
   isDeletingHeroImage: boolean;
   onHeroImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -26,7 +25,6 @@ interface HeroImageSectionProps {
 
 export const HeroImageSection = ({
   heroImage,
-  role,
   isUploadingHeroImage,
   isDeletingHeroImage,
   onHeroImageUpload,
@@ -37,11 +35,6 @@ export const HeroImageSection = ({
   const handleHeroImageClick = () => {
     heroFileInputRef.current?.click();
   };
-
-  // Only show for business profiles (non-private party)
-  if (role === 'private-party') {
-    return null;
-  }
 
   return (
     <Card>

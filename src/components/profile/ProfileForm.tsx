@@ -7,14 +7,12 @@ import { RoleSelect } from "@/components/ui/role-select";
 interface ProfileFormProps {
   name: string;
   email: string;
-  role: string;
   phone: string;
   address: string;
   about: string;
   website?: string;
   onNameChange: (value: string) => void;
   onEmailChange: (value: string) => void;
-  onRoleChange: (value: string) => void;
   onPhoneChange: (value: string) => void;
   onAddressChange: (value: string) => void;
   onAboutChange: (value: string) => void;
@@ -24,36 +22,20 @@ interface ProfileFormProps {
 export const ProfileForm = ({
   name,
   email,
-  role,
   phone,
   address,
   about,
   website = "",
   onNameChange,
   onEmailChange,
-  onRoleChange,
   onPhoneChange,
   onAddressChange,
   onAboutChange,
   onWebsiteChange,
 }: ProfileFormProps) => {
-  const showWebsiteField = role === "retail-store" || role === "builder";
 
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="role">Your Role</Label>
-        <RoleSelect
-          id="role"
-          value={role}
-          onValueChange={onRoleChange}
-          placeholder="Select Your Role"
-        />
-        <p className="text-xs text-muted-foreground">
-          This role will be used for all gear you list on the platform.
-        </p>
-      </div>
-
       <div className="space-y-2">
         <Label htmlFor="name">Name</Label>
         <Input
@@ -63,7 +45,7 @@ export const ProfileForm = ({
         />
       </div>
 
-      {showWebsiteField && onWebsiteChange && (
+      {onWebsiteChange && (
         <div className="space-y-2">
           <Label htmlFor="website">Website</Label>
           <Input

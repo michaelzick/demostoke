@@ -61,32 +61,23 @@ export class AuthService {
 
     if (error) {
       console.error("Profile fetch error:", error);
-      // Even if profile fetch fails, we can still set basic user info from session
+    // Even if profile fetch fails, we can still set basic user info from session
       return {
         id: session.user.id,
         name: session.user.user_metadata?.name || 'User',
         email: session.user.email || '',
-        imageUrl: null,
-        role: 'user' // Default role
+        imageUrl: null
       };
     }
 
     console.log("Profile data fetched:", data);
-
-    // Fetch user role
-    const { data: roleData } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', session.user.id)
-      .single();
 
     // Return user data
     return {
       id: session.user.id,
       name: data.name || session.user.user_metadata?.name || 'User',
       email: session.user.email || '',
-      imageUrl: data.avatar_url,
-      role: roleData?.role || 'user'
+      imageUrl: data.avatar_url
     };
   }
 }

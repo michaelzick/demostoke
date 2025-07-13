@@ -8,7 +8,6 @@ export const useProfileData = () => {
   // Local state for form inputs
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [about, setAbout] = useState("");
@@ -21,7 +20,6 @@ export const useProfileData = () => {
     if (profileData) {
       setName(profileData.name);
       setEmail(profileData.email);
-      setRole(profileData.role);
       setPhone(profileData.phone);
       setAddress(profileData.address);
       setAbout(profileData.about || "");
@@ -40,8 +38,6 @@ export const useProfileData = () => {
     setName,
     email,
     setEmail,
-    role,
-    setRole,
     phone,
     setPhone,
     address,

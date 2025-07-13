@@ -66,7 +66,6 @@ export interface User {
   name: string;
   email: string;
   imageUrl: string | null;
-  role: string;
 }
 
 // Add UserProfile interface
@@ -75,7 +74,6 @@ export interface UserProfile {
   name: string;
   email?: string;
   avatar_url: string | null;
-  role: string;
   about?: string | null;
   phone?: string | null;
   address?: string | null;

@@ -9,7 +9,6 @@ interface UserProfileHeaderProps {
     name: string;
     avatar_url: string | null;
     hero_image_url?: string | null;
-    role: string;
     created_at?: string;
     member_since?: string;
   };
@@ -22,41 +21,10 @@ interface UserProfileHeaderProps {
 }
 
 export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfileHeaderProps) => {
-  if (profile.role === 'private-party') {
-    return (
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-zinc-900 dark:to-zinc-800 py-12">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center gap-6">
-            <Avatar className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg">
-              <AvatarImage src={profile.avatar_url || undefined} alt={profile.name || ""} />
-              <AvatarFallback>{profile.name?.charAt(0) || 'U'}</AvatarFallback>
-            </Avatar>
-            <div>
-              <h1 className="text-4xl font-bold mb-2">{profile.name}</h1>
-              <div className="flex items-center gap-4 mb-2">
-                {stats && stats.totalReviews > 0 && (
-                  <div className="flex items-center gap-1">
-                    <StarIcon className="h-5 w-5 text-yellow-400 fill-yellow-400" />
-                    <span className="text-lg font-medium">{stats.averageRating}</span>
-                  </div>
-                )}
-                <Badge>Private Party</Badge>
-              </div>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <CalendarIcon className="h-4 w-4" />
-                  <span>Member since {memberSinceDate}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Default to private party view
+  const isBusinessProfile = profile.hero_image_url;
 
-  // Business profile header
-  if (profile.hero_image_url) {
+  if (isBusinessProfile) {
     return (
       <div
         className="relative h-64 bg-cover bg-center"
@@ -79,11 +47,7 @@ export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfi
                 </div>
               )}
               <div className="flex flex-wrap gap-2">
-                <Badge variant="secondary" className="capitalize">
-                  {profile.role === 'retail-store' ? 'Retail Store' :
-                    profile.role === 'builder' ? 'Builder' :
-                      profile.role === 'retail-website' ? 'Retail Website' : 'Business'}
-                </Badge>
+                <Badge variant="secondary">Business</Badge>
               </div>
             </div>
           </div>
@@ -120,11 +84,7 @@ export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfi
               </div>
             )}
             <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary" className="capitalize">
-                {profile.role === 'retail-store' ? 'Retail Store' :
-                  profile.role === 'builder' ? 'Builder' :
-                    profile.role === 'retail-website' ? 'Retail Website' : 'Business'}
-              </Badge>
+              <Badge variant="secondary">{isBusinessProfile ? 'Business' : 'Private Party'}</Badge>
             </div>
           </div>
         </div>

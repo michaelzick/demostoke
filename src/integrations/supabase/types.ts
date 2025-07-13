@@ -490,7 +490,6 @@ export type Database = {
           member_since: string | null
           name: string | null
           phone: string | null
-          role: string
           website: string | null
         }
         Insert: {
@@ -505,7 +504,6 @@ export type Database = {
           member_since?: string | null
           name?: string | null
           phone?: string | null
-          role?: string
           website?: string | null
         }
         Update: {
@@ -520,8 +518,46 @@ export type Database = {
           member_since?: string | null
           name?: string | null
           phone?: string | null
-          role?: string
           website?: string | null
+        }
+        Relationships: []
+      }
+      security_audit_log: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          ip_address: unknown | null
+          new_values: Json | null
+          old_values: Json | null
+          record_id: string | null
+          table_name: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: unknown | null
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string | null
+          table_name?: string | null
+          user_agent?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -654,6 +690,16 @@ export type Database = {
       is_admin: {
         Args: { user_id: string }
         Returns: boolean
+      }
+      log_security_event: {
+        Args: {
+          action_type: string
+          table_name?: string
+          record_id?: string
+          old_values?: Json
+          new_values?: Json
+        }
+        Returns: undefined
       }
     }
     Enums: {
