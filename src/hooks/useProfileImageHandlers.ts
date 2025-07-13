@@ -55,7 +55,7 @@ export const useProfileImageHandlers = ({
       // First, get the current profile data to preserve existing values
       const { data: currentProfile, error: fetchError } = await supabase
         .from('profiles')
-        .select('role, name')
+        .select('name')
         .eq('id', user.id)
         .single();
 
@@ -77,11 +77,10 @@ export const useProfileImageHandlers = ({
       // Update the avatar_url in the database while preserving existing role and name
       const { error } = await supabase
         .from('profiles')
-        .upsert({ 
+        .upsert({
           id: user.id,
           avatar_url: imageUrl,
-          name: currentProfile?.name || user.name || '',
-          role: currentProfile?.role || 'private-party' // Preserve existing role
+          name: currentProfile?.name || user.name || ''
         }, {
           onConflict: 'id'
         });
@@ -117,17 +116,16 @@ export const useProfileImageHandlers = ({
       // Update database with fallback avatar, preserving existing data
       const { data: currentProfile } = await supabase
         .from('profiles')
-        .select('role, name')
+        .select('name')
         .eq('id', user.id)
         .single();
 
       await supabase
         .from('profiles')
-        .upsert({ 
+        .upsert({
           id: user.id,
           avatar_url: fallbackAvatar,
-          name: currentProfile?.name || user.name || '',
-          role: currentProfile?.role || 'private-party' // Preserve existing role
+          name: currentProfile?.name || user.name || ''
         }, {
           onConflict: 'id'
         });
@@ -145,7 +143,7 @@ export const useProfileImageHandlers = ({
       // First, get the current profile data to preserve existing values
       const { data: currentProfile, error: fetchError } = await supabase
         .from('profiles')
-        .select('role, name')
+        .select('name')
         .eq('id', user.id)
         .single();
 
@@ -164,11 +162,10 @@ export const useProfileImageHandlers = ({
       // Update the avatar_url in the database while preserving existing role and name
       const { error } = await supabase
         .from('profiles')
-        .upsert({ 
+        .upsert({
           id: user.id,
           avatar_url: fallbackAvatar,
-          name: currentProfile?.name || user.name || '',
-          role: currentProfile?.role || 'private-party' // Preserve existing role
+          name: currentProfile?.name || user.name || ''
         }, {
           onConflict: 'id'
         });

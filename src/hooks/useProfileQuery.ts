@@ -18,7 +18,7 @@ export const useProfileQuery = () => {
 
       const { data: profileData, error } = await supabase
         .from('profiles')
-        .select('name, role, avatar_url, hero_image_url, phone, address, about, website, location_lat, location_lng')
+        .select('name, avatar_url, hero_image_url, phone, address, about, website, location_lat, location_lng')
         .eq('id', user.id)
         .single();
 
@@ -27,7 +27,7 @@ export const useProfileQuery = () => {
         return {
           name: user.name || "",
           email: currentEmail,
-          role: "private-party",
+          role: "user",
           phone: "",
           address: "",
           location_lat: null,
@@ -40,13 +40,19 @@ export const useProfileQuery = () => {
       }
 
       // Use avatar_url for profile image, fallback to dicebear if not set
+      const { data: roleRow } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .single();
+
       const avatarUrl = profileData.avatar_url || generateDicebearAvatar(user.id);
       console.log('Setting profile image from avatar_url:', avatarUrl);
 
       return {
         name: profileData.name || "",
         email: currentEmail, // Use the current email from auth
-        role: profileData.role || "private-party",
+        role: roleRow?.role || "user",
         phone: profileData.phone || "",
         address: profileData.address || "",
         location_lat: profileData.location_lat,
@@ -65,7 +71,7 @@ export const useProfileQuery = () => {
       return {
         name: user.name || "",
         email: currentEmail,
-        role: "private-party",
+        role: "user",
         phone: "",
         address: "",
         location_lat: null,
