@@ -229,7 +229,7 @@ const BlogPage = () => {
                   onClick={() => applyFilter("")}
                   className={`px-4 py-2 text-sm ${
                     selectedFilter === ""
-                      ? "bg-white text-blue-600 hover:bg-blue-50 dark:bg-white dark:text-blue-600"
+                      ? "bg-blue-50 text-blue-600 hover:bg-blue-50 dark:bg-white dark:text-blue-600"
                       : "bg-transparent border-gray-400 text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-blue-600"
                   }`}
                 >
@@ -243,7 +243,7 @@ const BlogPage = () => {
                     onClick={() => applyFilter(filter.value)}
                     className={`px-4 py-2 text-sm ${
                       selectedFilter === filter.value
-                        ? "bg-white text-blue-600 hover:bg-blue-50 dark:bg-white dark:text-blue-600"
+                        ? "bg-blue-50 text-blue-600 hover:bg-blue-50 dark:bg-white dark:text-blue-600"
                         : "bg-transparent border-gray-400 text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-blue-600"
                     }`}
                   >
