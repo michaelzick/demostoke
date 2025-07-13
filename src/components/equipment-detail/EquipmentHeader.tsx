@@ -24,18 +24,14 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
         <div className="flex items-center gap-4 mb-2">
           <h1 className="text-3xl font-bold">{equipment.name}</h1>
         </div>
-        <div className="flex flex-col mb-2">
-          <div className="flex items-center gap-2">
-            <Badge>{equipment.category}</Badge>
-          </div>
+        <div className="flex flex-col sm:flex-row sm:items-center mb-2">
+          <Badge>{equipment.category}</Badge>
           {equipment.subcategory && (
-            <div className="flex items-center gap-2 mt-1">
-              <Badge className="bg-white text-gray-900 border shadow-sm">
-                {equipment.subcategory}
-              </Badge>
-            </div>
+            <Badge className="bg-white text-gray-900 border shadow-sm mt-1 sm:mt-0 sm:ml-2">
+              {equipment.subcategory}
+            </Badge>
           )}
-          <div className="flex items-center text-sm mt-1">
+          <div className="flex items-center text-sm mt-1 sm:mt-0 sm:ml-2">
             <StarIcon className="h-4 w-4 text-yellow-500 fill-yellow-500 mr-1" />
             <span>{equipment.rating}</span>
             <span className="text-muted-foreground ml-1">({equipment.review_count} reviews)</span>
@@ -62,7 +58,7 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
               )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:underline"
+              className="underline profile-address hover:text-primary"
             >
               {equipment.location.address}
             </a>
