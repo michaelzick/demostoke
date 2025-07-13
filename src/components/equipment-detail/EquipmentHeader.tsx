@@ -1,6 +1,6 @@
 
 import { Badge } from "@/components/ui/badge";
-import { StarIcon, MapPin } from "lucide-react";
+import { StarIcon, MapPin, Car } from "lucide-react";
 import { Equipment } from "@/types";
 import PriceDisplay from "./PriceDisplay";
 import DistanceDisplay from "@/components/DistanceDisplay";
@@ -24,16 +24,18 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
         <div className="flex items-center gap-4 mb-2">
           <h1 className="text-3xl font-bold">{equipment.name}</h1>
         </div>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-x-2 mb-2">
+        <div className="flex flex-col mb-2">
           <div className="flex items-center gap-2">
             <Badge>{equipment.category}</Badge>
-            {equipment.subcategory && (
+          </div>
+          {equipment.subcategory && (
+            <div className="flex items-center gap-2 mt-1">
               <Badge className="bg-white text-gray-900 border shadow-sm">
                 {equipment.subcategory}
               </Badge>
-            )}
-          </div>
-          <div className="flex items-center text-sm mt-1 sm:mt-0">
+            </div>
+          )}
+          <div className="flex items-center text-sm mt-1">
             <StarIcon className="h-4 w-4 text-yellow-500 fill-yellow-500 mr-1" />
             <span>{equipment.rating}</span>
             <span className="text-muted-foreground ml-1">({equipment.review_count} reviews)</span>
@@ -54,10 +56,22 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
         <div className="flex flex-col sm:flex-row text-sm text-muted-foreground">
           <div className="flex items-center">
             <MapPin className="h-4 w-4 mr-1" />
-            <span>{equipment.location.address}</span>
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                equipment.location.address
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              {equipment.location.address}
+            </a>
           </div>
           <span className="hidden sm:block mx-2">•</span>
-          <DistanceDisplay className="mt-1 sm:mt-0 sm:ml-2" equipment={equipment} />
+          <div className="flex items-center mt-1 sm:mt-0 sm:ml-2">
+            <Car className="h-4 w-4 mr-1" />
+            <DistanceDisplay equipment={equipment} />
+          </div>
         </div>
       </div>
       <PriceDisplay equipment={equipment} equipmentHeader />
