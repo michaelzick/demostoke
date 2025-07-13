@@ -11,7 +11,7 @@ It was late spring, 2024, at Palisades Tahoe, and I was catching the last of the
 
 I'd gotten the Spring Trio + Demo package, and I was in the market for my own board. Up till then, I had only rented because I was brand new to the sport.
 
-My first day at Palisades (formerly Squaw Valley or "Squawlywood), I opted for the LibTech Orca. A great, beginner-friendly board that I had no problems with. However, I needed to be pushed a little more. On the second day, I asked the shop attendant to recommend something a little more challenging. Something that would encourage me to progress, but not too strongly.
+My first day at Palisades (formerly Squaw Valley or "Squawlywood"), I opted for the LibTech Orca. A great, beginner-friendly board that I had no problems with. However, I needed to be pushed a little more. On the second day, I asked the shop attendant to recommend something a little more challenging. Something that would encourage me to progress, but not too strongly.
 
 "Ah," he said confidently. "I know what you need. I'm gonna set you up with a Capita DOA."
 
