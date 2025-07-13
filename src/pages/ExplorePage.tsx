@@ -21,7 +21,7 @@ const ExplorePage = () => {
     description: 'Find gear near you and book demos on DemoStoke.'
   });
   const location = useLocation();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
   const isSearchRoute = !!useMatch("/search");
 
@@ -69,6 +69,15 @@ const ExplorePage = () => {
   const filteredUserLocations = activeCategory
     ? userLocations.filter(user => user.equipment_categories.includes(activeCategory))
     : userLocations;
+
+  const handleCategoryChange = (category: string | null) => {
+    setActiveCategory(category);
+    if (category === null) {
+      const newParams = new URLSearchParams(location.search);
+      newParams.delete('category');
+      setSearchParams(newParams);
+    }
+  };
 
   // Apply filters, sorting, and search synchronously to avoid stale data when
   // switching categories
@@ -132,6 +141,9 @@ const ExplorePage = () => {
     setSortBy("distance");
     setHasShownNoEquipmentToast(false);
     setResetCounter((c) => c + 1);
+    const newParams = new URLSearchParams(location.search);
+    newParams.delete('category');
+    setSearchParams(newParams);
     toast({
       title: "Filters Reset",
       description: "All filters have been cleared.",
@@ -143,7 +155,7 @@ const ExplorePage = () => {
     <div className="min-h-screen">
       <FilterBar
         activeCategory={activeCategory}
-        setActiveCategory={setActiveCategory}
+        setActiveCategory={handleCategoryChange}
         onSortChange={setSortBy}
         viewMode={viewMode}
         setViewMode={setViewMode}
