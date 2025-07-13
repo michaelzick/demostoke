@@ -22,7 +22,7 @@ const DemoCalendarPage = () => {
   const { isAuthenticated } = useAuth();
   const { isAdmin, isLoading: isLoadingRole } = useIsAdmin();
   const navigate = useNavigate();
-  const { currentDate, goToPreviousMonth, goToNextMonth, goToToday } = useCalendarNavigation();
+  const { currentDate, setCurrentDate, goToPreviousMonth, goToNextMonth, goToToday } = useCalendarNavigation();
   const { events, createEvent, updateEvent, deleteEvent, isCreating, isUpdating, isDeleting } = useDemoEvents();
   const isMobile = useIsMobile();
 
@@ -34,6 +34,34 @@ const DemoCalendarPage = () => {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<DemoEvent | null>(null);
+
+  // Jump to the month of the first upcoming event when the page loads
+  useEffect(() => {
+    if (events.length === 0) return;
+
+    const parseLocalDate = (dateStr: string) => new Date(dateStr + 'T00:00:00');
+
+    const datedEvents = events.filter((e): e is DemoEvent & { event_date: string } => !!e.event_date);
+    if (datedEvents.length === 0) return;
+
+    const today = new Date();
+    let targetDate = parseLocalDate(datedEvents[0].event_date!);
+
+    for (const ev of datedEvents) {
+      const evDate = parseLocalDate(ev.event_date!);
+      if (evDate >= today) {
+        targetDate = evDate;
+        break;
+      }
+    }
+
+    if (
+      targetDate.getFullYear() !== currentDate.getFullYear() ||
+      targetDate.getMonth() !== currentDate.getMonth()
+    ) {
+      setCurrentDate(targetDate);
+    }
+  }, [events]);
 
   const [categoryFilters, setCategoryFilters] = useState<CategoryFilterType[]>([
     { category: 'snowboards', name: 'Snowboards', color: 'bg-fuchsia-500', enabled: true },
