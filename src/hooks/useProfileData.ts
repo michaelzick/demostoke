@@ -12,6 +12,7 @@ export const useProfileData = () => {
   const [address, setAddress] = useState("");
   const [about, setAbout] = useState("");
   const [website, setWebsite] = useState("");
+  const [displayRole, setDisplayRole] = useState("");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [heroImage, setHeroImage] = useState<string | null>(null);
 
@@ -24,6 +25,7 @@ export const useProfileData = () => {
       setAddress(profileData.address);
       setAbout(profileData.about || "");
       setWebsite(profileData.website || "");
+      setDisplayRole(profileData.displayRole || "private-party");
       setProfileImage(profileData.profileImage);
       setHeroImage(profileData.heroImage);
     }
@@ -46,6 +48,8 @@ export const useProfileData = () => {
     setAbout,
     website,
     setWebsite,
+    displayRole,
+    setDisplayRole,
     profileImage,
     setProfileImage,
     heroImage,

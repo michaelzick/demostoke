@@ -14,6 +14,7 @@ interface ProfileFormSectionProps {
   address: string;
   about: string;
   website: string;
+  displayRole: string;
   isUploadingImage: boolean;
   isDeletingImage: boolean;
   isUpdating: boolean;
@@ -24,6 +25,7 @@ interface ProfileFormSectionProps {
   onAddressChange: (value: string) => void;
   onAboutChange: (value: string) => void;
   onWebsiteChange: (value: string) => void;
+  onDisplayRoleChange: (value: string) => void;
   onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onDeletePhoto: () => void;
   onSubmit: (e: React.FormEvent) => void;
@@ -37,6 +39,7 @@ export const ProfileFormSection = ({
   address,
   about,
   website,
+  displayRole,
   isUploadingImage,
   isDeletingImage,
   isUpdating,
@@ -47,6 +50,7 @@ export const ProfileFormSection = ({
   onAddressChange,
   onAboutChange,
   onWebsiteChange,
+  onDisplayRoleChange,
   onImageUpload,
   onDeletePhoto,
   onSubmit,
@@ -75,12 +79,14 @@ export const ProfileFormSection = ({
           <ProfileForm
             name={name}
             email={email}
+            displayRole={displayRole}
             phone={phone}
             address={address}
             about={about}
             website={website}
             onNameChange={onNameChange}
             onEmailChange={onEmailChange}
+            onDisplayRoleChange={onDisplayRoleChange}
             onPhoneChange={onPhoneChange}
             onAddressChange={onAddressChange}
             onAboutChange={onAboutChange}

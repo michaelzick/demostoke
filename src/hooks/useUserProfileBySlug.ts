@@ -14,6 +14,7 @@ interface UserProfile {
   member_since: string;
   created_at: string;
   website: string | null;
+  displayRole: string | null;
 }
 
 export const useUserProfileBySlug = (slug: string) => {
@@ -39,7 +40,25 @@ export const useUserProfileBySlug = (slug: string) => {
         throw error;
       }
 
-      return data;
+      if (!data) {
+        return null;
+      }
+
+      const { data: roleRow, error: roleError } = await supabase
+        .from('user_roles')
+        .select('display_role')
+        .eq('user_id', data.id)
+        .single();
+
+      if (roleError) {
+        console.error('Error fetching user display role:', roleError);
+      }
+
+      return {
+        ...data,
+        display_role: undefined,
+        displayRole: roleRow?.display_role || 'retail-store'
+      } as UserProfile & { displayRole: string };
     },
     enabled: !!slug,
   });

@@ -20,5 +20,6 @@ export const useMockUserProfileBySlug = (slug: string): UserProfile | null => {
     member_since: '2020-01-01T00:00:00.000Z',
     created_at: '2020-01-01T00:00:00.000Z',
     hero_image_url: null,
+    displayRole: 'private-party',
   };
 };

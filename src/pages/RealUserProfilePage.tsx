@@ -63,7 +63,7 @@ const RealUserProfilePage = () => {
       email: ownProfileData.email,
       avatar_url: ownProfileData.profileImage,
       hero_image_url: ownProfileData.heroImage,
-      role: ownProfileData.role,
+      displayRole: ownProfileData.displayRole,
       about: ownProfileData.about,
       phone: ownProfileData.phone,
       address: ownProfileData.address,

@@ -4,6 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { StarIcon, CalendarIcon } from "lucide-react";
 
+import { getRoleDisplayName } from "@/utils/mapUtils";
+
 interface UserProfileHeaderProps {
   profile: {
     name: string;
@@ -11,6 +13,7 @@ interface UserProfileHeaderProps {
     hero_image_url?: string | null;
     created_at?: string;
     member_since?: string;
+    displayRole?: string;
   };
   stats?: {
     averageRating: number;
@@ -21,10 +24,10 @@ interface UserProfileHeaderProps {
 }
 
 export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfileHeaderProps) => {
-  // Default to private party view
-  const isBusinessProfile = profile.hero_image_url;
+  const hasHeroImage = !!profile.hero_image_url;
+  const roleName = getRoleDisplayName(profile.displayRole || 'retail-store');
 
-  if (isBusinessProfile) {
+  if (hasHeroImage) {
     return (
       <div
         className="relative h-64 bg-cover bg-center"
@@ -47,7 +50,7 @@ export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfi
                 </div>
               )}
               <div className="flex flex-wrap gap-2">
-                <Badge variant="secondary">Business</Badge>
+                <Badge variant="secondary">{roleName}</Badge>
               </div>
             </div>
           </div>
@@ -84,7 +87,7 @@ export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfi
               </div>
             )}
             <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary">{isBusinessProfile ? 'Business' : 'Private Party'}</Badge>
+              <Badge variant="secondary">{roleName}</Badge>
             </div>
           </div>
         </div>
