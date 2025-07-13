@@ -196,13 +196,13 @@ const BlogPage = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="text-white py-16">
+      <div className="py-16 text-gray-900 dark:text-white">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               DemoStoke Blog
             </h1>
-            <p className="text-xl mb-8 text-blue-100">
+            <p className="text-xl mb-8 text-gray-600 dark:text-blue-100">
               Discover tips, techniques, and stories from the world of outdoor gear
             </p>
 
@@ -214,9 +214,9 @@ const BlogPage = () => {
                   placeholder="Search blog posts..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-white text-gray-900"
+                  className="pl-10 bg-white text-gray-900 dark:bg-zinc-800 dark:text-white"
                 />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
               </div>
             </div>
 
@@ -229,8 +229,8 @@ const BlogPage = () => {
                   onClick={() => applyFilter("")}
                   className={`px-4 py-2 text-sm ${
                     selectedFilter === ""
-                      ? "bg-white text-blue-600 hover:bg-blue-50"
-                      : "bg-transparent border-white text-white hover:bg-white hover:text-blue-600"
+                      ? "bg-blue-50 text-blue-600 hover:bg-blue-50 dark:bg-white dark:text-blue-600"
+                      : "bg-transparent border-gray-400 text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-blue-600"
                   }`}
                 >
                   All Posts
@@ -243,8 +243,8 @@ const BlogPage = () => {
                     onClick={() => applyFilter(filter.value)}
                     className={`px-4 py-2 text-sm ${
                       selectedFilter === filter.value
-                        ? "bg-white text-blue-600 hover:bg-blue-50"
-                        : "bg-transparent border-white text-white hover:bg-white hover:text-blue-600"
+                        ? "bg-blue-50 text-blue-600 hover:bg-blue-50 dark:bg-white dark:text-blue-600"
+                        : "bg-transparent border-gray-400 text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-blue-600"
                     }`}
                   >
                     {filter.label}
@@ -258,7 +258,7 @@ const BlogPage = () => {
                 <Button
                   variant="outline"
                   onClick={clearSearch}
-                  className="text-white border-white hover:bg-white hover:text-blue-600"
+                  className="text-gray-700 border-gray-400 hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:border-white dark:hover:bg-white dark:hover:text-blue-600"
                 >
                   Clear Search
                 </Button>
