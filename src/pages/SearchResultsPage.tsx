@@ -200,7 +200,7 @@ const SearchResultsPage = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="bg-muted py-8">
+      <div className="bg-muted py-5">
         <div className="container px-4 md:px-6">
           <div className="flex items-center gap-2 mb-4">
             <h1 className="text-3xl font-bold">Search Results</h1>
@@ -229,7 +229,7 @@ const SearchResultsPage = () => {
           </form>
 
           {query && (
-            <div className="mb-4">
+            <div className="mb-2">
               <p className="text-sm text-muted-foreground">
                 Showing results for: <span className="font-medium">{query}</span>
                 {/* {isAISearch && <span className="ml-2 text-primary">✨ AI-powered search</span>} */}
