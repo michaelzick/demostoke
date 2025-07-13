@@ -27,7 +27,7 @@ export const useProfileQuery = () => {
         return {
           name: user.name || "",
           email: currentEmail,
-          role: "user",
+          displayRole: "private-party",
           phone: "",
           address: "",
           location_lat: null,
@@ -42,7 +42,7 @@ export const useProfileQuery = () => {
       // Use avatar_url for profile image, fallback to dicebear if not set
       const { data: roleRow } = await supabase
         .from('user_roles')
-        .select('role')
+        .select('display_role')
         .eq('user_id', user.id)
         .single();
 
@@ -52,7 +52,7 @@ export const useProfileQuery = () => {
       return {
         name: profileData.name || "",
         email: currentEmail, // Use the current email from auth
-        role: roleRow?.role || "user",
+        displayRole: roleRow?.display_role || "private-party",
         phone: profileData.phone || "",
         address: profileData.address || "",
         location_lat: profileData.location_lat,
@@ -71,7 +71,7 @@ export const useProfileQuery = () => {
       return {
         name: user.name || "",
         email: currentEmail,
-        role: "user",
+        displayRole: "private-party",
         phone: "",
         address: "",
         location_lat: null,

@@ -151,7 +151,8 @@ export const useUserCreationSubmission = () => {
         .from('user_roles')
         .upsert({
           user_id: authData.user.id,
-          role: dbRole
+          role: dbRole,
+          display_role: formData.role
         });
 
       if (roleError) {

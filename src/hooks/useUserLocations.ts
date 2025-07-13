@@ -47,7 +47,7 @@ export const useUserLocations = () => {
       const userIds = data.map(profile => profile.id);
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
-        .select('user_id, role')
+        .select('user_id, display_role')
         .in('user_id', userIds);
 
       if (roleError) {
@@ -55,7 +55,7 @@ export const useUserLocations = () => {
         throw roleError;
       }
 
-      const roleMap = new Map(roleData.map(item => [item.user_id, item.role]));
+      const roleMap = new Map(roleData.map(item => [item.user_id, item.display_role]));
 
       const userLocations: UserLocation[] = data
         .filter(profile => profile.location_lat && profile.location_lng)
@@ -67,7 +67,7 @@ export const useUserLocations = () => {
           return {
             id: profile.id,
             name: profile.name || 'Unknown User',
-            role: roleMap.get(profile.id) || 'user',
+            role: roleMap.get(profile.id) || 'private-party',
             address: profile.address,
             location: {
               lat: Number(profile.location_lat),

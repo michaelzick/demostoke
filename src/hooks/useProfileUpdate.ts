@@ -22,6 +22,7 @@ export const useProfileUpdate = () => {
     address: string;
     about: string;
     website: string;
+    displayRole: string;
   }) => {
     if (!user) return;
 
@@ -98,6 +99,17 @@ export const useProfileUpdate = () => {
       if (error) {
         console.error('❌ Database update error:', error);
         throw error;
+      }
+
+      // Update the user's display role
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .update({ display_role: profileData.displayRole })
+        .eq('user_id', user.id);
+
+      if (roleError) {
+        console.error('❌ Display role update error:', roleError);
+        throw roleError;
       }
 
       console.log('✅ Profile updated successfully');
