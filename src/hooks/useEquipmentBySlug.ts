@@ -8,12 +8,16 @@ import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 import { useAuth } from "@/contexts/auth";
 import { useIsAdmin } from "@/hooks/useUserRole";
 
-export const useEquipmentBySlug = (category: string, slug: string) => {
+export const useEquipmentBySlug = (
+  category: string,
+  slug: string,
+  ownerSlug?: string,
+) => {
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
 
   return useQuery({
-    queryKey: ["equipment", category, slug, user?.id, isAdmin],
+    queryKey: ["equipment", category, slug, ownerSlug, user?.id, isAdmin],
     queryFn: async (): Promise<Equipment | null> => {
       if (!category || !slug) {
         throw new Error("Category and slug are required");
@@ -54,6 +58,10 @@ export const useEquipmentBySlug = (category: string, slug: string) => {
       }
 
       if (!row) {
+        return null;
+      }
+
+      if (ownerSlug && slugify(row.profiles?.name || '') !== ownerSlug) {
         return null;
       }
 

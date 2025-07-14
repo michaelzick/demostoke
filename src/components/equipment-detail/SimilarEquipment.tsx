@@ -74,7 +74,11 @@ const SimilarEquipment = ({ similarEquipment }: SimilarEquipmentProps) => {
                       ${item.price_per_day}/day
                     </span>
                     <Button size="sm" asChild className="text-xs h-6">
-                      <Link to={`/${item.category}/${slugify(item.name)}`}>View</Link>
+                      <Link
+                        to={`/${item.category}/${slugify(item.owner.name)}/${slugify(item.name)}`}
+                      >
+                        View
+                      </Link>
                     </Button>
                   </div>
                 </div>

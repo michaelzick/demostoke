@@ -105,7 +105,7 @@ export const createPopupContent = (item: {
       <p class="text-sm mt-1">$${item.price_per_day}/day</p>
       <button
         class="mt-2 px-2 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
-        onclick="window.location.href='/${item.category}/${slugify(item.name)}'"
+        onclick="window.location.href='/${item.category}/${slugify(item.ownerName)}/${slugify(item.name)}'"
       >
         View Details
       </button>

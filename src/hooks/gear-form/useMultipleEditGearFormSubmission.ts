@@ -172,7 +172,9 @@ export const useMultipleEditGearFormSubmission = ({
         description: `${gearName} has been successfully updated.`,
       });
 
-      navigate(`/${equipment!.category}/${slugify(equipment!.name)}`);
+      navigate(
+        `/${equipment!.category}/${slugify(equipment!.owner.name)}/${slugify(equipment!.name)}`,
+      );
 
     } catch (error) {
       console.error('=== FORM SUBMISSION ERROR ===');
@@ -197,7 +199,9 @@ export const useMultipleEditGearFormSubmission = ({
   };
 
   const handleCancel = () => {
-    navigate(`/${equipment!.category}/${slugify(equipment!.name)}`);
+    navigate(
+      `/${equipment!.category}/${slugify(equipment!.owner.name)}/${slugify(equipment!.name)}`,
+    );
   };
 
   return {

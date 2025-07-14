@@ -141,7 +141,11 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
 
       <CardFooter className="p-4 pt-0 flex justify-between">
         <Button asChild size="sm">
-          <Link to={`/${equipment.category}/${slugify(equipment.name)}`}>View Details</Link>
+          <Link
+            to={`/${equipment.category}/${slugify(equipment.owner.name)}/${slugify(equipment.name)}`}
+          >
+            View Details
+          </Link>
         </Button>
         {isOwner && (
           <Button asChild size="sm" variant="outline">
