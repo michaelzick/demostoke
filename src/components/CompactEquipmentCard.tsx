@@ -27,6 +27,11 @@ const CompactEquipmentCard = ({ equipment }: CompactEquipmentCardProps) => {
   const hasMultipleImages = images.length > 1;
   const hasImages = images.length > 0;
 
+  const isShop = equipment.owner.shopId;
+  const ownerLinkPath = isShop
+    ? `/shop/${equipment.owner.shopId}`
+    : `/user-profile/${slugify(equipment.owner.name)}`;
+
   return (
     <Card className="overflow-hidden">
       <div className="h-48 overflow-hidden">
@@ -57,7 +62,7 @@ const CompactEquipmentCard = ({ equipment }: CompactEquipmentCardProps) => {
         )}
       </div>
       <CardContent className="p-4">
-        <div className="flex justify-between items-start mb-2">
+        <div className="flex justify-between items-start mb-1">
           <h3 className="font-medium dark:text-white line-clamp-2 min-h-[3rem]">
             {equipment.name}
           </h3>
@@ -73,6 +78,12 @@ const CompactEquipmentCard = ({ equipment }: CompactEquipmentCardProps) => {
             {equipment.description}
           </TooltipContent>
         </Tooltip>
+        <Link
+          to={ownerLinkPath}
+          className="underline text-sm text-muted-foreground hover:text-primary mb-2 block"
+        >
+          {equipment.owner.name}
+        </Link>
         <div className="flex items-center text-xs text-muted-foreground mb-2">
           <Car className="h-3 w-3 mr-1" />
           <DistanceDisplay equipment={equipment} />
