@@ -26,7 +26,10 @@ export const useEquipmentBySlug = (
       // First check the public equipment data
       const data = await getEquipmentData();
       const publicItem = data.find(
-        (e) => e.category === category && slugify(e.name) === slug,
+        (e) =>
+          e.category === category &&
+          slugify(e.name) === slug &&
+          (!ownerSlug || slugify(e.owner?.name || "") === ownerSlug),
       );
       if (publicItem) {
         return publicItem;
@@ -36,7 +39,7 @@ export const useEquipmentBySlug = (
       const name = unslugify(slug);
       const pattern = `%${name.split(/\s+/).join('%')}%`;
 
-      const { data: row, error } = await supabase
+      const { data: rows, error } = await supabase
         .from('equipment')
         .select(
           `
@@ -48,9 +51,11 @@ export const useEquipmentBySlug = (
         `,
         )
         .eq('category', category)
-        .ilike('name', pattern)
-        .limit(1)
-        .maybeSingle();
+        .ilike('name', pattern);
+
+      const row = (rows || []).find((r) =>
+        ownerSlug ? slugify(r.profiles?.name || '') === ownerSlug : true,
+      );
 
       if (error) {
         console.error('Error fetching equipment by slug:', error);

@@ -105,6 +105,16 @@ const RealUserProfilePage = () => {
 
   const memberSinceDate = new Date(profile.created_at || profile.member_since).getFullYear();
 
+  const owner = {
+    id: profile.id,
+    name: profile.name,
+    imageUrl: profile.avatar_url || '',
+    rating: stats?.averageRating || 0,
+    reviewCount: stats?.totalReviews || 0,
+    responseRate: 95,
+    website: profile.website || undefined,
+  };
+
   return (
     <div className="min-h-screen">
       <UserProfileHeader 
@@ -129,11 +139,12 @@ const RealUserProfilePage = () => {
               {userEquipment && <Badge variant="outline">{userEquipment.length} items</Badge>}
             </div>
             
-            <UserEquipmentGrid 
-              userEquipment={userEquipment as UserEquipment[]} 
-              stats={stats} 
-              isLoading={equipmentLoading} 
-              isMockUser={isMockUser} 
+            <UserEquipmentGrid
+              userEquipment={userEquipment as UserEquipment[]}
+              owner={owner}
+              stats={stats}
+              isLoading={equipmentLoading}
+              isMockUser={isMockUser}
             />
           </div>
         </div>
