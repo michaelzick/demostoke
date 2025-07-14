@@ -14,12 +14,20 @@ import { getCategoryDisplayName } from "@/helpers";
 import EquipmentDetailPageDb from "./EquipmentDetailPageDb";
 
 const EquipmentDetailPage = () => {
-  const { category = "", slug = "" } = useParams<{ category: string; slug: string }>();
+  const {
+    category = "",
+    ownerSlug = "",
+    slug = "",
+  } = useParams<{ category: string; ownerSlug: string; slug: string }>();
   const [waiverCompleted, setWaiverCompleted] = useState(false);
   const [showWaiver, setShowWaiver] = useState(false);
   const bookingCardRef = useRef<HTMLDivElement>(null);
 
-  const { data: equipment, isLoading, error } = useEquipmentBySlug(category, slug);
+  const {
+    data: equipment,
+    isLoading,
+    error,
+  } = useEquipmentBySlug(category, slug, ownerSlug);
 
   // Scroll to top on page load
   useEffect(() => {

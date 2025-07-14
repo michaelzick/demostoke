@@ -8,12 +8,16 @@ import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 import { useAuth } from "@/contexts/auth";
 import { useIsAdmin } from "@/hooks/useUserRole";
 
-export const useEquipmentBySlug = (category: string, slug: string) => {
+export const useEquipmentBySlug = (
+  category: string,
+  slug: string,
+  ownerSlug?: string,
+) => {
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
 
   return useQuery({
-    queryKey: ["equipment", category, slug, user?.id, isAdmin],
+    queryKey: ["equipment", category, slug, ownerSlug, user?.id, isAdmin],
     queryFn: async (): Promise<Equipment | null> => {
       if (!category || !slug) {
         throw new Error("Category and slug are required");
@@ -22,7 +26,10 @@ export const useEquipmentBySlug = (category: string, slug: string) => {
       // First check the public equipment data
       const data = await getEquipmentData();
       const publicItem = data.find(
-        (e) => e.category === category && slugify(e.name) === slug,
+        (e) =>
+          e.category === category &&
+          slugify(e.name) === slug &&
+          (!ownerSlug || slugify(e.owner?.name || "") === ownerSlug),
       );
       if (publicItem) {
         return publicItem;
@@ -32,7 +39,7 @@ export const useEquipmentBySlug = (category: string, slug: string) => {
       const name = unslugify(slug);
       const pattern = `%${name.split(/\s+/).join('%')}%`;
 
-      const { data: row, error } = await supabase
+      const { data: rows, error } = await supabase
         .from('equipment')
         .select(
           `
@@ -44,9 +51,11 @@ export const useEquipmentBySlug = (category: string, slug: string) => {
         `,
         )
         .eq('category', category)
-        .ilike('name', pattern)
-        .limit(1)
-        .maybeSingle();
+        .ilike('name', pattern);
+
+      const row = (rows || []).find((r) =>
+        ownerSlug ? slugify(r.profiles?.name || '') === ownerSlug : true,
+      );
 
       if (error) {
         console.error('Error fetching equipment by slug:', error);
@@ -54,6 +63,10 @@ export const useEquipmentBySlug = (category: string, slug: string) => {
       }
 
       if (!row) {
+        return null;
+      }
+
+      if (ownerSlug && slugify(row.profiles?.name || '') !== ownerSlug) {
         return null;
       }
 

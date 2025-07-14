@@ -87,7 +87,10 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
             label: equipment.owner.name,
             path: `/user-profile/${slugify(equipment.owner.name)}`,
           },
-          { label: equipment.name, path: `/${equipment.category}/${slugify(equipment.name)}` },
+          {
+            label: equipment.name,
+            path: `/${equipment.category}/${slugify(equipment.owner.name)}/${slugify(equipment.name)}`,
+          },
         ]}
       />
 

@@ -17,6 +17,7 @@ export interface ImageRecord {
   equipment_id?: string; // For equipment_images table
   category?: string;
   name?: string;
+  owner_name?: string;
   file_type?: string;
   dimensions?: { width: number; height: number };
   already_processed?: boolean;
@@ -86,7 +87,7 @@ const ImageConversionSection = () => {
       console.log('Scanning equipment table...');
       const { data: equipmentData } = await supabase
         .from('equipment')
-        .select('id, image_url, category, name')
+        .select('id, image_url, category, name, profiles(name)')
         .not('image_url', 'is', null);
 
       equipmentData?.forEach(item => {
@@ -100,7 +101,8 @@ const ImageConversionSection = () => {
             equipment_id: item.id,
             category: item.category,
             name: item.name,
-            file_type: getFileType(item.image_url)
+            owner_name: (item as any).profiles?.name,
+            file_type: getFileType(item.image_url),
           });
         }
       });
@@ -110,7 +112,9 @@ const ImageConversionSection = () => {
       console.log('Scanning equipment_images table...');
       const { data: equipmentImagesData } = await supabase
         .from('equipment_images')
-        .select('id, image_url, equipment_id, equipment(category, name)')
+        .select(
+          'id, image_url, equipment_id, equipment(category, name, profiles(name))',
+        )
         .not('image_url', 'is', null);
 
       equipmentImagesData?.forEach(item => {
@@ -124,7 +128,8 @@ const ImageConversionSection = () => {
             equipment_id: item.equipment_id,
             category: (item as any).equipment?.category,
             name: (item as any).equipment?.name,
-            file_type: getFileType(item.image_url)
+            owner_name: (item as any).equipment?.profiles?.name,
+            file_type: getFileType(item.image_url),
           });
         }
       });
@@ -284,8 +289,8 @@ const ImageConversionSection = () => {
   };
 
   const getGearDetailLink = (image: ImageRecord): string | null => {
-    if (image.category && image.name) {
-      return `/${image.category}/${slugify(image.name)}`;
+    if (image.category && image.name && image.owner_name) {
+      return `/${image.category}/${slugify(image.owner_name)}/${slugify(image.name)}`;
     }
     return null;
   };

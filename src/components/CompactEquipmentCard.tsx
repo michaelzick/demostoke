@@ -85,7 +85,11 @@ const CompactEquipmentCard = ({ equipment }: CompactEquipmentCardProps) => {
             </span>
           </div>
           <Button size="sm" asChild className="text-xs h-8">
-            <Link to={`/${equipment.category}/${slugify(equipment.name)}`}>View Details</Link>
+            <Link
+              to={`/${equipment.category}/${slugify(equipment.owner.name)}/${slugify(equipment.name)}`}
+            >
+              View Details
+            </Link>
           </Button>
         </div>
       </CardContent>

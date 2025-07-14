@@ -68,7 +68,11 @@ const LightspeedPOSPage = () => {
   };
 
   const handleViewDetails = (id: string, name: string, category: string) => {
-    navigate(`/${category}/${slugify(name)}`);
+    if (user?.name) {
+      navigate(`/${category}/${slugify(user.name)}/${slugify(name)}`);
+    } else {
+      navigate(`/${category}/${slugify(name)}`);
+    }
   };
 
   const totalPages = Math.ceil(inventory.length / itemsPerPage) || 1;

@@ -73,7 +73,7 @@ const App = () => {
                     <Route path="blog/:slug" element={<BlogPostPage />} />
                     <Route path="contact-us" element={<ContactPage />} />
                     <Route path="explore" element={<ExplorePage />} />
-                    <Route path=":category/:slug" element={<EquipmentDetailPage />} />
+                    <Route path=":category/:ownerSlug/:slug" element={<EquipmentDetailPage />} />
                     <Route path="list-your-gear" element={<ListGearPage />} />
                     <Route path="list-your-gear/add-gear-form" element={<AddGearForm />} />
                     <Route path="list-your-gear/lightspeed-pos" element={<LightspeedPOSPage />} />

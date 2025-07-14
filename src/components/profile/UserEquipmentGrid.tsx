@@ -3,9 +3,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import CompactEquipmentCard from "@/components/CompactEquipmentCard";
 
 import type { UserEquipment } from "@/types/equipment";
+import type { GearOwner, Equipment } from "@/types";
 
 interface UserEquipmentGridProps {
   userEquipment: UserEquipment[] | undefined;
+  owner: GearOwner;
   stats?: {
     averageRating: number;
     totalReviews: number;
@@ -16,6 +18,7 @@ interface UserEquipmentGridProps {
 
 export const UserEquipmentGrid = ({
   userEquipment,
+  owner,
   stats,
   isLoading,
   isMockUser,
@@ -47,9 +50,10 @@ export const UserEquipmentGrid = ({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {userEquipment.map((item: UserEquipment) => (
-        <CompactEquipmentCard key={item.id} equipment={item as any} />
-      ))}
+      {userEquipment.map((item: UserEquipment) => {
+        const equipment = { ...(item as any), owner } as Equipment;
+        return <CompactEquipmentCard key={item.id} equipment={equipment} />;
+      })}
     </div>
   );
 };
