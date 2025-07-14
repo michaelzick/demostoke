@@ -30,11 +30,11 @@ export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfi
   if (hasHeroImage) {
     return (
       <div
-        className="relative h-64 bg-cover bg-center"
+        className="relative min-h-[16rem] bg-cover bg-center"
         style={{ backgroundImage: `url('${profile.hero_image_url}')` }}
       >
         <div className="absolute inset-0 bg-black/50" />
-        <div className="relative container mx-auto px-4 h-full flex items-center">
+        <div className="relative container mx-auto px-4 flex flex-col justify-center h-full py-4">
           <div className="flex items-center gap-4">
             <Avatar className="h-24 w-24 border-4 border-white">
               <AvatarImage src={profile.avatar_url || undefined} alt={profile.name || ""} />
@@ -54,7 +54,7 @@ export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfi
               </div>
             </div>
           </div>
-          <div className="absolute bottom-4 left-4 text-white">
+          <div className="mt-4 text-white md:mt-0 md:absolute md:bottom-4 md:left-4">
             <div>
               <div>This is an unclaimed profile for {profile.name || "this user"}.</div>
               <div>
