@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { StarIcon } from "lucide-react";
+import { StarIcon, Car } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -11,6 +11,12 @@ import {
 } from "@/components/ui/carousel";
 import { Equipment } from "@/types";
 import { slugify } from "@/utils/slugify";
+import DistanceDisplay from "@/components/DistanceDisplay";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 interface CompactEquipmentCardProps {
   equipment: Equipment;
@@ -57,9 +63,20 @@ const CompactEquipmentCard = ({ equipment }: CompactEquipmentCardProps) => {
           </h3>
           <span className="font-medium text-primary">${equipment.price_per_day}/day</span>
         </div>
-        <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
-          {equipment.description}
-        </p>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
+              {equipment.description}
+            </p>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" align="start" className="max-w-[500px]">
+            {equipment.description}
+          </TooltipContent>
+        </Tooltip>
+        <div className="flex items-center text-xs text-muted-foreground mb-2">
+          <Car className="h-3 w-3 mr-1" />
+          <DistanceDisplay equipment={equipment} />
+        </div>
         <div className="flex items-center justify-between mt-2">
           <div className="flex items-center text-xs">
             <StarIcon className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
