@@ -130,11 +130,11 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         <div className="border-t pt-2">
           <Link
             to={ownerLinkPath}
-            className="text-xs text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+            className="underline text-sm text-muted-foreground hover:text-primary flex items-center gap-1"
           >
             {isShop && <StoreIcon className="h-3 w-3" />}
             {isPrivateParty && <UsersIcon className="h-3 w-3" />}
-            <span className="truncate">From {equipment.owner.name}</span>
+            <span className="truncate">{equipment.owner.name}</span>
           </Link>
         </div>
       </CardContent>
