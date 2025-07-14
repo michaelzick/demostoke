@@ -69,7 +69,7 @@ const CompactEquipmentCard = ({ equipment }: CompactEquipmentCardProps) => {
               {equipment.description}
             </p>
           </TooltipTrigger>
-          <TooltipContent side="bottom" align="start">
+          <TooltipContent side="bottom" align="start" className="max-w-[500px]">
             {equipment.description}
           </TooltipContent>
         </Tooltip>
