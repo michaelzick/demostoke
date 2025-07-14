@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useParams } from "react-router-dom";
 import { mockEquipment, ownerPersonas } from "@/lib/mockData";
 import { Card, CardContent } from "@/components/ui/card";
 import CompactEquipmentCard from "@/components/CompactEquipmentCard";
+import CategorySelect from "@/components/CategorySelect";
 import {
   StarIcon,
   MapPinIcon,
@@ -31,6 +32,16 @@ const GearOwnerProfilePage = () => {
   // If not found in personas, get it from equipment
   const ownerEquipment = mockEquipment.filter((item) => item.owner.id === id);
   const ownerFromEquipment = ownerEquipment[0]?.owner;
+
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
+  const categories = [
+    ...new Set(ownerEquipment.map((item) => item.category)),
+  ];
+
+  const filteredEquipment = ownerEquipment.filter(
+    (item) => selectedCategory === "all" || item.category === selectedCategory,
+  );
 
   // Use persona if available, otherwise use data from equipment
   const owner = ownerFromPersonas || ownerFromEquipment;
@@ -143,11 +154,23 @@ const GearOwnerProfilePage = () => {
             No gear currently listed.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {ownerEquipment.map((item) => (
-              <CompactEquipmentCard key={item.id} equipment={item} />
-            ))}
-          </div>
+          <>
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="flex gap-4">
+                <CategorySelect
+                  selected={selectedCategory}
+                  onChange={setSelectedCategory}
+                  categories={categories}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredEquipment.map((item) => (
+                <CompactEquipmentCard key={item.id} equipment={item} />
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

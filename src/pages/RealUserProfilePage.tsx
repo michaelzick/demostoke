@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useParams } from "react-router-dom";
 import { useUserProfileBySlug } from "@/hooks/useUserProfileBySlug";
@@ -11,6 +11,7 @@ import { useMockData } from "@/hooks/useMockData";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
 import { useAuth } from "@/helpers";
 import { Badge } from "@/components/ui/badge";
+import CategorySelect from "@/components/CategorySelect";
 import { UserProfileHeader } from "@/components/profile/UserProfileHeader";
 import { UserProfileSidebar } from "@/components/profile/UserProfileSidebar";
 import { UserEquipmentGrid } from "@/components/profile/UserEquipmentGrid";
@@ -86,6 +87,14 @@ const RealUserProfilePage = () => {
     ? mockEquipment.filter(item => slugify(item.owner.name) === slug) // Mock data doesn't have visibility field, so show all
     : dbUserEquipment;
 
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const categories = [
+    ...new Set((userEquipment || []).map((item) => item.category)),
+  ];
+  const filteredEquipment = (userEquipment || []).filter(
+    (item) => selectedCategory === "all" || item.category === selectedCategory,
+  );
+
   const isLoading = isMockUser ? false : (profileLoading || statsLoading);
 
   const profileName = profile?.name;
@@ -139,8 +148,18 @@ const RealUserProfilePage = () => {
               {userEquipment && <Badge variant="outline">{userEquipment.length} items</Badge>}
             </div>
             
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="flex gap-4">
+                <CategorySelect
+                  selected={selectedCategory}
+                  onChange={setSelectedCategory}
+                  categories={categories}
+                />
+              </div>
+            </div>
+
             <UserEquipmentGrid
-              userEquipment={userEquipment as UserEquipment[]}
+              userEquipment={filteredEquipment as UserEquipment[]}
               owner={owner}
               stats={stats}
               isLoading={equipmentLoading}
