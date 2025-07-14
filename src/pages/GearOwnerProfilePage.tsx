@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useParams } from "react-router-dom";
 import { mockEquipment, ownerPersonas } from "@/lib/mockData";
@@ -31,6 +31,16 @@ const GearOwnerProfilePage = () => {
   // If not found in personas, get it from equipment
   const ownerEquipment = mockEquipment.filter((item) => item.owner.id === id);
   const ownerFromEquipment = ownerEquipment[0]?.owner;
+
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
+  const categories = [
+    ...new Set(ownerEquipment.map((item) => item.category)),
+  ];
+
+  const filteredEquipment = ownerEquipment.filter(
+    (item) => selectedCategory === "all" || item.category === selectedCategory,
+  );
 
   // Use persona if available, otherwise use data from equipment
   const owner = ownerFromPersonas || ownerFromEquipment;
@@ -143,11 +153,30 @@ const GearOwnerProfilePage = () => {
             No gear currently listed.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {ownerEquipment.map((item) => (
-              <CompactEquipmentCard key={item.id} equipment={item} />
-            ))}
-          </div>
+          <>
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="flex gap-4">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="px-3 py-2 border border-input bg-background rounded-md text-sm"
+                >
+                  <option value="all">All Categories</option>
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredEquipment.map((item) => (
+                <CompactEquipmentCard key={item.id} equipment={item} />
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>
