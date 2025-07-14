@@ -54,16 +54,6 @@ export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfi
               </div>
             </div>
           </div>
-          <div className="absolute bottom-4 left-4 text-white">
-            <div>
-              <div>This is an unclaimed profile for {profile.name || "this user"}.</div>
-              <div>
-                <Link to="/contact-us" className="text-primary hover:underline">
-                  Contact us
-                </Link> if you are the owner and want to claim this profile.
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     );
