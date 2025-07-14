@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { MessageCircleIcon, StarIcon, MapPinIcon, PhoneIcon, GlobeIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 import MapComponent from "@/components/MapComponent";
 
 interface UserProfileSidebarProps {
@@ -111,6 +112,15 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
                   </div>
                 </div>
               )}
+              <div className="text-sm text-muted-foreground">
+                <div>This is an unclaimed profile for {profile.name || "this user"}.</div>
+                <div>
+                  <Link to="/contact-us" className="text-primary hover:underline">
+                    Contact us
+                  </Link>{" "}
+                  if you are the owner and want to claim this profile.
+                </div>
+              </div>
               <div className="flex justify-between">
                 <span className="font-medium">Member Since</span>
                 <span>{memberSinceDate}</span>
@@ -127,6 +137,15 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
                   </div>
                 </div>
               )}
+              <div className="text-sm text-muted-foreground">
+                <div>This is an unclaimed profile for {profile.name || "this user"}.</div>
+                <div>
+                  <Link to="/contact-us" className="text-primary hover:underline">
+                    Contact us
+                  </Link>{" "}
+                  if you are the owner and want to claim this profile.
+                </div>
+              </div>
               <div className="flex justify-between">
                 <span className="font-medium">Member Since</span>
                 <span>{memberSinceDate}</span>

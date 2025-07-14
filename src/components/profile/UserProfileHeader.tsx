@@ -30,11 +30,11 @@ export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfi
   if (hasHeroImage) {
     return (
       <div
-        className="relative min-h-[16rem] bg-cover bg-center"
+        className="relative h-64 bg-cover bg-center"
         style={{ backgroundImage: `url('${profile.hero_image_url}')` }}
       >
         <div className="absolute inset-0 bg-black/50" />
-        <div className="relative container mx-auto px-4 flex flex-col justify-center h-full py-4">
+        <div className="relative container mx-auto px-4 h-full flex items-center">
           <div className="flex items-center gap-4">
             <Avatar className="h-24 w-24 border-4 border-white">
               <AvatarImage src={profile.avatar_url || undefined} alt={profile.name || ""} />
@@ -51,16 +51,6 @@ export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfi
               )}
               <div className="flex flex-wrap gap-2">
                 <Badge variant="secondary">{roleName}</Badge>
-              </div>
-            </div>
-          </div>
-          <div className="mt-4 text-white md:mt-0 md:absolute md:bottom-4 md:left-4">
-            <div>
-              <div>This is an unclaimed profile for {profile.name || "this user"}.</div>
-              <div>
-                <Link to="/contact-us" className="text-primary hover:underline">
-                  Contact us
-                </Link> if you are the owner and want to claim this profile.
               </div>
             </div>
           </div>
