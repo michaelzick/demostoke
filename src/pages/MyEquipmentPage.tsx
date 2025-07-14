@@ -353,7 +353,7 @@ const MyEquipmentPage = () => {
 
                       <div className="space-y-1">
                         <Link
-                          to={`/${item.category}/${slugify(item.owner.name)}/${slugify(item.name)}`}
+                          to={`/${item.category}/${slugify(user.name)}/${slugify(item.name)}`}
                         >
                           <CardTitle className="text-lg line-clamp-1 hover:text-primary transition-colors">
                             {item.name}
@@ -438,7 +438,7 @@ const MyEquipmentPage = () => {
 
                           <Button size="sm" asChild>
                             <Link
-                              to={`/${item.category}/${slugify(item.owner.name)}/${slugify(item.name)}`}
+                              to={`/${item.category}/${slugify(user.name)}/${slugify(item.name)}`}
                             >
                               View Details
                             </Link>
