@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { mockEquipment, ownerPersonas } from "@/lib/mockData";
 import { Card, CardContent } from "@/components/ui/card";
 import CompactEquipmentCard from "@/components/CompactEquipmentCard";
+import CategorySelect from "@/components/CategorySelect";
 import {
   StarIcon,
   MapPinIcon,
@@ -156,18 +157,11 @@ const GearOwnerProfilePage = () => {
           <>
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
               <div className="flex gap-4">
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-3 py-2 border border-input bg-background rounded-md text-sm"
-                >
-                  <option value="all">All Categories</option>
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category.charAt(0).toUpperCase() + category.slice(1)}
-                    </option>
-                  ))}
-                </select>
+                <CategorySelect
+                  selected={selectedCategory}
+                  onChange={setSelectedCategory}
+                  categories={categories}
+                />
               </div>
             </div>
 

@@ -11,6 +11,7 @@ import { useMockData } from "@/hooks/useMockData";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
 import { useAuth } from "@/helpers";
 import { Badge } from "@/components/ui/badge";
+import CategorySelect from "@/components/CategorySelect";
 import { UserProfileHeader } from "@/components/profile/UserProfileHeader";
 import { UserProfileSidebar } from "@/components/profile/UserProfileSidebar";
 import { UserEquipmentGrid } from "@/components/profile/UserEquipmentGrid";
@@ -149,18 +150,11 @@ const RealUserProfilePage = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
               <div className="flex gap-4">
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-3 py-2 border border-input bg-background rounded-md text-sm"
-                >
-                  <option value="all">All Categories</option>
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category.charAt(0).toUpperCase() + category.slice(1)}
-                    </option>
-                  ))}
-                </select>
+                <CategorySelect
+                  selected={selectedCategory}
+                  onChange={setSelectedCategory}
+                  categories={categories}
+                />
               </div>
             </div>
 
