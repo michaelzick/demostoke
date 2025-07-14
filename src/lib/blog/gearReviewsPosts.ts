@@ -90,7 +90,8 @@ The carbon fiber VXR laminate adds snap without making the board overly stiff. T
 **Summary**
 
 The Never Summer Proto Type Two is recommended for advanced riders seeking a board that can handle a variety of conditions.
-`,
+
+[Find this gear near you](/search?q=never+summer+proto+type+two)`,
     category: "gear reviews",
     publishedAt: "2025-01-15",
     readTime: 7,
@@ -135,7 +136,8 @@ The Never Summer Proto Type Two is recommended for advanced riders seeking a boa
 **Summary**
 
 The Firewire Seaside is a standout for surfers who want a board that combines classic style with modern versatility.
-`,
+
+[Find this gear near you](/search?q=firewire+seaside)`,
     category: "gear reviews",
     publishedAt: "2025-06-29",
     readTime: 7,
@@ -180,7 +182,8 @@ The Firewire Seaside is a standout for surfers who want a board that combines cl
 **Summary**
 
 The Pyzel Gremlin is a standout choice for surfers who want one board that can handle the majority of their sessions.
-`,
+
+[Find this gear near you](/search?q=pyzel+gremlin)`,
     category: "gear reviews",
     publishedAt: "2025-06-23",
     readTime: 7,
@@ -228,7 +231,8 @@ The Pyzel Gremlin is a standout choice for surfers who want one board that can h
 **Summary**
 
 The Firewire Sci-Fi 2.0 is a standout for surfers who want to blend futuristic design with real-world performance.
-`,
+
+[Find this gear near you](/search?q=firewire+sci-fi+2)`,
     category: "gear reviews",
     publishedAt: "2025-06-27",
     readTime: 7,
@@ -279,7 +283,8 @@ The Tom Wallisch Pro is built with Line's signature durability in mind. The Carb
 The Line Tom Wallisch Pro 2025 is a standout for freestyle skiers who want a ski that excels in the park but doesn't feel out of place on the rest of the mountain. Its blend of durability, pop, and versatility has made it a favorite among pros and dedicated park riders alike.
 
 "The 2025 Line Tom Wallisch Pro is a freestyle park specific ski that delivers the same performance that the top professionals need to the general public so that they too may ride to the top of the podium. [SkiEssentials' review](https://www.skiessentials.com/2025-ski-test/skis/2025-line-tom-wallisch-pro)"
-`,
+
+[Find this gear near you](/search?q=tom+wallisch+pro)`,
     category: "gear reviews",
     publishedAt: "2025-06-30",
     readTime: 8,
@@ -313,7 +318,8 @@ Our tester rode everything from rocky climbs in Arkansas to jump lines in Texas.
 Even at around 54 lb the bike handled jumps well, carrying speed through lips and landing confidently. Those downhill tires add security when things get rough, though they do make the bike feel a bit heavy on mellow terrain.
 
 Overall this refreshed Oso offers impressive parts for the money and rides more playfully than its weight suggests. Riders looking for a durable full‑power e‑bike should give it a serious look.
-    `,
+
+[Find this gear near you](/search?q=ibis+oso)`,
     publishedAt: "2025-07-07",
     readTime: 7,
     category: "gear reviews",
