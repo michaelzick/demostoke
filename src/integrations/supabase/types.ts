@@ -133,7 +133,6 @@ export type Database = {
           description: string | null
           has_multiple_images: boolean | null
           id: string
-          image_url: string | null
           location_address: string | null
           location_lat: number | null
           location_lng: number | null
@@ -161,7 +160,6 @@ export type Database = {
           description?: string | null
           has_multiple_images?: boolean | null
           id?: string
-          image_url?: string | null
           location_address?: string | null
           location_lat?: number | null
           location_lng?: number | null
@@ -189,7 +187,6 @@ export type Database = {
           description?: string | null
           has_multiple_images?: boolean | null
           id?: string
-          image_url?: string | null
           location_address?: string | null
           location_lat?: number | null
           location_lng?: number | null
@@ -671,6 +668,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_unused_downloaded_images: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          deleted_files: number
+          deleted_records: number
+        }[]
+      }
+      find_unused_downloaded_images: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          file_path: string
+          downloaded_url: string
+          reason: string
+        }[]
+      }
       get_app_setting: {
         Args: { key: string }
         Returns: Json
