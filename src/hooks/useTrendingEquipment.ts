@@ -73,11 +73,8 @@ export const useTrendingEquipment = () => {
         const { fetchEquipmentImages } = await import('@/utils/multipleImageHandling');
 
         const equipmentPromises = equipmentDetails.map(async (item) => {
-          // Fetch gallery images; fall back to primary image if none exist
-          const galleryImages = await fetchEquipmentImages(
-            item.id,
-            item.image_url,
-          );
+          // Fetch gallery images from equipment_images table
+          const galleryImages = await fetchEquipmentImages(item.id);
           const allImages = deduplicateImageUrls(galleryImages);
 
           const flatItem = {

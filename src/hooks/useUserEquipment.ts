@@ -105,11 +105,8 @@ export const useUserEquipment = (
           );
           console.log("Equipment ID:", item.id);
 
-          // Fetch images from equipment_images table; fall back to primary URL
-          const additionalImages = await fetchEquipmentImages(
-            item.id,
-            item.image_url || undefined,
-          );
+          // Fetch images from equipment_images table
+          const additionalImages = await fetchEquipmentImages(item.id);
           console.log("Additional images fetched:", additionalImages);
 
           // Use images from equipment_images table or fallback to primary
@@ -148,6 +145,10 @@ export const useUserEquipment = (
             },
             availability: {
               available: item.status === "available",
+            },
+            owner: {
+              id: item.user_id,
+              name: "User", // We don't have profile name in this query
             },
           };
         }),

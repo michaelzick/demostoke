@@ -3,25 +3,18 @@ import type { Equipment } from "@/types";
 export const convertDbEquipmentToFrontend = (
   dbEquipment: Record<string, unknown>,
 ): Equipment => {
-  // Handle images array - prioritize all_images if available, then images, and
-  // finally fall back to the single image_url field if provided. This ensures
-  // cards always have at least one image for the carousel component.
+  // Handle images array - only use equipment_images data (all_images)
+  // No fallback to image_url field anymore
   let imagesArray: string[] = [];
 
   if (dbEquipment.all_images && Array.isArray(dbEquipment.all_images)) {
     imagesArray = dbEquipment.all_images as string[];
   } else if (dbEquipment.images && Array.isArray(dbEquipment.images)) {
     imagesArray = dbEquipment.images as string[];
-  } else if (typeof dbEquipment.image_url === "string" && dbEquipment.image_url) {
-    imagesArray = [dbEquipment.image_url];
   }
 
-  // Determine the primary image URL, falling back to the image_url field when
-  // no images array exists
-  const primaryImageUrl =
-    imagesArray.length > 0
-      ? imagesArray[0]
-      : (typeof dbEquipment.image_url === "string" ? dbEquipment.image_url : "");
+  // Primary image URL is the first image in the array, or empty string
+  const primaryImageUrl = imagesArray.length > 0 ? imagesArray[0] : "";
 
   return {
     id: dbEquipment.id as string,

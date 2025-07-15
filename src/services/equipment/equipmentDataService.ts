@@ -36,11 +36,8 @@ export const fetchEquipmentFromSupabase = async (): Promise<Equipment[]> => {
   // Convert each item and fetch additional images
   const convertedEquipment = await Promise.all(
     data.map(async (item) => {
-      // Fetch images from equipment_images table; fall back to primary URL
-      const additionalImages = await fetchEquipmentImages(
-        item.id,
-        item.image_url as string,
-      );
+      // Fetch images from equipment_images table
+      const additionalImages = await fetchEquipmentImages(item.id);
 
       const allImages = deduplicateImageUrls(additionalImages);
 

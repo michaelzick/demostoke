@@ -61,14 +61,11 @@ const EditGearForm = () => {
     const loadCurrentImages = async () => {
       if (equipment?.id) {
         try {
-          const images = await fetchEquipmentImages(
-            equipment.id,
-            equipment.image_url || undefined,
-          );
-          setCurrentImages(images.length > 0 ? images : equipment.image_url ? [equipment.image_url] : []);
+          const images = await fetchEquipmentImages(equipment.id);
+          setCurrentImages(images);
         } catch (error) {
           console.error('Error fetching current images:', error);
-          setCurrentImages(equipment.image_url ? [equipment.image_url] : []);
+          setCurrentImages([]);
         }
       }
     };

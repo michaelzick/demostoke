@@ -592,25 +592,25 @@ export type Database = {
         Row: {
           assigned_at: string | null
           assigned_by: string | null
+          display_role: string | null
           id: string
           role: Database["public"]["Enums"]["app_role"]
-          display_role: string | null
           user_id: string
         }
         Insert: {
           assigned_at?: string | null
           assigned_by?: string | null
+          display_role?: string | null
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
-          display_role?: string | null
           user_id: string
         }
         Update: {
           assigned_at?: string | null
           assigned_by?: string | null
+          display_role?: string | null
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
-          display_role?: string | null
           user_id?: string
         }
         Relationships: []
@@ -691,7 +691,7 @@ export type Database = {
         Returns: undefined
       }
       is_admin: {
-        Args: { user_id: string }
+        Args: { user_id?: string }
         Returns: boolean
       }
       log_security_event: {

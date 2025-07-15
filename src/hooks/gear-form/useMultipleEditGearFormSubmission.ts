@@ -131,11 +131,11 @@ export const useMultipleEditGearFormSubmission = ({
             variant: "destructive",
           });
           // Keep existing images if upload fails
-          finalImageUrls = equipment?.images || (equipment?.image_url ? [equipment.image_url] : []);
+          finalImageUrls = equipment?.images || [];
         }
       } else {
         // Keep existing images
-        finalImageUrls = equipment?.images || (equipment?.image_url ? [equipment.image_url] : []);
+        finalImageUrls = equipment?.images || [];
       }
 
       // Handle location updates

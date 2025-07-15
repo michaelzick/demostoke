@@ -47,15 +47,12 @@ export const useEquipmentById = (id: string) => {
       console.log("Price per hour:", data.price_per_hour);
       console.log("Price per week:", data.price_per_week);
 
-      // Fetch additional images from equipment_images table
-      console.log("Fetching additional images for equipment ID:", data.id);
-      const additionalImages = await fetchEquipmentImages(
-        data.id,
-        data.image_url || undefined,
-      );
-      console.log("Additional images fetched:", additionalImages);
+      // Fetch images from equipment_images table
+      console.log("Fetching images for equipment ID:", data.id);
+      const images = await fetchEquipmentImages(data.id);
+      console.log("Images fetched:", images);
 
-      const allImages = deduplicateImageUrls(additionalImages);
+      const allImages = deduplicateImageUrls(images);
       console.log("Images array:", allImages);
 
       // Convert to Equipment type with proper location mapping
@@ -65,7 +62,7 @@ export const useEquipmentById = (id: string) => {
         category: data.category,
         subcategory: data.subcategory,
         description: data.description || "",
-        image_url: data.image_url || "",
+        image_url: allImages.length > 0 ? allImages[0] : "",
         images: allImages,
         price_per_day: Number(data.price_per_day),
         price_per_hour:

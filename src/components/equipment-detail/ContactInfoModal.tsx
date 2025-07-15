@@ -95,7 +95,7 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
           ) : (
             <div className="text-sm text-muted-foreground text-center py-4">
               Contact information is not available for {displayName}.
-              {profile?.role === 'shop' && (
+              {profile && (
                 <div className="mt-2">
                   To add contact details, the owner should update their profile settings.
                 </div>

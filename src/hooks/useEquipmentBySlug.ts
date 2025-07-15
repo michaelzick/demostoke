@@ -75,11 +75,8 @@ export const useEquipmentBySlug = (
         return null;
       }
 
-      const additionalImages = await fetchEquipmentImages(
-        row.id,
-        row.image_url || undefined,
-      );
-      const allImages = deduplicateImageUrls(additionalImages);
+      const images = await fetchEquipmentImages(row.id);
+      const allImages = deduplicateImageUrls(images);
 
       const equipment: Equipment = {
         id: row.id,
@@ -87,7 +84,7 @@ export const useEquipmentBySlug = (
         category: row.category,
         subcategory: row.subcategory || undefined,
         description: row.description || '',
-        image_url: row.image_url || '',
+        image_url: allImages.length > 0 ? allImages[0] : '',
         images: allImages,
         price_per_day: Number(row.price_per_day),
         price_per_hour:

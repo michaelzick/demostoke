@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const fetchEquipmentImages = async (
   equipmentId: string,
-  fallbackUrl?: string,
 ): Promise<string[]> => {
   console.log('=== FETCHING EQUIPMENT IMAGES ===');
   console.log('Equipment ID for image fetch:', equipmentId);
@@ -25,8 +24,8 @@ export const fetchEquipmentImages = async (
     console.log('Number of images found:', data?.length || 0);
 
     if (!data || data.length === 0) {
-      console.log('No additional images found in equipment_images table');
-      return fallbackUrl ? [fallbackUrl] : [];
+      console.log('No images found in equipment_images table');
+      return [];
     }
 
     const imageUrls = data.map((img) => img.image_url);

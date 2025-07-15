@@ -35,7 +35,11 @@ export const mockUserEquipment: UserEquipment[] = [
     status: 'available',
     created_at: '2024-12-01',
     updated_at: '2024-12-01',
-    visible_on_map: true
+    visible_on_map: true,
+    owner: {
+      id: "user1",
+      name: "Mock User"
+    }
   },
   {
     id: "user-equip-2",
@@ -68,6 +72,10 @@ export const mockUserEquipment: UserEquipment[] = [
     status: 'available',
     created_at: '2024-12-02',
     updated_at: '2024-12-02',
-    visible_on_map: true
+    visible_on_map: true,
+    owner: {
+      id: "user1",
+      name: "Mock User"
+    }
   }
 ];

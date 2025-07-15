@@ -31,4 +31,8 @@ export interface UserEquipment {
   availability: {
     available: boolean;
   };
+  owner: {
+    id: string;
+    name: string;
+  };
 }
