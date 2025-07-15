@@ -54,7 +54,6 @@ const EquipmentDetailPage = () => {
     if (equipment) {
       console.log('=== EQUIPMENT IMAGE DEBUG ===');
       console.log('Raw equipment data:', equipment);
-      console.log('Equipment image_url:', equipment.image_url);
       console.log('Equipment images array:', equipment.images);
       console.log('Images array length:', equipment.images?.length || 0);
       console.log('=== END IMAGE DEBUG ===');
@@ -68,7 +67,7 @@ const EquipmentDetailPage = () => {
         price_per_day: Number(equipment.price_per_day),
         price_per_hour: Number(equipment.price_per_hour),
         price_per_week: Number(equipment.price_per_week),
-        image_url: equipment.image_url || "",
+        image_url: equipment.images?.[0] || "",
         images: equipment.images || [], // Make sure images array is passed through
         rating: Number(equipment.rating || 0),
         review_count: equipment.review_count || 0,

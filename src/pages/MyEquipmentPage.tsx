@@ -118,7 +118,7 @@ const MyEquipmentPage = () => {
       suitable_skill_level: equipmentItem.specifications?.suitable || "",
       price_per_day: equipmentItem.price_per_day,
       damage_deposit: equipmentItem.damage_deposit || 0,
-      image_url: equipmentItem.image_url,
+      image_url: equipmentItem.images?.[0] || "",
     };
 
     sessionStorage.setItem("duplicateGearData", JSON.stringify(duplicateData));

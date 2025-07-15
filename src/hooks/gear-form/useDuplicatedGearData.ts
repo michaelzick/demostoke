@@ -140,8 +140,8 @@ export const useDuplicatedGearData = ({
 
         let toastDescription = "The form has been pre-filled with the duplicated gear's information. You can now edit and submit it as a new listing.";
 
-        // If there are image URLs, add it to the toast message
-        if (duplicatedEquipment.image_url || (duplicatedEquipment.images && duplicatedEquipment.images.length > 0)) {
+        // If there are images, add it to the toast message
+        if (duplicatedEquipment.images && duplicatedEquipment.images.length > 0) {
           toastDescription += " The original images will be used unless you upload new ones.";
         }
 
