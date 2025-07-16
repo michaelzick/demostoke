@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { generateGearDescription } from "@/services/equipment/descriptionAIService";
@@ -122,7 +122,10 @@ const GearBasicInfo = ({
               Generating...
             </>
           ) : (
-            <>Generate Description</>
+            <>
+              <Sparkles className="mr-2 h-4 w-4" />
+              Generate Description
+            </>
           )}
         </Button>
       </div>
