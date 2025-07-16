@@ -58,6 +58,31 @@ export const deleteProfileImage = async (imageUrl: string, userId: string): Prom
   }
 };
 
-export const generateDicebearAvatar = (userId: string): string => {
-  return `https://api.dicebear.com/6.x/avataaars/svg?seed=${userId}`;
+export const generateRoleBasedAvatar = (userId: string, displayRole: string = 'retail-store'): string => {
+  const iconMap = {
+    'retail-store': 'store',
+    'builder': 'hammer', 
+    'private-party': 'user'
+  };
+  
+  const iconName = iconMap[displayRole as keyof typeof iconMap] || 'store';
+  
+  // Generate SVG with lucide icon based on role
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" fill="none">
+    <rect width="120" height="120" rx="60" fill="hsl(var(--muted))"/>
+    <g transform="translate(30, 30)">
+      ${getSvgPath(iconName)}
+    </g>
+  </svg>`;
+  
+  return `data:image/svg+xml;base64,${btoa(svg)}`;
+};
+
+const getSvgPath = (iconName: string): string => {
+  const paths = {
+    'store': '<path d="M2 7v10c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V7m-8 4v6m-4-6v6m8-10V3c0-.55-.45-1-1-1H9c-.55 0-1 .45-1 1v4" stroke="hsl(var(--foreground))" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+    'hammer': '<path d="m15 12-8.5-8.5c-.83-.83-2.17-.83-3 0 0 0 0 0 0 0l-2.5 2.5c-.83.83-.83 2.17 0 3l8.5 8.5 2-2Zm-7 4 3-3 4 4-3 3-4-4Z" stroke="hsl(var(--foreground))" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+    'user': '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m8-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="hsl(var(--foreground))" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
+  };
+  return paths[iconName as keyof typeof paths] || paths.store;
 };

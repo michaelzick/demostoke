@@ -1,7 +1,7 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { generateDicebearAvatar } from "@/utils/profileImageUpload";
+import { generateRoleBasedAvatar } from "@/utils/profileImageUpload";
 import { useAuth } from "@/helpers";
 
 export const useProfileQuery = () => {
@@ -34,7 +34,7 @@ export const useProfileQuery = () => {
           location_lng: null,
           about: null,
           website: "",
-          profileImage: generateDicebearAvatar(user.id),
+          profileImage: generateRoleBasedAvatar(user.id, 'retail-store'),
           heroImage: null,
         };
       }
@@ -46,13 +46,14 @@ export const useProfileQuery = () => {
         .eq('user_id', user.id)
         .single();
 
-      const avatarUrl = profileData.avatar_url || generateDicebearAvatar(user.id);
+      const displayRole = roleRow?.display_role || "retail-store";
+      const avatarUrl = profileData.avatar_url || generateRoleBasedAvatar(user.id, displayRole);
       console.log('Setting profile image from avatar_url:', avatarUrl);
 
       return {
         name: profileData.name || "",
         email: currentEmail, // Use the current email from auth
-        displayRole: roleRow?.display_role || "retail-store",
+        displayRole: displayRole,
         phone: profileData.phone || "",
         address: profileData.address || "",
         location_lat: profileData.location_lat,
@@ -78,7 +79,7 @@ export const useProfileQuery = () => {
         location_lng: null,
         about: null,
         website: "",
-        profileImage: generateDicebearAvatar(user.id),
+        profileImage: generateRoleBasedAvatar(user.id, 'retail-store'),
         heroImage: null,
       };
     }

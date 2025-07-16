@@ -1,7 +1,7 @@
 
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { uploadProfileImage, deleteProfileImage, generateDicebearAvatar } from "@/utils/profileImageUpload";
+import { uploadProfileImage, deleteProfileImage, generateRoleBasedAvatar } from "@/utils/profileImageUpload";
 import { useQueryClient } from "@tanstack/react-query";
 import type { User } from "@/types";
 
@@ -109,8 +109,8 @@ export const useProfileImageHandlers = ({
         variant: "destructive",
       });
 
-      // Fallback to dicebear avatar on error
-      const fallbackAvatar = generateDicebearAvatar(user.id);
+      // Fallback to role-based avatar on error
+      const fallbackAvatar = generateRoleBasedAvatar(user.id, 'retail-store');
       setProfileImage(fallbackAvatar);
 
       // Update database with fallback avatar, preserving existing data
@@ -156,8 +156,8 @@ export const useProfileImageHandlers = ({
         await deleteProfileImage(profileImage, user.id);
       }
 
-      // Generate a new dicebear avatar
-      const fallbackAvatar = generateDicebearAvatar(user.id);
+      // Generate a new role-based avatar
+      const fallbackAvatar = generateRoleBasedAvatar(user.id, 'retail-store');
 
       // Update the avatar_url in the database while preserving existing role and name
       const { error } = await supabase
