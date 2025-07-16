@@ -359,7 +359,7 @@ const LightspeedPOSPage = () => {
                       {paginatedItems.map(item => (
                         <Card key={item.id} className="overflow-hidden">
                           <div className="relative h-32 cursor-pointer" onClick={() => handleViewDetails(item.id, item.name, item.category)}>
-                            <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                            <img src={item.images?.[0] || '/placeholder.svg'} alt={item.name} className="w-full h-full object-cover" />
                             <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
                               {item.visible_on_map ? (
                                 <Eye className="h-4 w-4 text-green-600" />
