@@ -5,8 +5,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { Badge } from "@/components/ui/badge";
-import { Copy, CheckCircle2, Images, Loader2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { slugify } from "@/utils/slugify";
+import { Copy, Images, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -274,7 +275,6 @@ const SimilarGearImageCopy = ({ gearName, currentGearId, currentImages }: Simila
                   <TableHead>Gear Name</TableHead>
                   <TableHead>Category</TableHead>
                   <TableHead>Owner</TableHead>
-                  <TableHead>Status</TableHead>
                   <TableHead>Current Images</TableHead>
                 </TableRow>
               </TableHeader>
@@ -287,13 +287,26 @@ const SimilarGearImageCopy = ({ gearName, currentGearId, currentImages }: Simila
                         onCheckedChange={(checked) => handleSelectGear(gear.id, checked as boolean)}
                       />
                     </TableCell>
-                    <TableCell className="font-medium">{gear.name}</TableCell>
+                    <TableCell className="font-medium">
+                      <Link
+                        to={`/${gear.category}/${slugify(gear.owner_name || '')}/${slugify(gear.name)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        {gear.name}
+                      </Link>
+                    </TableCell>
                     <TableCell>{gear.category}</TableCell>
-                    <TableCell>{gear.owner_name}</TableCell>
                     <TableCell>
-                      <Badge variant={gear.status === 'available' ? 'default' : 'secondary'}>
-                        {gear.status}
-                      </Badge>
+                      <Link
+                        to={`/user-profile/${slugify(gear.owner_name || '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        {gear.owner_name}
+                      </Link>
                     </TableCell>
                     <TableCell>
                       {gear.images.length === 0 ? (
