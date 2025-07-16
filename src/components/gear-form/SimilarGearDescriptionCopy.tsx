@@ -290,7 +290,11 @@ const SimilarGearDescriptionCopy = ({
                               {truncateDescription(gear.description)}
                             </p>
                           </TooltipTrigger>
-                          <TooltipContent side="bottom" align="start" className="max-w-[500px]">
+                          <TooltipContent
+                            side="top"
+                            align="end"
+                            className="max-w-[500px]"
+                          >
                             {gear.description}
                           </TooltipContent>
                         </Tooltip>
