@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import SimilarGearDescriptionCopy from "./SimilarGearDescriptionCopy";
 
 interface GearBasicInfoProps {
   gearName: string;
@@ -24,6 +25,7 @@ interface GearBasicInfoProps {
   setDescription: (value: string) => void;
   address: string; // Changed from zipCode to address
   setAddress: (value: string) => void; // Changed from setZipCode to setAddress
+  currentGearId?: string; // For description copy functionality
 }
 
 const GearBasicInfo = ({
@@ -34,7 +36,8 @@ const GearBasicInfo = ({
   description,
   setDescription,
   address, // Changed from zipCode to address
-  setAddress // Changed from setZipCode to setAddress
+  setAddress, // Changed from setZipCode to setAddress
+  currentGearId // For description copy functionality
 }: GearBasicInfoProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
@@ -109,25 +112,35 @@ const GearBasicInfo = ({
           rows={4}
           required
         />
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleGenerateDescription}
-          disabled={isGenerating}
-          className="mt-2 self-start"
-        >
-          {isGenerating ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Loading...
-            </>
-          ) : (
-            <>
-              <Sparkles className="mr-2 h-4 w-4" />
-              Generate Description
-            </>
+        <div className="flex items-center gap-2 mt-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleGenerateDescription}
+            disabled={isGenerating}
+            size="sm"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Loading...
+              </>
+            ) : (
+              <>
+                <Sparkles className="mr-2 h-4 w-4" />
+                Generate Description
+              </>
+            )}
+          </Button>
+          
+          {currentGearId && (
+            <SimilarGearDescriptionCopy
+              gearName={gearName}
+              currentGearId={currentGearId}
+              currentDescription={description}
+            />
           )}
-        </Button>
+        </div>
       </div>
 
       {/* Address / Location */}

@@ -142,6 +142,7 @@ const EditGearForm = () => {
           setDescription={formState.setDescription}
           address={formState.address} // Changed from zipCode
           setAddress={formState.setAddress} // Changed from setZipCode
+          currentGearId={equipment?.id}
         />
 
         <GearSpecifications
