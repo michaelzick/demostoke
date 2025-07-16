@@ -113,7 +113,7 @@ const GearBasicInfo = ({
           type="button"
           onClick={handleGenerateDescription}
           disabled={isGenerating}
-          className="mt-2"
+          className="mt-2 self-start"
         >
           {isGenerating ? (
             <>
