@@ -61,11 +61,23 @@ Please create:
 4. Make it engaging and informative for outdoor enthusiasts
 5. Include practical tips or insights where relevant
 
+IMPORTANT FORMATTING REQUIREMENTS:
+- Use **Section Title** for section headers (not ## headers)
+- Add a blank line after each section title
+- For bulleted lists, do NOT wrap any words in **
+- Add a blank line between the sentence introducing bullets and the bullet list
+- Example bullet formatting:
+  
+  This sentence introduces the bullets:
+  
+  - First bullet point
+  - Second bullet point
+
 Format the response as a JSON object with the following structure:
 {
   "title": "Blog post title",
   "excerpt": "Brief summary of the post",
-  "content": "Full blog post content with markdown formatting"
+  "content": "Full blog post content with markdown formatting following the requirements above"
 }`;
 
     console.log('🤖 Calling OpenAI API...');
