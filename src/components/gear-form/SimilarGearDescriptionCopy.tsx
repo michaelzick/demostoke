@@ -3,6 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 import { Link } from "react-router-dom";
 import { slugify } from "@/utils/slugify";
 import { Copy, FileText, Loader2 } from "lucide-react";
@@ -279,11 +284,16 @@ const SimilarGearDescriptionCopy = ({
                     </TableCell>
                     <TableCell className="max-w-xs">
                       {gear.description ? (
-                        <div className="text-sm">
-                          <p className="text-white">
-                            {truncateDescription(gear.description)}
-                          </p>
-                        </div>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <p className="text-sm text-white line-clamp-2">
+                              {truncateDescription(gear.description)}
+                            </p>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" align="start" className="max-w-[500px]">
+                            {gear.description}
+                          </TooltipContent>
+                        </Tooltip>
                       ) : (
                         <span className="text-sm text-muted-foreground">No description</span>
                       )}
