@@ -104,13 +104,59 @@ Format the response as a JSON object with the following structure:
     // Parse the JSON response from OpenAI
     let parsedContent;
     try {
-      parsedContent = JSON.parse(generatedContent);
+      // Clean up the response to handle potential formatting issues
+      const cleanedContent = generatedContent.trim();
+      
+      // Try to extract JSON from markdown code blocks if present
+      const jsonMatch = cleanedContent.match(/```json\n([\s\S]*?)\n```/) || 
+                       cleanedContent.match(/```\n([\s\S]*?)\n```/);
+      
+      const jsonToParse = jsonMatch ? jsonMatch[1] : cleanedContent;
+      
+      parsedContent = JSON.parse(jsonToParse);
+      
+      // Validate that we have the required fields
+      if (!parsedContent.title || !parsedContent.excerpt || !parsedContent.content) {
+        throw new Error('Missing required fields in parsed content');
+      }
+      
+      console.log('✅ Successfully parsed OpenAI response as JSON');
+      console.log('📝 Title:', parsedContent.title);
+      console.log('📝 Excerpt:', parsedContent.excerpt);
+      
     } catch (parseError) {
       console.error('Failed to parse OpenAI response as JSON:', parseError);
-      // Fallback: treat as plain text
+      console.error('Raw OpenAI response:', generatedContent.substring(0, 500) + '...');
+      
+      // Try to extract title and excerpt from the raw content if it looks structured
+      const lines = generatedContent.split('\n').filter(line => line.trim());
+      let extractedTitle = `Blog Post - ${requestData.category}`;
+      let extractedExcerpt = 'Generated blog post content';
+      
+      // Look for title patterns
+      const titleMatch = generatedContent.match(/title["\s]*:[\s]*["']([^"']+)["']/i) ||
+                        generatedContent.match(/^#\s*(.+)$/m) ||
+                        generatedContent.match(/\*\*(.+)\*\*/);
+      
+      if (titleMatch) {
+        extractedTitle = titleMatch[1].trim();
+      }
+      
+      // Look for excerpt patterns
+      const excerptMatch = generatedContent.match(/excerpt["\s]*:[\s]*["']([^"']+)["']/i) ||
+                          generatedContent.match(/summary["\s]*:[\s]*["']([^"']+)["']/i);
+      
+      if (excerptMatch) {
+        extractedExcerpt = excerptMatch[1].trim();
+      }
+      
+      console.log('🔄 Using extracted title:', extractedTitle);
+      console.log('🔄 Using extracted excerpt:', extractedExcerpt);
+      
+      // Fallback: treat as plain text with extracted title/excerpt
       parsedContent = {
-        title: `Blog Post - ${requestData.category}`,
-        excerpt: 'Generated blog post content',
+        title: extractedTitle,
+        excerpt: extractedExcerpt,
         content: generatedContent
       };
     }
