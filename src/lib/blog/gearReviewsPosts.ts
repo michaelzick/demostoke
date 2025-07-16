@@ -327,7 +327,7 @@ Overall this refreshed Oso offers impressive parts for the money and rides more 
     author: "Generative AI",
     authorId: "generative-ai",
     heroImage: "https://img.youtube.com/vi/VECiNIRQ_HQ/maxresdefault.jpg",
-    thumbnail: "https://img.youtube.com/vi/VECiNIRQ_HQ/hqdefault.jpg",
+    thumbnail: "https://ep1.pinkbike.org/p5pb25318682/p5pb25318682.jpg",
     videoEmbed: `<iframe src="https://www.youtube.com/embed/VECiNIRQ_HQ?si=67JrtjZ4oB01-Yn_" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen class="w-full h-full"></iframe>`
   }
 ];
