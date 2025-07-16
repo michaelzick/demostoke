@@ -42,7 +42,6 @@ export const prepareEquipmentData = ({
     name: gearName,
     category: mapGearTypeToCategory(gearType),
     description: description,
-    image_url: finalImageUrl,
     location_address: address, // Changed from location_zip to location_address
     size: size,
     suitable_skill_level: skillLevel,

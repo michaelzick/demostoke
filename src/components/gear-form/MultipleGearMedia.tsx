@@ -155,7 +155,7 @@ const MultipleGearMedia = ({
 
       {/* Copy Images to Similar Gear - Always available when there are current images */}
       {currentGearId && currentImages && currentImages.length > 0 && (
-        <div className="flex justify-center">
+        <div className="flex justify-start">
           <SimilarGearImageCopy
             gearName={gearName}
             currentGearId={currentGearId}
