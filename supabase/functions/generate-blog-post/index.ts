@@ -132,6 +132,11 @@ Format the response as a JSON object with the following structure:
         throw new Error('Missing required fields in parsed content');
       }
       
+      // Clean up the content to remove trailing spaces after ** titles
+      parsedContent.content = parsedContent.content
+        .replace(/\*\*([^*]+)\*\*\s+/g, '**$1**')  // Remove trailing spaces after ** titles
+        .replace(/\*\*([^*]+)\*\*[ \t]+$/gm, '**$1**'); // Remove trailing spaces at end of lines
+      
       console.log('✅ Successfully parsed OpenAI response as JSON');
       console.log('📝 Title:', parsedContent.title);
       console.log('📝 Excerpt:', parsedContent.excerpt);
@@ -141,35 +146,46 @@ Format the response as a JSON object with the following structure:
       console.error('Raw OpenAI response:', generatedContent.substring(0, 500) + '...');
       
       // Try to extract title and excerpt from the raw content if it looks structured
-      const lines = generatedContent.split('\n').filter(line => line.trim());
       let extractedTitle = `Blog Post - ${requestData.category}`;
       let extractedExcerpt = 'Generated blog post content';
+      let extractedContent = '';
       
-      // Look for title patterns
-      const titleMatch = generatedContent.match(/title["\s]*:[\s]*["']([^"']+)["']/i) ||
-                        generatedContent.match(/^#\s*(.+)$/m) ||
-                        generatedContent.match(/\*\*(.+)\*\*/);
+      // Look for title patterns in JSON format first
+      const titleMatch = generatedContent.match(/["']title["']\s*:\s*["']([^"']+)["']/i);
+      const excerptMatch = generatedContent.match(/["']excerpt["']\s*:\s*["']([^"']+)["']/i);
+      const contentMatch = generatedContent.match(/["']content["']\s*:\s*["']([\s\S]*?)["']\s*[},]/i);
       
       if (titleMatch) {
         extractedTitle = titleMatch[1].trim();
       }
       
-      // Look for excerpt patterns
-      const excerptMatch = generatedContent.match(/excerpt["\s]*:[\s]*["']([^"']+)["']/i) ||
-                          generatedContent.match(/summary["\s]*:[\s]*["']([^"']+)["']/i);
-      
       if (excerptMatch) {
         extractedExcerpt = excerptMatch[1].trim();
+      }
+      
+      if (contentMatch) {
+        extractedContent = contentMatch[1]
+          .replace(/\\n/g, '\n')  // Convert escaped newlines
+          .replace(/\\"/g, '"')   // Convert escaped quotes
+          .replace(/\*\*([^*]+)\*\*\s+/g, '**$1**')  // Clean up title formatting
+          .trim();
+      }
+      
+      // If no JSON-like content found, use the raw content but clean it
+      if (!extractedContent) {
+        extractedContent = generatedContent
+          .replace(/\*\*([^*]+)\*\*\s+/g, '**$1**')  // Clean up title formatting
+          .trim();
       }
       
       console.log('🔄 Using extracted title:', extractedTitle);
       console.log('🔄 Using extracted excerpt:', extractedExcerpt);
       
-      // Fallback: treat as plain text with extracted title/excerpt
+      // Fallback: use extracted content
       parsedContent = {
         title: extractedTitle,
         excerpt: extractedExcerpt,
-        content: generatedContent
+        content: extractedContent
       };
     }
 
