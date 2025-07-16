@@ -111,6 +111,7 @@ const GearBasicInfo = ({
         />
         <Button
           type="button"
+          variant="outline"
           onClick={handleGenerateDescription}
           disabled={isGenerating}
           className="mt-2 self-start"
