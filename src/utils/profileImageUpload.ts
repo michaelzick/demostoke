@@ -72,11 +72,11 @@ export const generateRoleBasedAvatar = (userId: string, displayRole: string = 'r
   const iconColor = '#334155'; // Dark gray for icon
   
   // Generate SVG with lucide icon based on role
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" fill="none">
-    <rect width="120" height="120" rx="60" fill="${backgroundColor}"/>
-    <g transform="translate(36, 36)">
-      ${getSvgPath(iconName, iconColor)}
-    </g>
+  // Using a 24x24 viewBox ensures the icon scales to fill the avatar container
+  // just like uploaded profile images
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none">
+    <rect width="24" height="24" rx="12" fill="${backgroundColor}"/>
+    ${getSvgPath(iconName, iconColor)}
   </svg>`;
   
   return `data:image/svg+xml;base64,${btoa(svg)}`;
