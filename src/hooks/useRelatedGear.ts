@@ -50,6 +50,15 @@ export const useRelatedGear = (tags: Array<string>, category?: string) => {
           );
         }
 
+        // Deduplicate by item name
+        const seenNames = new Set<string>();
+        related = related.filter((item) => {
+          if (seenNames.has(item.name)) return false;
+          seenNames.add(item.name);
+          return true;
+        });
+
+        // Limit to 4 items
         related = related.slice(0, 4);
 
         console.log(`✅ Found ${related.length} related gear items`);

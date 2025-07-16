@@ -7,11 +7,12 @@ import { calculateDistance, isValidCoordinate } from "@/utils/distanceCalculatio
 export const useSimilarEquipment = (
   category: string,
   excludeId: string,
+  excludeName?: string,
   lat?: number,
   lng?: number
 ) => {
   return useQuery({
-    queryKey: ['similarEquipment', category, excludeId, lat, lng],
+    queryKey: ['similarEquipment', category, excludeId, excludeName, lat, lng],
     queryFn: async (): Promise<Equipment[]> => {
       console.log(
         `🔍 Fetching similar equipment for category: ${category}, excluding ID: ${excludeId}`
@@ -22,7 +23,10 @@ export const useSimilarEquipment = (
 
       // Filter by category and exclude current item first
       let similarEquipment = allEquipment.filter(
-        (item) => item.category === category && item.id !== excludeId
+        (item) =>
+          item.category === category &&
+          item.id !== excludeId &&
+          item.name !== excludeName
       );
 
       // If we have valid coordinates for the current item, further filter by distance
@@ -40,6 +44,14 @@ export const useSimilarEquipment = (
           return distance <= 50; // only include equipment within 50 miles
         });
       }
+
+      // Deduplicate by item name
+      const seenNames = new Set<string>();
+      similarEquipment = similarEquipment.filter((item) => {
+        if (seenNames.has(item.name)) return false;
+        seenNames.add(item.name);
+        return true;
+      });
 
       // Limit to 3 items for the sidebar
       similarEquipment = similarEquipment.slice(0, 3);
