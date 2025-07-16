@@ -36,7 +36,7 @@ serve(async (req) => {
       );
     }
 
-    const prompt = `Write a short, compelling product description for ${gearType ? `a ${gearType}` : 'this gear'} named "${gearName}".`;
+    const prompt = `Write a short, compelling product description for ${gearType ? `a ${gearType}` : 'this gear'} named "${gearName}". Keep it concise, highlighting key features and benefits that would appeal to outdoor enthusiasts. Focus on practical aspects and what makes this gear special.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -45,7 +45,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-nano',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: 'You generate concise marketing copy.' },
           { role: 'user', content: prompt }
@@ -56,6 +56,8 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
+      const errorData = await response.text();
+      console.error(`OpenAI API error: ${response.status} - ${errorData}`);
       throw new Error(`OpenAI API error: ${response.status}`);
     }
 

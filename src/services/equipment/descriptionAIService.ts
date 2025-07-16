@@ -2,18 +2,25 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const generateGearDescription = async (gearName: string, gearType?: string): Promise<string | null> => {
   try {
+    console.log('Calling generate-description function with:', { gearName, gearType });
+    
     const { data, error } = await supabase.functions.invoke('generate-description', {
       body: { gearName, gearType }
     });
 
     if (error) {
-      console.error('Failed to generate description:', error);
-      return null;
+      console.error('Supabase function error:', error);
+      throw new Error(`Function error: ${error.message}`);
     }
 
-    return data?.description || null;
+    if (!data?.description) {
+      console.error('No description returned from AI service');
+      throw new Error('No description generated');
+    }
+
+    return data.description;
   } catch (err) {
     console.error('Error calling generate-description function:', err);
-    return null;
+    throw err;
   }
 };
