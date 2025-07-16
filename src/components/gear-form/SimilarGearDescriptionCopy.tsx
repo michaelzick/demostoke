@@ -24,10 +24,10 @@ interface SimilarGearDescriptionCopyProps {
   currentDescription: string;
 }
 
-const SimilarGearDescriptionCopy = ({ 
-  gearName, 
-  currentGearId, 
-  currentDescription 
+const SimilarGearDescriptionCopy = ({
+  gearName,
+  currentGearId,
+  currentDescription
 }: SimilarGearDescriptionCopyProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [similarGear, setSimilarGear] = useState<SimilarGearItem[]>([]);
@@ -280,7 +280,7 @@ const SimilarGearDescriptionCopy = ({
                     <TableCell className="max-w-xs">
                       {gear.description ? (
                         <div className="text-sm">
-                          <p className="text-gray-700">
+                          <p className="text-white">
                             {truncateDescription(gear.description)}
                           </p>
                         </div>
