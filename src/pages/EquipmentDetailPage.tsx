@@ -97,6 +97,7 @@ const EquipmentDetailPage = () => {
   const { data: similarEquipmentFromDb, isLoading: similarLoading } = useSimilarEquipment(
     currentEquipment?.category || '',
     currentEquipment?.id || '',
+    currentEquipment?.name || '',
     currentEquipment?.location?.lat,
     currentEquipment?.location?.lng
   );
