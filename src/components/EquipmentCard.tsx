@@ -15,6 +15,11 @@ import { Equipment } from "@/types";
 import { useAuth } from "@/contexts/auth";
 import { slugify } from "@/utils/slugify";
 import DistanceDisplay from "./DistanceDisplay";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 interface EquipmentCardProps {
   equipment: Equipment;
@@ -110,9 +115,16 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
             <span>{equipment.rating}</span>
           </div>
         </div>
-        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-          {equipment.description}
-        </p>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+              {equipment.description}
+            </p>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" align="start" className="max-w-[500px]">
+            {equipment.description}
+          </TooltipContent>
+        </Tooltip>
         <div className="flex items-center justify-between mb-2">
           <div>
             <p className="text-sm font-medium">
