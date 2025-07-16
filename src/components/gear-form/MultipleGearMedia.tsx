@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { X, Search } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { deleteEquipmentImage } from "@/utils/multipleImageHandling";
 import ImageSearchDialog from "./ImageSearchDialog";
 import SimilarGearImageCopy from "./SimilarGearImageCopy";
@@ -41,7 +41,12 @@ const MultipleGearMedia = ({
   currentGearId
 }: MultipleGearMediaProps) => {
   const [showImageSearch, setShowImageSearch] = useState(false);
+  const [imageDimensions, setImageDimensions] = useState<Record<number, { width: number; height: number }>>({});
   const displayImages = useImageUrls ? imageUrls : currentImages || duplicatedImageUrls || [];
+
+  useEffect(() => {
+    setImageDimensions({});
+  }, [displayImages]);
 
   const addImageUrl = () => {
     setImageUrls([...imageUrls, ""]);
@@ -63,6 +68,17 @@ const MultipleGearMedia = ({
       // Removing URL from input-based images
       removeImageUrl(index);
     }
+  };
+
+  const handleImageLoad = (
+    index: number,
+    e: React.SyntheticEvent<HTMLImageElement, Event>
+  ) => {
+    const { naturalWidth, naturalHeight } = e.currentTarget;
+    setImageDimensions((dims) => ({
+      ...dims,
+      [index]: { width: naturalWidth, height: naturalHeight },
+    }));
   };
 
   const updateImageUrl = (index: number, url: string) => {
@@ -172,11 +188,12 @@ const MultipleGearMedia = ({
           </p>
           <div className="grid grid-cols-3 gap-2">
             {displayImages.map((imageUrl, index) => (
-              <div key={index} className="relative group w-24">
+              <div key={index} className="relative group w-24 flex flex-col items-center">
                 <img
                   src={imageUrl}
                   alt={`Gear image ${index + 1}`}
                   className="w-24 h-24 object-cover rounded-md border"
+                  onLoad={(e) => handleImageLoad(index, e)}
                 />
                 <Button
                   type="button"
@@ -187,6 +204,11 @@ const MultipleGearMedia = ({
                 >
                   <X className="h-3 w-3" />
                 </Button>
+                {imageDimensions[index] && (
+                  <p className="text-xs mt-1 text-center">
+                    {imageDimensions[index].width} x {imageDimensions[index].height}
+                  </p>
+                )}
               </div>
             ))}
           </div>
