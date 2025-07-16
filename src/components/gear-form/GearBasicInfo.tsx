@@ -2,6 +2,11 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { generateGearDescription } from "@/services/equipment/descriptionAIService";
 import {
   Select,
   SelectContent,
@@ -31,6 +36,33 @@ const GearBasicInfo = ({
   address, // Changed from zipCode to address
   setAddress // Changed from setZipCode to setAddress
 }: GearBasicInfoProps) => {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast();
+
+  const handleGenerateDescription = async () => {
+    if (!gearName.trim()) {
+      toast({
+        title: "Gear Name Required",
+        description: "Please enter a gear name first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+    const generated = await generateGearDescription(gearName, gearType);
+    setIsGenerating(false);
+
+    if (generated) {
+      setDescription(generated);
+    } else {
+      toast({
+        title: "Error",
+        description: "Failed to generate description.",
+        variant: "destructive",
+      });
+    }
+  };
   return (
     <>
       {/* Gear Name */}
@@ -77,6 +109,21 @@ const GearBasicInfo = ({
           rows={4}
           required
         />
+        <Button
+          type="button"
+          onClick={handleGenerateDescription}
+          disabled={isGenerating}
+          className="mt-2 self-start"
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Generating...
+            </>
+          ) : (
+            <>Generate Description</>
+          )}
+        </Button>
       </div>
 
       {/* Address / Location */}

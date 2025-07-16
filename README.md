@@ -32,6 +32,13 @@ cd <YOUR_PROJECT_NAME>
 # Step 3: Install the necessary dependencies.
 npm i
 
+# Create a `.env` file and set Supabase credentials if running locally.
+# Example:
+```env
+VITE_SUPABASE_URL=http://localhost:54321
+VITE_SUPABASE_ANON_KEY=your-local-anon-key
+```
+
 # Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
