@@ -11,6 +11,11 @@ import { slugify } from "@/utils/slugify";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import {
   Eye,
   EyeOff,
   Plus,
@@ -381,6 +386,17 @@ const MyEquipmentPage = () => {
                             {item.location.address}
                           </span>
                         </div>
+
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <p className="text-sm text-muted-foreground line-clamp-2">
+                              {item.description}
+                            </p>
+                          </TooltipTrigger>
+                          <TooltipContent side="bottom" align="start" className="max-w-[500px]">
+                            {item.description}
+                          </TooltipContent>
+                        </Tooltip>
 
                         {/* Actions */}
                         <Separator />
