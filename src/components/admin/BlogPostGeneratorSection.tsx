@@ -13,7 +13,7 @@ import { blogPosts } from "@/lib/blog";
 import { slugify } from "@/utils/slugify";
 import { format } from "date-fns";
 import { CalendarIcon, Sparkles, Loader2 } from "lucide-react";
-import { generateBlogPost } from "@/services/blog/generateBlogPost";
+import { generateBlogPost, GenerateBlogPostResponse } from "@/services/blog/generateBlogPost";
 
 const BlogPostGeneratorSection = () => {
   const { toast } = useToast();
@@ -52,25 +52,39 @@ const BlogPostGeneratorSection = () => {
 
     setIsGenerating(true);
     const authorId = slugify(author);
-    const result = await generateBlogPost({
-      prompt,
-      category,
-      author,
-      authorId,
-      tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
-      thumbnail,
-      heroImage,
-      youtubeUrl,
-      useYoutubeThumbnail: useYoutubeThumb,
-      useYoutubeHero,
-      publishedAt: (publishedDate ?? new Date()).toISOString(),
-    });
-    setIsGenerating(false);
-
-    if (result) {
-      toast({ title: "Blog Post Generated", description: "Check your CMS for the new post." });
-    } else {
-      toast({ title: "Error", description: "Failed to generate blog post.", variant: "destructive" });
+    try {
+      const result = await generateBlogPost({
+        prompt,
+        category,
+        author,
+        authorId,
+        tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
+        thumbnail,
+        heroImage,
+        youtubeUrl,
+        useYoutubeThumbnail: useYoutubeThumb,
+        useYoutubeHero,
+        publishedAt: (publishedDate ?? new Date()).toISOString(),
+      });
+      console.log('Blog post generation result:', result);
+      
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: "Blog post has been generated and saved successfully! It will now appear in the blog section.",
+        });
+      } else {
+        throw new Error(result.error || 'Failed to generate blog post');
+      }
+    } catch (error) {
+      console.error('Error generating blog post:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to generate blog post.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGenerating(false);
     }
   };
 

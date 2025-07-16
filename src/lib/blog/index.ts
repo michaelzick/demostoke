@@ -8,6 +8,7 @@ import { storiesThatStokePosts } from './storiesThatStokePosts';
 
 export type { BlogPost };
 
+// Static blog posts - these will be combined with database posts
 export const blogPosts: BlogPost[] = [
   ...snowboardsPosts,
   ...skisPosts,

@@ -12,9 +12,10 @@ const FeaturedPostsSection = () => {
     const loadFeaturedPosts = async () => {
       const featuredIds = await featuredPostsService.getFeaturedPosts();
       if (featuredIds.length > 0) {
-        // Import blog posts dynamically to get the featured ones
-        const { blogPosts } = await import("@/lib/blog");
-        const posts = blogPosts.filter(post => featuredIds.includes(post.id)).slice(0, 3);
+        // Get all posts (database + static) to find featured ones
+        const { blogService } = await import("@/services/blogService");
+        const allPosts = await blogService.getAllPosts();
+        const posts = allPosts.filter(post => featuredIds.includes(post.id)).slice(0, 3);
         setFeaturedPosts(posts);
       }
     };

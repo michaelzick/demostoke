@@ -15,9 +15,15 @@ export interface GenerateBlogPostParams {
   publishedAt: string;
 }
 
+export interface GenerateBlogPostResponse {
+  success: boolean;
+  post?: BlogPost;
+  error?: string;
+}
+
 export const generateBlogPost = async (
   params: GenerateBlogPostParams,
-): Promise<BlogPost | null> => {
+): Promise<GenerateBlogPostResponse> => {
   try {
     const { data, error } = await supabase.functions.invoke(
       "generate-blog-post",
@@ -26,12 +32,16 @@ export const generateBlogPost = async (
 
     if (error) {
       console.error("Supabase function error:", error);
-      return null;
+      return { success: false, error: error.message };
     }
 
-    return (data as any)?.post ?? null;
+    if (data?.success) {
+      return { success: true, post: data.post };
+    } else {
+      return { success: false, error: data?.error || "Unknown error occurred" };
+    }
   } catch (err) {
     console.error("Error generating blog post:", err);
-    return null;
+    return { success: false, error: err instanceof Error ? err.message : "Unknown error occurred" };
   }
 };

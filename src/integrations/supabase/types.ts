@@ -41,6 +41,63 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_posts: {
+        Row: {
+          author: string
+          author_id: string
+          category: string
+          content: string
+          created_at: string
+          excerpt: string
+          hero_image: string | null
+          id: string
+          is_featured: boolean | null
+          published_at: string
+          read_time: number
+          tags: string[] | null
+          thumbnail: string | null
+          title: string
+          updated_at: string
+          video_embed: string | null
+        }
+        Insert: {
+          author: string
+          author_id: string
+          category: string
+          content: string
+          created_at?: string
+          excerpt: string
+          hero_image?: string | null
+          id?: string
+          is_featured?: boolean | null
+          published_at?: string
+          read_time?: number
+          tags?: string[] | null
+          thumbnail?: string | null
+          title: string
+          updated_at?: string
+          video_embed?: string | null
+        }
+        Update: {
+          author?: string
+          author_id?: string
+          category?: string
+          content?: string
+          created_at?: string
+          excerpt?: string
+          hero_image?: string | null
+          id?: string
+          is_featured?: boolean | null
+          published_at?: string
+          read_time?: number
+          tags?: string[] | null
+          thumbnail?: string | null
+          title?: string
+          updated_at?: string
+          video_embed?: string | null
+        }
+        Relationships: []
+      }
       demo_calendar: {
         Row: {
           company: string

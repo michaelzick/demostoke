@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -114,31 +115,61 @@ Format the response as a JSON object with the following structure:
       };
     }
 
-    // Create the blog post object
-    const blogPost = {
-      id: crypto.randomUUID(),
-      title: parsedContent.title,
-      excerpt: parsedContent.excerpt,
-      content: parsedContent.content,
-      category: requestData.category,
-      author: requestData.author,
-      authorId: requestData.authorId,
-      tags: requestData.tags,
-      thumbnail: requestData.thumbnail,
-      heroImage: requestData.heroImage,
-      youtubeUrl: requestData.youtubeUrl,
-      useYoutubeThumbnail: requestData.useYoutubeThumbnail,
-      useYoutubeHero: requestData.useYoutubeHero,
-      publishedAt: requestData.publishedAt,
-      slug: parsedContent.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''),
-      readTime: Math.ceil(parsedContent.content.split(' ').length / 200), // Estimated reading time
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
+    // Save the blog post to the database
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    console.log('✅ Blog post created successfully');
+    const readTime = Math.ceil(parsedContent.content.split(' ').length / 200);
+
+    const { data: blogPost, error: insertError } = await supabase
+      .from('blog_posts')
+      .insert([{
+        title: parsedContent.title,
+        excerpt: parsedContent.excerpt,
+        content: parsedContent.content,
+        category: requestData.category,
+        author: requestData.author,
+        author_id: requestData.authorId,
+        tags: requestData.tags,
+        thumbnail: requestData.thumbnail,
+        hero_image: requestData.heroImage,
+        video_embed: requestData.youtubeUrl || null,
+        published_at: requestData.publishedAt,
+        read_time: readTime,
+        is_featured: false
+      }])
+      .select()
+      .single();
+
+    if (insertError) {
+      console.error('❌ Error saving blog post to database:', insertError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to save blog post to database' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('✅ Blog post saved to database successfully');
     return new Response(
-      JSON.stringify({ post: blogPost }),
+      JSON.stringify({ 
+        success: true,
+        post: {
+          id: blogPost.id,
+          title: blogPost.title,
+          excerpt: blogPost.excerpt,
+          content: blogPost.content,
+          category: blogPost.category,
+          author: blogPost.author,
+          authorId: blogPost.author_id,
+          tags: blogPost.tags,
+          thumbnail: blogPost.thumbnail,
+          heroImage: blogPost.hero_image,
+          videoEmbed: blogPost.video_embed,
+          publishedAt: blogPost.published_at,
+          readTime: blogPost.read_time
+        }
+      }),
       { 
         status: 200, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 

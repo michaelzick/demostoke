@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Clock, User, Calendar } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { blogPosts, BlogPost } from "@/lib/blog";
+import { BlogPost } from "@/lib/blog";
+import { blogService } from "@/services/blogService";
 import { slugify } from "@/utils/slugify";
 import { searchBlogPostsWithNLP } from "@/services/blogSearchService";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -24,28 +25,44 @@ const BlogPage = () => {
 
   // Initialize state from URL params
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || "");
-  const [searchResults, setSearchResults] = useState<BlogPost[]>(blogPosts);
+  const [searchResults, setSearchResults] = useState<BlogPost[]>([]);
+  const [allPosts, setAllPosts] = useState<BlogPost[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState<string>(searchParams.get('category') || "");
   const [featuredPosts, setFeaturedPosts] = useState<string[]>([]);
   const { data: userRole } = useUserRole();
   const isAdmin = userRole === 'admin';
 
-  // Scroll to top on page load
+  // Load all posts and featured posts on mount
   useEffect(() => {
-    window.scrollTo(0, 0);
-    // Load featured posts from Supabase
-    const loadFeaturedPosts = async () => {
-      const posts = await featuredPostsService.getFeaturedPosts();
-      setFeaturedPosts(posts);
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        const [posts, featuredIds] = await Promise.all([
+          blogService.getAllPosts(),
+          featuredPostsService.getFeaturedPosts()
+        ]);
+        setAllPosts(posts);
+        setSearchResults(posts);
+        setFeaturedPosts(featuredIds);
+      } catch (error) {
+        console.error('Error loading blog data:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    loadFeaturedPosts();
+    
+    window.scrollTo(0, 0);
+    loadData();
   }, []);
 
   // Perform search whenever query or filter changes
   useEffect(() => {
-    handleSearch();
-  }, [searchQuery, selectedFilter]);
+    if (allPosts.length > 0) {
+      handleSearch();
+    }
+  }, [searchQuery, selectedFilter, allPosts]);
 
   // Sync state with URL params (e.g. when navigating with browser controls)
   useEffect(() => {
@@ -76,7 +93,7 @@ const BlogPage = () => {
     setIsSearching(true);
     try {
       // Check if the search term is an exact tag match first
-      const exactTagMatches = blogPosts.filter(post =>
+      const exactTagMatches = allPosts.filter(post =>
         post.tags.some(tag => tag.toLowerCase() === searchTerm.toLowerCase())
       );
 
@@ -86,7 +103,7 @@ const BlogPage = () => {
         results = exactTagMatches;
       } else {
         // Otherwise, fall back to NLP search
-        results = await searchBlogPostsWithNLP(searchTerm, blogPosts);
+        results = await searchBlogPostsWithNLP(searchTerm, allPosts);
       }
 
       const filteredResults = filterTerm
@@ -112,7 +129,7 @@ const BlogPage = () => {
     setSelectedFilter(filter);
 
     if (!filter) {
-      setSearchResults(blogPosts);
+      setSearchResults(allPosts);
       // Update URL - remove category param
       const params = new URLSearchParams();
       if (searchQuery) params.set('search', searchQuery);
@@ -120,7 +137,7 @@ const BlogPage = () => {
       return;
     }
 
-    const filtered = blogPosts.filter(post =>
+    const filtered = allPosts.filter(post =>
       post.category === filter || post.tags.includes(filter)
     );
     setSearchResults(filtered);
@@ -135,7 +152,7 @@ const BlogPage = () => {
   const clearSearch = () => {
     setSearchQuery("");
     setSelectedFilter("");
-    setSearchResults(blogPosts);
+    setSearchResults(allPosts);
     navigate('/blog', { replace: true });
   };
 
@@ -281,7 +298,11 @@ const BlogPage = () => {
           </div>
         )}
 
-        {searchResults.length === 0 ? (
+        {isLoading ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Loading blog posts...</p>
+          </div>
+        ) : searchResults.length === 0 ? (
           <div className="text-center py-12">
             <h3 className="text-xl font-medium mb-2">No posts found</h3>
             <p className="text-muted-foreground mb-4">
