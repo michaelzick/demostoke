@@ -7,6 +7,7 @@ import { X, Search } from "lucide-react";
 import { useState } from "react";
 import { deleteEquipmentImage } from "@/utils/multipleImageHandling";
 import ImageSearchDialog from "./ImageSearchDialog";
+import SimilarGearImageCopy from "./SimilarGearImageCopy";
 
 interface MultipleGearMediaProps {
   handleMultipleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -21,6 +22,7 @@ interface MultipleGearMediaProps {
   setSelectedFiles: (files: File[]) => void;
   gearName?: string;
   gearType?: string;
+  currentGearId?: string;
 }
 
 const MultipleGearMedia = ({
@@ -35,7 +37,8 @@ const MultipleGearMedia = ({
   selectedFiles,
   setSelectedFiles,
   gearName = '',
-  gearType = ''
+  gearType = '',
+  currentGearId
 }: MultipleGearMediaProps) => {
   const [showImageSearch, setShowImageSearch] = useState(false);
   const displayImages = useImageUrls ? imageUrls : currentImages || duplicatedImageUrls || [];
@@ -145,6 +148,13 @@ const MultipleGearMedia = ({
                 <Search className="h-4 w-4" />
                 Search Google Images
               </Button>
+              {currentGearId && (
+                <SimilarGearImageCopy
+                  gearName={gearName}
+                  currentGearId={currentGearId}
+                  currentImages={displayImages}
+                />
+              )}
             </div>
           </div>
         )}

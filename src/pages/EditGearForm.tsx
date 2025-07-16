@@ -168,6 +168,7 @@ const EditGearForm = () => {
           setSelectedFiles={formState.setImages}
           gearName={formState.gearName}
           gearType={formState.gearType}
+          currentGearId={equipment?.id}
         />
 
         <GearPricing
