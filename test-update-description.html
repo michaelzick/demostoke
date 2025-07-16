@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Gear Description</title>
+</head>
+<body>
+    <h1>Updating Gear Description with AI</h1>
+    <div id="status">Running...</div>
+    <div id="result"></div>
+    
+    <script type="module">
+        import { supabase } from '/src/integrations/supabase/client.ts';
+        import { generateGearDescription } from '/src/services/equipment/descriptionAIService.ts';
+
+        async function updateGearDescription() {
+          const gearId = 'c2bbe123-6f12-4c71-bab7-f0514b96088d';
+          const statusEl = document.getElementById('status');
+          const resultEl = document.getElementById('result');
+          
+          try {
+            statusEl.innerHTML = 'Fetching gear data...';
+            
+            // Get the current gear data
+            const { data: gear, error: fetchError } = await supabase
+              .from('equipment')
+              .select('id, name, category, subcategory, description')
+              .eq('id', gearId)
+              .single();
+
+            if (fetchError) {
+              console.error('Error fetching gear:', fetchError);
+              statusEl.innerHTML = 'Error fetching gear data';
+              resultEl.innerHTML = `<p style="color: red;">Error: ${fetchError.message}</p>`;
+              return;
+            }
+
+            console.log('Current gear:', gear);
+            resultEl.innerHTML = `
+              <h3>Current Gear Data:</h3>
+              <p><strong>Name:</strong> ${gear.name}</p>
+              <p><strong>Category:</strong> ${gear.category}</p>
+              <p><strong>Current Description:</strong> ${gear.description}</p>
+            `;
+
+            statusEl.innerHTML = 'Generating AI description...';
+
+            // Generate new description using AI
+            const newDescription = await generateGearDescription(gear.name, gear.category);
+            
+            console.log('Generated description:', newDescription);
+
+            resultEl.innerHTML += `
+              <h3>AI Generated Description:</h3>
+              <p style="background: #f0f0f0; padding: 10px; border-radius: 5px;">${newDescription}</p>
+            `;
+
+            statusEl.innerHTML = 'Updating database...';
+
+            // Update the database with the new description
+            const { data: updateData, error: updateError } = await supabase
+              .from('equipment')
+              .update({ description: newDescription })
+              .eq('id', gearId)
+              .select();
+
+            if (updateError) {
+              console.error('Error updating gear description:', updateError);
+              statusEl.innerHTML = 'Error updating database';
+              resultEl.innerHTML += `<p style="color: red;">Update Error: ${updateError.message}</p>`;
+              return;
+            }
+
+            statusEl.innerHTML = 'Success! Description updated.';
+            resultEl.innerHTML += `
+              <h3>✅ Successfully Updated!</h3>
+              <p style="color: green;">The gear description has been updated in the database.</p>
+            `;
+
+            console.log('Successfully updated gear description!');
+            console.log('Updated gear data:', updateData);
+
+          } catch (error) {
+            console.error('Error in updateGearDescription:', error);
+            statusEl.innerHTML = 'Error occurred';
+            resultEl.innerHTML += `<p style="color: red;">Error: ${error.message}</p>`;
+          }
+        }
+
+        // Run the function when page loads
+        updateGearDescription();
+    </script>
+</body>
+</html>
