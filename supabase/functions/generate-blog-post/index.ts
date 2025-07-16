@@ -121,11 +121,18 @@ Format the response as a JSON object with the following structure:
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const readTime = Math.ceil(parsedContent.content.split(' ').length / 200);
+    
+    // Generate slug from title
+    const slug = parsedContent.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
 
     const { data: blogPost, error: insertError } = await supabase
       .from('blog_posts')
       .insert([{
         title: parsedContent.title,
+        slug: slug,
         excerpt: parsedContent.excerpt,
         content: parsedContent.content,
         category: requestData.category,
@@ -156,6 +163,7 @@ Format the response as a JSON object with the following structure:
         success: true,
         post: {
           id: blogPost.id,
+          slug: blogPost.slug,
           title: blogPost.title,
           excerpt: blogPost.excerpt,
           content: blogPost.content,

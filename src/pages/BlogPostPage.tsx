@@ -4,17 +4,29 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Clock, User, Calendar, Share2, ArrowUp } from "lucide-react";
-import { blogPosts } from "@/lib/blog";
+import { blogService } from "@/services/blogService";
 import { slugify } from "@/utils/slugify";
 import { useEffect, useState } from "react";
 import { useRelatedGear } from "@/hooks/useRelatedGear";
 import RelatedGear from "@/components/equipment-detail/RelatedGear";
 import MarkdownTextRenderer from "@/components/blog/MarkdownTextRenderer";
+import { BlogPost } from "@/lib/blog/types";
 
 const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string; }>();
-  const post = blogPosts.find(p => p.id === slug);
+  const [post, setPost] = useState<BlogPost | null>(null);
+  const [allPosts, setAllPosts] = useState<BlogPost[]>([]);
   const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const loadPost = async () => {
+      const posts = await blogService.getAllPosts();
+      setAllPosts(posts);
+      const foundPost = posts.find(p => p.id === slug);
+      setPost(foundPost || null);
+    };
+    loadPost();
+  }, [slug]);
 
   usePageMetadata({
     title: post ? `${post.title} | DemoStoke` : 'Blog Post | DemoStoke',
@@ -221,11 +233,11 @@ const BlogPostPage = () => {
             </div>
 
             {/* Related Posts */}
-            {blogPosts.filter(p => p.category === post.category && p.id !== post.id).length > 0 && (
+            {allPosts.filter(p => p.category === post.category && p.id !== post.id).length > 0 && (
               <div className="border-t pt-8">
                 <h4 className="text-lg font-semibold mb-4">More from this category</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {blogPosts
+                  {allPosts
                     .filter(p => p.category === post.category && p.id !== post.id)
                     .slice(0, 2)
                     .map((relatedPost) => (

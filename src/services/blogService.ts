@@ -17,9 +17,9 @@ export const blogService = {
         return staticBlogPosts;
       }
 
-      // Convert database posts to BlogPost format
+      // Convert database posts to BlogPost format with slug as id
       const formattedDbPosts: BlogPost[] = (dbPosts || []).map(post => ({
-        id: post.id,
+        id: post.slug || post.id, // Use slug as id for routing
         title: post.title,
         excerpt: post.excerpt,
         content: post.content,
