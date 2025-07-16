@@ -140,15 +140,26 @@ export const useProfileImageHandlers = ({
     setIsDeletingImage(true);
 
     try {
-      // First, get the current profile data to preserve existing values
-      const { data: currentProfile, error: fetchError } = await supabase
-        .from('profiles')
-        .select('name')
-        .eq('id', user.id)
-        .single();
+      // First, get the current profile data and user role to preserve existing values
+      const [profileResult, roleResult] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('name')
+          .eq('id', user.id)
+          .single(),
+        supabase
+          .from('user_roles')
+          .select('display_role')
+          .eq('user_id', user.id)
+          .single()
+      ]);
 
-      if (fetchError) {
-        console.error('Error fetching current profile:', fetchError);
+      if (profileResult.error) {
+        console.error('Error fetching current profile:', profileResult.error);
+      }
+
+      if (roleResult.error) {
+        console.error('Error fetching user role:', roleResult.error);
       }
 
       // Delete the current profile image if it exists and is from profile-images bucket
@@ -156,8 +167,10 @@ export const useProfileImageHandlers = ({
         await deleteProfileImage(profileImage, user.id);
       }
 
-      // Generate a new role-based avatar
-      const fallbackAvatar = generateRoleBasedAvatar(user.id, 'retail-store');
+      // Generate a new role-based avatar with correct display role
+      const displayRole = roleResult.data?.display_role || 'retail-store';
+      const fallbackAvatar = generateRoleBasedAvatar(user.id, displayRole);
+      console.log('Generated fallback avatar for role:', displayRole, 'URL:', fallbackAvatar);
 
       // Update the avatar_url in the database while preserving existing role and name
       const { error } = await supabase
@@ -165,7 +178,7 @@ export const useProfileImageHandlers = ({
         .upsert({
           id: user.id,
           avatar_url: fallbackAvatar,
-          name: currentProfile?.name || user.name || ''
+          name: profileResult.data?.name || user.name || ''
         }, {
           onConflict: 'id'
         });
