@@ -151,17 +151,28 @@ const BlogPostGeneratorSection = () => {
           <Label>
             Published Date <span className="text-red-500">*</span>
           </Label>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="justify-start text-left font-normal w-full sm:w-auto">
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {publishedDate ? format(publishedDate, "PPP") : <span>Pick a date</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar mode="single" selected={publishedDate} onSelect={setPublishedDate} className="pointer-events-auto" />
-            </PopoverContent>
-          </Popover>
+          <div className="block">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="justify-start text-left font-normal w-full sm:w-auto">
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {publishedDate ? format(publishedDate, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar 
+                  mode="single" 
+                  selected={publishedDate} 
+                  onSelect={(date) => {
+                    setPublishedDate(date);
+                    // Close the popover after selection
+                    document.body.click();
+                  }} 
+                  className="pointer-events-auto" 
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
         <Button
           onClick={handleGenerate}
