@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
-import { Snowflake, Mountains, Waves, Fish, Bicycle } from "@phosphor-icons/react";
+import { Snowflake, Mountains, Waves, Bicycle } from "@phosphor-icons/react";
 import { useAuth } from "@/helpers";
 import { getVideoUrl } from "@/utils/videoUpload";
 
