@@ -95,7 +95,7 @@ serve(async (req) => {
     ];
 
     // Enhanced surfboard term recognition
-    const surfboardTerms = ['shortboard', 'longboard', 'funboard', 'fish', 'gun', 'step-up', 'groveler', 'hybrid', 'performance board', 'beginner board'];
+    const surfboardTerms = ['surfboard', 'shortboard', 'longboard', 'funboard', 'fish', 'gun', 'step-up', 'groveler', 'hybrid', 'performance board', 'beginner board', 'soft top', 'soft-top', 'foam board'];
     const snowboardTerms = ['snowboard', 'freestyle', 'all-mountain', 'freeride', 'splitboard', 'powder board'];
     const bikeTerms = ['mountain bike', 'mtb', 'road bike', 'gravel bike', 'fat bike', 'e-bike', 'electric bike'];
 
@@ -128,7 +128,7 @@ serve(async (req) => {
     } else if (mentionedLocation) {
       locationContext = `USER LOCATION: "${mentionedLocation}" mentioned in search query`;
       locationInstructions = `
-🎯 CRITICAL LOCATION FILTERING: User specified "${mentionedLocation}" location. ONLY return equipment located in or very near ${mentionedLocation}. Equipment from other states/regions should receive score 0.`;
+🎯 LOCATION FILTERING: User specified "${mentionedLocation}" location. Strongly prioritize equipment in ${mentionedLocation} area and surrounding regions. Equipment in distant states should get lower scores, but don't automatically score 0 unless clearly inappropriate (e.g., Hawaii equipment for Colorado search).`;
     } else if (userLocation) {
       locationContext = `USER LOCATION: Coordinates available - Latitude ${userLocation.lat}, Longitude ${userLocation.lng}`;
       locationInstructions = `
@@ -150,9 +150,9 @@ ${JSON.stringify(equipmentSummary, null, 2)}
 
 🎯 CRITICAL SCORING RULES (IN ORDER OF PRIORITY):
 
-1. **LOCATION FILTERING** - Apply only when explicitly requested:
+1. **LOCATION FILTERING** - Apply based on search context:
    - If user searched "near me" with coordinates: Equipment outside 30-mile radius gets score 0
-   - If specific location mentioned in query: Equipment from different regions gets score 0  
+   - If specific location mentioned in query: Prioritize equipment in that region, distant equipment gets lower scores (but not 0 unless clearly inappropriate)
    - If user location available but not requested: Prioritize nearby equipment (higher scores) but don't exclude distant items
    - Match location names to addresses, zip codes, and geographic regions
    - Geographic logic: surfboards near coasts, snowboards near mountains
@@ -164,8 +164,9 @@ ${JSON.stringify(equipmentSummary, null, 2)}
    - Wrong equipment type gets score 0
 
 3. **SKILL LEVEL MATCHING** - Third priority:
-   - "beginner" searches: ONLY return beginner-suitable equipment
-   - "advanced" searches: ONLY return advanced equipment
+   - "beginner" searches OR "soft top" surfboards: ONLY return beginner-suitable equipment
+   - "advanced" searches: ONLY return advanced equipment  
+   - Soft-top surfboards are always beginner-friendly
    - Mismatched skill level gets score 0
 
 4. **CONTENT RELEVANCE** - Final consideration:
@@ -173,7 +174,7 @@ ${JSON.stringify(equipmentSummary, null, 2)}
    - Equipment specifications and attributes
 
 🚫 ABSOLUTE REQUIREMENTS:
-- Equipment outside specified location = score 0
+- Equipment outside 30-mile radius when "near me" specified = score 0
 - Wrong equipment category when specified = score 0  
 - Wrong skill level when specified = score 0
 - Use EXACT equipment IDs from the data, never make up IDs
@@ -203,7 +204,7 @@ RESPOND WITH VALID JSON ONLY in this exact format:
             content: 'You are a search relevance expert. Always respond with valid JSON only. \
             Pay special attention to location such as proximity, regional preferences, and specific \
             location mentions. Also consider category, skill level matching, and anything related to \
-            equipment attributes. Do not show any results that do not match the location, if provided.'
+            equipment attributes. For location searches, prioritize nearby equipment but use flexible matching unless "near me" is specifically requested.'
           },
           {
             role: 'user',
