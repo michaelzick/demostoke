@@ -1,46 +1,25 @@
 
 import { supabase } from "@/integrations/supabase/client";
 
-// Simple function to get client IP (basic implementation)
-const getClientIP = (): string => {
-  // In a real app, you might get this from headers or a service
-  // For now, we'll use a simple fallback
-  return 'unknown';
-};
+// Simple in-memory cache for view deduplication
+const recentViews = new Map<string, number>();
 
 export const trackEquipmentView = async (equipmentId: string) => {
   try {
     console.log(`👀 Tracking view for equipment: ${equipmentId}`);
 
-    // Get current user if authenticated
-    const { data: { user } } = await supabase.auth.getUser();
+    // Simple deduplication using in-memory cache
+    // Create a key based on equipment ID and timestamp (rounded to nearest hour)
+    const currentHour = Math.floor(Date.now() / (60 * 60 * 1000));
+    const viewKey = `${equipmentId}-${currentHour}`;
     
-    // Get client IP for basic deduplication
-    const viewerIP = getClientIP();
-    
-    // Check if this IP has viewed this equipment in the last hour (basic deduplication)
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-    
-    const { data: recentViews, error: checkError } = await supabase
-      .from('equipment_views')
-      .select('id')
-      .eq('equipment_id', equipmentId)
-      .eq('viewer_ip', viewerIP)
-      .gte('viewed_at', oneHourAgo)
-      .limit(1);
-
-    if (checkError) {
-      console.error('❌ Error checking recent views:', checkError);
+    // Check if we've already tracked a view for this equipment in this hour
+    if (recentViews.has(viewKey)) {
+      console.log('⏰ Recent view found for this hour, skipping duplicate');
       return;
     }
 
-    // If there's a recent view from the same IP, don't record another one
-    if (recentViews && recentViews.length > 0) {
-      console.log('⏰ Recent view found from same IP, skipping duplicate');
-      return;
-    }
-
-    // Increment the view count in the equipment table using the new function
+    // Increment the view count in the equipment table
     const { error: incrementError } = await supabase
       .rpc('increment_equipment_view_count', { equipment_id: equipmentId });
 
@@ -49,19 +28,15 @@ export const trackEquipmentView = async (equipmentId: string) => {
       return;
     }
 
-    // Still record the detailed view for analytics (optional)
-    const { error: insertError } = await supabase
-      .from('equipment_views')
-      .insert({
-        equipment_id: equipmentId,
-        viewer_ip: viewerIP,
-        user_id: user?.id || null,
-        viewed_at: new Date().toISOString()
-      });
-
-    if (insertError) {
-      console.error('❌ Error recording detailed equipment view:', insertError);
-      // Don't return here - the view count was already incremented successfully
+    // Mark this equipment as viewed in this hour
+    recentViews.set(viewKey, Date.now());
+    
+    // Clean up old entries (older than 2 hours)
+    const twoHoursAgo = Date.now() - (2 * 60 * 60 * 1000);
+    for (const [key, timestamp] of recentViews.entries()) {
+      if (timestamp < twoHoursAgo) {
+        recentViews.delete(key);
+      }
     }
 
     console.log('✅ Equipment view tracked successfully');
