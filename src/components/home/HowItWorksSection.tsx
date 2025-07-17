@@ -12,7 +12,8 @@ const HowItWorksSection = () => {
           <h2 className="text-3xl font-bold mb-3">How It Works</h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
             Browse gear based on where you ride, how you ride, and what makes you feel alive.
-            Demo boards, skis, or surfcraft from local shops, indie shapers, or other riders — all matched to your conditions, skill level, and vibe.
+            Demo snowboards, skis, bikes, or surfboards from local shops, indie shapers, or other riders (coming soon)
+            — all matched to your conditions, skill level, and vibe.
             If it clicks, keep riding it. If not, try again — until you find <em>the one.</em>
           </p>
         </div>
