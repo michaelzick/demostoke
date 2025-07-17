@@ -116,17 +116,23 @@ serve(async (req) => {
     let locationContext = 'USER LOCATION: Not provided';
     let locationInstructions = '';
 
-    if (userLocation) {
-      locationContext = `USER LOCATION: Exact coordinates - Latitude ${userLocation.lat}, Longitude ${userLocation.lng}`;
-      locationInstructions = `
-🎯 CRITICAL LOCATION FILTERING: User's precise location provided. Apply STRICT 30-mile radius filtering. Equipment outside this radius should receive score 0.`;
+    if (queryLower.includes('near me')) {
+      if (userLocation) {
+        locationContext = `USER LOCATION: Exact coordinates - Latitude ${userLocation.lat}, Longitude ${userLocation.lng}`;
+        locationInstructions = `
+🎯 CRITICAL LOCATION FILTERING: User searched "near me" with coordinates provided. Apply STRICT 30-mile radius filtering. Equipment outside this radius should receive score 0.`;
+      } else {
+        locationInstructions = `
+🎯 LOCATION PRIORITY: User searched "near me" but no coordinates available. This is a location-based search that cannot be fulfilled properly.`;
+      }
     } else if (mentionedLocation) {
       locationContext = `USER LOCATION: "${mentionedLocation}" mentioned in search query`;
       locationInstructions = `
 🎯 CRITICAL LOCATION FILTERING: User specified "${mentionedLocation}" location. ONLY return equipment located in or very near ${mentionedLocation}. Equipment from other states/regions should receive score 0.`;
-    } else if (queryLower.includes('near me')) {
+    } else if (userLocation) {
+      locationContext = `USER LOCATION: Coordinates available - Latitude ${userLocation.lat}, Longitude ${userLocation.lng}`;
       locationInstructions = `
-🎯 LOCATION PRIORITY: User searched "near me" but no coordinates available. This is a location-based search that cannot be fulfilled properly.`;
+🎯 LOCATION AWARENESS: User location known but not specifically requested. Prioritize nearby equipment but don't exclude distant items entirely.`;
     } else {
       // Auto-fallback to location-based search for better relevance
       locationInstructions = `
@@ -144,9 +150,10 @@ ${JSON.stringify(equipmentSummary, null, 2)}
 
 🎯 CRITICAL SCORING RULES (IN ORDER OF PRIORITY):
 
-1. **LOCATION FILTERING (TOP PRIORITY)** - This is the most important factor:
-   - If user coordinates provided: Equipment outside 30-mile radius gets score 0
-   - If specific location mentioned: Equipment from different regions gets score 0  
+1. **LOCATION FILTERING** - Apply only when explicitly requested:
+   - If user searched "near me" with coordinates: Equipment outside 30-mile radius gets score 0
+   - If specific location mentioned in query: Equipment from different regions gets score 0  
+   - If user location available but not requested: Prioritize nearby equipment (higher scores) but don't exclude distant items
    - Match location names to addresses, zip codes, and geographic regions
    - Geographic logic: surfboards near coasts, snowboards near mountains
 
@@ -189,7 +196,7 @@ RESPOND WITH VALID JSON ONLY in this exact format:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-nano',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
