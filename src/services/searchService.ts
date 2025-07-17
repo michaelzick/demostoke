@@ -90,6 +90,12 @@ export const searchEquipmentWithNLP = async (
   } else {
     // Use AI-powered search with filtered equipment
     results = await searchWithAI(baseQuery, filteredEquipment, userLocation);
+    
+    // Fallback to non-AI search if AI returns 0 results
+    if (results.length === 0) {
+      console.log('⚠️ AI search returned 0 results - falling back to standard search');
+      results = fallbackSearch(baseQuery, filteredEquipment);
+    }
   }
 
   console.log(`✅ Search completed. Found ${results.length} results`);
