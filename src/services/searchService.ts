@@ -69,7 +69,9 @@ export const searchEquipmentWithNLP = async (
   let filteredEquipment = equipmentData;
   if (detectedCategories.length > 0) {
     filteredEquipment = equipmentData.filter(item => 
-      detectedCategories.includes(item.category)
+      detectedCategories.some(category => 
+        category.toLowerCase() === item.category.toLowerCase()
+      )
     );
     console.log(`🎯 Filtered to ${filteredEquipment.length} items in categories: ${detectedCategories.join(', ')}`);
   }
