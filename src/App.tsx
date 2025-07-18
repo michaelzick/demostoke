@@ -47,7 +47,12 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => {
+type AppProps = {
+  Router?: React.ComponentType<any>;
+  routerProps?: Record<string, unknown>;
+};
+
+const App = ({ Router = BrowserRouter, routerProps = {} }: AppProps) => {
   useEffect(() => {
     initializeAmplitudeClickTracking();
   }, []);
@@ -59,7 +64,7 @@ const App = () => {
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            <BrowserRouter>
+            <Router {...routerProps}>
               <Suspense fallback={<LoadingSpinner />}>
                 <Routes>
                   <Route path="/auth" element={<AuthLayout />}>
@@ -93,7 +98,7 @@ const App = () => {
                   </Route>
                 </Routes>
               </Suspense>
-            </BrowserRouter>
+            </Router>
           </TooltipProvider>
         </AuthProvider>
       </ThemeProvider>
