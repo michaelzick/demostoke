@@ -68,7 +68,6 @@ const CustomerWaiverForm = ({ equipment, onComplete }: CustomerWaiverFormProps) 
     }
 
     // Simulating form submission
-    console.log("Form Data:", { ...data, signature });
     
     toast({
       title: "Waiver Submitted",

@@ -114,7 +114,6 @@ const MapComponent = ({
 
     if (isEquipmentDetailMode) {
       // Equipment detail mode: Show single gear item without popup
-      console.log('🗺️ Equipment detail mode: Showing single gear item marker');
       
       const validEquipment = initialEquipment.filter(item => 
         item.location && 
@@ -137,7 +136,6 @@ const MapComponent = ({
       }
     } else if (isSearchRoute) {
       // Search route: Show user location markers based on results
-      console.log('🗺️ Search route: Showing user location markers');
 
       const filteredUserLocations = userLocations.filter(user =>
         (!ownerIds || ownerIds.includes(user.id)) &&
@@ -166,7 +164,6 @@ const MapComponent = ({
       }
     } else if (isExploreRoute) {
       // Explore route: Show user location markers
-      console.log('🗺️ Explore route: Showing user location markers');
       
       // Filter user locations by category if specified
       const filteredUserLocations = activeCategory

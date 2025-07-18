@@ -15,7 +15,6 @@ const GoogleTagManager = () => {
     // Initialize dataLayer if it doesn't exist
     window.dataLayer = window.dataLayer || [];
 
-    console.log('GTM initialized on page load');
   }, []);
 
   // Track page views on route changes
@@ -28,7 +27,6 @@ const GoogleTagManager = () => {
       page_title: document.title,
     });
 
-    console.log('GTM page view tracked:', location.pathname + location.search);
   }, [location]);
 
   return null;

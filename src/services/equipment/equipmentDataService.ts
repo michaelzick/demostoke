@@ -5,7 +5,6 @@ import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 
 export const fetchEquipmentFromSupabase = async (): Promise<Equipment[]> => {
-  console.log("🔍 Fetching equipment from Supabase...");
 
   const { data, error } = await supabase
     .from("equipment")
@@ -27,11 +26,9 @@ export const fetchEquipmentFromSupabase = async (): Promise<Equipment[]> => {
   }
 
   if (!data || data.length === 0) {
-    console.log("📭 No equipment found in Supabase");
     return [];
   }
 
-  console.log(`📦 Found ${data.length} equipment items in Supabase`);
 
   // Convert each item and fetch additional images
   const convertedEquipment = await Promise.all(
@@ -52,9 +49,6 @@ export const fetchEquipmentFromSupabase = async (): Promise<Equipment[]> => {
     }),
   );
 
-  console.log(
-    `✅ Successfully converted ${convertedEquipment.length} equipment items`,
-  );
   return convertedEquipment;
 };
 

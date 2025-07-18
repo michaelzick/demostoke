@@ -25,7 +25,6 @@ export interface AISearchResult extends Equipment {
 }
 
 export const searchWithAI = async (query: string, equipmentData: Equipment[], userLocation?: { lat: number; lng: number }): Promise<AISearchResult[]> => {
-  console.log(`🤖 Starting AI search for: "${query}"`);
 
   if (!query.trim() || equipmentData.length === 0) {
     return equipmentData as AISearchResult[];
@@ -39,7 +38,6 @@ export const searchWithAI = async (query: string, equipmentData: Equipment[], us
 
   // Try to get user location if not provided and search would benefit from it
   if (needsLocation) {
-    console.log('🌍 Auto-detecting location for better search results...');
     try {
       const position = await new Promise<GeolocationPosition>((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject, { 
@@ -52,9 +50,8 @@ export const searchWithAI = async (query: string, equipmentData: Equipment[], us
         lat: position.coords.latitude,
         lng: position.coords.longitude
       };
-      console.log('✅ Auto-detected user location:', finalUserLocation);
+      
     } catch (locationError) {
-      console.log('📍 Could not auto-detect location:', locationError);
       // Continue without location - AI will handle this gracefully
     }
   }
@@ -74,11 +71,9 @@ export const searchWithAI = async (query: string, equipmentData: Equipment[], us
     }
 
     if (data?.fallback) {
-      console.log('🔄 AI search failed, using fallback');
       return fallbackSearch(query, equipmentData);
     }
 
-    console.log(`✅ AI search successful: ${data?.results?.length || 0} results`);
     return data?.results || [];
 
   } catch (error) {
@@ -89,7 +84,6 @@ export const searchWithAI = async (query: string, equipmentData: Equipment[], us
 
 // Fallback to the original search logic if AI fails
 export const fallbackSearch = (query: string, equipmentData: Equipment[]): AISearchResult[] => {
-  console.log('🔄 Using fallback search logic');
 
   const lowerQuery = query.toLowerCase();
   const queryVariants = expandSearchVariants(lowerQuery);

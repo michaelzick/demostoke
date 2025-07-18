@@ -2,7 +2,6 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const generateGearDescription = async (gearName: string, gearType?: string): Promise<string | null> => {
   try {
-    console.log('Calling generate-description function with:', { gearName, gearType });
     
     const { data, error } = await supabase.functions.invoke('generate-description', {
       body: { gearName, gearType }

@@ -6,7 +6,6 @@ const recentViews = new Map<string, number>();
 
 export const trackEquipmentView = async (equipmentId: string) => {
   try {
-    console.log(`👀 Tracking view for equipment: ${equipmentId}`);
 
     // Simple deduplication using in-memory cache
     // Create a key based on equipment ID and timestamp (rounded to nearest hour)
@@ -15,7 +14,6 @@ export const trackEquipmentView = async (equipmentId: string) => {
     
     // Check if we've already tracked a view for this equipment in this hour
     if (recentViews.has(viewKey)) {
-      console.log('⏰ Recent view found for this hour, skipping duplicate');
       return;
     }
 
@@ -39,7 +37,6 @@ export const trackEquipmentView = async (equipmentId: string) => {
       }
     }
 
-    console.log('✅ Equipment view tracked successfully');
     
   } catch (error) {
     console.error('❌ Exception tracking equipment view:', error);

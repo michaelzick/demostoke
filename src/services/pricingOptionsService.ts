@@ -6,16 +6,13 @@ export const updatePricingOptions = async (
   equipmentId: string,
   pricingOptions: PricingOption[]
 ) => {
-  console.log('=== PRICING OPTIONS SERVICE ===');
-  console.log('Equipment ID:', equipmentId);
-  console.log('Pricing options to save:', pricingOptions);
 
   if (!equipmentId) {
     throw new Error('Equipment ID is required');
   }
 
   if (!pricingOptions || pricingOptions.length === 0) {
-    console.log('No pricing options provided, skipping update');
+    // No pricing options to update
     return;
   }
 
@@ -32,7 +29,6 @@ export const updatePricingOptions = async (
 
   try {
     // First, delete existing pricing options
-    console.log('Deleting existing pricing options...');
     const { error: deleteError } = await supabase
       .from('pricing_options')
       .delete()
@@ -43,16 +39,10 @@ export const updatePricingOptions = async (
       throw new Error(`Failed to delete existing pricing options: ${deleteError.message}`);
     }
 
-    console.log('Existing pricing options deleted successfully');
 
     // Then, insert new pricing options
     const pricingData = pricingOptions.map((option, index) => {
       const price = parseFloat(option.price);
-      console.log(`Processing option ${index + 1}:`, { 
-        originalPrice: option.price, 
-        parsedPrice: price, 
-        duration: option.duration 
-      });
       
       return {
         equipment_id: equipmentId,
@@ -61,7 +51,6 @@ export const updatePricingOptions = async (
       };
     });
 
-    console.log('Inserting new pricing options:', pricingData);
 
     const { data, error: insertError } = await supabase
       .from('pricing_options')
@@ -79,7 +68,6 @@ export const updatePricingOptions = async (
       throw new Error(`Failed to insert pricing options: ${insertError.message}`);
     }
 
-    console.log('Pricing options inserted successfully:', data);
     return data;
 
   } catch (error) {
@@ -93,7 +81,6 @@ export const createPricingOptions = async (
   pricingOptions: PricingOption[]
 ) => {
   if (!pricingOptions || pricingOptions.length === 0) {
-    console.log('No pricing options to create');
     return;
   }
 
@@ -113,6 +100,5 @@ export const createPricingOptions = async (
     throw error;
   }
 
-  console.log('Pricing options created successfully:', data);
   return data;
 };

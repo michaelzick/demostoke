@@ -47,7 +47,6 @@ export const searchEquipmentWithNLP = async (
   query: string,
   userLocation?: { lat: number; lng: number }
 ): Promise<AISearchResult[]> => {
-  console.log(`🔍 Starting AI-enhanced search for query: "${query}"`);
 
   const { baseQuery, location, nearMe } = parseQueryForLocation(query);
 
@@ -55,10 +54,8 @@ export const searchEquipmentWithNLP = async (
   
   // Get the appropriate dataset based on global setting
   const equipmentData = await getEquipmentData();
-  console.log(`📦 Retrieved ${equipmentData.length} equipment items for AI search`);
   
   if (equipmentData.length === 0) {
-    console.log('⚠️ No equipment data available for search');
     return [];
   }
 
@@ -73,19 +70,16 @@ export const searchEquipmentWithNLP = async (
         category.toLowerCase() === item.category.toLowerCase()
       )
     );
-    console.log(`🎯 Filtered to ${filteredEquipment.length} items in categories: ${detectedCategories.join(', ')}`);
   }
   
   // If filtering resulted in too few items, fall back to full dataset
   if (filteredEquipment.length < 3 && detectedCategories.length > 0) {
-    console.log('⚠️ Too few filtered results, using full dataset');
     filteredEquipment = equipmentData;
   }
   
   let results: AISearchResult[];
 
   if (!useAISearch) {
-    console.log('🤖 AI search disabled - using fallback search');
     results = fallbackSearch(baseQuery, filteredEquipment);
   } else {
     // Use AI-powered search with filtered equipment
@@ -93,12 +87,10 @@ export const searchEquipmentWithNLP = async (
     
     // Fallback to non-AI search if AI returns 0 results
     if (results.length === 0) {
-      console.log('⚠️ AI search returned 0 results - falling back to standard search');
       results = fallbackSearch(baseQuery, filteredEquipment);
     }
   }
 
-  console.log(`✅ Search completed. Found ${results.length} results`);
 
   // Filter by explicit location after "in"
   if (location) {

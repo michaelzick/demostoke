@@ -12,8 +12,6 @@ interface EquipmentHeaderProps {
 }
 
 const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
-  // Debug logging
-  console.log(`Equipment detail ${equipment.name} subcategory:`, equipment.subcategory);
 
   // Create tracking data for analytics
   const trackingData = `${equipment.owner.name} - ${equipment.name}`;

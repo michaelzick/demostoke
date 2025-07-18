@@ -1,5 +1,4 @@
 
-import React from "react";
 import { Equipment } from "@/types";
 
 interface PriceDisplayProps {
@@ -9,13 +8,6 @@ interface PriceDisplayProps {
 
 const PriceDisplay = ({ equipment, equipmentHeader }: PriceDisplayProps) => {
   // Debug logging to see what pricing data we have
-  console.log('=== PRICE DISPLAY DEBUG ===');
-  console.log('Equipment ID:', equipment.id);
-  console.log('Equipment name:', equipment.name);
-  console.log('Price per day:', equipment.price_per_day, typeof equipment.price_per_day);
-  console.log('Price per hour:', equipment.price_per_hour, typeof equipment.price_per_hour);
-  console.log('Price per week:', equipment.price_per_week, typeof equipment.price_per_week);
-  console.log('=== END PRICE DEBUG ===');
 
   const formatDuration = (duration: string) => {
     switch (duration) {
@@ -54,7 +46,6 @@ const PriceDisplay = ({ equipment, equipmentHeader }: PriceDisplayProps) => {
     pricingOptions.push({ price: Number(equipment.price_per_week), duration: 'week' });
   }
 
-  console.log('Created pricing options:', pricingOptions);
 
   // Order: day, week, hour - filter out undefined values properly
   const orderedPricingOptions = [
@@ -63,7 +54,6 @@ const PriceDisplay = ({ equipment, equipmentHeader }: PriceDisplayProps) => {
     pricingOptions.find(p => p.duration === 'hour')
   ].filter((option): option is { price: number; duration: string } => option !== undefined);
 
-  console.log('Ordered pricing options:', orderedPricingOptions);
 
   return (
     <div className="flex justify-between items-center">
