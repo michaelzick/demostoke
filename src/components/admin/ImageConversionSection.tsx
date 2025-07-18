@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Search, Download, CheckCircle, AlertCircle } from "lucide-react";
 import { slugify } from "@/utils/slugify";
 import ImageResultsTable from "./ImageResultsTable";
+import { scanImages } from "./utils/imageScanner";
 
 export interface ImageRecord {
   id: string;
@@ -55,144 +56,20 @@ const ImageConversionSection = () => {
   const scanForImages = async () => {
     setLoading(true);
     setScanComplete(false);
-    
+
     try {
-      const foundImages: ImageRecord[] = [];
-      
-      console.log('Starting comprehensive image scan...');
-      
-      // Helper function to check if URL can be processed
-      const isProcessableImage = (url: string): boolean => {
-        if (!url || url.trim() === '') return false;
-        // Skip internal/generated images
-        if (url.includes('supabase') || url.includes('dicebear') || url.startsWith('/img/')) return false;
-        // Include all common image formats
-        return /\.(jpg|jpeg|png|gif|bmp|tiff|webp)(\?.*)?$/i.test(url) || 
-               url.includes('unsplash') || 
-               url.includes('pexels') || 
-               url.includes('images') ||
-               url.includes('photo');
-      };
-
-      // Helper function to detect file type from URL
-      const getFileType = (url: string): string => {
-        const match = url.toLowerCase().match(/\.(jpg|jpeg|png|gif|bmp|tiff|webp)(\?.*)?$/i);
-        if (match) return match[1].toUpperCase();
-        if (url.includes('unsplash')) return 'JPG';
-        if (url.includes('pexels')) return 'JPG';
-        return 'UNKNOWN';
-      };
-
-      // Scan equipment table - primary images
-      console.log('Scanning equipment table...');
-      const { data: equipmentData } = await supabase
-        .from('equipment')
-        .select('id, image_url, category, name, profiles(name)')
-        .not('image_url', 'is', null);
-
-      equipmentData?.forEach(item => {
-        if (item.image_url && isProcessableImage(item.image_url)) {
-          foundImages.push({
-            id: `equipment-${item.id}`,
-            url: item.image_url,
-            source_table: 'equipment',
-            source_column: 'image_url',
-            source_record_id: item.id,
-            equipment_id: item.id,
-            category: item.category,
-            name: item.name,
-            owner_name: (item as any).profiles?.name,
-            file_type: getFileType(item.image_url),
-          });
-        }
-      });
-      console.log(`Found ${equipmentData?.filter(item => item.image_url && isProcessableImage(item.image_url)).length || 0} equipment images`);
-
-      // Scan equipment_images table - gallery images
-      console.log('Scanning equipment_images table...');
-      const { data: equipmentImagesData } = await supabase
-        .from('equipment_images')
-        .select(
-          'id, image_url, equipment_id, equipment(category, name, profiles(name))',
-        )
-        .not('image_url', 'is', null);
-
-      equipmentImagesData?.forEach(item => {
-        if (isProcessableImage(item.image_url)) {
-          foundImages.push({
-            id: `equipment_images-${item.id}`,
-            url: item.image_url,
-            source_table: 'equipment_images',
-            source_column: 'image_url',
-            source_record_id: item.id,
-            equipment_id: item.equipment_id,
-            category: (item as any).equipment?.category,
-            name: (item as any).equipment?.name,
-            owner_name: (item as any).equipment?.profiles?.name,
-            file_type: getFileType(item.image_url),
-          });
-        }
-      });
-      console.log(`Found ${equipmentImagesData?.filter(item => isProcessableImage(item.image_url)).length || 0} equipment gallery images`);
-
-      // Scan profiles table for avatars
-      console.log('Scanning profile avatars...');
-      const { data: profileAvatars } = await supabase
-        .from('profiles')
-        .select('id, avatar_url')
-        .not('avatar_url', 'is', null);
-
-      profileAvatars?.forEach(item => {
-        if (item.avatar_url && isProcessableImage(item.avatar_url)) {
-          foundImages.push({
-            id: `profiles-avatar-${item.id}`,
-            url: item.avatar_url,
-            source_table: 'profiles',
-            source_column: 'avatar_url',
-            source_record_id: item.id,
-            file_type: getFileType(item.avatar_url)
-          });
-        }
-      });
-      console.log(`Found ${profileAvatars?.filter(item => item.avatar_url && isProcessableImage(item.avatar_url)).length || 0} profile avatars`);
-
-      // Scan profiles table for hero images
-      console.log('Scanning profile hero images...');
-      const { data: profileHeros } = await supabase
-        .from('profiles')
-        .select('id, hero_image_url')
-        .not('hero_image_url', 'is', null);
-
-      profileHeros?.forEach(item => {
-        if (item.hero_image_url && isProcessableImage(item.hero_image_url)) {
-          foundImages.push({
-            id: `profiles-hero-${item.id}`,
-            url: item.hero_image_url,
-            source_table: 'profiles',
-            source_column: 'hero_image_url',
-            source_record_id: item.id,
-            file_type: getFileType(item.hero_image_url)
-          });
-        }
-      });
-      console.log(`Found ${profileHeros?.filter(item => item.hero_image_url && isProcessableImage(item.hero_image_url)).length || 0} profile hero images`);
-
-      // Log final results
-      console.log(`Total processable images found: ${foundImages.length}`);
-      foundImages.forEach(img => {
-        console.log(`- ${img.source_table}.${img.source_column}: ${img.url} (${img.file_type})`);
-      });
+      const foundImages = await scanImages();
 
       setImages(foundImages);
-      setSelectedIds(new Set(foundImages.map(img => img.id)));
+      setSelectedIds(new Set(foundImages.map((img) => img.id)));
       setScanComplete(true);
-      
+
       toast({
         title: "Scan Complete",
         description: `Found ${foundImages.length} images that can be downloaded and stored`,
       });
     } catch (error) {
-      console.error('Error scanning images:', error);
+      console.error("Error scanning images:", error);
       toast({
         title: "Scan Error",
         description: "Failed to scan for images",

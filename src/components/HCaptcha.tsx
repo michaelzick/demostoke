@@ -71,11 +71,9 @@ const HCaptcha = forwardRef<{ reset: () => void }, HCaptchaProps>(({ siteKey, on
           const id = window.hcaptcha.render('h-captcha-container', {
             sitekey: siteKey,
             callback: (token: string) => {
-              console.log('hCaptcha verification successful');
               onVerify(token);
             },
             'expired-callback': () => {
-              console.log('hCaptcha expired');
               onVerify('');
             },
             'error-callback': () => {

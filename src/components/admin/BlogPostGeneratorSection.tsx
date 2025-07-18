@@ -66,7 +66,6 @@ const BlogPostGeneratorSection = () => {
         useYoutubeHero,
         publishedAt: (publishedDate ?? new Date()).toISOString(),
       });
-      console.log('Blog post generation result:', result);
       
       if (result.success) {
         toast({

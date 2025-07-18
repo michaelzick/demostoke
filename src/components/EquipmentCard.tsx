@@ -28,11 +28,6 @@ interface EquipmentCardProps {
 const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
   const { user } = useAuth();
 
-  // Debug logging
-  console.log(
-    `Equipment ${equipment.name} subcategory:`,
-    equipment.subcategory,
-  );
 
   // Determine if this is from a shop or private party based on owner
   const isShop = equipment.owner.shopId;
