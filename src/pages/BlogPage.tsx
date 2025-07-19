@@ -382,9 +382,9 @@ const BlogPage = () => {
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-1 mt-3">
-                    {post.tags.map((tag) => (
-                      <Link key={tag} to={`/blog?search=${encodeURIComponent(tag)}`}>
-                        <Badge variant="outline" className="text-xs hover:text-primary hover:border-primary hover:bg-transparent transition-colors cursor-pointer">
+                    {Array.from(new Set(post.tags)).map((tag) => (
+                      <Link key={tag} to={`/blog?search=${encodeURIComponent(tag)}`}> 
+                        <Badge variant="outline" className="text-xs hover:text-primary hover:border-primary hover:bg-transparent transition-colors cursor-pointer"> 
                           {tag}
                         </Badge>
                       </Link>
