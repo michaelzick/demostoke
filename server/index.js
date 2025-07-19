@@ -37,7 +37,7 @@ async function getBlogPostMeta(slug) {
       return {
         title: dataById.title,
         description: dataById.excerpt,
-        image: dataById.hero_image || dataById.thumbnail || '',
+        image: dataById.thumbnail || dataById.hero_image || '',
         author: dataById.author,
         publishedAt: dataById.published_at
       };
@@ -46,7 +46,7 @@ async function getBlogPostMeta(slug) {
     return {
       title: data.title,
       description: data.excerpt,
-      image: data.hero_image || data.thumbnail || '',
+      image: data.thumbnail || data.hero_image || '',
       author: data.author,
       publishedAt: data.published_at
     };
