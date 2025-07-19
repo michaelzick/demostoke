@@ -20,13 +20,29 @@ const BlogPostPage = () => {
 
   useEffect(() => {
     const loadPost = async () => {
+      console.log('Loading post with slug:', slug);
       const posts = await blogService.getAllPosts();
+      console.log('All posts loaded:', posts.length);
       setAllPosts(posts);
       const foundPost = posts.find(p => p.id === slug);
+      console.log('Found post:', foundPost ? { id: foundPost.id, author: foundPost.author, title: foundPost.title } : 'NOT FOUND');
       setPost(foundPost || null);
     };
     loadPost();
   }, [slug]);
+
+  // Debug the post data when it changes
+  useEffect(() => {
+    if (post) {
+      console.log('Post data for meta:', {
+        id: post.id,
+        author: post.author,
+        authorId: post.authorId,
+        title: post.title,
+        thumbnail: post.thumbnail
+      });
+    }
+  }, [post]);
 
   usePageMetadata({
     title: post ? `${post.title} | DemoStoke` : 'Blog Post | DemoStoke',

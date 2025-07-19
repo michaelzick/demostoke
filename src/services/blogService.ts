@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { BlogPost } from "@/lib/blog/types";
 import { blogPosts as staticBlogPosts } from "@/lib/blog";
@@ -18,25 +19,31 @@ export const blogService = {
       }
 
       // Convert database posts to BlogPost format with slug as id
-      const formattedDbPosts: BlogPost[] = (dbPosts || []).map(post => ({
-        id: post.slug || post.id, // Use slug as id for routing
-        title: post.title,
-        excerpt: post.excerpt,
-        content: post.content,
-        category: post.category,
-        author: post.author,
-        authorId: post.author_id,
-        publishedAt: post.published_at,
-        readTime: post.read_time,
-        heroImage: post.hero_image || '',
-        thumbnail: post.thumbnail || '',
-        videoEmbed: post.video_embed || undefined,
-        tags: post.tags || []
-      }));
+      const formattedDbPosts: BlogPost[] = (dbPosts || []).map(post => {
+        console.log('Processing DB post:', { id: post.id, slug: post.slug, author: post.author });
+        return {
+          id: post.slug || post.id, // Use slug as id for routing
+          title: post.title,
+          excerpt: post.excerpt,
+          content: post.content,
+          category: post.category,
+          author: post.author,
+          authorId: post.author_id,
+          publishedAt: post.published_at,
+          readTime: post.read_time,
+          heroImage: post.hero_image || '',
+          thumbnail: post.thumbnail || '',
+          videoEmbed: post.video_embed || undefined,
+          tags: post.tags || []
+        };
+      });
 
       // Combine and sort by publishedAt
       const allPosts = [...formattedDbPosts, ...staticBlogPosts]
         .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+
+      console.log('Final combined posts count:', allPosts.length);
+      console.log('Sample post for debugging:', allPosts.find(p => p.id === 'b7eda836-d10c-450f-8db4-3be940ed63a6'));
 
       return allPosts;
     } catch (error) {

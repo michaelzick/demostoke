@@ -36,8 +36,8 @@ Cheers 🤙🏻`,
     heroImage: "https://qtlhqsqanbxgfbcjigrl.supabase.co/storage/v1/object/public/blog-images//admin-image-1751601812768-Capita%20DP%20Cropped.jpg",
     thumbnail: "https://qtlhqsqanbxgfbcjigrl.supabase.co/storage/v1/object/public/blog-images//admin-image-1751601805697-Capita%20Against%20Rail.jpg",
     tags: ["demo gear", "capita", "progression"],
-    author: "Generative AI",
-    authorId: "generative-ai"
+    author: "Michael Zick",
+    authorId: "98f914a6-2a72-455d-aa4b-41b081f4014d"
   },
   {
     id: "snowboard-buying-guide-2025",

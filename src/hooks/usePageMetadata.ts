@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 
 export interface PageMetadata {
@@ -10,6 +11,7 @@ export interface PageMetadata {
 
 const setMeta = (attr: 'name' | 'property', key: string, value: string) => {
   if (!value) return;
+  console.log(`Setting meta ${attr}="${key}" content="${value}"`);
   let element = document.head.querySelector(`meta[${attr}='${key}']`) as HTMLMetaElement | null;
   if (!element) {
     element = document.createElement('meta');
@@ -21,6 +23,8 @@ const setMeta = (attr: 'name' | 'property', key: string, value: string) => {
 
 const usePageMetadata = ({ title, description, image, type = 'website', schema }: PageMetadata) => {
   useEffect(() => {
+    console.log('usePageMetadata called with:', { title, description, image, type, schema });
+    
     if (title) {
       document.title = title;
       setMeta('property', 'og:title', title);
@@ -35,6 +39,12 @@ const usePageMetadata = ({ title, description, image, type = 'website', schema }
     }
     setMeta('property', 'og:type', type);
     setMeta('property', 'og:url', window.location.href);
+
+    // Handle author from schema
+    if (schema && schema.author && schema.author.name) {
+      console.log('Setting author meta from schema:', schema.author.name);
+      setMeta('name', 'author', schema.author.name);
+    }
 
     const scriptId = 'structured-data';
     let script = document.head.querySelector(`#${scriptId}`) as HTMLScriptElement | null;

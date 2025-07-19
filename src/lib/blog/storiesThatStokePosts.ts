@@ -1,3 +1,4 @@
+
 import { BlogPost } from './types';
 
 export const storiesThatStokePosts: BlogPost[] = [
@@ -31,15 +32,15 @@ When I'm ready for my next snowboard, surfboard, mountain bike—whatever—I'll
 
 From that first pop-up on a Wavestorm to taking waves all the way to the sand at Pipeline, the boards I've ridden have shaped my experience immensely. Choosing the right gear matters and is often the difference between a stoked session and one where you wonder where your abilities went.
 
-When you get that gear that feels like it was made for you, the whole experience changes. That's what it means to ride what makes you feel alive.`,
+When you get that gear that feels like it's made for you, the whole experience changes. That's what it means to ride what makes you feel alive.`,
     category: "stories that stoke",
     publishedAt: "2025-06-27",
     readTime: 2.5,
     heroImage: "https://www.theinertia.com/wp-content/uploads/2020/07/SurfCare1200.jpg",
     thumbnail: "https://www.theinertia.com/wp-content/uploads/2020/07/SurfCare1200.jpg",
     tags: ["surfing", "snowboarding", "surfing", "stories that stoke", "soft-top", "snowboards",],
-    author: "Generative AI",
-    authorId: "generative-ai",
+    author: "Michael Zick",
+    authorId: "98f914a6-2a72-455d-aa4b-41b081f4014d",
   },
   {
     id: "kelly-slater-on-music-and-surfing",
