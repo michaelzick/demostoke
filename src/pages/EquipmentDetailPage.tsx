@@ -131,15 +131,37 @@ const EquipmentDetailPage = () => {
             '@type': 'Offer',
             priceCurrency: 'USD',
             price: currentEquipment.price_per_day,
+            priceValidUntil: (() => {
+              const d = new Date();
+              d.setFullYear(d.getFullYear() + 1);
+              return d.toISOString().split('T')[0];
+            })(),
             availability: currentEquipment.availability.available
               ? 'https://schema.org/InStock'
-              : 'https://schema.org/OutOfStock'
+              : 'https://schema.org/OutOfStock',
+            shippingDetails: {
+              '@type': 'OfferShippingDetails',
+              shippingDestination: {
+                '@type': 'DefinedRegion',
+                addressCountry: 'US'
+              }
+            },
+            hasMerchantReturnPolicy: {
+              '@type': 'MerchantReturnPolicy',
+              applicableCountry: 'US',
+              returnPolicyCategory: 'https://schema.org/NoReturns'
+            }
           },
-          aggregateRating: {
-            '@type': 'AggregateRating',
-            ratingValue: currentEquipment.rating,
-            reviewCount: currentEquipment.review_count
-          }
+          aggregateRating:
+            currentEquipment.review_count > 0 &&
+            currentEquipment.rating > 0 &&
+            currentEquipment.rating <= 5
+              ? {
+                  '@type': 'AggregateRating',
+                  ratingValue: currentEquipment.rating,
+                  reviewCount: currentEquipment.review_count
+                }
+              : undefined
         }
       : undefined
   });
