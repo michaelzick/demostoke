@@ -31,7 +31,7 @@ const BlogPostPage = () => {
   usePageMetadata({
     title: post ? `${post.title} | DemoStoke` : 'Blog Post | DemoStoke',
     description: post?.excerpt,
-    image: post?.heroImage,
+    image: post?.thumbnail,
     type: 'article',
     schema: post
       ? {
