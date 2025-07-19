@@ -13,8 +13,13 @@ import {
 import { getCategoryDisplayName } from "@/helpers";
 import { Equipment } from "@/types";
 import { useAuth } from "@/contexts/auth";
+import { useIsAdmin } from "@/hooks/useUserRole";
 import { slugify } from "@/utils/slugify";
 import DistanceDisplay from "./DistanceDisplay";
+import { Checkbox } from "@/components/ui/checkbox";
+import { featuredGearService } from "@/services/featuredGearService";
+import { toast } from "@/hooks/use-toast";
+import { useState } from "react";
 import {
   Tooltip,
   TooltipTrigger,
@@ -23,10 +28,14 @@ import {
 
 interface EquipmentCardProps {
   equipment: Equipment;
+  showAdminControls?: boolean;
 }
 
-const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
+const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardProps) => {
   const { user } = useAuth();
+  const { isAdmin } = useIsAdmin();
+  const [isFeatured, setIsFeatured] = useState(equipment.is_featured || false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
 
   // Determine if this is from a shop or private party based on owner
@@ -46,6 +55,36 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
 
   const hasMultipleImages = images.length > 1;
   const hasImages = images.length > 0;
+
+  const handleFeatureToggle = async (checked: boolean) => {
+    if (isUpdating) return;
+    
+    setIsUpdating(true);
+    try {
+      const success = await featuredGearService.setFeaturedStatus(equipment.id, checked);
+      if (success) {
+        setIsFeatured(checked);
+        toast({
+          title: "Success",
+          description: checked ? "Equipment featured successfully" : "Equipment unfeatured successfully",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to update featured status. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update featured status. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
@@ -146,7 +185,7 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
         </div>
       </CardContent>
 
-      <CardFooter className="p-4 pt-0 flex justify-between">
+      <CardFooter className="p-4 pt-0 flex justify-between items-center">
         <Button asChild size="sm">
           <Link
             to={`/${equipment.category}/${slugify(equipment.owner.name)}/${slugify(equipment.name)}`}
@@ -154,14 +193,32 @@ const EquipmentCard = ({ equipment }: EquipmentCardProps) => {
             View Details
           </Link>
         </Button>
-        {isOwner && (
-          <Button asChild size="sm" variant="outline">
-            <Link to={`/edit-gear/${equipment.id}`}>
-              <EditIcon className="h-4 w-4 mr-1" />
-              Update
-            </Link>
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {isOwner && (
+            <Button asChild size="sm" variant="outline">
+              <Link to={`/edit-gear/${equipment.id}`}>
+                <EditIcon className="h-4 w-4 mr-1" />
+                Update
+              </Link>
+            </Button>
+          )}
+          {showAdminControls && isAdmin && (
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id={`featured-${equipment.id}`}
+                checked={isFeatured}
+                onCheckedChange={handleFeatureToggle}
+                disabled={isUpdating}
+              />
+              <label 
+                htmlFor={`featured-${equipment.id}`}
+                className="text-xs text-muted-foreground cursor-pointer"
+              >
+                Featured
+              </label>
+            </div>
+          )}
+        </div>
       </CardFooter>
     </Card>
   );

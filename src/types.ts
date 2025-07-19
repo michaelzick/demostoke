@@ -36,6 +36,7 @@ export interface Equipment {
   created_at?: string; // Add optional created_at
   updated_at?: string; // Add optional updated_at
   visible_on_map?: boolean; // Add optional visible_on_map
+  is_featured?: boolean; // Add featured status
 }
 
 export interface Owner {

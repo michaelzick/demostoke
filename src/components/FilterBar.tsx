@@ -17,6 +17,8 @@ interface FilterBarProps {
   viewMode: 'map' | 'list' | 'hybrid';
   setViewMode: (mode: 'map' | 'list' | 'hybrid') => void;
   onReset?: () => void;
+  showFeatured?: boolean;
+  setShowFeatured?: (show: boolean) => void;
 }
 
 const FilterBar = ({
@@ -26,6 +28,8 @@ const FilterBar = ({
   viewMode,
   setViewMode,
   onReset,
+  showFeatured = false,
+  setShowFeatured,
 }: FilterBarProps) => {
   const [sortBy, setSortBy] = useState("distance");
 
@@ -69,13 +73,18 @@ const FilterBar = ({
                   {`Category: ${categoryText}`}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setActiveCategory(null)}>All Equipment</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setActiveCategory('snowboards')}>Snowboards</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setActiveCategory('skis')}>Skis</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setActiveCategory('surfboards')}>Surfboards</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setActiveCategory('mountain-bikes')}>Mountain Bikes</DropdownMenuItem>
-              </DropdownMenuContent>
+               <DropdownMenuContent>
+                 <DropdownMenuItem onClick={() => setActiveCategory(null)}>All Equipment</DropdownMenuItem>
+                 <DropdownMenuItem onClick={() => setActiveCategory('snowboards')}>Snowboards</DropdownMenuItem>
+                 <DropdownMenuItem onClick={() => setActiveCategory('skis')}>Skis</DropdownMenuItem>
+                 <DropdownMenuItem onClick={() => setActiveCategory('surfboards')}>Surfboards</DropdownMenuItem>
+                 <DropdownMenuItem onClick={() => setActiveCategory('mountain-bikes')}>Mountain Bikes</DropdownMenuItem>
+                 {setShowFeatured && (
+                   <DropdownMenuItem onClick={() => setShowFeatured(!showFeatured)}>
+                     {showFeatured ? '✓ Featured' : 'Featured'}
+                   </DropdownMenuItem>
+                 )}
+               </DropdownMenuContent>
             </DropdownMenu>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -165,6 +174,16 @@ const FilterBar = ({
             >
               Mountain Bikes
             </Button>
+            {setShowFeatured && (
+              <Button
+                variant={showFeatured ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setShowFeatured(!showFeatured)}
+                className="whitespace-nowrap category-filter-button"
+              >
+                Featured
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"

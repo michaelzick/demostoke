@@ -4,10 +4,10 @@ import usePageMetadata from "@/hooks/usePageMetadata";
 import HeroSection from "@/components/HeroSection";
 import HowItWorksSection from "@/components/home/HowItWorksSection";
 import FeaturedGearSection from "@/components/home/FeaturedGearSection";
-import CategoriesSection from "@/components/home/CategoriesSection";
 import FeaturedPostsSection from "@/components/home/FeaturedPostsSection";
 import { useTrendingEquipment } from "@/hooks/useTrendingEquipment";
 import { useRecentEquipment } from "@/hooks/useRecentEquipment";
+import { useFeaturedEquipment } from "@/hooks/useFeaturedEquipment";
 import {
   Dialog,
   DialogContent,
@@ -35,9 +35,10 @@ const HomePage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Fetch trending and recent equipment
+  // Fetch trending, recent, and featured equipment
   const { data: trendingEquipment, isLoading: trendingLoading } = useTrendingEquipment();
   const { data: recentEquipment, isLoading: recentLoading } = useRecentEquipment();
+  const { data: featuredEquipment, isLoading: featuredLoading } = useFeaturedEquipment();
 
   // Modal state and localStorage logic
   const [showModal, setShowModal] = useState(false);
@@ -259,11 +260,20 @@ const HomePage = () => {
       <HeroSection />
       <HowItWorksSection />
 
+      {/* Featured section with admin-selected equipment */}
+      {!featuredLoading && featuredEquipment && featuredEquipment.length > 0 && (
+        <FeaturedGearSection
+          title="Featured Gear"
+          equipment={featuredEquipment}
+        />
+      )}
+
       {/* Conditionally render trending section only if we have trending data */}
       {!trendingLoading && trendingEquipment && trendingEquipment.length > 0 && (
         <FeaturedGearSection
           title="Trending"
           equipment={trendingEquipment}
+          className="bg-white dark:bg-zinc-900"
         />
       )}
 
@@ -272,11 +282,9 @@ const HomePage = () => {
         <FeaturedGearSection
           title="Fresh Picks"
           equipment={recentEquipment}
-          className="bg-white dark:bg-zinc-900"
         />
       )}
 
-      <CategoriesSection />
       <FeaturedPostsSection />
     </div>
   );

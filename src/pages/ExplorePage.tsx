@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
 import useScrollToTop from "@/hooks/useScrollToTop";
 import { useUserLocations } from "@/hooks/useUserLocations";
+import { useIsAdmin } from "@/hooks/useUserRole";
 
 const ExplorePage = () => {
   usePageMetadata({
@@ -28,11 +29,13 @@ const ExplorePage = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("distance");
   const [viewMode, setViewMode] = useState<"map" | "list" | "hybrid">("hybrid");
+  const [showFeatured, setShowFeatured] = useState<boolean>(false);
   const [allEquipment, setAllEquipment] = useState<Equipment[]>([]);
   const [isEquipmentLoading, setIsEquipmentLoading] = useState(true);
   const [hasShownNoEquipmentToast, setHasShownNoEquipmentToast] = useState(false);
   const { data: userLocations = [] } = useUserLocations();
   const [resetCounter, setResetCounter] = useState(0);
+  const { isAdmin } = useIsAdmin();
 
   // Scroll to top on mount
   useScrollToTop();
@@ -97,6 +100,10 @@ const ExplorePage = () => {
       results = results.filter(item => item.category === activeCategory);
     }
 
+    if (showFeatured) {
+      results = results.filter(item => item.is_featured === true);
+    }
+
     switch (sortBy) {
       case "distance":
         results.sort((a, b) => a.distance - b.distance);
@@ -122,7 +129,7 @@ const ExplorePage = () => {
     );
 
     return results;
-  }, [activeCategory, sortBy, searchParams, viewMode, equipmentWithDynamicDistances]);
+  }, [activeCategory, sortBy, searchParams, viewMode, equipmentWithDynamicDistances, showFeatured]);
 
   // Show toast when no equipment is found after filtering
   useEffect(() => {
@@ -139,6 +146,7 @@ const ExplorePage = () => {
   const handleReset = () => {
     setActiveCategory(null);
     setSortBy("distance");
+    setShowFeatured(false);
     setHasShownNoEquipmentToast(false);
     setResetCounter((c) => c + 1);
     const newParams = new URLSearchParams(location.search);
@@ -160,6 +168,8 @@ const ExplorePage = () => {
         viewMode={viewMode}
         setViewMode={setViewMode}
         onReset={handleReset}
+        showFeatured={showFeatured}
+        setShowFeatured={setShowFeatured}
       />
 
       {isEquipmentLoading ? (
@@ -194,7 +204,11 @@ const ExplorePage = () => {
           )}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEquipment.map((equipment) => (
-              <EquipmentCard key={equipment.id} equipment={equipment} />
+              <EquipmentCard 
+                key={equipment.id} 
+                equipment={equipment} 
+                showAdminControls={viewMode === 'list' && isAdmin}
+              />
             ))}
           </div>
           {filteredEquipment.length === 0 && !isEquipmentLoading && (

@@ -193,6 +193,7 @@ export type Database = {
           description: string | null
           has_multiple_images: boolean | null
           id: string
+          is_featured: boolean
           location_address: string | null
           location_lat: number | null
           location_lng: number | null
@@ -220,6 +221,7 @@ export type Database = {
           description?: string | null
           has_multiple_images?: boolean | null
           id?: string
+          is_featured?: boolean
           location_address?: string | null
           location_lat?: number | null
           location_lng?: number | null
@@ -247,6 +249,7 @@ export type Database = {
           description?: string | null
           has_multiple_images?: boolean | null
           id?: string
+          is_featured?: boolean
           location_address?: string | null
           location_lat?: number | null
           location_lng?: number | null
