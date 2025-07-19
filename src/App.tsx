@@ -1,7 +1,6 @@
 
 import { Suspense, lazy, useEffect } from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { ClientOnlyToaster } from "@/components/ClientOnlyToaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -62,8 +61,7 @@ const App = ({ Router = BrowserRouter, routerProps = {} }: AppProps) => {
       <ThemeProvider>
         <AuthProvider>
           <TooltipProvider>
-            <Toaster />
-            <Sonner />
+            <ClientOnlyToaster />
             <Router {...routerProps}>
               <Suspense fallback={<LoadingSpinner />}>
                 <Routes>
