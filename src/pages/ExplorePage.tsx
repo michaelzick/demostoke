@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from "react";
 import { Loader2 } from "lucide-react";
 import usePageMetadata from "@/hooks/usePageMetadata";
@@ -15,6 +14,8 @@ import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamic
 import useScrollToTop from "@/hooks/useScrollToTop";
 import { useUserLocations } from "@/hooks/useUserLocations";
 import { useIsAdmin } from "@/hooks/useUserRole";
+import LazyMapComponent from "@/components/LazyMapComponent";
+import LazyHybridView from "@/components/LazyHybridView";
 
 const ExplorePage = () => {
   usePageMetadata({
@@ -182,7 +183,7 @@ const ExplorePage = () => {
         </div>
       ) : viewMode === "map" ? (
         <div className="h-[calc(100vh-12rem)] relative">
-          <MapComponent
+          <LazyMapComponent
             activeCategory={activeCategory}
             searchQuery={searchParams.get("q")?.toLowerCase()}
             viewMode={viewMode}
@@ -190,7 +191,7 @@ const ExplorePage = () => {
           <MapLegend activeCategory={activeCategory} viewMode={viewMode} />
         </div>
       ) : viewMode === "hybrid" ? (
-        <HybridView
+        <LazyHybridView
           filteredEquipment={filteredEquipment}
           activeCategory={activeCategory}
           isLocationBased={isLocationBased}

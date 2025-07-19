@@ -1,107 +1,67 @@
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { ThemeProvider } from 'next-themes';
+import { TooltipProvider } from "@/components/ui/tooltip"
+import { AuthProvider } from './contexts/AuthContext';
+import { ClientOnlyToaster } from './components/ClientOnlyToaster';
+import HomePage from './pages/HomePage';
+import SearchResultsPage from './pages/SearchResultsPage';
+import ExplorePage from './pages/ExplorePage';
+import GearPage from './pages/GearPage';
+import ProfilePage from './pages/ProfilePage';
+import ManageGearPage from './pages/ManageGearPage';
+import EditGearPage from './pages/EditGearPage';
+import NewGearPage from './pages/NewGearPage';
+import AnalyticsPage from './pages/AnalyticsPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import ContactPage from './pages/ContactPage';
+import AboutPage from './pages/AboutPage';
+import NotFoundPage from './pages/NotFoundPage';
+import BlogPage from './pages/BlogPage';
+import BlogPostPage from './pages/BlogPostPage';
+import PasswordResetPage from './pages/PasswordResetPage';
+import LazyMapComponent from "@/components/LazyMapComponent";
+import LazyHybridView from "@/components/LazyHybridView";
 
-import { Suspense, lazy, useEffect } from "react";
-import { ClientOnlyToaster } from "@/components/ClientOnlyToaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./contexts/auth/AuthContext";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import MainLayout from "./layouts/MainLayout";
-import AuthLayout from "./layouts/AuthLayout";
-import AddGearForm from './pages/AddGearForm';
-import LightspeedPOSPage from './pages/LightspeedPOSPage';
-import LoadingSpinner from './components/LoadingSpinner';
-import { initializeAmplitudeClickTracking } from "./utils/amplitudeClickTracking";
+const queryClient = new QueryClient();
 
-const HomePage = lazy(() => import("./pages/HomePage"));
-const AboutPage = lazy(() => import("./pages/AboutPage"));
-const BlogPage = lazy(() => import("./pages/BlogPage"));
-const BlogPostPage = lazy(() => import("./pages/BlogPostPage"));
-const ContactPage = lazy(() => import("./pages/ContactUsPage"));
-const NotFoundPage = lazy(() => import("./pages/NotFound"));
-const ExplorePage = lazy(() => import("./pages/ExplorePage"));
-const EquipmentDetailPage = lazy(() => import("./pages/EquipmentDetailPage"));
-const ListGearPage = lazy(() => import("./pages/ListYourGearPage"));
-const EditGearPage = lazy(() => import("./pages/EditGearForm"));
-const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
-const MyEquipmentPage = lazy(() => import("./pages/MyEquipmentPage"));
-const AnalyticsPage = lazy(() => import("./pages/AnalyticsPage"));
-const BookingsPage = lazy(() => import("./pages/BookingsPage"));
-const AdminPage = lazy(() => import("./pages/AdminPage"));
-const SignInPage = lazy(() => import("./pages/SignInPage"));
-const SignUpPage = lazy(() => import("./pages/SignUpPage"));
-const RealUserProfilePage = lazy(() => import("./pages/RealUserProfilePage"));
-const GearOwnerProfilePage = lazy(() => import("./pages/GearOwnerProfilePage"));
-const ShopPage = lazy(() => import("./pages/ShopPage"));
-const PrivatePartyPage = lazy(() => import("./pages/PrivatePartyPage"));
-const SearchResultsPage = lazy(() => import("./pages/SearchResultsPage"));
-const DemoCalendarPage = lazy(() => import("./pages/DemoCalendarPage"));
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 1,
-    },
-  },
-});
-
-type AppProps = {
-  Router?: React.ComponentType<any>;
-  routerProps?: Record<string, unknown>;
-};
-
-const App = ({ Router = BrowserRouter, routerProps = {} }: AppProps) => {
-  useEffect(() => {
-    initializeAmplitudeClickTracking();
-  }, []);
-
+function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <TooltipProvider>
+          <TooltipProvider delayDuration={0}>
             <ClientOnlyToaster />
-            <Router {...routerProps}>
-              <Suspense fallback={<LoadingSpinner />}>
+            <BrowserRouter>
+              <div className="flex flex-col min-h-screen">
                 <Routes>
-                  <Route path="/auth" element={<AuthLayout />}>
-                    <Route path="signin" element={<SignInPage />} />
-                    <Route path="signup" element={<SignUpPage />} />
-                  </Route>
-                  <Route path="/" element={<MainLayout />}>
-                    <Route index element={<HomePage />} />
-                    <Route path="about" element={<AboutPage />} />
-                    <Route path="blog" element={<BlogPage />} />
-                    <Route path="blog/:slug" element={<BlogPostPage />} />
-                    <Route path="contact-us" element={<ContactPage />} />
-                    <Route path="explore" element={<ExplorePage />} />
-                    <Route path=":category/:ownerSlug/:slug" element={<EquipmentDetailPage />} />
-                    <Route path="list-your-gear" element={<ListGearPage />} />
-                    <Route path="list-your-gear/add-gear-form" element={<AddGearForm />} />
-                    <Route path="list-your-gear/lightspeed-pos" element={<LightspeedPOSPage />} />
-                    <Route path="edit-gear/:id" element={<EditGearPage />} />
-                    <Route path="profile" element={<UserProfilePage />} />
-                    <Route path="my-gear" element={<MyEquipmentPage />} />
-                    <Route path="analytics" element={<AnalyticsPage />} />
-                    <Route path="bookings" element={<BookingsPage />} />
-                    <Route path="admin" element={<AdminPage />} />
-                    <Route path="user-profile/:slug" element={<RealUserProfilePage />} />
-                    <Route path="owner/:id" element={<GearOwnerProfilePage />} />
-                    <Route path="shop/:shopId" element={<ShopPage />} />
-                    <Route path="private-party/:partyId" element={<PrivatePartyPage />} />
-                    <Route path="search" element={<SearchResultsPage />} />
-                    <Route path="demo-calendar" element={<DemoCalendarPage />} />
-                    <Route path="*" element={<NotFoundPage />} />
-                  </Route>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/search" element={<SearchResultsPage />} />
+                  <Route path="/explore" element={<ExplorePage />} />
+                  <Route path="/gear/:gearId" element={<GearPage />} />
+                  <Route path="/profile/:userId" element={<ProfilePage />} />
+                  <Route path="/manage-gear" element={<ManageGearPage />} />
+                  <Route path="/edit-gear/:gearId" element={<EditGearPage />} />
+                  <Route path="/new-gear" element={<NewGearPage />} />
+                  <Route path="/analytics" element={<AnalyticsPage />} />
+                  <Route path="/terms" element={<TermsOfServicePage />} />
+                  <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/blog" element={<BlogPage />} />
+                  <Route path="/blog/:postId" element={<BlogPostPage />} />
+                  <Route path="/password-reset" element={<PasswordResetPage />} />
+                  <Route path="*" element={<NotFoundPage />} />
                 </Routes>
-              </Suspense>
-            </Router>
+              </div>
+            </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
-};
+}
 
 export default App;

@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -98,9 +99,9 @@
 }
 
 @layer components {
-
-  button.bg-primary,
-  a.bg-primary {
+  .bg-primary,
+  .bg-primary button,
+  .bg-primary a {
     background-color: hsl(var(--primary));
     color: #212121;
   }
@@ -109,14 +110,11 @@
   .bg-primary a:link,
   .bg-primary a:visited {
     color: inherit;
-    /* Inherit the button's text color */
     text-decoration: none;
-    /* Remove underline from links */
   }
 
   .bg-primary a:hover {
     color: #212121;
-    /* Ensure hover state matches */
   }
 }
 
@@ -146,4 +144,3 @@
 .how-it-works-icon {
   color: #020817;
 }
-
