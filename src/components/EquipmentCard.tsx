@@ -37,8 +37,6 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
   const [isFeatured, setIsFeatured] = useState(equipment.is_featured || false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  console.log('partyId on EquipmentCard:', equipment.owner.partyId);
-
 
   // Determine if this is from a shop or private party based on owner
   const isShop = equipment.owner.shopId;
@@ -178,10 +176,8 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
         <div className="border-t pt-2">
           <Link
             to={ownerLinkPath}
-            className="underline text-sm text-muted-foreground hover:text-primary flex items-center gap-1"
+            className="underline text-sm text-muted-foreground hover:text-primary"
           >
-            {isShop && <StoreIcon className="h-3 w-3" />}
-            {isPrivateParty && <UsersIcon className="h-3 w-3" />}
             <span className="truncate">{equipment.owner.name}</span>
           </Link>
         </div>

@@ -273,7 +273,7 @@ const HomePage = () => {
         <FeaturedGearSection
           title="Trending"
           equipment={trendingEquipment}
-          className="bg-white dark:bg-zinc-900"
+          className="bg-white dark:bg-muted/20"
         />
       )}
 
@@ -282,6 +282,7 @@ const HomePage = () => {
         <FeaturedGearSection
           title="Fresh Picks"
           equipment={recentEquipment}
+          className="bg-white dark:bg-muted/20"
         />
       )}
 
