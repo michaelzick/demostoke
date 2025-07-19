@@ -94,6 +94,8 @@ app.get('*', async (req, res) => {
         const escapedAuthor = escapeContent(meta.author);
         const escapedImage = escapeContent(meta.image);
         
+        console.log('Image being used for meta tags:', escapedImage);
+        
         const schema = {
           '@context': 'https://schema.org',
           '@type': 'BlogPosting',
