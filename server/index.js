@@ -21,7 +21,7 @@ async function getBlogPostMeta(slug) {
   try {
     const { data, error } = await supabase
       .from('blog_posts')
-      .select('title, excerpt, thumbnail, hero_image, slug, id')
+      .select('title, excerpt, thumbnail, hero_image, author, slug, id')
       .or(`slug.eq.${slug},id.eq.${slug}`)
       .single();
 
@@ -30,7 +30,8 @@ async function getBlogPostMeta(slug) {
     return {
       title: data.title,
       description: data.excerpt,
-      image: data.thumbnail || data.hero_image || ''
+      image: data.thumbnail || data.hero_image || '',
+      author: data.author
     };
   } catch (e) {
     console.error('Error fetching blog meta', e);
@@ -57,6 +58,7 @@ app.get('*', async (req, res) => {
         html = html
           .replace(/<title>.*?<\/title>/, `<title>${meta.title} | DemoStoke<\/title>`)
           .replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${meta.description}" />`)
+          .replace(/<meta name="author"[^>]*>/, `<meta name="author" content="${meta.author}" />`)
           .replace(/<meta property="og:title"[^>]*>/, `<meta property="og:title" content="${meta.title} | DemoStoke" />`)
           .replace(/<meta property="og:description"[^>]*>/, `<meta property="og:description" content="${meta.description}" />`)
           .replace(/<meta property="og:image"[^>]*>/, `<meta property="og:image" content="${meta.image}" />`)
