@@ -17,8 +17,6 @@ import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamic
 import { useUserLocations } from "@/hooks/useUserLocations";
 import { parseQueryForLocation } from "@/utils/queryParsing";
 import useScrollToTop from "@/hooks/useScrollToTop";
-import LazyMapComponent from "@/components/LazyMapComponent";
-import LazyHybridView from "@/components/LazyHybridView";
 
 const SearchResultsPage = () => {
   usePageMetadata({
@@ -274,7 +272,7 @@ const SearchResultsPage = () => {
         </div>
       ) : viewMode === "map" ? (
         <div className="h-[calc(100vh-14rem)] relative">
-          <LazyMapComponent
+          <MapComponent
             activeCategory={activeCategory}
             searchQuery={query?.toLowerCase()}
             isEquipmentLoading={isLoading}
@@ -284,7 +282,7 @@ const SearchResultsPage = () => {
           <MapLegend activeCategory={activeCategory} viewMode={viewMode} />
         </div>
       ) : viewMode === "hybrid" ? (
-        <LazyHybridView
+        <HybridView
           filteredEquipment={sortedResults}
           activeCategory={activeCategory}
           isLocationBased={isLocationBased}
