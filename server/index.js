@@ -21,7 +21,7 @@ async function getBlogPostMeta(slug) {
   try {
     const { data, error } = await supabase
       .from('blog_posts')
-      .select('title, excerpt, thumbnail, hero_image, author, slug, id')
+      .select('title, excerpt, thumbnail, hero_image, author, slug, id, published_at')
       .or(`slug.eq.${slug},id.eq.${slug}`)
       .single();
 
@@ -31,7 +31,8 @@ async function getBlogPostMeta(slug) {
       title: data.title,
       description: data.excerpt,
       image: data.thumbnail || data.hero_image || '',
-      author: data.author
+      author: data.author,
+      publishedAt: data.published_at
     };
   } catch (e) {
     console.error('Error fetching blog meta', e);
@@ -50,19 +51,33 @@ app.get('*', async (req, res) => {
     const appHtml = await render(req.url);
     let html = template.replace(`<!--app-html-->`, appHtml);
 
-    // Inject Open Graph metadata for blog posts
+    // Inject Open Graph and structured metadata for blog posts
     if (req.path.startsWith('/blog/')) {
       const slug = req.path.split('/blog/')[1];
       const meta = await getBlogPostMeta(slug);
       if (meta) {
+        const ogUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+        const schema = {
+          '@context': 'https://schema.org',
+          '@type': 'BlogPosting',
+          headline: meta.title,
+          description: meta.description,
+          image: meta.image,
+          datePublished: meta.publishedAt,
+          author: { '@type': 'Person', name: meta.author },
+        };
+
         html = html
           .replace(/<title>.*?<\/title>/, `<title>${meta.title} | DemoStoke<\/title>`)
           .replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${meta.description}" />`)
           .replace(/<meta name="author"[^>]*>/, `<meta name="author" content="${meta.author}" />`)
           .replace(/<meta property="og:title"[^>]*>/, `<meta property="og:title" content="${meta.title} | DemoStoke" />`)
           .replace(/<meta property="og:description"[^>]*>/, `<meta property="og:description" content="${meta.description}" />`)
+          .replace(/<meta property="og:type"[^>]*>/, `<meta property="og:type" content="article" />`)
           .replace(/<meta property="og:image"[^>]*>/, `<meta property="og:image" content="${meta.image}" />`)
-          .replace(/<meta name="twitter:image"[^>]*>/, `<meta name="twitter:image" content="${meta.image}" />`);
+          .replace(/<meta property="og:url"[^>]*>/, `<meta property="og:url" content="${ogUrl}" />`)
+          .replace(/<meta name="twitter:image"[^>]*>/, `<meta name="twitter:image" content="${meta.image}" />`)
+          .replace('</head>', `<script id="structured-data" type="application/ld+json">${JSON.stringify(schema)}</script></head>`);
       }
     }
 
