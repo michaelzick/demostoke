@@ -70,6 +70,7 @@ export const convertDbEquipmentToFrontend = (
       (dbEquipment.visible_on_map as boolean) !== undefined
         ? (dbEquipment.visible_on_map as boolean)
         : true,
+    is_featured: (dbEquipment.is_featured as boolean) || false,
   };
 };
 
