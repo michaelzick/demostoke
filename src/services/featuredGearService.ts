@@ -89,7 +89,7 @@ export const featuredGearService = {
           name: equipment.profiles?.name || 'Unknown Owner',
           avatar_url: equipment.profiles?.avatar_url,
           shopId: null,
-          partyId: equipment.user_id
+          partyId: null
         },
         location: {
           address: equipment.location_address || '',
