@@ -38,8 +38,8 @@ When you get that gear that feels like it was made for you, the whole experience
     heroImage: "https://www.theinertia.com/wp-content/uploads/2020/07/SurfCare1200.jpg",
     thumbnail: "https://www.theinertia.com/wp-content/uploads/2020/07/SurfCare1200.jpg",
     tags: ["surfing", "snowboarding", "surfing", "stories that stoke", "soft-top", "snowboards",],
-    author: "Michael Zick",
-    authorId: "98f914a6-2a72-455d-aa4b-41b081f4014d",
+    author: "Generative AI",
+    authorId: "generative-ai",
   },
   {
     id: "kelly-slater-on-music-and-surfing",
