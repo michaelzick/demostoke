@@ -4,9 +4,12 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode, ssrBuild }) => {
+export default defineConfig(({ mode, command }) => {
   // Check if running on localhost
   const isLocalhost = process.env.HOSTNAME === "localhost" || process.env.NODE_ENV === "development";
+  
+  // Check if this is an SSR build
+  const isSSRBuild = process.env.SSR === 'true';
 
   return {
     server: {
@@ -23,8 +26,8 @@ export default defineConfig(({ mode, ssrBuild }) => {
       },
     },
     build: {
-      outDir: ssrBuild ? 'dist/server' : 'dist/client',
-      ssr: ssrBuild ? 'src/entry-server.tsx' : undefined,
+      outDir: isSSRBuild ? 'dist/server' : 'dist/client',
+      ssr: isSSRBuild ? 'src/entry-server.tsx' : undefined,
     },
   };
 });
