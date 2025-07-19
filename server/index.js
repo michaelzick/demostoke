@@ -22,15 +22,31 @@ async function getBlogPostMeta(slug) {
     const { data, error } = await supabase
       .from('blog_posts')
       .select('title, excerpt, thumbnail, hero_image, author, slug, id, published_at')
-      .or(`slug.eq.${slug},id.eq.${slug}`)
+      .eq('slug', slug)
       .single();
 
-    if (error || !data) return null;
+    if (error || !data) {
+      // Try by ID if slug doesn't work
+      const { data: dataById, error: errorById } = await supabase
+        .from('blog_posts')
+        .select('title, excerpt, thumbnail, hero_image, author, slug, id, published_at')
+        .eq('id', slug)
+        .single();
+      
+      if (errorById || !dataById) return null;
+      return {
+        title: dataById.title,
+        description: dataById.excerpt,
+        image: dataById.hero_image || dataById.thumbnail || '',
+        author: dataById.author,
+        publishedAt: dataById.published_at
+      };
+    }
 
     return {
       title: data.title,
       description: data.excerpt,
-      image: data.thumbnail || data.hero_image || '',
+      image: data.hero_image || data.thumbnail || '',
       author: data.author,
       publishedAt: data.published_at
     };
@@ -54,9 +70,25 @@ app.get('*', async (req, res) => {
     // Inject Open Graph and structured metadata for blog posts
     if (req.path.startsWith('/blog/')) {
       const slug = req.path.split('/blog/')[1];
+      console.log('Processing blog post with slug:', slug);
+      
       const meta = await getBlogPostMeta(slug);
       if (meta) {
-        const ogUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+        console.log('Found blog meta:', meta);
+        
+        // Use HTTPS and ensure proper URL construction
+        const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
+        const host = req.get('host');
+        const ogUrl = `${protocol}://${host}${req.originalUrl}`;
+        
+        // Escape quotes and special characters in content
+        const escapeContent = (str) => str ? str.replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '';
+        
+        const escapedTitle = escapeContent(meta.title);
+        const escapedDescription = escapeContent(meta.description);
+        const escapedAuthor = escapeContent(meta.author);
+        const escapedImage = escapeContent(meta.image);
+        
         const schema = {
           '@context': 'https://schema.org',
           '@type': 'BlogPosting',
@@ -65,19 +97,28 @@ app.get('*', async (req, res) => {
           image: meta.image,
           datePublished: meta.publishedAt,
           author: { '@type': 'Person', name: meta.author },
+          url: ogUrl
         };
 
+        // More robust replacement with better regex patterns
         html = html
-          .replace(/<title>.*?<\/title>/, `<title>${meta.title} | DemoStoke<\/title>`)
-          .replace(/<meta name="description"[^>]*>/, `<meta name="description" content="${meta.description}" />`)
-          .replace(/<meta name="author"[^>]*>/, `<meta name="author" content="${meta.author}" />`)
-          .replace(/<meta property="og:title"[^>]*>/, `<meta property="og:title" content="${meta.title} | DemoStoke" />`)
-          .replace(/<meta property="og:description"[^>]*>/, `<meta property="og:description" content="${meta.description}" />`)
-          .replace(/<meta property="og:type"[^>]*>/, `<meta property="og:type" content="article" />`)
-          .replace(/<meta property="og:image"[^>]*>/, `<meta property="og:image" content="${meta.image}" />`)
-          .replace(/<meta property="og:url"[^>]*>/, `<meta property="og:url" content="${ogUrl}" />`)
-          .replace(/<meta name="twitter:image"[^>]*>/, `<meta name="twitter:image" content="${meta.image}" />`)
+          .replace(/<title>[^<]*<\/title>/i, `<title>${escapedTitle} | DemoStoke</title>`)
+          .replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i, `<meta name="description" content="${escapedDescription}" />`)
+          .replace(/<meta\s+name="author"\s+content="[^"]*"\s*\/?>/i, `<meta name="author" content="${escapedAuthor}" />`)
+          .replace(/<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:title" content="${escapedTitle} | DemoStoke" />`)
+          .replace(/<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:description" content="${escapedDescription}" />`)
+          .replace(/<meta\s+property="og:type"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:type" content="article" />`)
+          .replace(/<meta\s+property="og:image"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:image" content="${escapedImage}" />`)
+          .replace(/<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:url" content="${ogUrl}" />`)
+          .replace(/<meta\s+name="twitter:title"\s+content="[^"]*"\s*\/?>/i, `<meta name="twitter:title" content="${escapedTitle} | DemoStoke" />`)
+          .replace(/<meta\s+name="twitter:description"\s+content="[^"]*"\s*\/?>/i, `<meta name="twitter:description" content="${escapedDescription}" />`)
+          .replace(/<meta\s+name="twitter:image"\s+content="[^"]*"\s*\/?>/i, `<meta name="twitter:image" content="${escapedImage}" />`)
+          .replace(/<script\s+id="structured-data"[^>]*>.*?<\/script>/i, '') // Remove existing structured data
           .replace('</head>', `<script id="structured-data" type="application/ld+json">${JSON.stringify(schema)}</script></head>`);
+          
+        console.log('Replaced meta tags for blog post:', escapedTitle);
+      } else {
+        console.log('No meta found for slug:', slug);
       }
     }
 
