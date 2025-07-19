@@ -37,6 +37,8 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
   const [isFeatured, setIsFeatured] = useState(equipment.is_featured || false);
   const [isUpdating, setIsUpdating] = useState(false);
 
+  console.log('partyId on EquipmentCard:', equipment.owner.partyId);
+
 
   // Determine if this is from a shop or private party based on owner
   const isShop = equipment.owner.shopId;
@@ -58,7 +60,7 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
 
   const handleFeatureToggle = async (checked: boolean) => {
     if (isUpdating) return;
-    
+
     setIsUpdating(true);
     try {
       const result = await featuredGearService.setFeaturedStatus(equipment.id, checked);
@@ -210,7 +212,7 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
                 onCheckedChange={handleFeatureToggle}
                 disabled={isUpdating}
               />
-              <label 
+              <label
                 htmlFor={`featured-${equipment.id}`}
                 className="text-xs text-muted-foreground cursor-pointer"
               >
