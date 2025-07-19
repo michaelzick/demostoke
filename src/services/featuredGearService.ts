@@ -1,9 +1,40 @@
 import { supabase } from "@/integrations/supabase/client";
 
 export const featuredGearService = {
-  // Set featured status for equipment
-  async setFeaturedStatus(equipmentId: string, isFeatured: boolean): Promise<boolean> {
+  // Get count of currently featured equipment
+  async getFeaturedCount(): Promise<number> {
     try {
+      const { count, error } = await supabase
+        .from('equipment')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_featured', true);
+
+      if (error) {
+        console.error('Error getting featured count:', error);
+        return 0;
+      }
+
+      return count || 0;
+    } catch (error) {
+      console.error('Error getting featured count:', error);
+      return 0;
+    }
+  },
+
+  // Set featured status for equipment with 3-item limit
+  async setFeaturedStatus(equipmentId: string, isFeatured: boolean): Promise<{ success: boolean; message?: string }> {
+    try {
+      if (isFeatured) {
+        // Check if we already have 3 featured items
+        const currentCount = await this.getFeaturedCount();
+        if (currentCount >= 3) {
+          return { 
+            success: false, 
+            message: "Maximum of 3 featured gear items allowed. Please unfeature another item first." 
+          };
+        }
+      }
+
       const { error } = await supabase
         .from('equipment')
         .update({ is_featured: isFeatured })
@@ -11,13 +42,13 @@ export const featuredGearService = {
 
       if (error) {
         console.error('Error updating featured status:', error);
-        return false;
+        return { success: false, message: "Failed to update featured status." };
       }
 
-      return true;
+      return { success: true };
     } catch (error) {
       console.error('Error updating featured status:', error);
-      return false;
+      return { success: false, message: "Failed to update featured status." };
     }
   },
 

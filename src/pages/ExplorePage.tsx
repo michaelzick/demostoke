@@ -101,7 +101,10 @@ const ExplorePage = () => {
     }
 
     if (showFeatured) {
+      console.log("Filtering for featured items. Total before filtering:", results.length);
+      console.log("Items with is_featured property:", results.map(item => ({ name: item.name, is_featured: item.is_featured })));
       results = results.filter(item => item.is_featured === true);
+      console.log("Filtered featured results:", results.length);
     }
 
     switch (sortBy) {

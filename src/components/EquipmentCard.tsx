@@ -61,8 +61,8 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
     
     setIsUpdating(true);
     try {
-      const success = await featuredGearService.setFeaturedStatus(equipment.id, checked);
-      if (success) {
+      const result = await featuredGearService.setFeaturedStatus(equipment.id, checked);
+      if (result.success) {
         setIsFeatured(checked);
         toast({
           title: "Success",
@@ -71,7 +71,7 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
       } else {
         toast({
           title: "Error",
-          description: "Failed to update featured status. Please try again.",
+          description: result.message || "Failed to update featured status. Please try again.",
           variant: "destructive"
         });
       }
