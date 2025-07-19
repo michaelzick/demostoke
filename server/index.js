@@ -74,7 +74,12 @@ app.get('*', async (req, res) => {
       
       const meta = await getBlogPostMeta(slug);
       if (meta) {
-        console.log('Found blog meta:', meta);
+        console.log('Found blog meta:', {
+          title: meta.title,
+          author: meta.author,
+          image: meta.image,
+          description: meta.description?.substring(0, 100) + '...'
+        });
         
         // Use HTTPS and ensure proper URL construction
         const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
@@ -100,6 +105,8 @@ app.get('*', async (req, res) => {
           url: ogUrl
         };
 
+        console.log('Using author for replacements:', meta.author);
+
         // More robust replacement with better regex patterns
         html = html
           .replace(/<title>[^<]*<\/title>/i, `<title>${escapedTitle} | DemoStoke</title>`)
@@ -116,7 +123,14 @@ app.get('*', async (req, res) => {
           .replace(/<script\s+id="structured-data"[^>]*>.*?<\/script>/i, '') // Remove existing structured data
           .replace('</head>', `<script id="structured-data" type="application/ld+json">${JSON.stringify(schema)}</script></head>`);
           
-        console.log('Replaced meta tags for blog post:', escapedTitle);
+        console.log('Replaced meta tags for blog post. Author used:', escapedAuthor);
+        
+        // Verify the replacement worked by checking if the author is in the HTML
+        if (html.includes(`content="${escapedAuthor}"`)) {
+          console.log('✅ Author replacement successful');
+        } else {
+          console.log('❌ Author replacement failed');
+        }
       } else {
         console.log('No meta found for slug:', slug);
       }
