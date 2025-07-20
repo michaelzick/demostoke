@@ -97,12 +97,12 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
           <div className="space-y-3 pt-1">
             {isPrivateParty ? (
               <>
-                {stats && (
+                {/* {stats && (
                   <div className="flex justify-between">
                     <span className="font-medium">Response Rate</span>
                     <span>{stats.responseRate}%</span>
                   </div>
-                )}
+                )} */}
                 {stats && stats.totalReviews > 0 && (
                   <div className="flex justify-between">
                     <span className="font-medium">Rating</span>
@@ -112,15 +112,6 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
                     </div>
                   </div>
                 )}
-                <div className="text-sm text-muted-foreground">
-                  <div>
-                    This is an unclaimed profile for {profile.name || "this user"}.{" "}
-                    <Link to="/contact-us" className="text-primary hover:underline">
-                      Contact us
-                    </Link>{" "}
-                    if you are the owner and want to claim this profile.
-                  </div>
-                </div>
                 <div className="flex justify-between">
                   <span className="font-medium">Member Since</span>
                   <span>{memberSinceDate}</span>
