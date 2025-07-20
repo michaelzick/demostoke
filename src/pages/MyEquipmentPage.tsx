@@ -317,7 +317,7 @@ const MyEquipmentPage = () => {
                             <img
                               src={images[0]}
                               alt={item.name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                              className="w-full h-full object-cover"
                             />
                           )
                         ) : (
