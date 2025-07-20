@@ -80,7 +80,7 @@ const CompactEquipmentCard = ({ equipment }: CompactEquipmentCardProps) => {
         </Tooltip>
         <Link
           to={ownerLinkPath}
-          className="underline text-sm text-muted-foreground hover:text-primary mb-2 block"
+          className="underline text-sm text-muted-foreground hover:text-primary mb-2"
         >
           {equipment.owner.name}
         </Link>
