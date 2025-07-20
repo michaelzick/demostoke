@@ -87,7 +87,7 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
   };
 
   return (
-    <Card className="overflow-hidden transition-all hover:shadow-md">
+    <Card className="overflow-hidden">
       <div className="relative w-full overflow-hidden h-[290px]">
         {hasImages ? (
           hasMultipleImages ? (
