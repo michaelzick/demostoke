@@ -54,7 +54,9 @@ export const useUserProfileBySlug = (slug: string) => {
 
       if (roleError || !roleRow) {
         try {
-          const res = await fetch(`/functions/v1/get-user-display-role?user_id=${data.id}`);
+          const res = await fetch(
+            `https://qtlhqsqanbxgfbcjigrl.supabase.co/functions/v1/get-user-display-role?user_id=${data.id}`
+          );
           if (res.ok) {
             const json = await res.json();
             displayRole = json.display_role;

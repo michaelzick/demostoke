@@ -158,11 +158,13 @@ export const useUserCreationSubmission = () => {
       if (roleError || !authData.session) {
         console.error('Role assignment error:', roleError);
         try {
-          const res = await fetch('/functions/v1/set-user-display-role', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: authData.user.id, display_role: formData.role })
-          });
+          const res = await fetch(
+            'https://qtlhqsqanbxgfbcjigrl.supabase.co/functions/v1/set-user-display-role',
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ user_id: authData.user.id, display_role: formData.role })
+            });
           if (!res.ok) {
             console.error('Edge function role update failed', await res.text());
           }
