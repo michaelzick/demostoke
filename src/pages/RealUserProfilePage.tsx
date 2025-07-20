@@ -58,6 +58,7 @@ const RealUserProfilePage = () => {
   // Use the correct profile data - prioritize own profile data for current user
   let profile: UserProfile | undefined;
   if (isOwnProfile && ownProfileData) {
+    console.log('Using own profile data, displayRole:', ownProfileData.displayRole);
     profile = {
       id: user.id,
       name: ownProfileData.name,
@@ -75,8 +76,10 @@ const RealUserProfilePage = () => {
       created_at: new Date().toISOString(),
     } as UserProfile;
   } else if (isMockUser) {
+    console.log('Using mock profile data, displayRole:', mockProfile?.displayRole);
     profile = mockProfile;
   } else {
+    console.log('Using db profile data, displayRole:', dbProfile?.displayRole);
     profile = dbProfile as UserProfile | undefined;
   }
 
