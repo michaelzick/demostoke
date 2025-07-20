@@ -44,20 +44,32 @@ export const useUserProfileBySlug = (slug: string) => {
         return null;
       }
 
+      let displayRole: string | null = null;
+
       const { data: roleRow, error: roleError } = await supabase
         .from('user_roles')
         .select('display_role')
         .eq('user_id', data.id)
         .single();
 
-      if (roleError) {
-        console.error('Error fetching user display role:', roleError);
+      if (roleError || !roleRow) {
+        try {
+          const res = await fetch(`/functions/v1/get-user-display-role?user_id=${data.id}`);
+          if (res.ok) {
+            const json = await res.json();
+            displayRole = json.display_role;
+          }
+        } catch (e) {
+          console.error('Edge function display role fetch failed:', e);
+        }
+      } else {
+        displayRole = roleRow.display_role;
       }
 
       return {
         ...data,
         display_role: undefined,
-        displayRole: roleRow?.display_role || 'retail-store'
+        displayRole: displayRole || 'retail-store'
       } as UserProfile & { displayRole: string };
     },
     enabled: !!slug,
