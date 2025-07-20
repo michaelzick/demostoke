@@ -10,6 +10,8 @@ const corsHeaders = {
 interface GenerateRequest {
   gearName: string;
   gearType?: string;
+  existingText?: string;
+  mode?: 'generate' | 'rewrite';
 }
 
 serve(async (req) => {
@@ -18,11 +20,18 @@ serve(async (req) => {
   }
 
   try {
-    const { gearName, gearType }: GenerateRequest = await req.json();
+    const { gearName, gearType, existingText, mode = 'generate' }: GenerateRequest = await req.json();
 
-    if (!gearName) {
+    if (mode === 'rewrite' && !existingText) {
       return new Response(
-        JSON.stringify({ error: 'gearName is required' }),
+        JSON.stringify({ error: 'existingText is required for rewrite mode' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (mode === 'generate' && !gearName) {
+      return new Response(
+        JSON.stringify({ error: 'gearName is required for generate mode' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -36,7 +45,12 @@ serve(async (req) => {
       );
     }
 
-    const prompt = `Write a short, compelling product description for ${gearType ? `a ${gearType}` : 'this gear'} named "${gearName}". Keep it concise, highlighting key features and benefits that would appeal to outdoor enthusiasts. Focus on practical aspects and what makes this gear special.`;
+    let prompt: string;
+    if (mode === 'rewrite') {
+      prompt = `Rewrite the following product description to make it more compelling and professional while maintaining accuracy. Keep the same length or shorter. Original text: "${existingText}"${gearName ? ` (This is for gear named "${gearName}")` : ''}${gearType ? ` (This is a ${gearType})` : ''}`;
+    } else {
+      prompt = `Write a short, compelling product description for ${gearType ? `a ${gearType}` : 'this gear'} named "${gearName}". Keep it concise, highlighting key features and benefits that would appeal to outdoor enthusiasts. Focus on practical aspects and what makes this gear special.`;
+    }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -47,7 +61,12 @@ serve(async (req) => {
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'You generate concise marketing copy.' },
+          { 
+            role: 'system', 
+            content: mode === 'rewrite' 
+              ? 'You are an expert copywriter who rewrites product descriptions to make them more compelling while maintaining accuracy and keeping similar length.'
+              : 'You generate concise marketing copy.'
+          },
           { role: 'user', content: prompt }
         ],
         temperature: 0.7,
