@@ -205,7 +205,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
             >
               Book Now
             </Button>
-            <p className="text-lg mb-6">{equipment.description}</p>
+            <div className="text-lg mb-6 whitespace-pre-wrap">{equipment.description}</div>
             <EquipmentSpecs specifications={equipment.specifications} />
           </div>
           {/* Tabs for Additional Information */}
