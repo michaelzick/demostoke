@@ -89,7 +89,7 @@ export const useProfileQuery = () => {
     queryKey: ['profile', user?.id],
     queryFn: fetchProfileData,
     enabled: !!user?.id,
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 0, // Force fresh data to avoid caching issues with role changes
     refetchOnWindowFocus: true,
   });
 
