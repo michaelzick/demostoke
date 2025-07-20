@@ -54,12 +54,11 @@ export const useUserProfileBySlug = (slug: string) => {
 
       if (roleError || !roleRow) {
         try {
-          const res = await fetch(
-            `https://qtlhqsqanbxgfbcjigrl.supabase.co/functions/v1/get-user-display-role?user_id=${data.id}`
+          const { data: fnData, error: fnError } = await supabase.functions.invoke(
+            `get-user-display-role?user_id=${data.id}`
           );
-          if (res.ok) {
-            const json = await res.json();
-            displayRole = json.display_role;
+          if (!fnError && (fnData as any)?.display_role) {
+            displayRole = (fnData as any).display_role as string;
           }
         } catch (e) {
           console.error('Edge function display role fetch failed:', e);
