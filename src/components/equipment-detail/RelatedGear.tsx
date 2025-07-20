@@ -33,10 +33,7 @@ const RelatedGear = ({ relatedGear }: RelatedGearProps) => {
           const hasImages = images.length > 0;
 
           return (
-            <Card
-              key={item.id}
-              className="overflow-hidden hover:shadow-md transition-shadow"
-            >
+            <Card key={item.id} className="overflow-hidden">
               <div className="flex h-24">
                 <div className="w-1/3 relative">
                   {hasImages ? (

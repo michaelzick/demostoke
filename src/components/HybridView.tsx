@@ -200,7 +200,7 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased, userLo
               <div
                 key={equipment.id}
                 id={`equipment-card-${equipment.id}`}
-                className={`transition-all duration-300 rounded-lg ${
+                className={`transition-all duration-300 rounded-lg hover:shadow-md cursor-pointer ${
                   selectedEquipmentId === equipment.id
                     ? 'ring-2 ring-primary ring-offset-2'
                     : ''
@@ -231,7 +231,7 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased, userLo
             <div
               key={equipment.id}
               id={`equipment-card-${equipment.id}`}
-              className={`transition-all duration-300 cursor-pointer rounded-lg ${
+              className={`transition-all duration-300 cursor-pointer rounded-lg hover:shadow-md ${
                 selectedEquipmentId === equipment.id
                   ? 'ring-2 ring-primary ring-offset-2'
                   : ''

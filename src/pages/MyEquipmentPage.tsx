@@ -290,10 +290,7 @@ const MyEquipmentPage = () => {
                 const hasImages = images.length > 0;
 
                 return (
-                  <Card
-                    key={item.id}
-                    className="group hover:shadow-lg transition-shadow"
-                  >
+                  <Card key={item.id} className="group">
                     <CardHeader className="pb-2">
                       <div className="aspect-square relative overflow-hidden rounded-md mb-4">
                         {hasImages ? (
@@ -320,7 +317,7 @@ const MyEquipmentPage = () => {
                             <img
                               src={images[0]}
                               alt={item.name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                              className="w-full h-full object-cover"
                             />
                           )
                         ) : (
@@ -353,6 +350,7 @@ const MyEquipmentPage = () => {
                       <div className="space-y-1">
                         <Link
                           to={`/${item.category}/${slugify(user.name)}/${slugify(item.name)}`}
+                          className="inline-block"
                         >
                           <CardTitle className="text-lg line-clamp-1 hover:text-primary transition-colors">
                             {item.name}
