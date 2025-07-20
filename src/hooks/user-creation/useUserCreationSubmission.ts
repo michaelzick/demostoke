@@ -155,9 +155,23 @@ export const useUserCreationSubmission = () => {
           display_role: formData.role
         });
 
-      if (roleError) {
+      if (roleError || !authData.session) {
         console.error('Role assignment error:', roleError);
-        // Don't throw here as the user was created successfully
+        try {
+          const res = await fetch(
+            'https://qtlhqsqanbxgfbcjigrl.supabase.co/functions/v1/set-user-display-role',
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ user_id: authData.user.id, display_role: formData.role })
+            });
+          if (!res.ok) {
+            console.error('Edge function role update failed', await res.text());
+          }
+        } catch (e) {
+          console.error('Edge function role update exception', e);
+        }
+
         toast({
           title: "User Created with Warning",
           description: `User account created but role assignment failed. User: ${formData.name} (${formData.email})`,
