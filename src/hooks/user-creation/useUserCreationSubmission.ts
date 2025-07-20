@@ -135,7 +135,8 @@ export const useUserCreationSubmission = () => {
         console.log('Profile created successfully');
       }
 
-      // Step 6: Create user role entry with proper role mapping
+      // Step 6: Create user role entry with proper role mapping BEFORE user creation
+      // This prevents the trigger from creating a default role
       console.log('Assigning role:', formData.role);
       
       // Map frontend role values to database enum values
@@ -147,9 +148,10 @@ export const useUserCreationSubmission = () => {
         dbRole = 'admin';
       }
       
+      // Insert the role IMMEDIATELY after user creation to prevent trigger override
       const { error: roleError } = await supabase
         .from('user_roles')
-        .upsert({
+        .insert({
           user_id: authData.user.id,
           role: dbRole,
           display_role: formData.role
