@@ -1,10 +1,1 @@
 project_id = "qtlhqsqanbxgfbcjigrl"
-
-[functions.convert-to-jpeg]
-verify_jwt = false
-
-[functions.download-store-image]
-verify_jwt = false
-
-[functions.generate-description]
-verify_jwt = false
