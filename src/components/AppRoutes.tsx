@@ -4,7 +4,7 @@ import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import AddGearForm from '../pages/AddGearForm';
 import LightspeedPOSPage from '../pages/LightspeedPOSPage';
-import Index from "../pages/Index";
+import HomePage from "../pages/HomePage";
 import AboutPage from "../pages/AboutPage";
 import BlogPage from "../pages/BlogPage";
 import BlogPostPage from "../pages/BlogPostPage";
@@ -36,7 +36,7 @@ const AppRoutes = () => {
           <Route path="signup" element={<SignUpPage />} />
         </Route>
         <Route path="/" element={<MainLayout />}>
-          <Route index element={<Index />} />
+          <Route index element={<HomePage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="blog" element={<BlogPage />} />
           <Route path="blog/:slug" element={<BlogPostPage />} />
