@@ -1,46 +1,42 @@
 
-import { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import AddGearForm from '../pages/AddGearForm';
 import LightspeedPOSPage from '../pages/LightspeedPOSPage';
-import LoadingSpinner from './LoadingSpinner';
-
-const HomePage = lazy(() => import("../pages/HomePage"));
-const AboutPage = lazy(() => import("../pages/AboutPage"));
-const BlogPage = lazy(() => import("../pages/BlogPage"));
-const BlogPostPage = lazy(() => import("../pages/BlogPostPage"));
-const ContactPage = lazy(() => import("../pages/ContactUsPage"));
-const NotFoundPage = lazy(() => import("../pages/NotFound"));
-const ExplorePage = lazy(() => import("../pages/ExplorePage"));
-const EquipmentDetailPage = lazy(() => import("../pages/EquipmentDetailPage"));
-const ListGearPage = lazy(() => import("../pages/ListYourGearPage"));
-const EditGearPage = lazy(() => import("../pages/EditGearForm"));
-const UserProfilePage = lazy(() => import("../pages/UserProfilePage"));
-const MyEquipmentPage = lazy(() => import("../pages/MyEquipmentPage"));
-const AnalyticsPage = lazy(() => import("../pages/AnalyticsPage"));
-const BookingsPage = lazy(() => import("../pages/BookingsPage"));
-const AdminPage = lazy(() => import("../pages/AdminPage"));
-const SignInPage = lazy(() => import("../pages/SignInPage"));
-const SignUpPage = lazy(() => import("../pages/SignUpPage"));
-const RealUserProfilePage = lazy(() => import("../pages/RealUserProfilePage"));
-const GearOwnerProfilePage = lazy(() => import("../pages/GearOwnerProfilePage"));
-const ShopPage = lazy(() => import("../pages/ShopPage"));
-const PrivatePartyPage = lazy(() => import("../pages/PrivatePartyPage"));
-const SearchResultsPage = lazy(() => import("../pages/SearchResultsPage"));
-const DemoCalendarPage = lazy(() => import("../pages/DemoCalendarPage"));
+import Index from "../pages/Index";
+import AboutPage from "../pages/AboutPage";
+import BlogPage from "../pages/BlogPage";
+import BlogPostPage from "../pages/BlogPostPage";
+import ContactPage from "../pages/ContactUsPage";
+import NotFoundPage from "../pages/NotFound";
+import ExplorePage from "../pages/ExplorePage";
+import EquipmentDetailPage from "../pages/EquipmentDetailPage";
+import ListGearPage from "../pages/ListYourGearPage";
+import EditGearPage from "../pages/EditGearForm";
+import UserProfilePage from "../pages/UserProfilePage";
+import MyEquipmentPage from "../pages/MyEquipmentPage";
+import AnalyticsPage from "../pages/AnalyticsPage";
+import BookingsPage from "../pages/BookingsPage";
+import AdminPage from "../pages/AdminPage";
+import SignInPage from "../pages/SignInPage";
+import SignUpPage from "../pages/SignUpPage";
+import RealUserProfilePage from "../pages/RealUserProfilePage";
+import GearOwnerProfilePage from "../pages/GearOwnerProfilePage";
+import ShopPage from "../pages/ShopPage";
+import PrivatePartyPage from "../pages/PrivatePartyPage";
+import SearchResultsPage from "../pages/SearchResultsPage";
+import DemoCalendarPage from "../pages/DemoCalendarPage";
 
 const AppRoutes = () => {
   return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <Routes>
+    <Routes>
         <Route path="/auth" element={<AuthLayout />}>
           <Route path="signin" element={<SignInPage />} />
           <Route path="signup" element={<SignUpPage />} />
         </Route>
         <Route path="/" element={<MainLayout />}>
-          <Route index element={<HomePage />} />
+          <Route index element={<Index />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="blog" element={<BlogPage />} />
           <Route path="blog/:slug" element={<BlogPostPage />} />
@@ -64,8 +60,7 @@ const AppRoutes = () => {
           <Route path="demo-calendar" element={<DemoCalendarPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
-      </Routes>
-    </Suspense>
+    </Routes>
   );
 };
 
