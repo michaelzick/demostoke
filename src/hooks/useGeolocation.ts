@@ -18,8 +18,16 @@ export const useGeolocation = () => {
     permissionDenied: false,
   });
 
+  const [mounted, setMounted] = useState(false);
+
+  // Set mounted state to track when component is hydrated
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const getCurrentLocation = () => {
-    if (!navigator.geolocation) {
+    // Only proceed if we're in a browser environment
+    if (!mounted || typeof window === "undefined" || !navigator.geolocation) {
       setState(prev => ({
         ...prev,
         error: 'Geolocation is not supported by this browser',
@@ -40,12 +48,18 @@ export const useGeolocation = () => {
           permissionDenied: false,
         });
         
-        // Cache location in localStorage for future use
-        localStorage.setItem('userLocation', JSON.stringify({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          timestamp: Date.now(),
-        }));
+        // Cache location in localStorage only if available
+        if (typeof window !== "undefined" && window.localStorage) {
+          try {
+            localStorage.setItem('userLocation', JSON.stringify({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              timestamp: Date.now(),
+            }));
+          } catch (error) {
+            console.error('Error saving location to localStorage:', error);
+          }
+        }
       },
       (error) => {
         console.error('Geolocation error:', error);
@@ -81,11 +95,13 @@ export const useGeolocation = () => {
     );
   };
 
-  // Try to load cached location on mount
+  // Try to load cached location on mount, but only on client side
   useEffect(() => {
-    const cachedLocation = localStorage.getItem('userLocation');
-    if (cachedLocation) {
-      try {
+    if (!mounted || typeof window === "undefined") return;
+
+    try {
+      const cachedLocation = localStorage.getItem('userLocation');
+      if (cachedLocation) {
         const parsed = JSON.parse(cachedLocation);
         const isStale = Date.now() - parsed.timestamp > 300000; // 5 minutes
         
@@ -99,14 +115,14 @@ export const useGeolocation = () => {
           });
           return;
         }
-      } catch (error) {
-        console.error('Error parsing cached location:', error);
       }
+    } catch (error) {
+      console.error('Error parsing cached location:', error);
     }
 
     // Auto-request location on first load
     getCurrentLocation();
-  }, []);
+  }, [mounted]);
 
   return {
     ...state,

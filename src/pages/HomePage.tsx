@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import HCaptcha from "@/components/HCaptcha";
+import { safeLocalStorage } from "@/utils/ssrSafe";
 
 const HomePage = () => {
   usePageMetadata({
@@ -63,10 +64,10 @@ const HomePage = () => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (!mounted || typeof window === "undefined") return;
+    if (!mounted) return;
 
-    const dontShow = localStorage.getItem("hideEmailModal");
-    const sent = localStorage.getItem("emailModalSent");
+    const dontShow = safeLocalStorage.getItem("hideEmailModal");
+    const sent = safeLocalStorage.getItem("emailModalSent");
     // Not showing the modal for now. Uncomment to show it.
     // if (!dontShow && !sent) {
     //   timerRef.current = setTimeout(() => setShowModal(true), 3000);
@@ -94,9 +95,7 @@ const HomePage = () => {
     captchaToken;
 
   const handleDontShowAgain = () => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("hideEmailModal", "1");
-    }
+    safeLocalStorage.setItem("hideEmailModal", "1");
     setShowModal(false);
   };
 
