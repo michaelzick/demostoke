@@ -6,9 +6,7 @@ import App from './App';
 import './index.css';
 
 hydrateRoot(document.getElementById('root')!,
-  <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
 );
