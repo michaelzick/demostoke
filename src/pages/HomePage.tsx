@@ -30,9 +30,18 @@ const HomePage = () => {
     title: 'DemoStoke | Find it. Ride it. Love it? Buy it.',
     description: 'DemoStoke is the go-to platform to find, try, and buy the gear you\'ll eventually fall in love with.'
   });
+
+  // Client-only state
+  const [mounted, setMounted] = useState(false);
+  
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  // Set mounted state
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
   // Fetch trending, recent, and featured equipment
@@ -54,6 +63,8 @@ const HomePage = () => {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    if (!mounted || typeof window === "undefined") return;
+
     const dontShow = localStorage.getItem("hideEmailModal");
     const sent = localStorage.getItem("emailModalSent");
     // Not showing the modal for now. Uncomment to show it.
@@ -63,14 +74,14 @@ const HomePage = () => {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, []);
+  }, [mounted]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCaptchaVerify = (token) => {
+  const handleCaptchaVerify = (token: string) => {
     setCaptchaToken(token);
   };
 
@@ -83,7 +94,9 @@ const HomePage = () => {
     captchaToken;
 
   const handleDontShowAgain = () => {
-    localStorage.setItem("hideEmailModal", "1");
+    if (typeof window !== "undefined") {
+      localStorage.setItem("hideEmailModal", "1");
+    }
     setShowModal(false);
   };
 

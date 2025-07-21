@@ -11,7 +11,7 @@ import AuthLayout from "./layouts/AuthLayout";
 import AddGearForm from './pages/AddGearForm';
 import LightspeedPOSPage from './pages/LightspeedPOSPage';
 import LoadingSpinner from './components/LoadingSpinner';
-import { initializeAmplitudeClickTracking } from "./utils/amplitudeClickTracking";
+import { ClientOnlyAmplitudeInit } from "./components/ClientOnlyAmplitudeInit";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
@@ -46,23 +46,15 @@ const queryClient = new QueryClient({
   },
 });
 
-type AppProps = {
-  Router?: React.ComponentType<any>;
-  routerProps?: Record<string, unknown>;
-};
-
-const App = ({ Router = BrowserRouter, routerProps = {} }: AppProps) => {
-  useEffect(() => {
-    initializeAmplitudeClickTracking();
-  }, []);
-
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
           <TooltipProvider>
             <ClientOnlyToaster />
-            <Router {...routerProps}>
+            <ClientOnlyAmplitudeInit />
+            <BrowserRouter>
               <Suspense fallback={<LoadingSpinner />}>
                 <Routes>
                   <Route path="/auth" element={<AuthLayout />}>
@@ -96,7 +88,7 @@ const App = ({ Router = BrowserRouter, routerProps = {} }: AppProps) => {
                   </Route>
                 </Routes>
               </Suspense>
-            </Router>
+            </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>
       </ThemeProvider>

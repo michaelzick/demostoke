@@ -13,9 +13,16 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [session, setSession] = useState<Session | null>(null);
+  const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || typeof window === "undefined") return;
+
     const initAuth = async () => {
       setIsLoading(true);
 
@@ -64,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
     };
 
     initAuth();
-  }, []);
+  }, [mounted]);
 
   const handleSessionChange = async (session: Session) => {
     setIsLoading(true);

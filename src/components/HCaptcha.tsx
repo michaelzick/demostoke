@@ -20,6 +20,11 @@ declare global {
 const HCaptcha = forwardRef<{ reset: () => void }, HCaptchaProps>(({ siteKey, onVerify, shouldReset }, ref) => {
   const [loaded, setLoaded] = useState(false);
   const [widgetId, setWidgetId] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useImperativeHandle(ref, () => ({
     reset: () => {
@@ -28,7 +33,7 @@ const HCaptcha = forwardRef<{ reset: () => void }, HCaptchaProps>(({ siteKey, on
   }));
 
   const resetCaptcha = () => {
-    if (window.hcaptcha && widgetId) {
+    if (typeof window !== "undefined" && window.hcaptcha && widgetId) {
       window.hcaptcha.reset(widgetId);
       onVerify(''); // Clear the token
     }
@@ -36,13 +41,15 @@ const HCaptcha = forwardRef<{ reset: () => void }, HCaptchaProps>(({ siteKey, on
 
   // Handle reset from parent component
   useEffect(() => {
-    if (shouldReset && window.hcaptcha && widgetId) {
+    if (shouldReset && typeof window !== "undefined" && window.hcaptcha && widgetId) {
       resetCaptcha();
     }
   }, [shouldReset, widgetId]);
 
   // Load the hCaptcha script once
   useEffect(() => {
+    if (!mounted || typeof window === "undefined") return;
+
     // Only load the script if it's not already loaded
     if (!document.querySelector('script[src*="hcaptcha"]')) {
       // Define the callback function
@@ -60,13 +67,15 @@ const HCaptcha = forwardRef<{ reset: () => void }, HCaptchaProps>(({ siteKey, on
       // If the script is already loaded, set loaded to true
       setLoaded(true);
     }
-  }, []);
+  }, [mounted]);
 
   // Render hCaptcha when the script is loaded
   useEffect(() => {
+    if (!mounted || typeof window === "undefined") return;
+    
     if (loaded && !document.querySelector('.h-captcha iframe')) {
       const container = document.getElementById('h-captcha-container');
-      if (container) {
+      if (container && window.hcaptcha) {
         try {
           const id = window.hcaptcha.render('h-captcha-container', {
             sitekey: siteKey,
@@ -87,7 +96,11 @@ const HCaptcha = forwardRef<{ reset: () => void }, HCaptchaProps>(({ siteKey, on
         }
       }
     }
-  }, [loaded, siteKey, onVerify]);
+  }, [loaded, siteKey, onVerify, mounted]);
+
+  if (!mounted) {
+    return <div className="mt-4 h-[78px]"></div>; // Placeholder with hCaptcha height
+  }
 
   return <div id="h-captcha-container" className="mt-4"></div>;
 });
