@@ -22,27 +22,7 @@ const getFileType = (url: string): string => {
 export const scanImages = async (): Promise<ImageRecord[]> => {
   const foundImages: ImageRecord[] = [];
 
-  const { data: equipmentData } = await supabase
-    .from("equipment")
-    .select("id, image_url, category, name, profiles(name)")
-    .not("image_url", "is", null);
-
-  equipmentData?.forEach(item => {
-    if (item.image_url && isProcessableImage(item.image_url)) {
-      foundImages.push({
-        id: `equipment-${item.id}`,
-        url: item.image_url,
-        source_table: "equipment",
-        source_column: "image_url",
-        source_record_id: item.id,
-        equipment_id: item.id,
-        category: item.category,
-        name: item.name,
-        owner_name: (item as any).profiles?.name,
-        file_type: getFileType(item.image_url)
-      });
-    }
-  });
+  // Note: equipment.image_url column was removed, so we only scan equipment_images table
 
   const { data: equipmentImagesData } = await supabase
     .from("equipment_images")

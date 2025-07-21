@@ -82,28 +82,60 @@ export const featuredGearService = {
       }
 
       // Transform the data to match the Equipment interface
-      return data?.map(equipment => ({
-        ...equipment,
-        owner: {
-          id: equipment.profiles?.id || equipment.user_id,
-          name: equipment.profiles?.name || 'Unknown Owner',
-          avatar_url: equipment.profiles?.avatar_url,
-          shopId: null,
-          partyId: null
-        },
-        location: {
-          address: equipment.location_address || '',
-          latitude: equipment.location_lat,
-          longitude: equipment.location_lng
-        },
-        images: equipment.equipment_images
+      return data?.map(equipment => {
+        const images = equipment.equipment_images
           ?.sort((a, b) => {
             if (a.is_primary && !b.is_primary) return -1;
             if (!a.is_primary && b.is_primary) return 1;
             return a.display_order - b.display_order;
           })
-          .map(img => img.image_url) || []
-      })) || [];
+          .map(img => img.image_url) || [];
+
+        return {
+          id: equipment.id,
+          user_id: equipment.user_id,
+          name: equipment.name,
+          category: equipment.category,
+          subcategory: equipment.subcategory,
+          description: equipment.description || '',
+          image_url: images.length > 0 ? images[0] : '',
+          images: images,
+          price_per_day: Number(equipment.price_per_day),
+          price_per_hour: equipment.price_per_hour ? Number(equipment.price_per_hour) : undefined,
+          price_per_week: equipment.price_per_week ? Number(equipment.price_per_week) : undefined,
+          rating: Number(equipment.rating || 0),
+          review_count: equipment.review_count || 0,
+          damage_deposit: equipment.damage_deposit ? Number(equipment.damage_deposit) : undefined,
+          owner: {
+            id: equipment.profiles?.id || equipment.user_id,
+            name: equipment.profiles?.name || 'Unknown Owner',
+            imageUrl: equipment.profiles?.avatar_url || `https://api.dicebear.com/6.x/avataaars/svg?seed=${equipment.user_id}`,
+            rating: 4.8,
+            reviewCount: 15,
+            responseRate: 95
+          },
+          location: {
+            lat: Number(equipment.location_lat || 0),
+            lng: Number(equipment.location_lng || 0),
+            address: equipment.location_address || ''
+          },
+          distance: 2.5,
+          specifications: {
+            size: equipment.size || '',
+            weight: equipment.weight || '',
+            material: equipment.material || '',
+            suitable: equipment.suitable_skill_level || ''
+          },
+          availability: {
+            available: equipment.status === 'available'
+          },
+          pricing_options: [],
+          status: equipment.status,
+          created_at: equipment.created_at,
+          updated_at: equipment.updated_at,
+          visible_on_map: equipment.visible_on_map
+        };
+      }) || [];
     } catch (error) {
       console.error('Error fetching featured equipment:', error);
       return [];

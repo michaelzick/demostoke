@@ -15,7 +15,7 @@ export const featuredPostsService = {
         return [];
       }
 
-      return data || [];
+      return Array.isArray(data) ? data.filter((item): item is string => typeof item === 'string') : [];
     } catch (error) {
       console.error('Error fetching featured posts:', error);
       return [];

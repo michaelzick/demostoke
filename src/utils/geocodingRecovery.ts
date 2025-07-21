@@ -5,7 +5,7 @@ import { geocodeZipCode } from "./geocoding";
 interface EquipmentToGeocode {
   id: string;
   name: string;
-  location_zip: string;
+  location_address: string;
   location_lat: number | null;
   location_lng: number | null;
 }
@@ -15,8 +15,8 @@ export const findEquipmentMissingCoordinates = async (): Promise<EquipmentToGeoc
   
   const { data, error } = await supabase
     .from('equipment')
-    .select('id, name, location_zip, location_lat, location_lng')
-    .not('location_zip', 'is', null)
+    .select('id, name, location_address, location_lat, location_lng')
+    .not('location_address', 'is', null)
     .or('location_lat.is.null,location_lng.is.null');
 
   if (error) {
@@ -41,9 +41,9 @@ export const geocodeEquipmentBatch = async (equipment: EquipmentToGeocode[]): Pr
 
   for (const item of equipment) {
     try {
-      console.log(`🔍 Geocoding ${item.name} with zip ${item.location_zip}...`);
+      console.log(`🔍 Geocoding ${item.name} with address ${item.location_address}...`);
       
-      const coordinates = await geocodeZipCode(item.location_zip);
+      const coordinates = await geocodeZipCode(item.location_address);
       
       if (coordinates) {
         // Update the equipment with coordinates
@@ -65,7 +65,7 @@ export const geocodeEquipmentBatch = async (equipment: EquipmentToGeocode[]): Pr
           successful++;
         }
       } else {
-        console.warn(`⚠️ Failed to geocode ${item.name} with zip ${item.location_zip}`);
+        console.warn(`⚠️ Failed to geocode ${item.name} with address ${item.location_address}`);
         results.push({ id: item.id, name: item.name, success: false, error: 'Geocoding failed' });
         failed++;
       }

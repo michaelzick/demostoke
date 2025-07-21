@@ -42,7 +42,7 @@ export const useEquipmentById = (id: string) => {
       console.log("Raw equipment data from database:", data);
       console.log("Profile data:", data.profiles);
       console.log("Damage deposit from database:", data.damage_deposit);
-      console.log("Primary image URL:", data.image_url);
+      console.log("Equipment has multiple images:", data.has_multiple_images);
       console.log("Price per day:", data.price_per_day);
       console.log("Price per hour:", data.price_per_hour);
       console.log("Price per week:", data.price_per_week);
