@@ -52,7 +52,7 @@ const BlogPage = () => {
         setIsLoading(false);
       }
     };
-    
+
     window.scrollTo(0, 0);
     loadData();
   }, []);
@@ -78,7 +78,8 @@ const BlogPage = () => {
     { label: "Skis", value: "skis" },
     { label: "Surfboards", value: "surfboards" },
     { label: "Mountain Bikes", value: "mountain bikes" },
-    { label: "Stories That Stoke", value: "stories that stoke" }
+    { label: "Stories That Stoke", value: "stories that stoke" },
+    { label: "Stories That Suck", value: "stories that suck" },
   ];
 
   const handleSearch = async (query?: string, filter?: string) => {
@@ -334,8 +335,8 @@ const BlogPage = () => {
                         onCheckedChange={(checked) => handleFeatureToggle(post.id, checked as boolean)}
                         disabled={!featuredPosts.includes(post.id) && featuredPosts.length >= 3}
                       />
-                      <label 
-                        htmlFor={`featured-${post.id}`} 
+                      <label
+                        htmlFor={`featured-${post.id}`}
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
                         Feature on homepage
@@ -383,8 +384,8 @@ const BlogPage = () => {
                   </div>
                   <div className="flex flex-wrap gap-1 mt-3">
                     {Array.from(new Set(post.tags)).map((tag) => (
-                      <Link key={tag} to={`/blog?search=${encodeURIComponent(tag)}`}> 
-                        <Badge variant="outline" className="text-xs hover:text-primary hover:border-primary hover:bg-transparent transition-colors cursor-pointer"> 
+                      <Link key={tag} to={`/blog?search=${encodeURIComponent(tag)}`}>
+                        <Badge variant="outline" className="text-xs hover:text-primary hover:border-primary hover:bg-transparent transition-colors cursor-pointer">
                           {tag}
                         </Badge>
                       </Link>
