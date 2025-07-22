@@ -88,7 +88,8 @@ const HeroSection = () => {
         }}
       />
       {/* Overlay to darken the background */}
-      <div className="absolute inset-0 bg-black bg-opacity-30" />
+      {/* <div className="absolute inset-0 bg-black bg-opacity-30" /> */}
+
       {/* Diagonal divider */}
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none"
