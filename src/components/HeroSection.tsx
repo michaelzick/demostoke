@@ -80,7 +80,7 @@ const HeroSection = () => {
       ))}
       {/* Static image clipped to the bottom triangle */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-right"
         style={{
           clipPath: 'polygon(100% 0, 100% 100%, 0 100%)',
           backgroundImage:

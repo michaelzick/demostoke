@@ -6,7 +6,7 @@ import { Snowflake, Waves } from "@phosphor-icons/react";
 
 const HowItWorksSection = () => {
   return (
-    <section className="py-8 bg-white dark:bg-black">
+    <section className="py-8 bg-zinc-900/10 dark:bg-muted/20">
       <div className="container px-4 md:px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-3">How It Works</h2>
