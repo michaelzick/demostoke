@@ -19,7 +19,15 @@ import { blogService } from "@/services/blogService";
 
 const BlogPostGeneratorSection = () => {
   const { toast } = useToast();
-  const categories = Array.from(new Set(blogPosts.map((p) => p.category)));
+  const categories = [
+    'snowboards',
+    'skis',
+    'surfboards',
+    'mountain bikes',
+    'gear reviews',
+    'stories that stoke',
+    'stories that suck'
+  ];
 
   const [prompt, setPrompt] = useState("");
   const [category, setCategory] = useState<string>(categories[0] || "");
@@ -62,7 +70,7 @@ const BlogPostGeneratorSection = () => {
         prompt,
         category,
       });
-      
+
       if (result.success && result.content) {
         setBlogText(result.content);
         setIsTextGenerated(true);
@@ -97,14 +105,14 @@ const BlogPostGeneratorSection = () => {
 
     setIsCreatingPost(true);
     const authorId = slugify(author);
-    
+
     try {
       // Generate title and excerpt from the blog text
       const lines = blogText.split('\n').filter(line => line.trim());
-      const title = lines.find(line => line.startsWith('#'))?.replace(/^#+\s*/, '') || 
-                   `${category} - ${prompt.slice(0, 50)}...`;
-      const excerpt = lines.find(line => line.length > 50 && !line.startsWith('#'))?.slice(0, 160) + '...' || 
-                     prompt.slice(0, 160) + '...';
+      const title = lines.find(line => line.startsWith('#'))?.replace(/^#+\s*/, '') ||
+        `${category} - ${prompt.slice(0, 50)}...`;
+      const excerpt = lines.find(line => line.length > 50 && !line.startsWith('#'))?.slice(0, 160) + '...' ||
+        prompt.slice(0, 160) + '...';
 
       const result = await blogService.createPost({
         title,
@@ -120,13 +128,13 @@ const BlogPostGeneratorSection = () => {
         publishedAt: (publishedDate ?? new Date()).toISOString(),
         readTime: Math.ceil(blogText.split(' ').length / 200), // Rough reading time calculation
       });
-      
+
       if (result.success) {
         toast({
           title: "Success",
           description: "Blog post has been created and saved successfully! It will now appear in the blog section.",
         });
-        
+
         // Reset form
         setPrompt("");
         setBlogText("");
@@ -285,15 +293,15 @@ const BlogPostGeneratorSection = () => {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
-                <Calendar 
-                  mode="single" 
-                  selected={publishedDate} 
+                <Calendar
+                  mode="single"
+                  selected={publishedDate}
                   onSelect={(date) => {
                     setPublishedDate(date);
                     // Close the popover after selection
                     document.body.click();
-                  }} 
-                  className="pointer-events-auto" 
+                  }}
+                  className="pointer-events-auto"
                 />
               </PopoverContent>
             </Popover>
