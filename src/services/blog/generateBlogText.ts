@@ -9,6 +9,8 @@ export interface GenerateBlogTextParams {
 export interface GenerateBlogTextResponse {
   success: boolean;
   content?: string;
+  title?: string;
+  excerpt?: string;
   error?: string;
 }
 
@@ -27,7 +29,12 @@ export const generateBlogText = async (
     }
 
     if (data?.success) {
-      return { success: true, content: data.content };
+      return { 
+        success: true, 
+        content: data.content,
+        title: data.title,
+        excerpt: data.excerpt
+      };
     } else {
       return { success: false, error: data?.error || "Unknown error occurred" };
     }

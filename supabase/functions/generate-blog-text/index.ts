@@ -31,7 +31,8 @@ serve(async (req) => {
 
     console.log('Generating blog text for prompt:', prompt);
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // First, generate the main content
+    const contentResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
@@ -54,8 +55,8 @@ serve(async (req) => {
       }),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
+    if (!contentResponse.ok) {
+      const errorData = await contentResponse.json();
       console.error('OpenAI API error:', errorData);
       return new Response(
         JSON.stringify({ success: false, error: 'Failed to generate content' }),
@@ -63,13 +64,60 @@ serve(async (req) => {
       );
     }
 
-    const data = await response.json();
-    const generatedText = data.choices[0].message.content;
+    const contentData = await contentResponse.json();
+    const content = contentData.choices[0].message.content;
 
-    console.log('Blog text generated successfully');
+    // Generate title and excerpt based on the content
+    const metaResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a professional blog editor. Create compelling titles and excerpts for blog posts. Return your response in JSON format with "title" and "excerpt" fields. The title should be catchy and SEO-friendly. The excerpt should be 1-2 sentences that summarize the main value of the post.'
+          },
+          {
+            role: 'user',
+            content: `Create a title and excerpt for this ${category} blog post:\n\n${content}`
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 200,
+      }),
+    });
+
+    let title = `${category.charAt(0).toUpperCase() + category.slice(1)} Guide`;
+    let excerpt = 'Discover expert insights and tips in this comprehensive guide.';
+
+    if (metaResponse.ok) {
+      const metaData = await metaResponse.json();
+      const metaContent = metaData.choices[0]?.message?.content;
+      
+      if (metaContent) {
+        try {
+          const parsedMeta = JSON.parse(metaContent);
+          title = parsedMeta.title || title;
+          excerpt = parsedMeta.excerpt || excerpt;
+        } catch (error) {
+          console.warn('Failed to parse meta content as JSON, using fallback');
+        }
+      }
+    }
+
+    console.log('Blog content, title, and excerpt generated successfully');
 
     return new Response(
-      JSON.stringify({ success: true, content: generatedText }),
+      JSON.stringify({ 
+        success: true, 
+        content,
+        title,
+        excerpt
+      }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200 

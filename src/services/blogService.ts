@@ -68,12 +68,13 @@ export const blogService = {
   },
 
   // Create a new blog post in the database
-  async createPost(postData: Omit<BlogPost, 'id'>): Promise<{ success: boolean; post?: BlogPost; error?: string }> {
+  async createPost(postData: Omit<BlogPost, 'id'> & { slug?: string }): Promise<{ success: boolean; post?: BlogPost; error?: string }> {
     try {
       const { data, error } = await supabase
         .from('blog_posts')
         .insert([{
           title: postData.title,
+          slug: postData.slug,
           excerpt: postData.excerpt,
           content: postData.content,
           category: postData.category,

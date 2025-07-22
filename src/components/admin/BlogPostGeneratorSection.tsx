@@ -78,9 +78,18 @@ const BlogPostGeneratorSection = () => {
       if (result.success && result.content) {
         setBlogText(result.content);
         setIsTextGenerated(true);
+        
+        // Auto-populate title and excerpt if they were generated
+        if (result.title) {
+          setTitle(result.title);
+        }
+        if (result.excerpt) {
+          setExcerpt(result.excerpt);
+        }
+        
         toast({
           title: "Success",
-          description: "Blog text has been generated successfully!",
+          description: "Blog content, title, and excerpt have been generated successfully!",
         });
       } else {
         throw new Error(result.error || 'Failed to generate blog text');
@@ -113,6 +122,7 @@ const BlogPostGeneratorSection = () => {
     try {
       const result = await blogService.createPost({
         title,
+        slug: slugify(title), // Auto-generate slug from title
         excerpt,
         content: blogText,
         category,
