@@ -84,11 +84,11 @@ const HeroSection = () => {
         style={{
           clipPath: 'polygon(100% 0, 100% 100%, 0 100%)',
           backgroundImage:
-            "url('https://qtlhqsqanbxgfbcjigrl.supabase.co/storage/v1/object/public/blog-images//admin-image-1753204940012-ds-mobile-hybrid.webp')",
+            "url('https://qtlhqsqanbxgfbcjigrl.supabase.co/storage/v1/object/public/blog-images//admin-image-1753206825330-full-map-retailers.webp')",
         }}
       />
       {/* Overlay to darken the background */}
-      <div className="absolute inset-0 bg-black bg-opacity-40" />
+      <div className="absolute inset-0 bg-black bg-opacity-30" />
       {/* Diagonal divider */}
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none"
@@ -104,11 +104,11 @@ const HeroSection = () => {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 text-white">
-        <div className="max-w-3xl text-center">
+        <div className="max-w-3xl text-center bg-zinc-900/60 p-4 rounded-lg shadow-lg">
           <h1 className="text-6xl sm:text-8xl md:text-9xl font-bold mb-4 text-primary" style={{ fontFamily: 'Tahoma, sans-serif' }}>
             DemoStoke
           </h1>
-          <h2 className="text-xl sm:text-3xl mb-8 max-w-2xl mx-auto text-shop">
+          <h2 className="text-2xl sm:text-4xl mb-8 max-w-2xl mx-auto text-shop">
             Find it. Ride it. Love it? Buy it.
           </h2>
           <div className="w-full max-w-2xl mx-auto mb-8">
@@ -127,7 +127,6 @@ const HeroSection = () => {
                 size="lg"
                 onClick={() => handleSearch()}
                 className="bg-primary hover:bg-primary/90 h-12 px-6"
-                disabled={!searchQuery.trim()}
               >
                 Search
               </Button>
