@@ -40,6 +40,8 @@ const BlogPostGeneratorSection = () => {
   const [useYoutubeHero, setUseYoutubeHero] = useState(false);
   const [publishedDate, setPublishedDate] = useState<Date | undefined>(undefined);
   const [blogText, setBlogText] = useState("");
+  const [title, setTitle] = useState("");
+  const [excerpt, setExcerpt] = useState("");
   const [isTextGenerated, setIsTextGenerated] = useState(false);
   const [isGeneratingText, setIsGeneratingText] = useState(false);
   const [isCreatingPost, setIsCreatingPost] = useState(false);
@@ -52,7 +54,9 @@ const BlogPostGeneratorSection = () => {
     thumbnail.trim() &&
     heroImage.trim() &&
     publishedDate &&
-    blogText.trim();
+    blogText.trim() &&
+    title.trim() &&
+    excerpt.trim();
 
   const handleGenerateText = async () => {
     if (!prompt.trim()) {
@@ -107,13 +111,6 @@ const BlogPostGeneratorSection = () => {
     const authorId = slugify(author);
 
     try {
-      // Generate title and excerpt from the blog text
-      const lines = blogText.split('\n').filter(line => line.trim());
-      const title = lines.find(line => line.startsWith('#'))?.replace(/^#+\s*/, '') ||
-        `${category} - ${prompt.slice(0, 50)}...`;
-      const excerpt = lines.find(line => line.length > 50 && !line.startsWith('#'))?.slice(0, 160) + '...' ||
-        prompt.slice(0, 160) + '...';
-
       const result = await blogService.createPost({
         title,
         excerpt,
@@ -126,7 +123,7 @@ const BlogPostGeneratorSection = () => {
         heroImage,
         videoEmbed: youtubeUrl || undefined,
         publishedAt: (publishedDate ?? new Date()).toISOString(),
-        readTime: Math.ceil(blogText.split(' ').length / 200), // Rough reading time calculation
+        readTime: Math.ceil(blogText.split(' ').length / 200), // Auto-generate read time based on text
       });
 
       if (result.success) {
@@ -138,6 +135,8 @@ const BlogPostGeneratorSection = () => {
         // Reset form
         setPrompt("");
         setBlogText("");
+        setTitle("");
+        setExcerpt("");
         setIsTextGenerated(false);
         setAuthor("");
         setTags("");
@@ -214,6 +213,26 @@ const BlogPostGeneratorSection = () => {
             onChange={(e) => handleTextChange(e.target.value)}
             rows={12}
             placeholder="Generated blog content will appear here, or you can write your own..."
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="title">
+            Title <span className="text-red-500">*</span>
+          </Label>
+          <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="excerpt">
+            Excerpt <span className="text-red-500">*</span>
+          </Label>
+          <Textarea
+            id="excerpt"
+            value={excerpt}
+            onChange={(e) => setExcerpt(e.target.value)}
+            rows={3}
+            placeholder="Brief description of the blog post..."
           />
         </div>
 
