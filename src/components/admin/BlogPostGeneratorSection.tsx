@@ -43,9 +43,9 @@ const BlogPostGeneratorSection = () => {
   const [isTextGenerated, setIsTextGenerated] = useState(false);
   const [isGeneratingText, setIsGeneratingText] = useState(false);
   const [isCreatingPost, setIsCreatingPost] = useState(false);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   const isFormValid =
-    prompt.trim() &&
     category &&
     author.trim() &&
     tags.trim() &&
@@ -179,7 +179,7 @@ const BlogPostGeneratorSection = () => {
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="prompt">
-            Prompt <span className="text-red-500">*</span>
+            Prompt
           </Label>
           <Textarea
             id="prompt"
@@ -192,7 +192,6 @@ const BlogPostGeneratorSection = () => {
             onClick={handleGenerateText}
             disabled={isGeneratingText || !prompt.trim()}
             className="flex items-center gap-2 mt-2"
-            variant="outline"
           >
             {isGeneratingText ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
             {isGeneratingText ? "Generating..." : "Generate Text"}
@@ -285,7 +284,7 @@ const BlogPostGeneratorSection = () => {
             Published Date <span className="text-red-500">*</span>
           </Label>
           <div className="block">
-            <Popover>
+            <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="justify-start text-left font-normal w-full sm:w-auto">
                   <CalendarIcon className="mr-2 h-4 w-4" />
@@ -298,8 +297,7 @@ const BlogPostGeneratorSection = () => {
                   selected={publishedDate}
                   onSelect={(date) => {
                     setPublishedDate(date);
-                    // Close the popover after selection
-                    document.body.click();
+                    setIsDatePickerOpen(false);
                   }}
                   className="pointer-events-auto"
                 />
@@ -311,7 +309,7 @@ const BlogPostGeneratorSection = () => {
         <Button
           onClick={handleCreatePost}
           disabled={isCreatingPost || !isFormValid}
-          className="flex items-center gap-2 w-full"
+          className="flex items-center gap-2 w-auto"
         >
           {isCreatingPost ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
           {isCreatingPost ? "Creating..." : "Create Blog Post"}
