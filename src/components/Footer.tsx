@@ -37,7 +37,7 @@ const Footer = () => {
                   </Link>
                 </li> */}
                 <li>
-                  <Link to="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <Link to="/how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     How It Works
                   </Link>
                 </li>
@@ -57,11 +57,11 @@ const Footer = () => {
                     Blog
                   </Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link to="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     Partners
                   </Link>
-                </li>
+                </li> */}
               </ul>
             </div>
 
@@ -69,20 +69,20 @@ const Footer = () => {
               <h4 className="text-sm font-medium">Legal</h4>
               <ul className="space-y-2">
                 <li>
-                  <Link to="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <Link to="/privacy-policy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link to="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <Link to="/terms-of-service" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     Terms of Service
                   </Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link to="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     FAQ
                   </Link>
-                </li>
+                </li> */}
               </ul>
             </div>
           </div>

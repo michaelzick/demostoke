@@ -1,3 +1,4 @@
+
 import fs from 'fs';
 import path from 'path';
 
@@ -50,6 +51,9 @@ async function generate() {
   const staticUrls = [
     '/',
     '/about',
+    '/how-it-works',
+    '/privacy-policy',
+    '/terms-of-service',
     '/blog',
     '/contact-us',
     '/explore',
