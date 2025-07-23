@@ -1,4 +1,5 @@
 
+import { Link } from "react-router-dom";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import useScrollToTop from "@/hooks/useScrollToTop";
 
@@ -121,7 +122,7 @@ const TermsOfServicePage = () => {
           <section>
             <h2 className="text-2xl font-bold mb-4">8. Privacy</h2>
             <p className="mb-4">
-              Your privacy is important to us. Please review our <a href="/privacy-policy" className="text-ocean hover:underline">Privacy Policy</a> to understand how we collect, use, and protect your information.
+              Your privacy is important to us. Please review our <Link to="/privacy-policy" className="text-ocean hover:underline">Privacy Policy</Link> to understand how we collect, use, and protect your information.
             </p>
           </section>
 
@@ -149,7 +150,7 @@ const TermsOfServicePage = () => {
           <section>
             <h2 className="text-2xl font-bold mb-4">12. Contact Information</h2>
             <p className="mb-4">
-              For questions about these Terms, please <a href="/contact-us" className="text-ocean hover:underline">contact us</a>.
+              For questions about these Terms, please <Link to="/contact-us" className="text-ocean hover:underline">contact us</Link>.
             </p>
           </section>
 

@@ -1,4 +1,5 @@
 
+import { Link } from "react-router-dom";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import useScrollToTop from "@/hooks/useScrollToTop";
 
@@ -131,7 +132,7 @@ const PrivacyPolicyPage = () => {
           <section>
             <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
             <p className="mb-4">
-              If you have any questions about this Privacy Policy or our privacy practices, please <a href="/contact-us" className="text-ocean hover:underline">contact us</a>.
+              If you have any questions about this Privacy Policy or our privacy practices, please <Link to="/contact-us" className="text-ocean hover:underline">contact us</Link>.
             </p>
           </section>
         </div>
