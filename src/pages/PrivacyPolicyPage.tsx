@@ -1,7 +1,10 @@
 
 import usePageMetadata from "@/hooks/usePageMetadata";
+import useScrollToTop from "@/hooks/useScrollToTop";
 
 const PrivacyPolicyPage = () => {
+  useScrollToTop();
+  
   usePageMetadata({
     title: "Privacy Policy | DemoStoke",
     description: "Learn about how DemoStoke protects your privacy and handles your personal information.",
@@ -128,11 +131,7 @@ const PrivacyPolicyPage = () => {
           <section>
             <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
             <p className="mb-4">
-              If you have any questions about this Privacy Policy or our privacy practices, please contact us at:
-            </p>
-            <p className="mb-4">
-              Email: privacy@demostoke.com<br />
-              Or visit our <a href="/contact-us" className="text-ocean hover:underline">Contact Us</a> page.
+              If you have any questions about this Privacy Policy or our privacy practices, please <a href="/contact-us" className="text-ocean hover:underline">contact us</a>.
             </p>
           </section>
         </div>

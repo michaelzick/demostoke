@@ -3,8 +3,11 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MapPin, Snowflake, Waves, Shield, Clock, Users } from "lucide-react";
 import usePageMetadata from "@/hooks/usePageMetadata";
+import useScrollToTop from "@/hooks/useScrollToTop";
 
 const HowItWorksPage = () => {
+  useScrollToTop();
+  
   usePageMetadata({
     title: "How It Works | DemoStoke - Try Before You Buy",
     description: "Learn how DemoStoke connects you with local gear for snowboards, skis, surfboards, and mountain bikes. Find, demo, and buy the perfect equipment for your adventures.",
@@ -96,7 +99,7 @@ const HowItWorksPage = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Why DemoStoke?</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              We're revolutionizing how outdoor enthusiasts find and try gear
+              We're revolutionizing how outdoor enthusiasts find and try gear.
             </p>
           </div>
 

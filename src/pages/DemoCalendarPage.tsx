@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
+import useScrollToTop from "@/hooks/useScrollToTop";
 import { useAuth } from "@/helpers";
 import { useDemoEvents } from "@/hooks/useDemoEvents";
 import { useCalendarNavigation } from "@/hooks/useCalendarNavigation";
@@ -15,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
 const DemoCalendarPage = () => {
+  useScrollToTop();
+  
   usePageMetadata({
     title: 'Demo Events Calendar | DemoStoke',
     description: 'Explore upcoming demo events and manage your own.'
