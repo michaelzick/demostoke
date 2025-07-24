@@ -55,8 +55,9 @@ const RealUserProfilePage = () => {
   // Only show visible equipment on public profiles (visibleOnly = true for other users, false for own profile)
   const { data: dbUserEquipment, isLoading: equipmentLoading } = useUserEquipment(profileId || "", !isOwnProfile);
 
-  // Profile editing hooks (only for own profile, and only when needed)
-  const profileData = isOwnProfile ? useProfileData() : {
+  // Profile editing hooks (always call hooks, but conditionally use data)
+  const profileDataResult = useProfileData();
+  const profileData = isOwnProfile ? profileDataResult : {
     name: '', setName: () => {}, email: '', setEmail: () => {}, 
     phone: '', setPhone: () => {}, address: '', setAddress: () => {},
     about: '', setAbout: () => {}, website: '', setWebsite: () => {},
