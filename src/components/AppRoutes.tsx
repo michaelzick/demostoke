@@ -17,7 +17,7 @@ import ExplorePage from "../pages/ExplorePage";
 import EquipmentDetailPage from "../pages/EquipmentDetailPage";
 import ListGearPage from "../pages/ListYourGearPage";
 import EditGearPage from "../pages/EditGearForm";
-import UserProfilePage from "../pages/UserProfilePage";
+
 import MyEquipmentPage from "../pages/MyEquipmentPage";
 import AnalyticsPage from "../pages/AnalyticsPage";
 import BookingsPage from "../pages/BookingsPage";
@@ -53,7 +53,7 @@ const AppRoutes = () => {
           <Route path="list-your-gear/add-gear-form" element={<AddGearForm />} />
           <Route path="list-your-gear/lightspeed-pos" element={<LightspeedPOSPage />} />
           <Route path="edit-gear/:id" element={<EditGearPage />} />
-          <Route path="profile" element={<UserProfilePage />} />
+          
           <Route path="my-gear" element={<MyEquipmentPage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="bookings" element={<BookingsPage />} />

@@ -11,26 +11,21 @@ export const useAppSettings = () => {
       const { data, error } = await supabase
         .from('app_settings')
         .select('setting_key, setting_value')
-        .in('setting_key', ['show_mock_data', 'use_ai_search']);
+        .in('setting_key', ['use_ai_search']);
 
       if (error) {
         console.error('❌ Error fetching app settings:', error);
         console.log('🔄 Using default fallback values');
         return {
-          show_mock_data: true,
           use_ai_search: false
         };
       }
 
       const settings = {
-        show_mock_data: true, // default
         use_ai_search: false
       };
 
       data?.forEach(setting => {
-        if (setting.setting_key === 'show_mock_data') {
-          settings.show_mock_data = setting.setting_value === true;
-        }
         if (setting.setting_key === 'use_ai_search') {
           settings.use_ai_search = setting.setting_value === true;
         }
@@ -49,7 +44,7 @@ export const useUpdateAppSettings = () => {
   const { isAdmin } = useIsAdmin();
 
   return useMutation({
-    mutationFn: async (settings: { showMockData?: boolean; useAISearch?: boolean }) => {
+    mutationFn: async (settings: { useAISearch?: boolean }) => {
       if (!isAdmin) {
         throw new Error('Only admins can update app settings');
       }
@@ -57,18 +52,6 @@ export const useUpdateAppSettings = () => {
       console.log('🔧 Admin updating app settings:', settings);
 
       const updates = [];
-
-      if (settings.showMockData !== undefined) {
-        updates.push(
-          supabase
-            .from('app_settings')
-            .update({
-              setting_value: settings.showMockData,
-              updated_at: new Date().toISOString()
-            })
-            .eq('setting_key', 'show_mock_data')
-        );
-      }
 
       if (settings.useAISearch !== undefined) {
         updates.push(

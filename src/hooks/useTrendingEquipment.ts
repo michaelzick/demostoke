@@ -2,30 +2,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { Equipment } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
-import { getShowMockDataSetting } from "@/services/equipment/appSettingsService";
-import { mockEquipment } from "@/lib/mockData";
+
 import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 
 export const useTrendingEquipment = () => {
   return useQuery({
     queryKey: ['trendingEquipment'],
     queryFn: async (): Promise<Equipment[]> => {
-      console.log('🔥 Fetching trending equipment');
-      
-      // Check if we should use mock data
-      const useMockData = await getShowMockDataSetting();
-      
-      if (useMockData) {
-        console.log('📦 Using MOCK trending data (top rated equipment)');
-        // For mock data, return top rated equipment sorted by rating
-        const trending = mockEquipment
-          .sort((a, b) => parseFloat(b.rating.toString()) - parseFloat(a.rating.toString()))
-          .slice(0, 3);
-        console.log(`✅ Mock trending equipment: ${trending.length} items`);
-        return trending;
-      }
-
-      console.log('🗄️ Fetching real trending equipment from database');
+      console.log('🔥 Fetching trending equipment from database');
       
       try {
         // Get trending equipment IDs with view counts using the optimized function

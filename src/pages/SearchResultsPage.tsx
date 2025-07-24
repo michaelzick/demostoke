@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Search, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { useMockData } from "@/hooks/useMockData";
+
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
 import { useUserLocations } from "@/hooks/useUserLocations";
 import { parseQueryForLocation } from "@/utils/queryParsing";
@@ -36,7 +36,7 @@ const SearchResultsPage = () => {
   const [searchInput, setSearchInput] = useState(query);
   const [isAISearch, setIsAISearch] = useState(false);
   const { toast } = useToast();
-  const { showMockData } = useMockData();
+  
   const { data: userLocations = [] } = useUserLocations();
   const [resetCounter, setResetCounter] = useState(0);
 
@@ -237,7 +237,6 @@ const SearchResultsPage = () => {
               {!isLoading && (
                 <p className="text-sm">
                   Found {filteredResults.length} {filteredResults.length === 1 ? "item" : "items"}
-                  {/* {showMockData ? " (mock data)" : " (real data)"} */}
                 </p>
               )}
             </div>

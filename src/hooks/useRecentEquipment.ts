@@ -2,28 +2,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { Equipment } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
-import { getShowMockDataSetting } from "@/services/equipment/appSettingsService";
-import { mockEquipment } from "@/lib/mockData";
+
 import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 
 export const useRecentEquipment = () => {
   return useQuery({
     queryKey: ['recentEquipment'],
     queryFn: async (): Promise<Equipment[]> => {
-      console.log('🆕 Fetching recent equipment');
-      
-      // Check if we should use mock data
-      const useMockData = await getShowMockDataSetting();
-      
-      if (useMockData) {
-        console.log('📦 Using MOCK recent data (last 3 items)');
-        // For mock data, take the last 3 items from the array (simulating recent additions)
-        const recent = mockEquipment.slice(-3).reverse();
-        console.log(`✅ Mock recent equipment: ${recent.length} items`);
-        return recent;
-      }
-
-      console.log('🗄️ Fetching real recent equipment from database');
+      console.log('🆕 Fetching recent equipment from database');
       
       try {
         // Get the 3 most recently created equipment items
