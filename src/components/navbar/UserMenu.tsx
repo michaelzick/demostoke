@@ -10,10 +10,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/helpers";
 import { useIsAdmin } from "@/hooks/useUserRole";
+import { slugify } from "@/utils/slugify";
 
 const UserMenu = () => {
   const { isAuthenticated, logout, user } = useAuth();
   const { isAdmin, isLoading } = useIsAdmin();
+  
+  const userSlug = user?.name ? slugify(user.name) : "";
 
   if (isAuthenticated) {
     return (
@@ -23,7 +26,7 @@ const UserMenu = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem asChild className="cursor-pointer">
-            <Link to="/profile">Profile</Link>
+            <Link to={`/user-profile/${userSlug}`}>Profile</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild className="cursor-pointer">
             <Link to="/my-gear">My Gear</Link>
