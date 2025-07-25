@@ -13,14 +13,14 @@ interface EventCardProps {
   isAdmin: boolean;
 }
 
-const EventCard = ({ 
-  event, 
-  categoryColors, 
-  onEdit, 
-  onDelete, 
+const EventCard = ({
+  event,
+  categoryColors,
+  onEdit,
+  onDelete,
   onEventClick,
-  isDeleting, 
-  isAdmin 
+  isDeleting,
+  isAdmin
 }: EventCardProps) => {
   const categoryFilter = categoryColors.find(c => c.category === event.gear_category);
   const colorClass = categoryFilter?.color || 'bg-gray-500';
@@ -28,14 +28,14 @@ const EventCard = ({
   // Map background colors to their corresponding text colors
   const getTextColor = (bgColor: string) => {
     switch (bgColor) {
-      case 'bg-fuchsia-500':
-        return 'text-fuchsia-500';
-      case 'bg-green-400':
-        return 'text-green-400';
+      case 'bg-rose-500':
+        return 'text-rose-500';
+      case 'bg-lime-300':
+        return 'text-lime-300';
       case 'bg-sky-500':
         return 'text-sky-500';
-      case 'bg-violet-400':
-        return 'text-violet-400';
+      case 'bg-orange-400':
+        return 'text-orange-400';
       default:
         return 'text-gray-500';
     }

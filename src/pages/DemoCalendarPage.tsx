@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 
 const DemoCalendarPage = () => {
   useScrollToTop();
-  
+
   usePageMetadata({
     title: 'Demo Events Calendar | DemoStoke',
     description: 'Explore upcoming demo events and manage your own.'
@@ -67,10 +67,10 @@ const DemoCalendarPage = () => {
   }, [events]);
 
   const [categoryFilters, setCategoryFilters] = useState<CategoryFilterType[]>([
-    { category: 'snowboards', name: 'Snowboards', color: 'bg-fuchsia-500', enabled: true },
-    { category: 'skis', name: 'Skis', color: 'bg-green-400', enabled: true },
+    { category: 'snowboards', name: 'Snowboards', color: 'bg-rose-500', enabled: true },
+    { category: 'skis', name: 'Skis', color: 'bg-lime-300', enabled: true },
     { category: 'surfboards', name: 'Surfboards', color: 'bg-sky-500', enabled: true },
-    { category: 'mountain-bikes', name: 'Mountain Bikes', color: 'bg-violet-400', enabled: true },
+    { category: 'mountain-bikes', name: 'Mountain Bikes', color: 'bg-orange-400', enabled: true },
   ]);
 
   const handleToggleCategory = (category: string) => {

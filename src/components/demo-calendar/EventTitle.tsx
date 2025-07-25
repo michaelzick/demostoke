@@ -14,14 +14,14 @@ const EventTitle = ({ event, categoryColors, onClick }: EventTitleProps) => {
   // Map background colors to their corresponding text colors
   const getTextColor = (bgColor: string) => {
     switch (bgColor) {
-      case 'bg-fuchsia-500':
-        return 'text-fuchsia-500';
-      case 'bg-green-400':
-        return 'text-green-400';
+      case 'bg-rose-500':
+        return 'text-rose-500';
+      case 'bg-lime-300':
+        return 'text-lime-300';
       case 'bg-sky-500':
         return 'text-sky-500';
-      case 'bg-violet-400':
-        return 'text-violet-400';
+      case 'bg-orange-400':
+        return 'text-orange-400';
       default:
         return 'text-gray-500';
     }

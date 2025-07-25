@@ -5,14 +5,14 @@ import { slugify } from '@/utils/slugify';
 export const getCategoryColor = (category: string): string => {
   switch (category.toLowerCase()) {
     case 'snowboards':
-      return 'bg-fuchsia-500';
+      return 'bg-rose-500';
     case 'skis':
-      return 'bg-green-400';
+      return 'bg-lime-300';
     case 'surfboards':
       return 'bg-sky-500';
     case 'mountain-bikes':
     case 'mountain-bike':  // Handle both variations
-      return 'bg-violet-400';
+      return 'bg-orange-400';
     default:
       return 'bg-black';
   }

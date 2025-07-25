@@ -2,10 +2,10 @@
 import { useMatch } from 'react-router-dom';
 
 const gearLegendItems = [
-  { category: 'Snowboards', color: 'bg-fuchsia-500' },
-  { category: 'Skis', color: 'bg-green-400' },
+  { category: 'Snowboards', color: 'bg-rose-500' },
+  { category: 'Skis', color: 'bg-lime-300' },
   { category: 'Surfboards', color: 'bg-sky-500' },
-  { category: 'Mountain Bikes', color: 'bg-violet-400' },
+  { category: 'Mountain Bikes', color: 'bg-orange-400' },
 ];
 
 const profileLegendItems = [
