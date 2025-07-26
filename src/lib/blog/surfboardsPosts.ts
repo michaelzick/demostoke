@@ -178,8 +178,8 @@ Start with a shape that's forgiving and appropriate for your level, then experim
     heroImage: "https://lushpalm.com/wp-content/uploads/2018/07/beginner-surfboards-13.jpg",
     thumbnail: "https://lushpalm.com/wp-content/uploads/2018/07/beginner-surfboards-13.jpg",
     tags: ["surfboards", "shapes", "guides", "surfing"],
-    author: "Generative AI",
-    authorId: "generative-ai"
+    author: "Chad G.",
+    authorId: "chad-g"
   },
   {
     id: "reading-surf-forecasts",
@@ -397,8 +397,8 @@ The best surfers combine technical forecast reading with intuitive understanding
     heroImage: "https://images.ctfassets.net/xhzuh2up4xai/1GZGyT2Xcd0W8CYYHVyEg7/ae886cec8bb759d248841e3840da6ce6/How-to-Read-a-Surf-Forecast-_-Swell-Charts.jpg",
     thumbnail: "https://images.ctfassets.net/xhzuh2up4xai/1GZGyT2Xcd0W8CYYHVyEg7/ae886cec8bb759d248841e3840da6ce6/How-to-Read-a-Surf-Forecast-_-Swell-Charts.jpg",
     tags: ["surfboards", "forecasting", "waves", "planning", "technique", "guides"],
-    author: "Generative AI",
-    authorId: "generative-ai"
+    author: "Chad G.",
+    authorId: "chad-g"
   },
   {
     id: 'how-to-pop-up-on-a-surfboard',
@@ -444,8 +444,8 @@ Practice the pop-up on land before heading into the water, and remember that flu
     heroImage: "https://live.staticflickr.com/65535/52323073938_344a33aeef_b.jpg",
     thumbnail: "https://live.staticflickr.com/65535/52323073938_344a33aeef_b.jpg",
     tags: ["guides", "surfing", "pop up", "technique", "beginner"],
-    author: "Generative AI",
-    authorId: "generative-ai"
+    author: "Chad G.",
+    authorId: "chad-g"
   },
   {
     id: "north-shore-surf-breaks",
@@ -517,7 +517,7 @@ No matter where you paddle out, always show aloha. Wait your turn, respect the l
     heroImage: "https://www.hawaiiactivities.com/travelguide/wp-content/uploads/ehukai01.jpg",
     thumbnail: "https://briantissot.com/wp-content/uploads/2020/04/pipelines-hungry-reef-sean-davey.jpg",
     tags: ["surfing", "surf breaks", "guides", "localism", "hawaii", "channel islands", "pyzel", "tokoro", "firewire"],
-    author: "Generative AI",
-    authorId: "generative-ai"
+    author: "Chad G.",
+    authorId: "chad-g"
   }
 ];

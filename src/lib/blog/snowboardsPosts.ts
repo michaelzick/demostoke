@@ -259,7 +259,7 @@ The key to mastering these advanced techniques is consistent practice and patien
     heroImage: "https://neversummer.com/cdn/shop/articles/10TipsBlog.jpg?v=1653255663",
     thumbnail: "https://neversummer.com/cdn/shop/articles/10TipsBlog.jpg?v=1653255663",
     tags: ["snowboards", "advanced", "technique", "skills", "progression", "guides"],
-    author: "Generative AI",
-    authorId: "generative-ai"
+    author: "Chad G.",
+    authorId: "chad-g"
   }
 ];

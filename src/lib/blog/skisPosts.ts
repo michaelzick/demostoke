@@ -125,8 +125,8 @@ Remember, consistency is more important than perfection. Regular waxing with bas
     heroImage: "https://shop-raze-cat.com/cdn/shop/articles/warum-ski-wachsen-und-welches-wachs-sollte-ich-benutzen-raze-cat.jpg?v=1712086056",
     thumbnail: "https://shop-raze-cat.com/cdn/shop/articles/warum-ski-wachsen-und-welches-wachs-sollte-ich-benutzen-raze-cat.jpg?v=1712086056",
     tags: ["maintenance", "waxing", "diy", "guides"],
-    author: "Generative AI",
-    authorId: "generative-ai"
+    author: "Chad G.",
+    authorId: "chad-g"
   },
   {
     id: "avalanche-safety-basics",
@@ -327,7 +327,7 @@ Remember: no powder run is worth your life or the lives of your partners. When i
     heroImage: "https://www.weather.gov/images/wrn/Infographics/2021/ww-avalanche.png",
     thumbnail: "https://www.weather.gov/images/wrn/Infographics/2021/ww-avalanche.png",
     tags: ["safety", "backcountry", "avalanche", "guides"],
-    author: "Generative AI",
-    authorId: "generative-ai"
+    author: "Chad G.",
+    authorId: "chad-g"
   }
 ];

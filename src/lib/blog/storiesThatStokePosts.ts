@@ -63,7 +63,7 @@ Slater ended the chat by inviting Beato to surf his wave pool—a reminder that 
     heroImage: "https://img.youtube.com/vi/ndDacdpg2xA/maxresdefault.jpg",
     thumbnail: "https://qtlhqsqanbxgfbcjigrl.supabase.co/storage/v1/object/public/blog-images//admin-image-1752730673409-Slater%20Pipe.jpg",
     tags: ["kelly slater", "surfing", "music", "stories that stoke", "firewire", "video"],
-    author: "Generative AI",
-    authorId: "generative-ai"
+    author: "Chad G.",
+    authorId: "chad-g"
   }
 ];
