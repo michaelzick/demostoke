@@ -176,7 +176,7 @@ const BlogPostPage = () => {
                   <div className="flex items-center">
                     <User className="h-4 w-4 mr-1" />
                     <Link
-                      to={post.authorId !== 'generative-ai' ? `/user-profile/${slugify(post.author)}` : '#'}
+                      to={post.authorId !== 'chad-g' ? `/user-profile/${slugify(post.author)}` : '#'}
                       className="hover:text-primary transition-colors"
                     >
                       {post.author}
@@ -239,8 +239,8 @@ const BlogPostPage = () => {
               <h4 className="text-lg font-semibold mb-3">Tags</h4>
               <div className="flex flex-wrap gap-2">
                 {Array.from(new Set(post.tags)).map((tag) => (
-                  <Link key={tag} to={`/blog?search=${encodeURIComponent(tag)}`}> 
-                    <Badge variant="outline" className="hover:text-primary hover:border-primary hover:bg-transparent transition-colors cursor-pointer"> 
+                  <Link key={tag} to={`/blog?search=${encodeURIComponent(tag)}`}>
+                    <Badge variant="outline" className="hover:text-primary hover:border-primary hover:bg-transparent transition-colors cursor-pointer">
                       {tag}
                     </Badge>
                   </Link>
