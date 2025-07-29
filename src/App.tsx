@@ -7,6 +7,8 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { ClientOnlyAmplitudeInit } from "./components/ClientOnlyAmplitudeInit";
 import AppRoutes from "./components/AppRoutes";
 
+// comment to force rebuild
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
