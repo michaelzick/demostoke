@@ -112,6 +112,18 @@ const FilterBar = ({
             </DropdownMenu>
           </div>
           <div className="flex gap-2 w-full">
+            {(viewMode === 'hybrid' || viewMode === 'list') &&
+              onAdvancedFiltersChange && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAdvancedDrawer(true)}
+                  className="flex-1 flex items-center gap-1"
+                >
+                  <Filter className="h-3 w-3" />
+                  Advanced Filter
+                </Button>
+              )}
             <Button
               variant="outline"
               size="sm"
@@ -145,16 +157,6 @@ const FilterBar = ({
           {/* Mobile Advanced Filter Section - Only show for hybrid and list views */}
           {(viewMode === 'hybrid' || viewMode === 'list') && onAdvancedFiltersChange && (
             <div className="flex items-center gap-2 mt-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowAdvancedDrawer(true)}
-                className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
-              >
-                <Filter className="h-3 w-3" />
-                Advanced Filter
-              </Button>
-
               {onRemovePriceRange && onRemoveRatingRange && (
                 <AdvancedFilterPills
                   filters={advancedFilters}
@@ -220,6 +222,18 @@ const FilterBar = ({
                   Featured
                 </Button>
               )}
+              {(viewMode === 'hybrid' || viewMode === 'list') &&
+                onAdvancedFiltersChange && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowAdvancedDrawer(true)}
+                    className="whitespace-nowrap flex items-center gap-1 category-filter-button"
+                  >
+                    <Filter className="h-3 w-3" />
+                    Advanced Filter
+                  </Button>
+                )}
               <Button
                 variant="outline"
                 size="sm"
@@ -272,16 +286,6 @@ const FilterBar = ({
           {/* Advanced Filter Link and Pills - Only show for hybrid and list views */}
           {(viewMode === 'hybrid' || viewMode === 'list') && onAdvancedFiltersChange && (
             <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowAdvancedDrawer(true)}
-                className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
-              >
-                <Filter className="h-3 w-3" />
-                Advanced Filter
-              </Button>
-
               {onRemovePriceRange && onRemoveRatingRange && (
                 <AdvancedFilterPills
                   filters={advancedFilters}

@@ -13,11 +13,11 @@ export function AdvancedFilterPills({
   onRemovePriceRange,
   onRemoveRatingRange,
 }: AdvancedFilterPillsProps) {
-  const selectedPriceRanges = PRICE_RANGES.filter(range => 
+  const selectedPriceRanges = PRICE_RANGES.filter(range =>
     filters.priceRanges.includes(range.id)
   );
-  
-  const selectedRatingRanges = RATING_RANGES.filter(range => 
+
+  const selectedRatingRanges = RATING_RANGES.filter(range =>
     filters.ratingRanges.includes(range.id)
   );
 
@@ -30,8 +30,8 @@ export function AdvancedFilterPills({
       {selectedPriceRanges.map((range) => (
         <Badge
           key={range.id}
-          variant="secondary"
-          className="flex items-center gap-1 px-2 py-1"
+          variant="outline"
+          className="flex items-center gap-1 px-2 py-1 bg-rose-600 text-white border-transparent"
         >
           <span className="text-xs">{range.label}</span>
           <button
@@ -43,12 +43,12 @@ export function AdvancedFilterPills({
           </button>
         </Badge>
       ))}
-      
+
       {selectedRatingRanges.map((range) => (
         <Badge
           key={range.id}
-          variant="secondary"
-          className="flex items-center gap-1 px-2 py-1"
+          variant="outline"
+          className="flex items-center gap-1 px-2 py-1 bg-rose-600 text-white border-transparent"
         >
           <span className="text-xs">{range.label}</span>
           <button
