@@ -8,7 +8,10 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Filter } from "lucide-react";
+import { AdvancedFilterDrawer } from "@/components/AdvancedFilterDrawer";
+import { AdvancedFilterPills } from "@/components/AdvancedFilterPills";
+import { AdvancedFilters } from "@/types/advancedFilters";
 
 interface FilterBarProps {
   activeCategory: string | null;
@@ -19,6 +22,10 @@ interface FilterBarProps {
   onReset?: () => void;
   showFeatured?: boolean;
   setShowFeatured?: (show: boolean) => void;
+  advancedFilters?: AdvancedFilters;
+  onAdvancedFiltersChange?: (filters: AdvancedFilters) => void;
+  onRemovePriceRange?: (rangeId: string) => void;
+  onRemoveRatingRange?: (rangeId: string) => void;
 }
 
 const FilterBar = ({
@@ -30,8 +37,13 @@ const FilterBar = ({
   onReset,
   showFeatured = false,
   setShowFeatured,
+  advancedFilters = { priceRanges: [], ratingRanges: [] },
+  onAdvancedFiltersChange,
+  onRemovePriceRange,
+  onRemoveRatingRange,
 }: FilterBarProps) => {
   const [sortBy, setSortBy] = useState("distance");
+  const [showAdvancedDrawer, setShowAdvancedDrawer] = useState(false);
 
   const handleSortChange = (value: string) => {
     setSortBy(value);
@@ -132,107 +144,142 @@ const FilterBar = ({
         </div>
 
         {/* Desktop layout */}
-        <div className="hidden lg:flex flex-col sm:flex-row gap-4 justify-between">
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-            <Button
-              variant={activeCategory === null ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setActiveCategory(null)}
-              className="whitespace-nowrap category-filter-button"
-            >
-              All Equipment
-            </Button>
-            <Button
-              variant={activeCategory === 'snowboards' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setActiveCategory('snowboards')}
-              className="whitespace-nowrap category-filter-button"
-            >
-              Snowboards
-            </Button>
-            <Button
-              variant={activeCategory === 'skis' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setActiveCategory('skis')}
-              className="whitespace-nowrap gap-1 category-filter-button"
-            >
-              Skis
-            </Button>
-            <Button
-              variant={activeCategory === 'surfboards' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setActiveCategory('surfboards')}
-              className="whitespace-nowrap gap-1 category-filter-button"
-            >
-              Surfboards
-            </Button>
-            <Button
-              variant={activeCategory === 'mountain-bikes' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setActiveCategory('mountain-bikes')}
-              className="whitespace-nowrap gap-1 category-filter-button"
-            >
-              Mountain Bikes
-            </Button>
-            {setShowFeatured && (
+        <div className="hidden lg:flex flex-col gap-3">
+          <div className="flex justify-between">
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
               <Button
-                variant={showFeatured ? 'default' : 'outline'}
+                variant={activeCategory === null ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => setShowFeatured(!showFeatured)}
+                onClick={() => setActiveCategory(null)}
                 className="whitespace-nowrap category-filter-button"
               >
-                Featured
+                All Equipment
               </Button>
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onReset}
-              className="whitespace-nowrap flex items-center gap-1 category-filter-button"
-            >
-              <RefreshCw size={14} />
-              Reset
-            </Button>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant={viewMode === 'map' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('map')}
-            >
-              Map View
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('list')}
-            >
-              List View
-            </Button>
-            <Button
-              variant={viewMode === 'hybrid' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('hybrid')}
-            >
-              Hybrid View
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" disabled={viewMode === 'map'}>
-                  {`Sort: ${sortText}`}
+              <Button
+                variant={activeCategory === 'snowboards' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveCategory('snowboards')}
+                className="whitespace-nowrap category-filter-button"
+              >
+                Snowboards
+              </Button>
+              <Button
+                variant={activeCategory === 'skis' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveCategory('skis')}
+                className="whitespace-nowrap gap-1 category-filter-button"
+              >
+                Skis
+              </Button>
+              <Button
+                variant={activeCategory === 'surfboards' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveCategory('surfboards')}
+                className="whitespace-nowrap gap-1 category-filter-button"
+              >
+                Surfboards
+              </Button>
+              <Button
+                variant={activeCategory === 'mountain-bikes' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveCategory('mountain-bikes')}
+                className="whitespace-nowrap gap-1 category-filter-button"
+              >
+                Mountain Bikes
+              </Button>
+              {setShowFeatured && (
+                <Button
+                  variant={showFeatured ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setShowFeatured(!showFeatured)}
+                  className="whitespace-nowrap category-filter-button"
+                >
+                  Featured
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuRadioGroup value={sortBy} onValueChange={handleSortChange}>
-                  <DropdownMenuRadioItem value="distance">Nearest</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="price_asc">Price: Low to High</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="price_desc">Price: High to Low</DropdownMenuRadioItem>
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onReset}
+                className="whitespace-nowrap flex items-center gap-1 category-filter-button"
+              >
+                <RefreshCw size={14} />
+                Reset
+              </Button>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant={viewMode === 'map' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('map')}
+              >
+                Map View
+              </Button>
+              <Button
+                variant={viewMode === 'list' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('list')}
+              >
+                List View
+              </Button>
+              <Button
+                variant={viewMode === 'hybrid' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('hybrid')}
+              >
+                Hybrid View
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" disabled={viewMode === 'map'}>
+                    {`Sort: ${sortText}`}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuRadioGroup value={sortBy} onValueChange={handleSortChange}>
+                    <DropdownMenuRadioItem value="distance">Nearest</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="price_asc">Price: Low to High</DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="price_desc">Price: High to Low</DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
+          
+          {/* Advanced Filter Link and Pills - Only show for hybrid and list views */}
+          {(viewMode === 'hybrid' || viewMode === 'list') && onAdvancedFiltersChange && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAdvancedDrawer(true)}
+                className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
+              >
+                <Filter className="h-3 w-3" />
+                Advanced Filter
+              </Button>
+              
+              {onRemovePriceRange && onRemoveRatingRange && (
+                <AdvancedFilterPills
+                  filters={advancedFilters}
+                  onRemovePriceRange={onRemovePriceRange}
+                  onRemoveRatingRange={onRemoveRatingRange}
+                />
+              )}
+            </div>
+          )}
         </div>
       </div>
+      
+      {/* Advanced Filter Drawer */}
+      {onAdvancedFiltersChange && (
+        <AdvancedFilterDrawer
+          open={showAdvancedDrawer}
+          onOpenChange={setShowAdvancedDrawer}
+          filters={advancedFilters}
+          onFiltersChange={onAdvancedFiltersChange}
+        />
+      )}
     </div>
   );
 };

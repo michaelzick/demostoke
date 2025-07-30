@@ -15,6 +15,8 @@ import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamic
 import useScrollToTop from "@/hooks/useScrollToTop";
 import { useUserLocations } from "@/hooks/useUserLocations";
 import { useIsAdmin } from "@/hooks/useUserRole";
+import { AdvancedFilters } from "@/types/advancedFilters";
+import { applyAdvancedFilters } from "@/utils/advancedFiltering";
 
 const ExplorePage = () => {
   usePageMetadata({
@@ -36,6 +38,10 @@ const ExplorePage = () => {
   const { data: userLocations = [] } = useUserLocations();
   const [resetCounter, setResetCounter] = useState(0);
   const { isAdmin } = useIsAdmin();
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({
+    priceRanges: [],
+    ratingRanges: []
+  });
 
   // Scroll to top on mount
   useScrollToTop();
@@ -107,6 +113,9 @@ const ExplorePage = () => {
       console.log("Filtered featured results:", results.length);
     }
 
+    // Apply advanced filters
+    results = applyAdvancedFilters(results, advancedFilters);
+
     switch (sortBy) {
       case "distance":
         results.sort((a, b) => a.distance - b.distance);
@@ -132,7 +141,7 @@ const ExplorePage = () => {
     );
 
     return results;
-  }, [activeCategory, sortBy, searchParams, viewMode, equipmentWithDynamicDistances, showFeatured]);
+  }, [activeCategory, sortBy, searchParams, viewMode, equipmentWithDynamicDistances, showFeatured, advancedFilters]);
 
   // Show toast when no equipment is found after filtering
   useEffect(() => {
@@ -150,6 +159,7 @@ const ExplorePage = () => {
     setActiveCategory(null);
     setSortBy("distance");
     setShowFeatured(false);
+    setAdvancedFilters({ priceRanges: [], ratingRanges: [] });
     setHasShownNoEquipmentToast(false);
     setResetCounter((c) => c + 1);
     const newParams = new URLSearchParams(location.search);
@@ -159,6 +169,28 @@ const ExplorePage = () => {
       title: "Filters Reset",
       description: "All filters have been cleared.",
     });
+  };
+
+  // Handle advanced filter changes
+  const handleAdvancedFiltersChange = (filters: AdvancedFilters) => {
+    setAdvancedFilters(filters);
+    setHasShownNoEquipmentToast(false);
+  };
+
+  // Handle removing individual price range filters
+  const handleRemovePriceRange = (rangeId: string) => {
+    setAdvancedFilters(prev => ({
+      ...prev,
+      priceRanges: prev.priceRanges.filter(id => id !== rangeId)
+    }));
+  };
+
+  // Handle removing individual rating range filters  
+  const handleRemoveRatingRange = (rangeId: string) => {
+    setAdvancedFilters(prev => ({
+      ...prev,
+      ratingRanges: prev.ratingRanges.filter(id => id !== rangeId)
+    }));
   };
 
 
@@ -173,6 +205,10 @@ const ExplorePage = () => {
         onReset={handleReset}
         showFeatured={showFeatured}
         setShowFeatured={setShowFeatured}
+        advancedFilters={advancedFilters}
+        onAdvancedFiltersChange={handleAdvancedFiltersChange}
+        onRemovePriceRange={handleRemovePriceRange}
+        onRemoveRatingRange={handleRemoveRatingRange}
       />
 
       {isEquipmentLoading ? (
