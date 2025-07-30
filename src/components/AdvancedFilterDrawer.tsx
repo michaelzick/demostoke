@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Drawer,
   DrawerContent,
@@ -27,6 +27,11 @@ export function AdvancedFilterDrawer({
   onFiltersChange,
 }: AdvancedFilterDrawerProps) {
   const [tempFilters, setTempFilters] = useState<AdvancedFilters>(filters);
+
+  // Sync tempFilters with filters prop when it changes (e.g., when pills are removed)
+  useEffect(() => {
+    setTempFilters(filters);
+  }, [filters]);
 
   const handlePriceRangeChange = (rangeId: string, checked: boolean) => {
     setTempFilters(prev => ({

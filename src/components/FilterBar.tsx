@@ -141,6 +141,29 @@ const FilterBar = ({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+
+          {/* Mobile Advanced Filter Section - Only show for hybrid and list views */}
+          {(viewMode === 'hybrid' || viewMode === 'list') && onAdvancedFiltersChange && (
+            <div className="flex items-center gap-2 mt-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAdvancedDrawer(true)}
+                className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1"
+              >
+                <Filter className="h-3 w-3" />
+                Advanced Filter
+              </Button>
+              
+              {onRemovePriceRange && onRemoveRatingRange && (
+                <AdvancedFilterPills
+                  filters={advancedFilters}
+                  onRemovePriceRange={onRemovePriceRange}
+                  onRemoveRatingRange={onRemoveRatingRange}
+                />
+              )}
+            </div>
+          )}
         </div>
 
         {/* Desktop layout */}
