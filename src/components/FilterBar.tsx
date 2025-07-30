@@ -75,7 +75,7 @@ const FilterBar = ({
 
   return (
     <div className="border-b sticky top-16 z-30 bg-background pb-2">
-      <div className="container px-4 md:px-6 py-4">
+      <div className="px-4 md:px-6 py-4">
         {/* Mobile layout */}
         <div className="flex flex-col gap-2 lg:hidden">
           <div className="flex gap-2 w-full">
@@ -154,7 +154,7 @@ const FilterBar = ({
                 <Filter className="h-3 w-3" />
                 Advanced Filter
               </Button>
-              
+
               {onRemovePriceRange && onRemoveRatingRange && (
                 <AdvancedFilterPills
                   filters={advancedFilters}
@@ -268,7 +268,7 @@ const FilterBar = ({
               </DropdownMenu>
             </div>
           </div>
-          
+
           {/* Advanced Filter Link and Pills - Only show for hybrid and list views */}
           {(viewMode === 'hybrid' || viewMode === 'list') && onAdvancedFiltersChange && (
             <div className="flex items-center gap-2">
@@ -281,7 +281,7 @@ const FilterBar = ({
                 <Filter className="h-3 w-3" />
                 Advanced Filter
               </Button>
-              
+
               {onRemovePriceRange && onRemoveRatingRange && (
                 <AdvancedFilterPills
                   filters={advancedFilters}
@@ -293,7 +293,7 @@ const FilterBar = ({
           )}
         </div>
       </div>
-      
+
       {/* Advanced Filter Drawer */}
       {onAdvancedFiltersChange && (
         <AdvancedFilterDrawer

@@ -15,15 +15,15 @@ const Navbar = () => {
   return (
     <>
       <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-sm">
-        <div className="container flex h-20 items-center justify-between px-4 md:px-6">
+        <div className="flex h-20 items-center justify-between px-4 md:px-6">
           <div className="flex items-center gap-2">
             <NavbarLogo />
             <ThemeSwitcher />
           </div>
 
-          <MobileMenuButton 
-            isOpen={isMenuOpen} 
-            onClick={() => setIsMenuOpen(!isMenuOpen)} 
+          <MobileMenuButton
+            isOpen={isMenuOpen}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
           />
 
           <DesktopNavigation onOpenSearch={() => setIsSearchOpen(true)} />
@@ -32,7 +32,7 @@ const Navbar = () => {
             <UserMenu />
           </div>
 
-          <MobileMenu 
+          <MobileMenu
             isOpen={isMenuOpen}
             onClose={() => setIsMenuOpen(false)}
             onOpenSearch={() => setIsSearchOpen(true)}
