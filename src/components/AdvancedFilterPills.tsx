@@ -30,8 +30,8 @@ export function AdvancedFilterPills({
       {selectedPriceRanges.map((range) => (
         <Badge
           key={range.id}
-          variant="secondary"
-          className="flex items-center gap-1 px-2 py-1"
+          variant="outline"
+          className="flex items-center gap-1 px-2 py-1 bg-fuchsia-500 text-white border-transparent"
         >
           <span className="text-xs">{range.label}</span>
           <button
@@ -47,8 +47,8 @@ export function AdvancedFilterPills({
       {selectedRatingRanges.map((range) => (
         <Badge
           key={range.id}
-          variant="secondary"
-          className="flex items-center gap-1 px-2 py-1"
+          variant="outline"
+          className="flex items-center gap-1 px-2 py-1 bg-fuchsia-500 text-white border-transparent"
         >
           <span className="text-xs">{range.label}</span>
           <button
