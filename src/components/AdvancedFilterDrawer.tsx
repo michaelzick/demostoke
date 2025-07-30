@@ -78,8 +78,8 @@ export function AdvancedFilterDrawer({
               Refine your search with price and rating filters
             </DrawerDescription>
           </DrawerHeader>
-          
-          <div className="p-4 pb-0 space-y-6">
+
+          <div className="p-4 pb-0 pt-0 space-y-5">
             {/* Price Range Section */}
             <div>
               <h3 className="font-medium mb-3">Price Range</h3>
@@ -89,7 +89,7 @@ export function AdvancedFilterDrawer({
                     <Checkbox
                       id={range.id}
                       checked={tempFilters.priceRanges.includes(range.id)}
-                      onCheckedChange={(checked) => 
+                      onCheckedChange={(checked) =>
                         handlePriceRangeChange(range.id, checked as boolean)
                       }
                     />
@@ -112,7 +112,7 @@ export function AdvancedFilterDrawer({
                     <Checkbox
                       id={range.id}
                       checked={tempFilters.ratingRanges.includes(range.id)}
-                      onCheckedChange={(checked) => 
+                      onCheckedChange={(checked) =>
                         handleRatingRangeChange(range.id, checked as boolean)
                       }
                     />
@@ -126,7 +126,7 @@ export function AdvancedFilterDrawer({
           </div>
 
           <DrawerFooter>
-            <div className="flex gap-2">
+            <div className="flex gap-2 mt-2">
               <Button variant="outline" onClick={handleCancel} className="flex-1">
                 Cancel
               </Button>
