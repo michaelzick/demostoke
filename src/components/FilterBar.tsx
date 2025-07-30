@@ -75,7 +75,7 @@ const FilterBar = ({
 
   return (
     <div className="border-b sticky top-16 z-30 bg-background pb-2">
-      <div className="container px-4 md:px-6 py-4">
+      <div className="px-4 md:px-6 py-4">
         {/* Mobile layout */}
         <div className="flex flex-col gap-2 lg:hidden">
           <div className="flex gap-2 w-full">
