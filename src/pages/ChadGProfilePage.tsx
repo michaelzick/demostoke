@@ -8,7 +8,7 @@ import { ArrowLeft } from "lucide-react";
 
 const ChadGProfilePage = () => {
   const navigate = useNavigate();
-  
+
   usePageMetadata({
     title: 'Chad G. | DemoStoke',
     description: 'About Chad G., AI author at DemoStoke'
@@ -17,10 +17,6 @@ const ChadGProfilePage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const handleGoBack = () => {
-    navigate(-1);
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -32,18 +28,9 @@ const ChadGProfilePage = () => {
               <AvatarImage src="https://api.dicebear.com/6.x/avataaars/svg?seed=chad-g" alt="Chad G." />
               <AvatarFallback>CG</AvatarFallback>
             </Avatar>
-            
+
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Chad G.</h1>
             <p className="text-xl text-muted-foreground mb-6">AI Author at DemoStoke</p>
-            
-            <Button
-              variant="ghost"
-              onClick={handleGoBack}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
           </div>
         </div>
       </div>
