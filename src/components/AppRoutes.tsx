@@ -26,6 +26,7 @@ import SignInPage from "../pages/SignInPage";
 import SignUpPage from "../pages/SignUpPage";
 import RealUserProfilePage from "../pages/RealUserProfilePage";
 import GearOwnerProfilePage from "../pages/GearOwnerProfilePage";
+import ChadGProfilePage from "../pages/ChadGProfilePage";
 import ShopPage from "../pages/ShopPage";
 import PrivatePartyPage from "../pages/PrivatePartyPage";
 import SearchResultsPage from "../pages/SearchResultsPage";
@@ -59,6 +60,7 @@ const AppRoutes = () => {
           <Route path="bookings" element={<BookingsPage />} />
           <Route path="admin" element={<AdminPage />} />
           <Route path="user-profile/:slug" element={<RealUserProfilePage />} />
+          <Route path="profile/chad-g" element={<ChadGProfilePage />} />
           <Route path="owner/:id" element={<GearOwnerProfilePage />} />
           <Route path="shop/:shopId" element={<ShopPage />} />
           <Route path="private-party/:partyId" element={<PrivatePartyPage />} />
