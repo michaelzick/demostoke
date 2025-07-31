@@ -371,7 +371,7 @@ const BlogPage = () => {
                     <div className="flex items-center">
                       <User className="h-3 w-3 mr-1" />
                       <Link
-                        to={post.authorId !== 'chad-g' ? `/user-profile/${slugify(post.author)}` : '#'}
+                        to={post.authorId === 'chad-g' ? '/profile/chad-g' : `/user-profile/${slugify(post.author)}`}
                         className="hover:text-primary transition-colors"
                       >
                         {post.author}
