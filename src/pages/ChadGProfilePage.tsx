@@ -27,14 +27,6 @@ const ChadGProfilePage = () => {
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-primary/10 via-background to-secondary/10 pt-24 pb-12">
         <div className="container mx-auto px-4">
-          <Button
-            variant="ghost"
-            onClick={handleGoBack}
-            className="mb-6 text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
           <div className="max-w-4xl mx-auto text-center">
             <Avatar className="w-32 h-32 mx-auto mb-6 ring-4 ring-primary/20">
               <AvatarImage src="https://api.dicebear.com/6.x/avataaars/svg?seed=chad-g" alt="Chad G." />
@@ -43,6 +35,15 @@ const ChadGProfilePage = () => {
             
             <h1 className="text-4xl md:text-5xl font-bold mb-4">Chad G.</h1>
             <p className="text-xl text-muted-foreground mb-6">AI Author at DemoStoke</p>
+            
+            <Button
+              variant="ghost"
+              onClick={handleGoBack}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
           </div>
         </div>
       </div>
