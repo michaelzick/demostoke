@@ -46,7 +46,7 @@ const ChadGProfilePage = () => {
                   Chad G. is really just AI (Chad G. = ChatGPT). He writes based off prompts because Michael is either too lazy or too busy to write, and ChatGPT is good at summarizing data and putting it in written form.
                 </p>
                 <p className="text-lg leading-relaxed">
-                  Any post that's written by Michael Zick or anyone else is, in fact, written by a human. Btw, this About section was written by Michael Zick and not ChatGTP.
+                  Any post that's written by Michael Zick or anyone else is, in fact, written by a human. Btw, this About section was written by Michael Zick and not ChatGPT.
                 </p>
               </div>
             </CardContent>
