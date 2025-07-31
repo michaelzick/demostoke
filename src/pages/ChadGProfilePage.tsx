@@ -1,9 +1,14 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 const ChadGProfilePage = () => {
+  const navigate = useNavigate();
+  
   usePageMetadata({
     title: 'Chad G. | DemoStoke',
     description: 'About Chad G., AI author at DemoStoke'
@@ -13,11 +18,23 @@ const ChadGProfilePage = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="relative bg-gradient-to-br from-primary/10 via-background to-secondary/10 pt-24 pb-12">
         <div className="container mx-auto px-4">
+          <Button
+            variant="ghost"
+            onClick={handleGoBack}
+            className="mb-6 text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back
+          </Button>
           <div className="max-w-4xl mx-auto text-center">
             <Avatar className="w-32 h-32 mx-auto mb-6 ring-4 ring-primary/20">
               <AvatarImage src="https://api.dicebear.com/6.x/avataaars/svg?seed=chad-g" alt="Chad G." />
