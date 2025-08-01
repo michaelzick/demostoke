@@ -32,6 +32,14 @@ interface MapProps {
   interactive?: boolean;
   ownerIds?: string[];
   viewMode?: 'map' | 'list' | 'hybrid';
+  filteredUserLocations?: Array<{
+    id: string;
+    name: string;
+    role: string;
+    address: string;
+    location: { lat: number; lng: number };
+    equipment_categories: string[];
+  }>;
 }
 
 const MapComponent = ({
@@ -42,7 +50,8 @@ const MapComponent = ({
   isEquipmentLoading = false,
   interactive = true,
   ownerIds,
-  viewMode
+  viewMode,
+  filteredUserLocations
 }: MapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -135,14 +144,13 @@ const MapComponent = ({
         fitMapBounds(map.current, validEquipment, validEquipment.length === 1);
       }
     } else if (isSearchRoute) {
-      // Search route: Show user location markers based on results
-
-      const filteredUserLocations = userLocations.filter(user =>
+      // Search route: Show user location markers based on filtered results
+      const locationsToShow = filteredUserLocations || userLocations.filter(user =>
         (!ownerIds || ownerIds.includes(user.id)) &&
         (!activeCategory || user.equipment_categories.includes(activeCategory))
       );
 
-      filteredUserLocations.forEach((user) => {
+      locationsToShow.forEach((user) => {
         if (!user.location?.lat || !user.location?.lng) return;
 
         const categoryForMarker =
@@ -159,8 +167,8 @@ const MapComponent = ({
           .addTo(map.current!);
       });
 
-      if (filteredUserLocations.length > 0) {
-        fitMapBounds(map.current, filteredUserLocations);
+      if (locationsToShow.length > 0) {
+        fitMapBounds(map.current, locationsToShow);
       }
     } else if (isExploreRoute) {
       // Explore route: Show user location markers
@@ -193,7 +201,7 @@ const MapComponent = ({
         fitMapBounds(map.current, filteredUserLocations);
       }
     }
-  }, [isSearchRoute, isExploreRoute, isEquipmentDetailMode, initialEquipment, userLocations, activeCategory, isLoading, ownerIds, viewMode]);
+  }, [isSearchRoute, isExploreRoute, isEquipmentDetailMode, initialEquipment, userLocations, activeCategory, isLoading, ownerIds, viewMode, filteredUserLocations]);
 
   const showLoading = isLoading || 
     (isSearchRoute ? isEquipmentLoading : (isExploreRoute ? isUserLocationsLoading : false));

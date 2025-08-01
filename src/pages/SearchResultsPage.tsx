@@ -12,6 +12,9 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Search, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+// Note: AdvancedFilterDrawer and AdvancedFilterPills are handled in FilterBar component
+import { AdvancedFilters } from "@/types/advancedFilters";
+import { applyAdvancedFilters } from "@/utils/advancedFiltering";
 
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
 import { useUserLocations } from "@/hooks/useUserLocations";
@@ -39,6 +42,12 @@ const SearchResultsPage = () => {
   
   const { data: userLocations = [] } = useUserLocations();
   const [resetCounter, setResetCounter] = useState(0);
+  
+  // Advanced filters state
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({
+    priceRanges: [],
+    ratingRanges: []
+  });
 
   // Perform search when query changes
   useEffect(() => {
@@ -112,9 +121,12 @@ const SearchResultsPage = () => {
   const { equipment: equipmentWithDynamicDistances, isLocationBased } = useEquipmentWithDynamicDistance(results);
 
   // Filter results by category if selected
-  const filteredResults = activeCategory
+  const categoryFilteredResults = activeCategory
     ? equipmentWithDynamicDistances.filter(item => item.category === activeCategory)
     : equipmentWithDynamicDistances;
+
+  // Apply advanced filters
+  const filteredResults = applyAdvancedFilters(categoryFilteredResults, advancedFilters);
 
   // Sort results based on selected option
   const sortedResults = [...filteredResults].sort((a, b) => {
@@ -128,8 +140,10 @@ const SearchResultsPage = () => {
       case "rating":
         return b.rating - a.rating;
       default: // relevance - use AI score if available, otherwise keep original order
-        if (isAISearch && a.ai_relevance_score && b.ai_relevance_score) {
-          return b.ai_relevance_score - a.ai_relevance_score;
+        if (isAISearch && 'ai_relevance_score' in a && 'ai_relevance_score' in b) {
+          const aScore = typeof a.ai_relevance_score === 'number' ? a.ai_relevance_score : 0;
+          const bScore = typeof b.ai_relevance_score === 'number' ? b.ai_relevance_score : 0;
+          return bScore - aScore;
         }
         return 0;
     }
@@ -160,6 +174,7 @@ const SearchResultsPage = () => {
     setSearchParams({});
     setActiveCategory(null);
     setSortBy("relevance");
+    setAdvancedFilters({ priceRanges: [], ratingRanges: [] });
     setResetCounter((c) => c + 1);
     toast({
       title: "Filters Reset",
@@ -167,10 +182,29 @@ const SearchResultsPage = () => {
     });
   };
 
+  const handleAdvancedFiltersChange = (filters: AdvancedFilters) => {
+    setAdvancedFilters(filters);
+  };
+
+  const handleRemovePriceRange = (rangeId: string) => {
+    setAdvancedFilters(prev => ({
+      ...prev,
+      priceRanges: prev.priceRanges.filter(id => id !== rangeId)
+    }));
+  };
+
+  const handleRemoveRatingRange = (rangeId: string) => {
+    setAdvancedFilters(prev => ({
+      ...prev,
+      ratingRanges: prev.ratingRanges.filter(id => id !== rangeId)
+    }));
+  };
+
   const handleSuggestionClick = (searchQuery: string) => {
     // Clear existing filters and search, then perform new search
     setSearchInput(searchQuery);
     setActiveCategory(null);
+    setAdvancedFilters({ priceRanges: [], ratingRanges: [] });
     setSearchParams({ q: searchQuery });
   };
 
@@ -193,10 +227,9 @@ const SearchResultsPage = () => {
       ownerName: item.owner.name,
     }));
 
+  // Get user locations that have equipment matching the current filters
   const ownerIds = Array.from(new Set(mapEquipment.map(item => item.ownerId)));
-  const filteredUserLocations = userLocations.filter(user =>
-    ownerIds.includes(user.id) && (!activeCategory || user.equipment_categories.includes(activeCategory))
-  );
+  const filteredUserLocations = userLocations.filter(user => ownerIds.includes(user.id));
 
   return (
     <div className="min-h-screen">
@@ -262,6 +295,10 @@ const SearchResultsPage = () => {
         viewMode={viewMode}
         setViewMode={setViewMode}
         onReset={handleReset}
+        advancedFilters={advancedFilters}
+        onAdvancedFiltersChange={handleAdvancedFiltersChange}
+        onRemovePriceRange={handleRemovePriceRange}
+        onRemoveRatingRange={handleRemoveRatingRange}
       />
 
       {isLoading ? (
@@ -277,6 +314,7 @@ const SearchResultsPage = () => {
             isEquipmentLoading={isLoading}
             ownerIds={ownerIds}
             viewMode={viewMode}
+            filteredUserLocations={filteredUserLocations}
           />
           <MapLegend activeCategory={activeCategory} viewMode={viewMode} />
         </div>
@@ -301,7 +339,9 @@ const SearchResultsPage = () => {
               {sortedResults.map((equipment) => (
                 <div key={equipment.id} className="relative">
                   <EquipmentCard equipment={equipment} />
-                  {equipment.ai_relevance_score && equipment.ai_relevance_score > 70 && (
+                  {'ai_relevance_score' in equipment && 
+                   typeof equipment.ai_relevance_score === 'number' && 
+                   equipment.ai_relevance_score > 70 && (
                     <div className="absolute top-2 right-2 bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
                       <Sparkles className="h-3 w-3" />
                       {equipment.ai_relevance_score}%

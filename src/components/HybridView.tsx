@@ -8,6 +8,7 @@ import mapboxgl from "mapbox-gl";
 import { supabase } from "@/integrations/supabase/client";
 import { initializeMap, fitMapBounds } from "@/utils/mapUtils";
 import { UserLocation } from "@/hooks/useUserLocations";
+import { getFilteredUserLocations } from "@/utils/equipmentLocationMapping";
 
 interface HybridViewProps {
   filteredEquipment: Equipment[];
@@ -56,7 +57,9 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased, userLo
       ownerName: item.owner.name,
     }));
 
-  const mapUserLocations = userLocations.filter(user => user.location?.lat && user.location?.lng);
+  // Filter user locations to only show those that have equipment in the filtered results
+  const filteredUserLocationsByEquipment = getFilteredUserLocations(filteredEquipment, userLocations);
+  const mapUserLocations = filteredUserLocationsByEquipment.filter(user => user.location?.lat && user.location?.lng);
 
   // Fetch Mapbox token
   useEffect(() => {

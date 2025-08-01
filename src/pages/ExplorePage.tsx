@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
 import useScrollToTop from "@/hooks/useScrollToTop";
 import { useUserLocations } from "@/hooks/useUserLocations";
+import { getFilteredUserLocations } from "@/utils/equipmentLocationMapping";
 import { useIsAdmin } from "@/hooks/useUserRole";
 import { AdvancedFilters } from "@/types/advancedFilters";
 import { applyAdvancedFilters } from "@/utils/advancedFiltering";
@@ -74,10 +75,6 @@ const ExplorePage = () => {
 
   // Get equipment with dynamic distances
   const { equipment: equipmentWithDynamicDistances, isLocationBased } = useEquipmentWithDynamicDistance(allEquipment);
-
-  const filteredUserLocations = activeCategory
-    ? userLocations.filter(user => user.equipment_categories.includes(activeCategory))
-    : userLocations;
 
   const handleCategoryChange = (category: string | null) => {
     setActiveCategory(category);
@@ -142,6 +139,9 @@ const ExplorePage = () => {
 
     return results;
   }, [activeCategory, sortBy, searchParams, viewMode, equipmentWithDynamicDistances, showFeatured, advancedFilters]);
+
+  // Filter user locations to only show those that have equipment in the filtered results
+  const filteredUserLocations = getFilteredUserLocations(filteredEquipment, userLocations);
 
   // Show toast when no equipment is found after filtering
   useEffect(() => {
@@ -222,6 +222,7 @@ const ExplorePage = () => {
             activeCategory={activeCategory}
             searchQuery={searchParams.get("q")?.toLowerCase()}
             viewMode={viewMode}
+            filteredUserLocations={filteredUserLocations}
           />
           <MapLegend activeCategory={activeCategory} viewMode={viewMode} />
         </div>
