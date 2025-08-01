@@ -46,7 +46,8 @@ const SearchResultsPage = () => {
   // Advanced filters state
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({
     priceRanges: [],
-    ratingRanges: []
+    ratingRanges: [],
+    featured: false
   });
 
   // Perform search when query changes
@@ -174,7 +175,7 @@ const SearchResultsPage = () => {
     setSearchParams({});
     setActiveCategory(null);
     setSortBy("relevance");
-    setAdvancedFilters({ priceRanges: [], ratingRanges: [] });
+    setAdvancedFilters({ priceRanges: [], ratingRanges: [], featured: false });
     setResetCounter((c) => c + 1);
     toast({
       title: "Filters Reset",
@@ -200,11 +201,18 @@ const SearchResultsPage = () => {
     }));
   };
 
+  const handleRemoveFeatured = () => {
+    setAdvancedFilters(prev => ({
+      ...prev,
+      featured: false
+    }));
+  };
+
   const handleSuggestionClick = (searchQuery: string) => {
     // Clear existing filters and search, then perform new search
     setSearchInput(searchQuery);
     setActiveCategory(null);
-    setAdvancedFilters({ priceRanges: [], ratingRanges: [] });
+    setAdvancedFilters({ priceRanges: [], ratingRanges: [], featured: false });
     setSearchParams({ q: searchQuery });
   };
 
@@ -299,6 +307,7 @@ const SearchResultsPage = () => {
         onAdvancedFiltersChange={handleAdvancedFiltersChange}
         onRemovePriceRange={handleRemovePriceRange}
         onRemoveRatingRange={handleRemoveRatingRange}
+        onRemoveFeatured={handleRemoveFeatured}
       />
 
       {isLoading ? (
