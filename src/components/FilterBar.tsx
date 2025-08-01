@@ -222,27 +222,6 @@ const FilterBar = ({
                   Featured
                 </Button>
               )}
-              {(viewMode === 'hybrid' || viewMode === 'list') &&
-                onAdvancedFiltersChange && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowAdvancedDrawer(true)}
-                    className="whitespace-nowrap flex items-center gap-1 category-filter-button"
-                  >
-                    <Filter className="h-3 w-3" />
-                    Advanced Filter
-                  </Button>
-                )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onReset}
-                className="whitespace-nowrap flex items-center gap-1 category-filter-button"
-              >
-                <RefreshCw size={14} />
-                Reset
-              </Button>
             </div>
             <div className="flex gap-2">
               <Button
@@ -282,6 +261,28 @@ const FilterBar = ({
               </DropdownMenu>
             </div>
           </div>
+
+          {/* Advanced Filter and Reset buttons - Second line */}
+          {(viewMode === 'hybrid' || viewMode === 'list') && onAdvancedFiltersChange && (
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="flex items-center gap-1 text-xs px-2 py-1 h-7"
+                onClick={() => setShowAdvancedDrawer(true)}
+              >
+                <Filter className="h-3 w-3" />
+                Advanced Filter
+              </Button>
+              <Button
+                variant="outline"
+                className="flex items-center gap-1 text-xs px-2 py-1 h-7"
+                onClick={onReset}
+              >
+                <RefreshCw size={12} />
+                Reset
+              </Button>
+            </div>
+          )}
 
           {/* Advanced Filter Link and Pills - Only show for hybrid and list views */}
           {(viewMode === 'hybrid' || viewMode === 'list') && onAdvancedFiltersChange && (
