@@ -51,13 +51,20 @@ export function AdvancedFilterDrawer({
     }));
   };
 
+  const handleFeaturedChange = (checked: boolean) => {
+    setTempFilters(prev => ({
+      ...prev,
+      featured: checked
+    }));
+  };
+
   const handleApply = () => {
     onFiltersChange(tempFilters);
     onOpenChange(false);
   };
 
   const handleClearAll = () => {
-    const clearedFilters = { priceRanges: [], ratingRanges: [] };
+    const clearedFilters = { priceRanges: [], ratingRanges: [], featured: false };
     setTempFilters(clearedFilters);
     onFiltersChange(clearedFilters);
     onOpenChange(false);
@@ -74,12 +81,33 @@ export function AdvancedFilterDrawer({
         <div className="mx-auto w-full max-w-sm">
           <DrawerHeader>
             <DrawerTitle>Advanced Filters</DrawerTitle>
-            <DrawerDescription>
-              Refine your search with price and rating filters
-            </DrawerDescription>
+          <DrawerDescription>
+            Refine your search with additional filters
+          </DrawerDescription>
           </DrawerHeader>
 
           <div className="p-4 pb-0 pt-0 space-y-5">
+            {/* Featured Section */}
+            <div>
+              <h3 className="font-medium mb-3">Featured</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="featured"
+                    checked={tempFilters.featured}
+                    onCheckedChange={(checked) =>
+                      handleFeaturedChange(checked as boolean)
+                    }
+                  />
+                  <Label htmlFor="featured" className="text-sm">
+                    Only show featured items
+                  </Label>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
             {/* Price Range Section */}
             <div>
               <h3 className="font-medium mb-3">Price Range</h3>

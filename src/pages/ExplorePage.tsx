@@ -32,7 +32,6 @@ const ExplorePage = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("distance");
   const [viewMode, setViewMode] = useState<"map" | "list" | "hybrid">("hybrid");
-  const [showFeatured, setShowFeatured] = useState<boolean>(false);
   const [allEquipment, setAllEquipment] = useState<Equipment[]>([]);
   const [isEquipmentLoading, setIsEquipmentLoading] = useState(true);
   const [hasShownNoEquipmentToast, setHasShownNoEquipmentToast] = useState(false);
@@ -41,7 +40,8 @@ const ExplorePage = () => {
   const { isAdmin } = useIsAdmin();
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({
     priceRanges: [],
-    ratingRanges: []
+    ratingRanges: [],
+    featured: false
   });
 
   // Scroll to top on mount
@@ -103,12 +103,6 @@ const ExplorePage = () => {
       results = results.filter(item => item.category === activeCategory);
     }
 
-    if (showFeatured) {
-      console.log("Filtering for featured items. Total before filtering:", results.length);
-      console.log("Items with is_featured property:", results.map(item => ({ name: item.name, is_featured: item.is_featured })));
-      results = results.filter(item => item.is_featured === true);
-      console.log("Filtered featured results:", results.length);
-    }
 
     // Apply advanced filters
     results = applyAdvancedFilters(results, advancedFilters);
@@ -138,7 +132,7 @@ const ExplorePage = () => {
     );
 
     return results;
-  }, [activeCategory, sortBy, searchParams, viewMode, equipmentWithDynamicDistances, showFeatured, advancedFilters]);
+  }, [activeCategory, sortBy, searchParams, viewMode, equipmentWithDynamicDistances, advancedFilters]);
 
   // Filter user locations to only show those that have equipment in the filtered results
   const filteredUserLocations = getFilteredUserLocations(filteredEquipment, userLocations);
@@ -158,8 +152,7 @@ const ExplorePage = () => {
   const handleReset = () => {
     setActiveCategory(null);
     setSortBy("distance");
-    setShowFeatured(false);
-    setAdvancedFilters({ priceRanges: [], ratingRanges: [] });
+    setAdvancedFilters({ priceRanges: [], ratingRanges: [], featured: false });
     setHasShownNoEquipmentToast(false);
     setResetCounter((c) => c + 1);
     const newParams = new URLSearchParams(location.search);
@@ -193,6 +186,13 @@ const ExplorePage = () => {
     }));
   };
 
+  const handleRemoveFeatured = () => {
+    setAdvancedFilters(prev => ({
+      ...prev,
+      featured: false
+    }));
+  };
+
 
   return (
     <div className="min-h-screen">
@@ -203,12 +203,11 @@ const ExplorePage = () => {
         viewMode={viewMode}
         setViewMode={setViewMode}
         onReset={handleReset}
-        showFeatured={showFeatured}
-        setShowFeatured={setShowFeatured}
         advancedFilters={advancedFilters}
         onAdvancedFiltersChange={handleAdvancedFiltersChange}
         onRemovePriceRange={handleRemovePriceRange}
         onRemoveRatingRange={handleRemoveRatingRange}
+        onRemoveFeatured={handleRemoveFeatured}
       />
 
       {isEquipmentLoading ? (

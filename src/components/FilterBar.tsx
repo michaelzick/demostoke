@@ -21,12 +21,11 @@ interface FilterBarProps {
   viewMode: 'map' | 'list' | 'hybrid';
   setViewMode: (mode: 'map' | 'list' | 'hybrid') => void;
   onReset?: () => void;
-  showFeatured?: boolean;
-  setShowFeatured?: (show: boolean) => void;
   advancedFilters?: AdvancedFilters;
   onAdvancedFiltersChange?: (filters: AdvancedFilters) => void;
   onRemovePriceRange?: (rangeId: string) => void;
   onRemoveRatingRange?: (rangeId: string) => void;
+  onRemoveFeatured?: () => void;
 }
 
 const FilterBar = ({
@@ -36,12 +35,11 @@ const FilterBar = ({
   viewMode,
   setViewMode,
   onReset,
-  showFeatured = false,
-  setShowFeatured,
-  advancedFilters = { priceRanges: [], ratingRanges: [] },
+  advancedFilters = { priceRanges: [], ratingRanges: [], featured: false },
   onAdvancedFiltersChange,
   onRemovePriceRange,
   onRemoveRatingRange,
+  onRemoveFeatured,
 }: FilterBarProps) => {
   const [sortBy, setSortBy] = useState("distance");
   const [showAdvancedDrawer, setShowAdvancedDrawer] = useState(false);
@@ -100,11 +98,6 @@ const FilterBar = ({
                  <DropdownMenuItem onClick={() => setActiveCategory('skis')}>Skis</DropdownMenuItem>
                  <DropdownMenuItem onClick={() => setActiveCategory('surfboards')}>Surfboards</DropdownMenuItem>
                  <DropdownMenuItem onClick={() => setActiveCategory('mountain-bikes')}>Mountain Bikes</DropdownMenuItem>
-                 {setShowFeatured && (
-                   <DropdownMenuItem onClick={() => setShowFeatured(!showFeatured)}>
-                     {showFeatured ? '✓ Featured' : 'Featured'}
-                   </DropdownMenuItem>
-                 )}
                </DropdownMenuContent>
             </DropdownMenu>
             <DropdownMenu>
@@ -170,11 +163,12 @@ const FilterBar = ({
           {/* Mobile Advanced Filter Section - Only show for hybrid and list views */}
           {(viewMode === 'hybrid' || viewMode === 'list') && onAdvancedFiltersChange && (
             <div className="flex items-center gap-2 mt-2">
-              {onRemovePriceRange && onRemoveRatingRange && (
+              {onRemovePriceRange && onRemoveRatingRange && onRemoveFeatured && (
                 <AdvancedFilterPills
                   filters={advancedFilters}
                   onRemovePriceRange={onRemovePriceRange}
                   onRemoveRatingRange={onRemoveRatingRange}
+                  onRemoveFeatured={onRemoveFeatured}
                 />
               )}
             </div>
@@ -225,16 +219,6 @@ const FilterBar = ({
               >
                 Mountain Bikes
               </Button>
-              {setShowFeatured && (
-                <Button
-                  variant={showFeatured ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setShowFeatured(!showFeatured)}
-                  className="whitespace-nowrap category-filter-button"
-                >
-                  Featured
-                </Button>
-              )}
             </div>
             <div className="flex gap-2">
               <Button
@@ -300,11 +284,12 @@ const FilterBar = ({
           {/* Advanced Filter Link and Pills - Only show for hybrid and list views */}
           {(viewMode === 'hybrid' || viewMode === 'list') && onAdvancedFiltersChange && (
             <div className="flex items-center gap-2">
-              {onRemovePriceRange && onRemoveRatingRange && (
+              {onRemovePriceRange && onRemoveRatingRange && onRemoveFeatured && (
                 <AdvancedFilterPills
                   filters={advancedFilters}
                   onRemovePriceRange={onRemovePriceRange}
                   onRemoveRatingRange={onRemoveRatingRange}
+                  onRemoveFeatured={onRemoveFeatured}
                 />
               )}
             </div>

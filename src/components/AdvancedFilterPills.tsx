@@ -6,12 +6,14 @@ interface AdvancedFilterPillsProps {
   filters: AdvancedFilters;
   onRemovePriceRange: (rangeId: string) => void;
   onRemoveRatingRange: (rangeId: string) => void;
+  onRemoveFeatured: () => void;
 }
 
 export function AdvancedFilterPills({
   filters,
   onRemovePriceRange,
   onRemoveRatingRange,
+  onRemoveFeatured,
 }: AdvancedFilterPillsProps) {
   const selectedPriceRanges = PRICE_RANGES.filter(range =>
     filters.priceRanges.includes(range.id)
@@ -21,7 +23,10 @@ export function AdvancedFilterPills({
     filters.ratingRanges.includes(range.id)
   );
 
-  const hasFilters = selectedPriceRanges.length > 0 || selectedRatingRanges.length > 0;
+  const hasFilters =
+    selectedPriceRanges.length > 0 ||
+    selectedRatingRanges.length > 0 ||
+    filters.featured;
 
   if (!hasFilters) return null;
 
@@ -60,6 +65,22 @@ export function AdvancedFilterPills({
           </button>
         </Badge>
       ))}
+
+      {filters.featured && (
+        <Badge
+          variant="outline"
+          className="flex items-center gap-1 px-2 py-1 bg-rose-600 text-white border-transparent"
+        >
+          <span className="text-xs">Featured</span>
+          <button
+            onClick={onRemoveFeatured}
+            className="ml-1 hover:bg-destructive/10 rounded-full p-0.5"
+            aria-label="Remove Featured filter"
+          >
+            <X className="h-3 w-3" />
+          </button>
+        </Badge>
+      )}
     </div>
   );
 }

@@ -40,5 +40,10 @@ export function applyAdvancedFilters(
     });
   }
 
+  // Apply featured filter
+  if (filters.featured) {
+    results = results.filter(item => item.is_featured === true);
+  }
+
   return results;
 }
