@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,6 +46,10 @@ const FilterBar = ({
   const [sortBy, setSortBy] = useState("distance");
   const [showAdvancedDrawer, setShowAdvancedDrawer] = useState(false);
 
+  // Shared styles for small screens to prevent filter overflow
+  const smallButtonClasses =
+    "max-[400px]:text-xs max-[400px]:px-2 max-[400px]:py-1 max-[400px]:h-7";
+
   const handleSortChange = (value: string) => {
     setSortBy(value);
     onSortChange(value);
@@ -81,7 +86,11 @@ const FilterBar = ({
           <div className="flex gap-2 w-full">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex-1 text-left">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={cn("flex-1 text-left", smallButtonClasses)}
+                >
                   {`Category: ${categoryText}`}
                 </Button>
               </DropdownMenuTrigger>
@@ -100,7 +109,11 @@ const FilterBar = ({
             </DropdownMenu>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="flex-1 text-left">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={cn("flex-1 text-left", smallButtonClasses)}
+                >
                   {`View: ${viewText}`}
                 </Button>
               </DropdownMenuTrigger>
@@ -118,7 +131,7 @@ const FilterBar = ({
                   variant="outline"
                   size="sm"
                   onClick={() => setShowAdvancedDrawer(true)}
-                  className="flex-1 flex items-center gap-1"
+                  className={cn("flex-1 flex items-center gap-1", smallButtonClasses)}
                 >
                   <Filter className="h-3 w-3" />
                   Advanced Filter
@@ -128,7 +141,7 @@ const FilterBar = ({
               variant="outline"
               size="sm"
               onClick={onReset}
-              className="flex-1 flex items-center gap-1"
+              className={cn("flex-1 flex items-center gap-1", smallButtonClasses)}
             >
               <RefreshCw size={14} />
               Reset
@@ -139,7 +152,7 @@ const FilterBar = ({
                   variant="outline"
                   size="sm"
                   disabled={viewMode === 'map'}
-                  className="flex-1 text-left"
+                  className={cn("flex-1 text-left", smallButtonClasses)}
                 >
                   {`Sort: ${sortText}`}
                 </Button>
