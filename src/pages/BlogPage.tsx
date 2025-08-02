@@ -35,6 +35,7 @@ const BlogPage = () => {
   const [featuredPosts, setFeaturedPosts] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<'latest' | 'oldest'>('latest');
   const [selectedDateFilter, setSelectedDateFilter] = useState<string>("");
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { data: userRole } = useUserRole();
   const isAdmin = userRole === 'admin';
 
@@ -274,7 +275,7 @@ const BlogPage = () => {
 
             {/* Search and Filter Sheet */}
             <div className="flex justify-center">
-              <Sheet>
+              <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
                 <SheetTrigger asChild>
                   <Button size="lg" className="gap-2">
                     <Filter className="h-4 w-4" />
@@ -328,10 +329,10 @@ const BlogPage = () => {
                     </div>
 
                     {/* Accordion for multi-row sections */}
-                    <Accordion type="multiple" defaultValue={["category", "date"]} className="w-full">
+                    <Accordion type="multiple" defaultValue={["category", "date"]} className="w-full space-y-0">
                       {/* Category Filter */}
-                      <AccordionItem value="category">
-                        <AccordionTrigger className="text-sm font-medium">
+                      <AccordionItem value="category" className="border-none">
+                        <AccordionTrigger className="text-sm font-medium py-3">
                           Category
                         </AccordionTrigger>
                         <AccordionContent>
@@ -360,8 +361,8 @@ const BlogPage = () => {
                       </AccordionItem>
 
                       {/* Date Filter */}
-                      <AccordionItem value="date">
-                        <AccordionTrigger className="text-sm font-medium">
+                      <AccordionItem value="date" className="border-none">
+                        <AccordionTrigger className="text-sm font-medium py-3">
                           Filter by Month/Year
                         </AccordionTrigger>
                         <AccordionContent>
@@ -390,15 +391,23 @@ const BlogPage = () => {
                       </AccordionItem>
                     </Accordion>
 
-                    {/* Clear All */}
+                    {/* Go and Clear All buttons */}
                     {(searchQuery || selectedFilter || selectedDateFilter || sortBy !== 'latest') && (
-                      <Button
-                        variant="outline"
-                        onClick={clearSearch}
-                        className="w-full"
-                      >
-                        Clear All Filters
-                      </Button>
+                      <div className="space-y-2">
+                        <Button
+                          onClick={() => setIsSheetOpen(false)}
+                          className="w-full"
+                        >
+                          Go
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={clearSearch}
+                          className="w-full"
+                        >
+                          Clear All Filters
+                        </Button>
+                      </div>
                     )}
                   </div>
                 </SheetContent>
