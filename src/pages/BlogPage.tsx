@@ -5,8 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Clock, User, Calendar } from "lucide-react";
+import { Search, Clock, User, Calendar, Filter, SortAsc, SortDesc } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { BlogPost } from "@/lib/blog";
 import { blogService } from "@/services/blogService";
 import { slugify } from "@/utils/slugify";
@@ -31,6 +32,8 @@ const BlogPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState<string>(searchParams.get('category') || "");
   const [featuredPosts, setFeaturedPosts] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState<'latest' | 'oldest'>('latest');
+  const [selectedDateFilter, setSelectedDateFilter] = useState<string>("");
   const { data: userRole } = useUserRole();
   const isAdmin = userRole === 'admin';
 
@@ -57,12 +60,12 @@ const BlogPage = () => {
     loadData();
   }, []);
 
-  // Perform search whenever query or filter changes
+  // Perform search whenever query, filter, or sort changes
   useEffect(() => {
     if (allPosts.length > 0) {
       handleSearch();
     }
-  }, [searchQuery, selectedFilter, allPosts]);
+  }, [searchQuery, selectedFilter, sortBy, selectedDateFilter, allPosts]);
 
   // Sync state with URL params (e.g. when navigating with browser controls)
   useEffect(() => {
@@ -107,9 +110,21 @@ const BlogPage = () => {
         results = await searchBlogPostsWithNLP(searchTerm, allPosts);
       }
 
-      const filteredResults = filterTerm
+      let filteredResults = filterTerm
         ? results.filter(post => post.category === filterTerm || post.tags.includes(filterTerm))
         : results;
+      
+      // Apply date filter
+      if (selectedDateFilter) {
+        filteredResults = filteredResults.filter(post => {
+          const postDate = new Date(post.publishedAt);
+          return selectedDateFilter === `${postDate.getFullYear()}-${String(postDate.getMonth() + 1).padStart(2, '0')}`;
+        });
+      }
+      
+      // Apply sorting
+      filteredResults = sortPosts(filteredResults);
+      
       setSearchResults(filteredResults);
 
       // Update URL
@@ -126,35 +141,67 @@ const BlogPage = () => {
   };
 
 
+  const sortPosts = (posts: BlogPost[]) => {
+    return [...posts].sort((a, b) => {
+      const dateA = new Date(a.publishedAt).getTime();
+      const dateB = new Date(b.publishedAt).getTime();
+      return sortBy === 'latest' ? dateB - dateA : dateA - dateB;
+    });
+  };
+
   const applyFilter = (filter: string) => {
     setSelectedFilter(filter);
 
-    if (!filter) {
-      setSearchResults(allPosts);
-      // Update URL - remove category param
-      const params = new URLSearchParams();
-      if (searchQuery) params.set('search', searchQuery);
-      navigate(`/blog${params.toString() ? `?${params.toString()}` : ''}`, { replace: true });
-      return;
-    }
-
-    const filtered = allPosts.filter(post =>
+    let filtered = !filter ? allPosts : allPosts.filter(post =>
       post.category === filter || post.tags.includes(filter)
     );
+
+    // Apply date filter
+    if (selectedDateFilter) {
+      filtered = filtered.filter(post => {
+        const postDate = new Date(post.publishedAt);
+        return selectedDateFilter === `${postDate.getFullYear()}-${String(postDate.getMonth() + 1).padStart(2, '0')}`;
+      });
+    }
+
+    // Apply sorting
+    filtered = sortPosts(filtered);
+    
     setSearchResults(filtered);
 
     // Update URL
     const params = new URLSearchParams();
     if (searchQuery) params.set('search', searchQuery);
     if (filter) params.set('category', filter);
-    navigate(`/blog?${params.toString()}`, { replace: true });
+    navigate(`/blog${params.toString() ? `?${params.toString()}` : ''}`, { replace: true });
   };
 
   const clearSearch = () => {
     setSearchQuery("");
     setSelectedFilter("");
-    setSearchResults(allPosts);
+    setSelectedDateFilter("");
+    setSortBy('latest');
+    setSearchResults(sortPosts(allPosts));
     navigate('/blog', { replace: true });
+  };
+
+  // Get unique months/years from all posts
+  const getDateOptions = () => {
+    const dates = allPosts.map(post => {
+      const date = new Date(post.publishedAt);
+      return {
+        year: date.getFullYear(),
+        month: date.getMonth() + 1,
+        label: date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' }),
+        value: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+      };
+    });
+    
+    const unique = dates.filter((date, index, arr) => 
+      arr.findIndex(d => d.value === date.value) === index
+    );
+    
+    return unique.sort((a, b) => b.year - a.year || b.month - a.month);
   };
 
   const formatDate = (dateString: string) => {
@@ -224,64 +271,127 @@ const BlogPage = () => {
               Discover tips, techniques, and stories from the world of outdoor gear
             </p>
 
-            {/* Search Bar */}
-            <div className="flex max-w-md mx-auto gap-2">
-              <div className="relative flex-1">
-                <Input
-                  type="text"
-                  placeholder="Search blog posts..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-white text-gray-900 dark:bg-zinc-800 dark:text-white"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500 dark:text-gray-400" />
-              </div>
-            </div>
-
-            {/* Filter Pills */}
-            <div className="mt-6">
-              <div className="flex flex-wrap justify-center gap-2">
-                <Button
-                  variant={selectedFilter === "" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => applyFilter("")}
-                  className={`px-4 py-2 text-sm ${
-                    selectedFilter === ""
-                      ? "bg-blue-50 text-blue-600 hover:bg-blue-50 dark:bg-white dark:text-blue-600"
-                      : "bg-transparent border-gray-400 text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-blue-600"
-                  }`}
-                >
-                  All Posts
-                </Button>
-                {filters.map((filter) => (
-                  <Button
-                    key={filter.value}
-                    variant={selectedFilter === filter.value ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => applyFilter(filter.value)}
-                    className={`px-4 py-2 text-sm ${
-                      selectedFilter === filter.value
-                        ? "bg-blue-50 text-blue-600 hover:bg-blue-50 dark:bg-white dark:text-blue-600"
-                        : "bg-transparent border-gray-400 text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:border-white dark:text-white dark:hover:bg-white dark:hover:text-blue-600"
-                    }`}
-                  >
-                    {filter.label}
+            {/* Search and Filter Sheet */}
+            <div className="flex justify-center">
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="lg" className="gap-2">
+                    <Filter className="h-4 w-4" />
+                    Search & Filter
                   </Button>
-                ))}
-              </div>
-            </div>
+                </SheetTrigger>
+                <SheetContent className="w-full sm:max-w-md">
+                  <SheetHeader>
+                    <SheetTitle>Search & Filter Posts</SheetTitle>
+                  </SheetHeader>
+                  
+                  <div className="space-y-6 mt-6">
+                    {/* Search Bar */}
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Search</label>
+                      <div className="relative">
+                        <Input
+                          type="text"
+                          placeholder="Search blog posts..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-10"
+                        />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                      </div>
+                    </div>
 
-            {(searchQuery || selectedFilter) && (
-              <div className="mt-4">
-                <Button
-                  variant="outline"
-                  onClick={clearSearch}
-                  className="text-gray-700 border-gray-400 hover:bg-gray-100 hover:text-gray-900 dark:text-white dark:border-white dark:hover:bg-white dark:hover:text-blue-600"
-                >
-                  Clear Search
-                </Button>
-              </div>
-            )}
+                    {/* Category Filter */}
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Category</label>
+                      <div className="grid grid-cols-1 gap-2">
+                        <Button
+                          variant={selectedFilter === "" ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => applyFilter("")}
+                          className="justify-start"
+                        >
+                          All Posts
+                        </Button>
+                        {filters.map((filter) => (
+                          <Button
+                            key={filter.value}
+                            variant={selectedFilter === filter.value ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => applyFilter(filter.value)}
+                            className="justify-start"
+                          >
+                            {filter.label}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Sort Options */}
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Sort by Date</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          variant={sortBy === 'latest' ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setSortBy('latest')}
+                          className="gap-2"
+                        >
+                          <SortDesc className="h-3 w-3" />
+                          Latest
+                        </Button>
+                        <Button
+                          variant={sortBy === 'oldest' ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setSortBy('oldest')}
+                          className="gap-2"
+                        >
+                          <SortAsc className="h-3 w-3" />
+                          Oldest
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Date Filter */}
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Filter by Month/Year</label>
+                      <div className="grid grid-cols-1 gap-1 max-h-40 overflow-y-auto">
+                        <Button
+                          variant={selectedDateFilter === "" ? "default" : "outline"}
+                          size="sm"
+                          onClick={() => setSelectedDateFilter("")}
+                          className="justify-start text-xs"
+                        >
+                          All Dates
+                        </Button>
+                        {getDateOptions().map((dateOption) => (
+                          <Button
+                            key={dateOption.value}
+                            variant={selectedDateFilter === dateOption.value ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setSelectedDateFilter(dateOption.value)}
+                            className="justify-start text-xs"
+                          >
+                            {dateOption.label}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Clear All */}
+                    {(searchQuery || selectedFilter || selectedDateFilter || sortBy !== 'latest') && (
+                      <Button
+                        variant="outline"
+                        onClick={clearSearch}
+                        className="w-full"
+                      >
+                        Clear All Filters
+                      </Button>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
           </div>
         </div>
       </div>
