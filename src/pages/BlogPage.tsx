@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Search, Clock, User, Calendar, Filter, SortAsc, SortDesc } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { BlogPost } from "@/lib/blog";
 import { blogService } from "@/services/blogService";
 import { slugify } from "@/utils/slugify";
@@ -280,12 +281,12 @@ const BlogPage = () => {
                     Search & Filter
                   </Button>
                 </SheetTrigger>
-                <SheetContent className="w-full sm:max-w-md">
+                <SheetContent className="w-full sm:max-w-md overflow-y-auto">
                   <SheetHeader>
                     <SheetTitle>Search & Filter Posts</SheetTitle>
                   </SheetHeader>
                   
-                  <div className="space-y-6 mt-6">
+                  <div className="space-y-6 mt-6 pb-6">
                     {/* Search Bar */}
                     <div>
                       <label className="text-sm font-medium mb-2 block">Search</label>
@@ -298,32 +299,6 @@ const BlogPage = () => {
                           className="pl-10"
                         />
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-                      </div>
-                    </div>
-
-                    {/* Category Filter */}
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Category</label>
-                      <div className="grid grid-cols-1 gap-2">
-                        <Button
-                          variant={selectedFilter === "" ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => applyFilter("")}
-                          className="justify-start"
-                        >
-                          All Posts
-                        </Button>
-                        {filters.map((filter) => (
-                          <Button
-                            key={filter.value}
-                            variant={selectedFilter === filter.value ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => applyFilter(filter.value)}
-                            className="justify-start"
-                          >
-                            {filter.label}
-                          </Button>
-                        ))}
                       </div>
                     </div>
 
@@ -352,31 +327,68 @@ const BlogPage = () => {
                       </div>
                     </div>
 
-                    {/* Date Filter */}
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Filter by Month/Year</label>
-                      <div className="grid grid-cols-1 gap-1 max-h-40 overflow-y-auto">
-                        <Button
-                          variant={selectedDateFilter === "" ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setSelectedDateFilter("")}
-                          className="justify-start text-xs"
-                        >
-                          All Dates
-                        </Button>
-                        {getDateOptions().map((dateOption) => (
-                          <Button
-                            key={dateOption.value}
-                            variant={selectedDateFilter === dateOption.value ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => setSelectedDateFilter(dateOption.value)}
-                            className="justify-start text-xs"
-                          >
-                            {dateOption.label}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
+                    {/* Accordion for multi-row sections */}
+                    <Accordion type="multiple" className="w-full">
+                      {/* Category Filter */}
+                      <AccordionItem value="category">
+                        <AccordionTrigger className="text-sm font-medium">
+                          Category
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="grid grid-cols-1 gap-2 pt-2">
+                            <Button
+                              variant={selectedFilter === "" ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => applyFilter("")}
+                              className="justify-start"
+                            >
+                              All Posts
+                            </Button>
+                            {filters.map((filter) => (
+                              <Button
+                                key={filter.value}
+                                variant={selectedFilter === filter.value ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => applyFilter(filter.value)}
+                                className="justify-start"
+                              >
+                                {filter.label}
+                              </Button>
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+
+                      {/* Date Filter */}
+                      <AccordionItem value="date">
+                        <AccordionTrigger className="text-sm font-medium">
+                          Filter by Month/Year
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="grid grid-cols-1 gap-1 max-h-40 overflow-y-auto pt-2">
+                            <Button
+                              variant={selectedDateFilter === "" ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => setSelectedDateFilter("")}
+                              className="justify-start text-xs"
+                            >
+                              All Dates
+                            </Button>
+                            {getDateOptions().map((dateOption) => (
+                              <Button
+                                key={dateOption.value}
+                                variant={selectedDateFilter === dateOption.value ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setSelectedDateFilter(dateOption.value)}
+                                className="justify-start text-xs"
+                              >
+                                {dateOption.label}
+                              </Button>
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
 
                     {/* Clear All */}
                     {(searchQuery || selectedFilter || selectedDateFilter || sortBy !== 'latest') && (
