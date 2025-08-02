@@ -275,7 +275,7 @@ const BlogPage = () => {
             <div className="flex justify-center">
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="outline" size="lg" className="gap-2">
+                  <Button size="lg" className="gap-2">
                     <Filter className="h-4 w-4" />
                     Search & Filter
                   </Button>
