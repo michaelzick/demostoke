@@ -328,7 +328,7 @@ const BlogPage = () => {
                     </div>
 
                     {/* Accordion for multi-row sections */}
-                    <Accordion type="multiple" className="w-full">
+                    <Accordion type="multiple" defaultValue={["category", "date"]} className="w-full">
                       {/* Category Filter */}
                       <AccordionItem value="category">
                         <AccordionTrigger className="text-sm font-medium">
