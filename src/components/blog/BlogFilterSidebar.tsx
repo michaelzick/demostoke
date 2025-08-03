@@ -5,6 +5,7 @@ import { SidebarContent, SidebarHeader, useSidebar } from "@/components/ui/sideb
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useEffect, useRef } from "react";
 
 interface FilterOption {
   label: string;
@@ -45,11 +46,25 @@ export function BlogFilterSidebar({
 }: BlogFilterSidebarProps) {
   const { setOpen, setOpenMobile } = useSidebar();
   const isMobile = useIsMobile();
+  const previousIsMobileRef = useRef(isMobile);
 
   const closeSidebar = () => {
     setOpen(false);
     setOpenMobile(false);
   };
+
+  // Reset sidebar visibility when switching from mobile to desktop
+  useEffect(() => {
+    const wasMobile = previousIsMobileRef.current;
+    const isNowDesktop = !isMobile;
+    
+    if (wasMobile && isNowDesktop) {
+      setOpen(true);
+      setOpenMobile(false);
+    }
+    
+    previousIsMobileRef.current = isMobile;
+  }, [isMobile, setOpen, setOpenMobile]);
 
   const hasActiveFilters =
     !!searchQuery ||
