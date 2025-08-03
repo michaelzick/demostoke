@@ -12,7 +12,7 @@ import {
   SidebarProvider,
   useSidebar,
 } from "@/components/ui/sidebar";
-import BlogFilterSidebar from "@/components/blog/BlogFilterSidebar";
+import BlogFilterSidebar from "@/components/blog/BlogFilterSidebar.tsx";
 import { BlogPost } from "@/lib/blog";
 import { blogService } from "@/services/blogService";
 import { slugify } from "@/utils/slugify";
