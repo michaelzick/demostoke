@@ -71,13 +71,21 @@ export function BlogFilterSidebar({
     !!selectedDateFilter ||
     sortBy !== "latest";
 
+  const bottomPadding = isMobile
+    ? hasActiveFilters
+      ? "120px"
+      : "80px"
+    : hasActiveFilters
+    ? "120px"
+    : "24px";
+
   return (
     <>
       <SidebarHeader className="p-6">
         <h2 className="text-lg font-semibold">Search & Filter Posts</h2>
       </SidebarHeader>
       <SidebarContent>
-        <div className="p-6 space-y-6" style={{ paddingBottom: hasActiveFilters ? '120px' : '24px' }}>
+        <div className="p-6 space-y-6" style={{ paddingBottom: bottomPadding }}>
           <div>
             <label className="text-sm font-medium mb-2 block">Search</label>
             <div className="relative">
@@ -178,16 +186,21 @@ export function BlogFilterSidebar({
         </div>
       </SidebarContent>
       
-      {hasActiveFilters && (
-        <div className="fixed bottom-0 left-0 p-6 bg-sidebar border-t space-y-2 z-10" style={{ width: 'var(--sidebar-width, 320px)' }}>
+      {(isMobile || hasActiveFilters) && (
+        <div
+          className="fixed bottom-0 left-0 p-6 bg-sidebar border-t space-y-2 z-10"
+          style={{ width: 'var(--sidebar-width, 320px)' }}
+        >
           {isMobile && (
             <Button onClick={closeSidebar} className="w-full">
               Close
             </Button>
           )}
-          <Button variant="outline" onClick={clearSearch} className="w-full">
-            Clear All Filters
-          </Button>
+          {hasActiveFilters && (
+            <Button variant="outline" onClick={clearSearch} className="w-full">
+              Clear All Filters
+            </Button>
+          )}
         </div>
       )}
     </>
