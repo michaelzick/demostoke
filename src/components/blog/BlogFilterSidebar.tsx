@@ -47,12 +47,10 @@ export function BlogFilterSidebar({
   const { setOpen, setOpenMobile } = useSidebar();
   const isMobile = useIsMobile();
   const previousIsMobileRef = useRef(isMobile);
-  const wasManuallyClosedRef = useRef(false);
 
   const closeSidebar = () => {
     setOpen(false);
     setOpenMobile(false);
-    wasManuallyClosedRef.current = true;
   };
 
   // Reset sidebar visibility when switching from mobile to desktop
@@ -60,13 +58,9 @@ export function BlogFilterSidebar({
     const wasMobile = previousIsMobileRef.current;
     const isNowDesktop = !isMobile;
     
-    if (wasMobile && isNowDesktop && wasManuallyClosedRef.current) {
-      // Use timeout to ensure clean state transition
-      setTimeout(() => {
-        setOpen(true);
-        setOpenMobile(false);
-        wasManuallyClosedRef.current = false;
-      }, 50);
+    if (wasMobile && isNowDesktop) {
+      setOpen(true);
+      setOpenMobile(false);
     }
     
     previousIsMobileRef.current = isMobile;
