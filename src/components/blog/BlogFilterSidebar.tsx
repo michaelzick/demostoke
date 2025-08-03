@@ -62,8 +62,8 @@ export function BlogFilterSidebar({
       <SidebarHeader className="p-6">
         <h2 className="text-lg font-semibold">Search & Filter Posts</h2>
       </SidebarHeader>
-      <SidebarContent className="flex flex-col h-full">
-        <div className="flex-1 p-6 space-y-6">
+      <SidebarContent className="relative">
+        <div className="p-6 space-y-6 pb-32">
           <div>
             <label className="text-sm font-medium mb-2 block">Search</label>
             <div className="relative">
@@ -164,7 +164,7 @@ export function BlogFilterSidebar({
         </div>
 
         {hasActiveFilters && (
-          <div className="p-6 border-t space-y-2">
+          <div className="absolute bottom-0 left-0 right-0 p-6 bg-sidebar border-t space-y-2">
             {isMobile && (
               <Button onClick={closeSidebar} className="w-full">
                 Go
