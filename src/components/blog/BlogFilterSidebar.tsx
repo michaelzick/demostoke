@@ -49,7 +49,6 @@ export function BlogFilterSidebar({
   const previousIsMobileRef = useRef(isMobile);
 
   const closeSidebar = () => {
-    setOpen(false);
     setOpenMobile(false);
   };
 
@@ -183,7 +182,7 @@ export function BlogFilterSidebar({
         <div className="fixed bottom-0 left-0 p-6 bg-sidebar border-t space-y-2 z-10" style={{ width: 'var(--sidebar-width, 320px)' }}>
           {isMobile && (
             <Button onClick={closeSidebar} className="w-full">
-              Go
+              Close
             </Button>
           )}
           <Button variant="outline" onClick={clearSearch} className="w-full">
