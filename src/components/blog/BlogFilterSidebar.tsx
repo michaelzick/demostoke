@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { SidebarContent, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface FilterOption {
   label: string;
@@ -43,6 +44,7 @@ export function BlogFilterSidebar({
   filters,
 }: BlogFilterSidebarProps) {
   const { setOpen, setOpenMobile } = useSidebar();
+  const isMobile = useIsMobile();
 
   const closeSidebar = () => {
     setOpen(false);
@@ -163,10 +165,12 @@ export function BlogFilterSidebar({
         </div>
       </SidebarContent>
       {hasActiveFilters && (
-        <div className="space-y-2 fixed bottom-0 left-0 w-[--sidebar-width] p-6 bg-sidebar">
-          <Button onClick={closeSidebar} className="w-full">
-            Go
-          </Button>
+        <div className="space-y-2 fixed bottom-0 left-0 w-80 p-6 bg-sidebar">
+          {isMobile && (
+            <Button onClick={closeSidebar} className="w-full">
+              Go
+            </Button>
+          )}
           <Button variant="outline" onClick={clearSearch} className="w-full">
             Clear All Filters
           </Button>

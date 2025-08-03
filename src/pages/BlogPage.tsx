@@ -422,7 +422,7 @@ const BlogPageInner = () => {
 };
 
 const BlogPage = () => (
-  <SidebarProvider style={{ "--sidebar-width": "20rem" }}>
+  <SidebarProvider>
     <BlogPageInner />
   </SidebarProvider>
 );
