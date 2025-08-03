@@ -62,8 +62,8 @@ export function BlogFilterSidebar({
       <SidebarHeader className="p-6">
         <h2 className="text-lg font-semibold">Search & Filter Posts</h2>
       </SidebarHeader>
-      <SidebarContent className="relative">
-        <div className="p-6 space-y-6 pb-32">
+      <SidebarContent>
+        <div className="p-6 space-y-6" style={{ paddingBottom: hasActiveFilters ? '120px' : '24px' }}>
           <div>
             <label className="text-sm font-medium mb-2 block">Search</label>
             <div className="relative">
@@ -162,20 +162,20 @@ export function BlogFilterSidebar({
             </AccordionItem>
           </Accordion>
         </div>
-
-        {hasActiveFilters && (
-          <div className="absolute bottom-0 left-0 right-0 p-6 bg-sidebar border-t space-y-2">
-            {isMobile && (
-              <Button onClick={closeSidebar} className="w-full">
-                Go
-              </Button>
-            )}
-            <Button variant="outline" onClick={clearSearch} className="w-full">
-              Clear All Filters
-            </Button>
-          </div>
-        )}
       </SidebarContent>
+      
+      {hasActiveFilters && (
+        <div className="fixed bottom-0 left-0 w-80 p-6 bg-sidebar border-t space-y-2 z-10">
+          {isMobile && (
+            <Button onClick={closeSidebar} className="w-full">
+              Go
+            </Button>
+          )}
+          <Button variant="outline" onClick={clearSearch} className="w-full">
+            Clear All Filters
+          </Button>
+        </div>
+      )}
     </>
   );
 }
