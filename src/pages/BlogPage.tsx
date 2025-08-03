@@ -3,12 +3,16 @@ import usePageMetadata from "@/hooks/usePageMetadata";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Clock, User, Calendar, Filter, SortAsc, SortDesc } from "lucide-react";
+import { Clock, User, Calendar, Filter } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Sidebar,
+  SidebarInset,
+  SidebarProvider,
+  useSidebar,
+} from "@/components/ui/sidebar";
+import BlogFilterSidebar from "@/components/blog/BlogFilterSidebar";
 import { BlogPost } from "@/lib/blog";
 import { blogService } from "@/services/blogService";
 import { slugify } from "@/utils/slugify";
@@ -17,7 +21,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { toast } from "@/hooks/use-toast";
 import { featuredPostsService } from "@/services/featuredPostsService";
 
-const BlogPage = () => {
+const BlogPageInner = () => {
   usePageMetadata({
     title: 'DemoStoke Blog',
     description: 'Tips, gear reviews and stories from the DemoStoke community.'
@@ -35,9 +39,9 @@ const BlogPage = () => {
   const [featuredPosts, setFeaturedPosts] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<'latest' | 'oldest'>('latest');
   const [selectedDateFilter, setSelectedDateFilter] = useState<string>("");
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { data: userRole } = useUserRole();
   const isAdmin = userRole === 'admin';
+  const { toggleSidebar } = useSidebar();
 
   // Load all posts and featured posts on mount
   useEffect(() => {
@@ -261,7 +265,24 @@ const BlogPage = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <>
+      <Sidebar>
+        <BlogFilterSidebar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+          selectedFilter={selectedFilter}
+          applyFilter={applyFilter}
+          selectedDateFilter={selectedDateFilter}
+          setSelectedDateFilter={setSelectedDateFilter}
+          getDateOptions={getDateOptions}
+          clearSearch={clearSearch}
+          filters={filters}
+        />
+      </Sidebar>
+      <SidebarInset>
+        <div className="min-h-screen">
       {/* Hero Section */}
       <div className="py-16 text-gray-900 dark:text-white">
         <div className="container mx-auto px-4">
@@ -273,145 +294,11 @@ const BlogPage = () => {
               Discover tips, techniques, and stories from the world of outdoor gear
             </p>
 
-            {/* Search and Filter Sheet */}
-            <div className="flex justify-center">
-              <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
-                <SheetTrigger asChild>
-                  <Button size="lg" className="gap-2">
-                    <Filter className="h-4 w-4" />
-                    Search & Filter
-                  </Button>
-                </SheetTrigger>
-                <SheetContent className="w-full sm:max-w-md overflow-y-auto">
-                  <SheetHeader>
-                    <SheetTitle>Search & Filter Posts</SheetTitle>
-                  </SheetHeader>
-                  
-                  <div className="space-y-6 mt-6 pb-6">
-                    {/* Search Bar */}
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Search</label>
-                      <div className="relative">
-                        <Input
-                          type="text"
-                          placeholder="Search blog posts..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="pl-10"
-                        />
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-                      </div>
-                    </div>
-
-                    {/* Sort Options */}
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Sort by Date</label>
-                      <div className="grid grid-cols-2 gap-2">
-                        <Button
-                          variant={sortBy === 'latest' ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setSortBy('latest')}
-                          className="gap-2"
-                        >
-                          <SortDesc className="h-3 w-3" />
-                          Latest
-                        </Button>
-                        <Button
-                          variant={sortBy === 'oldest' ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setSortBy('oldest')}
-                          className="gap-2"
-                        >
-                          <SortAsc className="h-3 w-3" />
-                          Oldest
-                        </Button>
-                      </div>
-                    </div>
-
-                    {/* Accordion for multi-row sections */}
-                    <Accordion type="multiple" defaultValue={["category", "date"]} className="w-full space-y-0">
-                      {/* Category Filter */}
-                      <AccordionItem value="category" className="border-none">
-                        <AccordionTrigger className="text-sm font-medium py-3">
-                          Category
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <div className="grid grid-cols-1 gap-2 pt-2">
-                            <Button
-                              variant={selectedFilter === "" ? "default" : "outline"}
-                              size="sm"
-                              onClick={() => applyFilter("")}
-                              className="justify-start"
-                            >
-                              All Posts
-                            </Button>
-                            {filters.map((filter) => (
-                              <Button
-                                key={filter.value}
-                                variant={selectedFilter === filter.value ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => applyFilter(filter.value)}
-                                className="justify-start"
-                              >
-                                {filter.label}
-                              </Button>
-                            ))}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-
-                      {/* Date Filter */}
-                      <AccordionItem value="date" className="border-none">
-                        <AccordionTrigger className="text-sm font-medium py-3">
-                          Filter by Month/Year
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <div className="grid grid-cols-1 gap-1 max-h-40 overflow-y-auto pt-2">
-                            <Button
-                              variant={selectedDateFilter === "" ? "default" : "outline"}
-                              size="sm"
-                              onClick={() => setSelectedDateFilter("")}
-                              className="justify-start text-xs"
-                            >
-                              All Dates
-                            </Button>
-                            {getDateOptions().map((dateOption) => (
-                              <Button
-                                key={dateOption.value}
-                                variant={selectedDateFilter === dateOption.value ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => setSelectedDateFilter(dateOption.value)}
-                                className="justify-start text-xs"
-                              >
-                                {dateOption.label}
-                              </Button>
-                            ))}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-
-                    {/* Go and Clear All buttons */}
-                    {(searchQuery || selectedFilter || selectedDateFilter || sortBy !== 'latest') && (
-                      <div className="space-y-2">
-                        <Button
-                          onClick={() => setIsSheetOpen(false)}
-                          className="w-full"
-                        >
-                          Go
-                        </Button>
-                        <Button
-                          variant="outline"
-                          onClick={clearSearch}
-                          className="w-full"
-                        >
-                          Clear All Filters
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </SheetContent>
-              </Sheet>
+            <div className="flex justify-center md:hidden">
+              <Button size="lg" className="gap-2" onClick={toggleSidebar}>
+                <Filter className="h-4 w-4" />
+                Search & Filter
+              </Button>
             </div>
           </div>
         </div>
@@ -529,7 +416,15 @@ const BlogPage = () => {
         )}
       </div>
     </div>
+  </SidebarInset>
+  </>
   );
 };
+
+const BlogPage = () => (
+  <SidebarProvider style={{ "--sidebar-width": "20rem" }}>
+    <BlogPageInner />
+  </SidebarProvider>
+);
 
 export default BlogPage;
