@@ -165,7 +165,7 @@ export function BlogFilterSidebar({
       </SidebarContent>
       
       {hasActiveFilters && (
-        <div className="fixed bottom-0 left-0 w-80 p-6 bg-sidebar border-t space-y-2 z-10">
+        <div className="fixed bottom-0 left-0 p-6 bg-sidebar border-t space-y-2 z-10" style={{ width: 'var(--sidebar-width, 320px)' }}>
           {isMobile && (
             <Button onClick={closeSidebar} className="w-full">
               Go
