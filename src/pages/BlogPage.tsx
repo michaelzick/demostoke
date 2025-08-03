@@ -12,7 +12,7 @@ import {
   SidebarProvider,
   useSidebar,
 } from "@/components/ui/sidebar";
-import BlogFilterSidebar from "@/components/blog/BlogFilterSidebar.tsx";
+import BlogFilterSidebar from "@/components/blog/BlogFilterSidebar";
 import { BlogPost } from "@/lib/blog";
 import { blogService } from "@/services/blogService";
 import { slugify } from "@/utils/slugify";
@@ -294,7 +294,7 @@ const BlogPageInner = () => {
               Discover tips, techniques, and stories from the world of outdoor gear
             </p>
 
-            <div className="flex justify-center">
+            <div className="flex justify-center md:hidden">
               <Button size="lg" className="gap-2" onClick={toggleSidebar}>
                 <Filter className="h-4 w-4" />
                 Search & Filter
@@ -422,7 +422,7 @@ const BlogPageInner = () => {
 };
 
 const BlogPage = () => (
-  <SidebarProvider defaultOpen={false} style={{ "--sidebar-width": "20rem" }}>
+  <SidebarProvider style={{ "--sidebar-width": "20rem" }}>
     <BlogPageInner />
   </SidebarProvider>
 );

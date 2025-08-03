@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SidebarContent, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { cn } from "@/lib/utils";
 
 interface FilterOption {
   label: string;
@@ -59,8 +60,8 @@ export function BlogFilterSidebar({
       <SidebarHeader className="p-6">
         <h2 className="text-lg font-semibold">Search & Filter Posts</h2>
       </SidebarHeader>
-      <SidebarContent className="p-6">
-        <div className="space-y-6 pb-6">
+      <SidebarContent className="p-6 pb-32">
+        <div className="space-y-6">
           <div>
             <label className="text-sm font-medium mb-2 block">Search</label>
             <div className="relative">
@@ -79,19 +80,19 @@ export function BlogFilterSidebar({
             <label className="text-sm font-medium mb-2 block">Sort by Date</label>
             <div className="grid grid-cols-2 gap-2">
               <Button
-                variant={sortBy === "latest" ? "default" : "outline"}
+                variant="outline"
                 size="sm"
                 onClick={() => setSortBy("latest")}
-                className="gap-2"
+                className={cn("gap-2", sortBy === "latest" && "border-white text-white")}
               >
                 <SortDesc className="h-3 w-3" />
                 Latest
               </Button>
               <Button
-                variant={sortBy === "oldest" ? "default" : "outline"}
+                variant="outline"
                 size="sm"
                 onClick={() => setSortBy("oldest")}
-                className="gap-2"
+                className={cn("gap-2", sortBy === "oldest" && "border-white text-white")}
               >
                 <SortAsc className="h-3 w-3" />
                 Oldest
@@ -107,20 +108,20 @@ export function BlogFilterSidebar({
               <AccordionContent>
                 <div className="grid grid-cols-1 gap-2 pt-2">
                   <Button
-                    variant={selectedFilter === "" ? "default" : "outline"}
+                    variant="outline"
                     size="sm"
                     onClick={() => applyFilter("")}
-                    className="justify-start"
+                    className={cn("justify-start", selectedFilter === "" && "border-white text-white")}
                   >
                     All Posts
                   </Button>
                   {filters.map((filter) => (
                     <Button
                       key={filter.value}
-                      variant={selectedFilter === filter.value ? "default" : "outline"}
+                      variant="outline"
                       size="sm"
                       onClick={() => applyFilter(filter.value)}
-                      className="justify-start"
+                      className={cn("justify-start", selectedFilter === filter.value && "border-white text-white")}
                     >
                       {filter.label}
                     </Button>
@@ -136,20 +137,20 @@ export function BlogFilterSidebar({
               <AccordionContent>
                 <div className="grid grid-cols-1 gap-1 max-h-40 overflow-y-auto pt-2">
                   <Button
-                    variant={selectedDateFilter === "" ? "default" : "outline"}
+                    variant="outline"
                     size="sm"
                     onClick={() => setSelectedDateFilter("")}
-                    className="justify-start text-xs"
+                    className={cn("justify-start text-xs", selectedDateFilter === "" && "border-white text-white")}
                   >
                     All Dates
                   </Button>
                   {getDateOptions().map((dateOption) => (
                     <Button
                       key={dateOption.value}
-                      variant={selectedDateFilter === dateOption.value ? "default" : "outline"}
+                      variant="outline"
                       size="sm"
                       onClick={() => setSelectedDateFilter(dateOption.value)}
-                      className="justify-start text-xs"
+                      className={cn("justify-start text-xs", selectedDateFilter === dateOption.value && "border-white text-white")}
                     >
                       {dateOption.label}
                     </Button>
@@ -159,18 +160,18 @@ export function BlogFilterSidebar({
             </AccordionItem>
           </Accordion>
 
-          {hasActiveFilters && (
-            <div className="space-y-2">
-              <Button onClick={closeSidebar} className="w-full">
-                Go
-              </Button>
-              <Button variant="outline" onClick={clearSearch} className="w-full">
-                Clear All Filters
-              </Button>
-            </div>
-          )}
         </div>
       </SidebarContent>
+      {hasActiveFilters && (
+        <div className="space-y-2 fixed bottom-0 left-0 w-[--sidebar-width] p-6 bg-sidebar">
+          <Button onClick={closeSidebar} className="w-full">
+            Go
+          </Button>
+          <Button variant="outline" onClick={clearSearch} className="w-full">
+            Clear All Filters
+          </Button>
+        </div>
+      )}
     </>
   );
 }
