@@ -230,12 +230,18 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
           </div>
           {/* Equipment Info */}
           <div>
-            <div className="flex justify-between items-start mb-4">
+            <div
+              className={`mb-4 ${
+                canEdit
+                  ? "flex flex-col md:flex-row md:justify-between md:items-start"
+                  : "flex justify-between items-start"
+              }`}
+            >
               <div className="flex-1">
-                <EquipmentHeader equipment={equipment} />
+                <EquipmentHeader equipment={equipment} stackOnMobile={canEdit} />
               </div>
               {canEdit && (
-                <div className="flex gap-2 flex-col ml-4">
+                <div className="flex gap-2 flex-col mt-4 md:mt-0 md:ml-4">
                   <Button
                     variant="outline"
                     size="sm"
