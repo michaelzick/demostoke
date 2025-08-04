@@ -235,7 +235,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
                 <EquipmentHeader equipment={equipment} />
               </div>
               {canEdit && (
-                <div className="flex gap-2 ml-4">
+                <div className="flex gap-2 flex-col ml-4">
                   <Button
                     variant="outline"
                     size="sm"
