@@ -241,12 +241,13 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
                 <EquipmentHeader equipment={equipment} stackOnMobile={canEdit} />
               </div>
               {canEdit && (
-                <div className="flex gap-2 flex-col mt-4 md:mt-0 md:ml-4">
+                <div className="flex gap-2 flex-col mt-4 md:mt-0 md:ml-4 w-full md:w-40">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={handleVisibilityToggle}
                     disabled={updateVisibilityMutation.isPending}
+                    className="w-full"
                   >
                     {equipment.visible_on_map ? (
                       <Eye className="w-4 h-4 mr-2" />
@@ -257,8 +258,8 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
                     {isAdmin && equipment.owner.id !== user?.id ? ' (Admin)' : ''}
                   </Button>
 
-                  <Link to={`/edit-gear/${equipment.id}`}>
-                    <Button variant="outline" size="sm">
+                  <Link to={`/edit-gear/${equipment.id}`} className="block w-full">
+                    <Button variant="outline" size="sm" className="w-full">
                       <Edit className="w-4 h-4 mr-2" />
                       {isAdmin && equipment.owner.id !== user?.id ? 'Edit (Admin)' : 'Edit'}
                     </Button>
@@ -269,7 +270,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
                     size="sm"
                     onClick={handleDelete}
                     disabled={deleteEquipmentMutation.isPending}
-                    className="border-red-200 text-red-600"
+                    className="w-full text-red-600 border-0"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
                     {isAdmin && equipment.owner.id !== user?.id ? 'Delete (Admin)' : 'Delete'}
