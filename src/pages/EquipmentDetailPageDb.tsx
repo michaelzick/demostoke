@@ -230,30 +230,37 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
           </div>
           {/* Equipment Info */}
           <div>
-            <div className="flex justify-between items-start mb-4">
+            <div
+              className={`mb-4 ${
+                canEdit
+                  ? "flex flex-col md:flex-row md:justify-between md:items-start"
+                  : "flex justify-between items-start"
+              }`}
+            >
               <div className="flex-1">
-                <EquipmentHeader equipment={equipment} />
+                <EquipmentHeader equipment={equipment} stackOnMobile={canEdit} />
               </div>
               {canEdit && (
-                <div className="flex gap-2 flex-col ml-4">
+                <div className="flex gap-2 flex-col mt-4 md:mt-0 md:ml-4 w-full md:w-40">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={handleVisibilityToggle}
                     disabled={updateVisibilityMutation.isPending}
+                    className="w-full"
                   >
                     {equipment.visible_on_map ? (
-                      <Eye className="w-4 h-4 mr-2" />
+                      <Eye className="w-4 h-4 mr-1" />
                     ) : (
-                      <EyeOff className="w-4 h-4 mr-2" />
+                      <EyeOff className="w-4 h-4 mr-1" />
                     )}
                     {equipment.visible_on_map ? "Hide" : "Show"}
                     {isAdmin && equipment.owner.id !== user?.id ? ' (Admin)' : ''}
                   </Button>
 
-                  <Link to={`/edit-gear/${equipment.id}`}>
-                    <Button variant="outline" size="sm">
-                      <Edit className="w-4 h-4 mr-2" />
+                  <Link to={`/edit-gear/${equipment.id}`} className="block w-full">
+                    <Button variant="outline" size="sm" className="w-full">
+                      <Edit className="w-4 h-4 mr-1" />
                       {isAdmin && equipment.owner.id !== user?.id ? 'Edit (Admin)' : 'Edit'}
                     </Button>
                   </Link>
@@ -263,9 +270,9 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
                     size="sm"
                     onClick={handleDelete}
                     disabled={deleteEquipmentMutation.isPending}
-                    className="border-red-200 text-red-600"
+                    className="w-full text-red-600"
                   >
-                    <Trash2 className="w-4 h-4 mr-2" />
+                    <Trash2 className="w-4 h-4 mr-1" />
                     {isAdmin && equipment.owner.id !== user?.id ? 'Delete (Admin)' : 'Delete'}
                   </Button>
                 </div>

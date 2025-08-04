@@ -6,18 +6,27 @@ import PriceDisplay from "./PriceDisplay";
 import DistanceDisplay from "@/components/DistanceDisplay";
 import { Link } from "react-router-dom";
 import { slugify } from "@/utils/slugify";
+import { cn } from "@/lib/utils";
 
 interface EquipmentHeaderProps {
   equipment: Equipment;
+  stackOnMobile?: boolean;
 }
 
-const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
+const EquipmentHeader = ({ equipment, stackOnMobile = false }: EquipmentHeaderProps) => {
 
   // Create tracking data for analytics
   const trackingData = `${equipment.owner.name} - ${equipment.name}`;
 
   return (
-    <div className="flex justify-between items-start mb-4">
+    <div
+      className={cn(
+        "mb-4",
+        stackOnMobile
+          ? "flex flex-col md:flex-row md:justify-between md:items-start"
+          : "flex justify-between items-start"
+      )}
+    >
       <div className="flex-1">
         <div className="flex items-center gap-4 mb-2">
           <h1 className="text-3xl font-bold">{equipment.name}</h1>
@@ -68,7 +77,9 @@ const EquipmentHeader = ({ equipment }: EquipmentHeaderProps) => {
           </div>
         </div>
       </div>
-      <PriceDisplay equipment={equipment} equipmentHeader />
+      <div className={stackOnMobile ? "mt-4 md:mt-0" : ""}>
+        <PriceDisplay equipment={equipment} equipmentHeader />
+      </div>
     </div>
   );
 };
