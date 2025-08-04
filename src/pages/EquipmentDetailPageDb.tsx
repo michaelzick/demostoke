@@ -250,7 +250,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
                     {equipment.visible_on_map ? "Hide" : "Show"}
                     {isAdmin && equipment.owner.id !== user?.id ? ' (Admin)' : ''}
                   </Button>
-                  
+
                   <Link to={`/edit-gear/${equipment.id}`}>
                     <Button variant="outline" size="sm">
                       <Edit className="w-4 h-4 mr-2" />
@@ -263,7 +263,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
                     size="sm"
                     onClick={handleDelete}
                     disabled={deleteEquipmentMutation.isPending}
-                    className="border-red-200 text-red-600 hover:bg-red-50"
+                    className="border-red-200 text-red-600"
                   >
                     <Trash2 className="w-4 h-4 mr-2" />
                     {isAdmin && equipment.owner.id !== user?.id ? 'Delete (Admin)' : 'Delete'}

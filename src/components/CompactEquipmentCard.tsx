@@ -29,13 +29,13 @@ interface CompactEquipmentCardProps {
   onVisibilityToggle?: (equipmentId: string, currentVisibility: boolean) => void;
 }
 
-const CompactEquipmentCard = ({ 
-  equipment, 
+const CompactEquipmentCard = ({
+  equipment,
   showActions = false,
   isAdmin = false,
   currentUserId,
   onDelete,
-  onVisibilityToggle 
+  onVisibilityToggle
 }: CompactEquipmentCardProps) => {
   const { toast } = useToast();
   const images = equipment.images && equipment.images.length > 0 ? equipment.images : [];
@@ -132,7 +132,7 @@ const CompactEquipmentCard = ({
         </div>
         {canEditDelete && (
           <>
-            <Separator />
+            <Separator className="mt-4" />
             <div className="flex items-center gap-1 mt-2">
               <Button
                 variant="ghost"
@@ -146,7 +146,7 @@ const CompactEquipmentCard = ({
                   <EyeOff className="h-4 w-4" />
                 )}
               </Button>
-              
+
               <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0">
                 <Link to={`/edit-gear/${equipment.id}`}>
                   <Edit className="h-4 w-4" />
