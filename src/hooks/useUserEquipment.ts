@@ -162,13 +162,19 @@ export const useDeleteEquipment = () => {
 
   return useMutation({
     mutationFn: async (equipmentId: string) => {
-      const { error } = await supabase
+      const { data, error, count } = await supabase
         .from("equipment")
         .delete()
-        .eq("id", equipmentId);
+        .eq("id", equipmentId)
+        .select()
+        .single();
 
       if (error) {
         throw error;
+      }
+
+      if (!data) {
+        throw new Error("Equipment not found or you don't have permission to delete it");
       }
     },
     onSuccess: () => {
