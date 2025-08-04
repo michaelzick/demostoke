@@ -250,9 +250,9 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
                     className="w-full"
                   >
                     {equipment.visible_on_map ? (
-                      <Eye className="w-4 h-4 mr-2" />
+                      <Eye className="w-4 h-4 mr-1" />
                     ) : (
-                      <EyeOff className="w-4 h-4 mr-2" />
+                      <EyeOff className="w-4 h-4 mr-1" />
                     )}
                     {equipment.visible_on_map ? "Hide" : "Show"}
                     {isAdmin && equipment.owner.id !== user?.id ? ' (Admin)' : ''}
@@ -260,7 +260,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
 
                   <Link to={`/edit-gear/${equipment.id}`} className="block w-full">
                     <Button variant="outline" size="sm" className="w-full">
-                      <Edit className="w-4 h-4 mr-2" />
+                      <Edit className="w-4 h-4 mr-1" />
                       {isAdmin && equipment.owner.id !== user?.id ? 'Edit (Admin)' : 'Edit'}
                     </Button>
                   </Link>
@@ -270,9 +270,9 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
                     size="sm"
                     onClick={handleDelete}
                     disabled={deleteEquipmentMutation.isPending}
-                    className="w-full text-red-600 border-0"
+                    className="w-full text-red-600"
                   >
-                    <Trash2 className="w-4 h-4 mr-2" />
+                    <Trash2 className="w-4 h-4 mr-1" />
                     {isAdmin && equipment.owner.id !== user?.id ? 'Delete (Admin)' : 'Delete'}
                   </Button>
                 </div>
