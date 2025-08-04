@@ -27,7 +27,10 @@ import React, { useState } from "react";
 import { useAuth } from "@/contexts/auth";
 import { useIsAdmin } from "@/hooks/useUserRole";
 import { Link } from "react-router-dom";
-import { Edit } from "lucide-react";
+import { Edit, Eye, EyeOff, Trash2 } from "lucide-react";
+import { useDeleteEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface EquipmentDetailPageDbProps {
   equipment: Equipment;
@@ -55,6 +58,10 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
   const [showContactModal, setShowContactModal] = useState(false);
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const deleteEquipmentMutation = useDeleteEquipment();
+  const updateVisibilityMutation = useUpdateEquipmentVisibility();
 
   // Use images array from equipment_images table
   const images =
@@ -73,6 +80,46 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
 
   // Check if current user can edit this equipment
   const canEdit = user && (equipment.owner.id === user.id || isAdmin);
+
+  const handleDelete = async () => {
+    if (window.confirm(`Are you sure you want to delete "${equipment.name}"? This action cannot be undone.`)) {
+      try {
+        await deleteEquipmentMutation.mutateAsync(equipment.id);
+        toast({
+          title: "Equipment Deleted",
+          description: `${equipment.name} has been successfully deleted.`,
+        });
+        navigate(`/user-profile/${slugify(equipment.owner.name)}`);
+      } catch (error) {
+        console.error("Delete error:", error);
+        toast({
+          title: "Error",
+          description: "Failed to delete equipment. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const handleVisibilityToggle = async () => {
+    try {
+      await updateVisibilityMutation.mutateAsync({
+        equipmentId: equipment.id,
+        visible: !(equipment.visible_on_map || false),
+      });
+      toast({
+        title: "Visibility Updated",
+        description: `${equipment.name} is now ${!(equipment.visible_on_map || false) ? "visible" : "hidden"} on the map.`,
+      });
+    } catch (error) {
+      console.error("Visibility toggle error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update visibility. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="container px-4 md:px-6 py-8">
@@ -188,12 +235,40 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
                 <EquipmentHeader equipment={equipment} />
               </div>
               {canEdit && (
-                <Link to={`/edit-gear/${equipment.id}`}>
-                  <Button variant="outline" size="sm" className="ml-4">
-                    <Edit className="w-4 h-4 mr-2" />
-                    {isAdmin && equipment.owner.id !== user?.id ? 'Edit (Admin)' : 'Edit'}
+                <div className="flex gap-2 ml-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleVisibilityToggle}
+                    disabled={updateVisibilityMutation.isPending}
+                  >
+                    {equipment.visible_on_map ? (
+                      <Eye className="w-4 h-4 mr-2" />
+                    ) : (
+                      <EyeOff className="w-4 h-4 mr-2" />
+                    )}
+                    {equipment.visible_on_map ? "Hide" : "Show"}
+                    {isAdmin && equipment.owner.id !== user?.id ? ' (Admin)' : ''}
                   </Button>
-                </Link>
+                  
+                  <Link to={`/edit-gear/${equipment.id}`}>
+                    <Button variant="outline" size="sm">
+                      <Edit className="w-4 h-4 mr-2" />
+                      {isAdmin && equipment.owner.id !== user?.id ? 'Edit (Admin)' : 'Edit'}
+                    </Button>
+                  </Link>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleDelete}
+                    disabled={deleteEquipmentMutation.isPending}
+                    className="border-red-200 text-red-600 hover:bg-red-50"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    {isAdmin && equipment.owner.id !== user?.id ? 'Delete (Admin)' : 'Delete'}
+                  </Button>
+                </div>
               )}
             </div>
             {/* Book Now button: only visible on mobile (columns stacked) */}

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { StarIcon, Car } from "lucide-react";
+import { StarIcon, Car, Eye, EyeOff, Edit, Trash2 } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -17,12 +17,27 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import { Separator } from "@/components/ui/separator";
+import { useToast } from "@/hooks/use-toast";
 
 interface CompactEquipmentCardProps {
   equipment: Equipment;
+  showActions?: boolean;
+  isAdmin?: boolean;
+  currentUserId?: string;
+  onDelete?: (equipmentId: string) => void;
+  onVisibilityToggle?: (equipmentId: string, currentVisibility: boolean) => void;
 }
 
-const CompactEquipmentCard = ({ equipment }: CompactEquipmentCardProps) => {
+const CompactEquipmentCard = ({ 
+  equipment, 
+  showActions = false,
+  isAdmin = false,
+  currentUserId,
+  onDelete,
+  onVisibilityToggle 
+}: CompactEquipmentCardProps) => {
+  const { toast } = useToast();
   const images = equipment.images && equipment.images.length > 0 ? equipment.images : [];
   const hasMultipleImages = images.length > 1;
   const hasImages = images.length > 0;
@@ -31,6 +46,18 @@ const CompactEquipmentCard = ({ equipment }: CompactEquipmentCardProps) => {
   const ownerLinkPath = isShop
     ? `/shop/${equipment.owner.shopId}`
     : `/user-profile/${slugify(equipment.owner.name)}`;
+
+  const canEditDelete = showActions && (equipment.owner.id === currentUserId || isAdmin);
+
+  const handleDelete = () => {
+    if (window.confirm(`Are you sure you want to delete "${equipment.name}"? This action cannot be undone.`)) {
+      onDelete?.(equipment.id);
+    }
+  };
+
+  const handleVisibilityToggle = () => {
+    onVisibilityToggle?.(equipment.id, equipment.visible_on_map || false);
+  };
 
   return (
     <Card className="overflow-hidden">
@@ -103,6 +130,40 @@ const CompactEquipmentCard = ({ equipment }: CompactEquipmentCardProps) => {
             </Link>
           </Button>
         </div>
+        {canEditDelete && (
+          <>
+            <Separator />
+            <div className="flex items-center gap-1 mt-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleVisibilityToggle}
+                className="h-8 w-8 p-0"
+              >
+                {equipment.visible_on_map ? (
+                  <Eye className="h-4 w-4" />
+                ) : (
+                  <EyeOff className="h-4 w-4" />
+                )}
+              </Button>
+              
+              <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0">
+                <Link to={`/edit-gear/${equipment.id}`}>
+                  <Edit className="h-4 w-4" />
+                </Link>
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleDelete}
+                className="h-8 w-8 p-0"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );
