@@ -206,8 +206,24 @@ export const saveEquipmentImages = async (
 
 export const updateEquipmentImages = async (
   equipmentId: string,
-  imageUrls: string[]
+  imageUrls: string[],
+  mergeWithExisting: boolean = false
 ): Promise<void> => {
-  // This is the same as saveEquipmentImages for now
-  await saveEquipmentImages(equipmentId, imageUrls);
+  if (mergeWithExisting) {
+    // Get existing images first
+    const existingImages = await fetchEquipmentImages(equipmentId);
+    
+    // Create a set for deduplication
+    const existingSet = new Set(existingImages);
+    const newUrls = imageUrls.filter(url => !existingSet.has(url));
+    
+    // Merge existing with new images
+    const finalUrls = [...existingImages, ...newUrls];
+    
+    console.log('Merging images:', { existing: existingImages, new: newUrls, final: finalUrls });
+    await saveEquipmentImages(equipmentId, finalUrls);
+  } else {
+    // Replace all images as before
+    await saveEquipmentImages(equipmentId, imageUrls);
+  }
 };

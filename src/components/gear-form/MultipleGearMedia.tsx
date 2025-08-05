@@ -42,11 +42,26 @@ const MultipleGearMedia = ({
 }: MultipleGearMediaProps) => {
   const [showImageSearch, setShowImageSearch] = useState(false);
   const [imageDimensions, setImageDimensions] = useState<Record<number, { width: number; height: number }>>({});
+  const [hasInitializedUrls, setHasInitializedUrls] = useState(false);
   const displayImages = useImageUrls ? imageUrls : currentImages || duplicatedImageUrls || [];
 
   useEffect(() => {
     setImageDimensions({});
   }, [displayImages]);
+
+  // Initialize imageUrls with existing images when switching to URL mode
+  useEffect(() => {
+    if (useImageUrls && !hasInitializedUrls && currentImages && currentImages.length > 0) {
+      // Merge existing images with any new URLs, filter out empty strings
+      const existingNonEmptyUrls = imageUrls.filter(url => url.trim() !== '');
+      const mergedUrls = [...currentImages, ...existingNonEmptyUrls];
+      setImageUrls(mergedUrls);
+      setHasInitializedUrls(true);
+    } else if (!useImageUrls) {
+      // Reset initialization flag when switching back to file mode
+      setHasInitializedUrls(false);
+    }
+  }, [useImageUrls, currentImages, hasInitializedUrls]);
 
   const addImageUrl = () => {
     setImageUrls([...imageUrls, ""]);
@@ -120,7 +135,10 @@ const MultipleGearMedia = ({
             onCheckedChange={(checked) => setUseImageUrls(checked as boolean)}
           />
           <Label htmlFor="useImageUrls" className="text-sm font-normal">
-            Use image URLs instead of uploaded files
+            {currentImages && currentImages.length > 0 
+              ? "Add image URLs (will be added to existing images)" 
+              : "Use image URLs instead of uploaded files"
+            }
           </Label>
         </div>
 
@@ -187,30 +205,44 @@ const MultipleGearMedia = ({
             {useImageUrls ? "Image URL previews:" : currentImages ? "Current images:" : "Images from duplicated gear:"}
           </p>
           <div className="grid grid-cols-3 gap-2">
-            {displayImages.map((imageUrl, index) => (
-              <div key={index} className="relative group w-24 flex flex-col items-center">
-                <img
-                  src={imageUrl}
-                  alt={`Gear image ${index + 1}`}
-                  className="w-24 h-24 object-cover rounded-md border"
-                  onLoad={(e) => handleImageLoad(index, e)}
-                />
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="destructive"
-                  onClick={() => handleRemoveImage(index)}
-                  className="absolute top-0 right-0 m-1 h-5 w-5 opacity-80 group-hover:opacity-100"
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-                {imageDimensions[index] && (
-                  <p className="text-xs mt-1 text-center">
-                    {imageDimensions[index].width} x {imageDimensions[index].height}
-                  </p>
-                )}
-              </div>
-            ))}
+            {displayImages.map((imageUrl, index) => {
+              // Determine if this is an existing image or new one
+              const isExistingImage = currentImages && currentImages.includes(imageUrl);
+              const isNewImage = useImageUrls && currentImages && !currentImages.includes(imageUrl);
+              
+              return (
+                <div key={index} className="relative group w-24 flex flex-col items-center">
+                  <img
+                    src={imageUrl}
+                    alt={`Gear image ${index + 1}`}
+                    className={cn(
+                      "w-24 h-24 object-cover rounded-md border",
+                      isNewImage && "border-green-500 border-2"
+                    )}
+                    onLoad={(e) => handleImageLoad(index, e)}
+                  />
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="destructive"
+                    onClick={() => handleRemoveImage(index)}
+                    className="absolute top-0 right-0 m-1 h-5 w-5 opacity-80 group-hover:opacity-100"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                  {isNewImage && (
+                    <div className="absolute top-0 left-0 m-1 bg-green-500 text-white text-xs px-1 rounded">
+                      NEW
+                    </div>
+                  )}
+                  {imageDimensions[index] && (
+                    <p className="text-xs mt-1 text-center">
+                      {imageDimensions[index].width} x {imageDimensions[index].height}
+                    </p>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -250,7 +282,7 @@ const MultipleGearMedia = ({
 
         <p className="text-sm text-muted-foreground">
           {useImageUrls ?
-            "File upload is disabled while using image URLs" :
+            "File upload is disabled while using image URLs. New URLs will be added to existing images." :
             displayImages.length > 0 ?
               "Upload new images to replace the current ones, or leave empty to keep the existing images." :
               "Upload high-quality images of your gear. Supported formats: JPEG, PNG, WebP, GIF (max 5MB each). You can select multiple images."
