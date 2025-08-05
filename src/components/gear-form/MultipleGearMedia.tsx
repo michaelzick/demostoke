@@ -51,17 +51,16 @@ const MultipleGearMedia = ({
 
   // Initialize imageUrls with existing images when switching to URL mode
   useEffect(() => {
-    if (useImageUrls && !hasInitializedUrls && currentImages && currentImages.length > 0) {
-      // Merge existing images with any new URLs, filter out empty strings
-      const existingNonEmptyUrls = imageUrls.filter(url => url.trim() !== '');
-      const mergedUrls = [...currentImages, ...existingNonEmptyUrls];
-      setImageUrls(mergedUrls);
-      setHasInitializedUrls(true);
+    if (useImageUrls && currentImages && currentImages.length > 0) {
+      // When toggling to URL mode, only set to currentImages (database images) 
+      // Don't merge with previous imageUrls to avoid duplication
+      const newUrls = imageUrls.filter(url => url.trim() !== '' && !currentImages.includes(url));
+      setImageUrls([...currentImages, ...newUrls]);
     } else if (!useImageUrls) {
-      // Reset initialization flag when switching back to file mode
-      setHasInitializedUrls(false);
+      // When toggling off URL mode, clear imageUrls to avoid state pollution
+      setImageUrls([]);
     }
-  }, [useImageUrls, currentImages, hasInitializedUrls]);
+  }, [useImageUrls]);
 
   const addImageUrl = () => {
     setImageUrls([...imageUrls, ""]);
