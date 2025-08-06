@@ -20,6 +20,7 @@ import { searchBlogPostsWithNLP } from "@/services/blogSearchService";
 import { useUserRole } from "@/hooks/useUserRole";
 import { toast } from "@/hooks/use-toast";
 import { featuredPostsService } from "@/services/featuredPostsService";
+import BlogFooter from "@/components/BlogFooter";
 
 const BlogPageInner = () => {
   usePageMetadata({
@@ -416,6 +417,7 @@ const BlogPageInner = () => {
         )}
       </div>
     </div>
+    <BlogFooter />
   </SidebarInset>
   </>
   );
