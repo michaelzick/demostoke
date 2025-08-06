@@ -316,13 +316,6 @@ export type Database = {
             referencedRelation: "equipment"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "equipment_images_equipment_id_fkey"
-            columns: ["equipment_id"]
-            isOneToOne: false
-            referencedRelation: "mv_trending_equipment"
-            referencedColumns: ["id"]
-          },
         ]
       }
       equipment_reviews: {
@@ -361,13 +354,6 @@ export type Database = {
             referencedRelation: "equipment"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "equipment_reviews_equipment_id_fkey"
-            columns: ["equipment_id"]
-            isOneToOne: false
-            referencedRelation: "mv_trending_equipment"
-            referencedColumns: ["id"]
-          },
         ]
       }
       equipment_views: {
@@ -401,13 +387,6 @@ export type Database = {
             columns: ["equipment_id"]
             isOneToOne: false
             referencedRelation: "equipment"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "equipment_views_equipment_id_fkey"
-            columns: ["equipment_id"]
-            isOneToOne: false
-            referencedRelation: "mv_trending_equipment"
             referencedColumns: ["id"]
           },
         ]
@@ -491,13 +470,6 @@ export type Database = {
             columns: ["equipment_id"]
             isOneToOne: false
             referencedRelation: "equipment"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "pricing_options_equipment_id_fkey"
-            columns: ["equipment_id"]
-            isOneToOne: false
-            referencedRelation: "mv_trending_equipment"
             referencedColumns: ["id"]
           },
         ]
@@ -756,30 +728,7 @@ export type Database = {
       }
     }
     Views: {
-      mv_equipment_stats: {
-        Row: {
-          available_count: number | null
-          avg_price_per_day: number | null
-          avg_view_count: number | null
-          category: string | null
-          total_equipment: number | null
-        }
-        Relationships: []
-      }
-      mv_trending_equipment: {
-        Row: {
-          category: string | null
-          id: string | null
-          location_lat: number | null
-          location_lng: number | null
-          name: string | null
-          owner_avatar: string | null
-          owner_name: string | null
-          price_per_day: number | null
-          view_count: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       cleanup_unused_downloaded_images: {
