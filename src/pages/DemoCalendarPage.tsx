@@ -13,7 +13,9 @@ import CalendarList from "@/components/demo-calendar/CalendarList";
 import CategoryFilter from "@/components/demo-calendar/CategoryFilter";
 import AddEventModal from "@/components/demo-calendar/AddEventModal";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import EventModal from "@/components/demo-calendar/EventModal";
+import { generateEventSlug, findEventBySlug } from "@/utils/eventSlug";
 
 const DemoCalendarPage = () => {
   useScrollToTop();
@@ -25,6 +27,7 @@ const DemoCalendarPage = () => {
   const { isAuthenticated } = useAuth();
   const { isAdmin, isLoading: isLoadingRole } = useIsAdmin();
   const navigate = useNavigate();
+  const { eventSlug } = useParams<{ eventSlug?: string }>();
   const { currentDate, setCurrentDate, goToPreviousMonth, goToNextMonth, goToToday } = useCalendarNavigation();
   const { events, createEvent, updateEvent, deleteEvent, isCreating, isUpdating, isDeleting } = useDemoEvents();
   const isMobile = useIsMobile();
@@ -37,6 +40,7 @@ const DemoCalendarPage = () => {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<DemoEvent | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<DemoEvent | null>(null);
 
   // Jump to the month of the first upcoming event when the page loads
   useEffect(() => {
@@ -129,6 +133,43 @@ const DemoCalendarPage = () => {
     setEditingEvent(null);
   };
 
+  const handleEventClick = (event: DemoEvent) => {
+    setSelectedEvent(event);
+    navigate(`/demo-calendar/event/${generateEventSlug(event)}`);
+  };
+
+  const handleCloseEventModal = () => {
+    setSelectedEvent(null);
+    navigate('/demo-calendar', { replace: true });
+  };
+
+  const handleEditFromModal = (event: DemoEvent) => {
+    setSelectedEvent(null);
+    navigate('/demo-calendar', { replace: true });
+    handleEditEvent(event);
+  };
+
+  const handleDeleteFromModal = (eventId: string) => {
+    setSelectedEvent(null);
+    navigate('/demo-calendar', { replace: true });
+    handleDeleteEvent(eventId);
+  };
+
+  useEffect(() => {
+    if (eventSlug && events.length > 0) {
+      const matched = findEventBySlug(events, eventSlug);
+      if (matched) {
+        setSelectedEvent(matched);
+        if (matched.event_date) {
+          const date = new Date(matched.event_date + 'T00:00:00');
+          setCurrentDate(date);
+        }
+      }
+    } else {
+      setSelectedEvent(null);
+    }
+  }, [eventSlug, events]);
+
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="mb-8">
@@ -182,6 +223,7 @@ const DemoCalendarPage = () => {
               onChangeView={setViewMode}
               onEditEvent={handleEditEvent}
               onDeleteEvent={handleDeleteEvent}
+              onEventClick={handleEventClick}
               isDeleting={isDeleting}
               isAdmin={isAdmin}
               isLoadingRole={isLoadingRole}
@@ -199,6 +241,7 @@ const DemoCalendarPage = () => {
               onChangeView={setViewMode}
               onEditEvent={handleEditEvent}
               onDeleteEvent={handleDeleteEvent}
+              onEventClick={handleEventClick}
               isDeleting={isDeleting}
               isAdmin={isAdmin}
               isLoadingRole={isLoadingRole}
@@ -206,6 +249,17 @@ const DemoCalendarPage = () => {
           )}
         </div>
       </div>
+
+      {/* Event Modal */}
+      <EventModal
+        event={selectedEvent}
+        categoryColors={categoryFilters}
+        onClose={handleCloseEventModal}
+        onEdit={handleEditFromModal}
+        onDelete={handleDeleteFromModal}
+        isDeleting={isDeleting}
+        isAdmin={isAdmin}
+      />
 
       {/* Add/Edit Event Modal */}
       <AddEventModal

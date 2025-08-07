@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from "date-fns";
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
 import CalendarHeader from "./CalendarHeader";
 import TBDEventsSection from "./TBDEventsSection";
-import EventModal from "./EventModal";
 import EventListItem from "./EventListItem";
 
 interface CalendarListProps {
@@ -18,6 +16,7 @@ interface CalendarListProps {
   onChangeView: (mode: 'calendar' | 'list') => void;
   onEditEvent: (event: DemoEvent) => void;
   onDeleteEvent: (eventId: string) => void;
+  onEventClick: (event: DemoEvent) => void;
   isDeleting?: boolean;
   isAdmin: boolean;
   isLoadingRole: boolean;
@@ -39,12 +38,11 @@ const CalendarList = ({
   onChangeView,
   onEditEvent,
   onDeleteEvent,
+  onEventClick,
   isDeleting,
   isAdmin,
   isLoadingRole
 }: CalendarListProps) => {
-  const [selectedEvent, setSelectedEvent] = useState<DemoEvent | null>(null);
-
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
 
@@ -69,24 +67,6 @@ const CalendarList = ({
     });
     return { day, events: dayEvents };
   }).filter(group => group.events.length > 0);
-
-  const handleEventClick = (event: DemoEvent) => {
-    setSelectedEvent(event);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedEvent(null);
-  };
-
-  const handleEditFromModal = (event: DemoEvent) => {
-    setSelectedEvent(null);
-    onEditEvent(event);
-  };
-
-  const handleDeleteFromModal = (eventId: string) => {
-    setSelectedEvent(null);
-    onDeleteEvent(eventId);
-  };
 
   return (
     <div className="bg-card rounded-lg shadow-sm border">
@@ -116,7 +96,7 @@ const CalendarList = ({
                   categoryColors={categoryFilters}
                   onEdit={onEditEvent}
                   onDelete={onDeleteEvent}
-                  onEventClick={handleEventClick}
+                  onEventClick={onEventClick}
                   isDeleting={isDeleting}
                   isAdmin={isAdmin}
                 />
@@ -134,17 +114,7 @@ const CalendarList = ({
         categoryFilters={categoryFilters}
         onEditEvent={onEditEvent}
         onDeleteEvent={onDeleteEvent}
-        onEventClick={handleEventClick}
-        isDeleting={isDeleting}
-        isAdmin={isAdmin}
-      />
-
-      <EventModal
-        event={selectedEvent}
-        categoryColors={categoryFilters}
-        onClose={handleCloseModal}
-        onEdit={handleEditFromModal}
-        onDelete={handleDeleteFromModal}
+        onEventClick={onEventClick}
         isDeleting={isDeleting}
         isAdmin={isAdmin}
       />
