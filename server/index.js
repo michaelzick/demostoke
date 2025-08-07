@@ -12,8 +12,7 @@ const serverDist = path.join(__dirname, '../dist/server');
 
 // Supabase client for fetching blog metadata on the server
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://qtlhqsqanbxgfbcjigrl.supabase.co';
-const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0bGhxc3FhbmJ4Z2ZiY2ppZ3JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyODg2MzUsImV4cCI6MjA2MTg2NDYzNX0.wTjmLkZPG2xo3eqwBo1jnLWsXxNmil_1-u_7ojTDY2g';
+const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -32,7 +31,7 @@ async function getBlogPostMeta(slug) {
         .select('title, excerpt, thumbnail, hero_image, author, slug, id, published_at')
         .eq('id', slug)
         .single();
-      
+
       if (errorById || !dataById) return null;
       return {
         title: dataById.title,
@@ -71,7 +70,7 @@ app.get('*', async (req, res) => {
     if (req.path.startsWith('/blog/')) {
       const slug = req.path.split('/blog/')[1];
       console.log('Processing blog post with slug:', slug);
-      
+
       const meta = await getBlogPostMeta(slug);
       if (meta) {
         console.log('Found blog meta:', {
@@ -80,22 +79,22 @@ app.get('*', async (req, res) => {
           image: meta.image,
           description: meta.description?.substring(0, 100) + '...'
         });
-        
+
         // Use HTTPS and ensure proper URL construction
         const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
         const host = req.get('host');
         const ogUrl = `${protocol}://${host}${req.originalUrl}`;
-        
+
         // Escape quotes and special characters in content
         const escapeContent = (str) => str ? str.replace(/"/g, '&quot;').replace(/'/g, '&#39;') : '';
-        
+
         const escapedTitle = escapeContent(meta.title);
         const escapedDescription = escapeContent(meta.description);
         const escapedAuthor = escapeContent(meta.author);
         const escapedImage = escapeContent(meta.image);
-        
+
         console.log('Image being used for meta tags:', escapedImage);
-        
+
         const schema = {
           '@context': 'https://schema.org',
           '@type': 'BlogPosting',
@@ -124,9 +123,9 @@ app.get('*', async (req, res) => {
           .replace(/<meta\s+name="twitter:image"\s+content="[^"]*"\s*\/?>/i, `<meta name="twitter:image" content="${escapedImage}" />`)
           .replace(/<script\s+id="structured-data"[^>]*>.*?<\/script>/i, '') // Remove existing structured data
           .replace('</head>', `<script id="structured-data" type="application/ld+json">${JSON.stringify(schema)}</script></head>`);
-          
+
         console.log('Replaced meta tags for blog post. Author used:', escapedAuthor);
-        
+
         // Verify the replacement worked by checking if the author is in the HTML
         if (html.includes(`content="${escapedAuthor}"`)) {
           console.log('✅ Author replacement successful');
