@@ -2,8 +2,8 @@
 import fs from 'fs';
 import path from 'path';
 
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://qtlhqsqanbxgfbcjigrl.supabase.co';
-const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0bGhxc3FhbmJ4Z2ZiY2ppZ3JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYyODg2MzUsImV4cCI6MjA2MTg2NDYzNX0.wTjmLkZPG2xo3eqwBo1jnLWsXxNmil_1-u_7ojTDY2g';
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
+const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 
 let supabase;
 async function initSupabase() {
