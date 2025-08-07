@@ -8,11 +8,6 @@ const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 
 let supabase;
 async function initSupabase() {
-  if (!SUPABASE_URL || !SUPABASE_KEY) {
-    console.warn('Supabase credentials are not set; dynamic routes will be skipped.');
-    supabase = null;
-    return;
-  }
   try {
     const { createClient } = await import('@supabase/supabase-js');
     supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
