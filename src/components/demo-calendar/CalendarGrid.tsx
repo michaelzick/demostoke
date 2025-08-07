@@ -1,12 +1,10 @@
 
-import { useState } from "react";
-import { startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, parseISO, startOfWeek, endOfWeek } from "date-fns";
+import { startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, startOfWeek, endOfWeek } from "date-fns";
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
 import CalendarHeader from "./CalendarHeader";
 import CalendarDaysHeader from "./CalendarDaysHeader";
 import CalendarDay from "./CalendarDay";
 import TBDEventsSection from "./TBDEventsSection";
-import EventModal from "./EventModal";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CalendarGridProps {
@@ -21,6 +19,7 @@ interface CalendarGridProps {
   onChangeView: (mode: 'calendar' | 'list') => void;
   onEditEvent: (event: DemoEvent) => void;
   onDeleteEvent: (eventId: string) => void;
+  onEventClick: (event: DemoEvent) => void;
   isDeleting?: boolean;
   isAdmin: boolean;
   isLoadingRole: boolean;
@@ -44,14 +43,12 @@ const CalendarGrid = ({
   onChangeView,
   onEditEvent,
   onDeleteEvent,
+  onEventClick,
   isDeleting,
   isAdmin,
   isLoadingRole
 }: CalendarGridProps) => {
   const isMobile = useIsMobile();
-  const [selectedEvent, setSelectedEvent] = useState<DemoEvent | null>(null);
-
-
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   
@@ -86,24 +83,6 @@ const CalendarGrid = ({
   // Get events without dates (TBD events)
   const tbdEvents = filteredEvents.filter(event => !event.event_date);
 
-  const handleEventClick = (event: DemoEvent) => {
-    setSelectedEvent(event);
-  };
-
-  const handleCloseModal = () => {
-    setSelectedEvent(null);
-  };
-
-  const handleEditFromModal = (event: DemoEvent) => {
-    setSelectedEvent(null);
-    onEditEvent(event);
-  };
-
-  const handleDeleteFromModal = (eventId: string) => {
-    setSelectedEvent(null);
-    onDeleteEvent(eventId);
-  };
-
   return (
     <div className="bg-card rounded-lg shadow-sm border">
       <CalendarHeader
@@ -134,7 +113,7 @@ const CalendarGrid = ({
               categoryFilters={categoryFilters}
               onEditEvent={onEditEvent}
               onDeleteEvent={onDeleteEvent}
-              onEventClick={handleEventClick}
+              onEventClick={onEventClick}
               isDeleting={isDeleting}
               isAdmin={isAdmin}
             />
@@ -147,18 +126,7 @@ const CalendarGrid = ({
         categoryFilters={categoryFilters}
         onEditEvent={onEditEvent}
         onDeleteEvent={onDeleteEvent}
-        onEventClick={handleEventClick}
-        isDeleting={isDeleting}
-        isAdmin={isAdmin}
-      />
-
-      {/* Event Modal */}
-      <EventModal
-        event={selectedEvent}
-        categoryColors={categoryFilters}
-        onClose={handleCloseModal}
-        onEdit={handleEditFromModal}
-        onDelete={handleDeleteFromModal}
+        onEventClick={onEventClick}
         isDeleting={isDeleting}
         isAdmin={isAdmin}
       />

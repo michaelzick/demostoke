@@ -1,12 +1,18 @@
 
 import fs from 'fs';
 import path from 'path';
+import { format } from 'date-fns';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 
 let supabase;
 async function initSupabase() {
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    console.warn('Supabase credentials are not set; dynamic routes will be skipped.');
+    supabase = null;
+    return;
+  }
   try {
     const { createClient } = await import('@supabase/supabase-js');
     supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -46,6 +52,32 @@ async function fetchEquipment() {
   }));
 }
 
+function slugify(text) {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+function generateEventSlug(event) {
+  const titlePart = slugify(event.title);
+  const datePart = event.event_date ? format(new Date(event.event_date + 'T00:00:00'), 'MM-dd-yyyy') : 'tbd';
+  const timePart = event.event_time ? event.event_time.replace(':', '') : 'tbd';
+  return `${titlePart}-${datePart}-${timePart}`;
+}
+
+async function fetchDemoEvents() {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('demo_calendar')
+    .select('title, event_date, event_time, updated_at');
+  if (error) {
+    console.error('Error fetching demo events:', error);
+    return [];
+  }
+  return (data || []).map(ev => ({
+    loc: `${baseUrl}/demo-calendar/event/${generateEventSlug(ev)}`,
+    lastmod: ev.updated_at ? new Date(ev.updated_at).toISOString() : undefined,
+  }));
+}
+
 async function generate() {
   await initSupabase();
   const staticUrls = [
@@ -69,8 +101,12 @@ async function generate() {
     '/demo-calendar',
   ].map(p => ({ loc: `${baseUrl}${p}` }));
 
-  const [blogUrls, equipmentUrls] = await Promise.all([fetchBlogPosts(), fetchEquipment()]);
-  const urls = [...staticUrls, ...blogUrls, ...equipmentUrls];
+  const [blogUrls, equipmentUrls, demoEventUrls] = await Promise.all([
+    fetchBlogPosts(),
+    fetchEquipment(),
+    fetchDemoEvents()
+  ]);
+  const urls = [...staticUrls, ...blogUrls, ...equipmentUrls, ...demoEventUrls];
 
   const xmlLines = [
     '<?xml version="1.0" encoding="UTF-8"?>',
