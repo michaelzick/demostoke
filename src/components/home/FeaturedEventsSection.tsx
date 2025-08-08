@@ -52,18 +52,6 @@ const FeaturedEventsSection = () => {
               </Link>
             </div>
           </div>
-          <div className="flex justify-end mt-8 md:mt-0">
-            <div className="relative">
-              <div className="absolute -top-4 -left-4 bg-primary/10 rounded-full w-28 h-28 animate-float homepage-float-1"></div>
-              <div className="absolute -bottom-3 -right-3 bg-primary/10 rounded-full w-16 h-16 animate-float"></div>
-              <img
-                src="https://images.unsplash.com/photo-1545579133-99bb5ab2b731?auto=format&fit=crop&w=600&q=80"
-                alt="Outdoor demo event"
-                loading="lazy"
-                className="rounded-lg relative z-10 max-h-64 object-cover"
-              />
-            </div>
-          </div>
         </div>
       </div>
     </section>
