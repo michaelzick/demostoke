@@ -67,6 +67,7 @@ const AppRoutes = () => {
           <Route path="search" element={<SearchResultsPage />} />
           <Route path="demo-calendar" element={<DemoCalendarPage />} />
           <Route path="demo-calendar/event/:eventSlug" element={<DemoCalendarPage />} />
+          <Route path="event/:eventSlug" element={<DemoCalendarPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
     </Routes>
