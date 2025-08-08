@@ -6,12 +6,17 @@ import { Search } from "lucide-react";
 import { Snowflake, Mountains, Waves, Bicycle } from "@phosphor-icons/react";
 import { useAuth } from "@/helpers";
 import { getVideoUrl } from "@/utils/videoUpload";
+import { useDemoEvents } from "@/hooks/useDemoEvents";
+import { generateEventSlug } from "@/utils/eventSlug";
 
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  const { events } = useDemoEvents();
+  const featuredEvents = events.filter(ev => ev.is_featured).slice(0, 3);
 
   // const backgrounds = [
   //   { type: 'video', url: getVideoUrl('surfers_compressed.mp4') },
@@ -165,6 +170,36 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
+
+      {/* Featured demo events within hero */}
+      {featuredEvents.length > 0 && (
+        <div className="absolute left-0 right-0 bottom-16 sm:bottom-20 px-4">
+          <div className="mx-auto max-w-6xl">
+            <div className="flex justify-center gap-3 sm:gap-4 md:gap-6 flex-wrap">
+              {featuredEvents.map((ev) => (
+                <Link
+                  key={ev.id}
+                  to={`/event/${generateEventSlug(ev)}`}
+                  className="group relative rounded-md overflow-hidden shadow-lg border border-white/20 dark:border-zinc-700/40 bg-background/70 backdrop-blur supports-[backdrop-filter]:bg-background/50"
+                >
+                  <div className="w-28 h-16 sm:w-36 sm:h-20 md:w-48 md:h-28">
+                    <img
+                      src={ev.thumbnail_url || '/placeholder.svg'}
+                      alt={`Featured demo event: ${ev.title}`}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/40 text-white text-[10px] sm:text-xs px-2 py-1 line-clamp-1">
+                    {ev.title}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
         {backgrounds.map((_, index) => (
           <button
