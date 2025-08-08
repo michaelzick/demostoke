@@ -19,7 +19,7 @@ const FeaturedEventsSection = () => {
     <section className="py-10 bg-white dark:bg-muted/50">
       <div className="container px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          <div>
+          <div className='z-10'>
             <h2 className="text-2xl font-bold mb-6">Featured Demo Events</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               {featured.map((ev) => {
@@ -51,16 +51,16 @@ const FeaturedEventsSection = () => {
                 </Button>
               </Link>
             </div>
-            </div>
+          </div>
           <div className="flex justify-end mt-12 md:mt-0">
             <div className="relative">
               <div className="absolute -top-6 -left-6 bg-white/10 dark:bg-white/20 rounded-full w-40 h-40 animate-float homepage-float-1"></div>
               <div className="absolute -bottom-4 -right-4 bg-white/10 dark:bg-white/20 rounded-full w-24 h-24 animate-float"></div>
               <img
-                src="https://today.usc.edu/wp-content/uploads/2023/03/skiteam_web-768x432.jpg"
-                alt="Person on surfboard"
+                src="https://www.mayrhofen3000.at/wp-content/uploads/2024/01/Foto-Gruppenkurs-Snowboard-Fortgeschritten-scaled-900x600.jpg"
+                alt="Snowboarder"
                 loading="lazy"
-                className="rounded-lg relative z-10 max-h-80 object-cover"
+                className="rounded-lg relative z-10 max-w-sm lg:max-w-md object-cover"
               />
             </div>
           </div>
