@@ -1,6 +1,9 @@
 
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useDemoEvents } from "@/hooks/useDemoEvents";
+import { useToast } from "@/hooks/use-toast";
 import { Pencil, Trash2 } from "lucide-react";
 
 interface EventCardProps {
@@ -42,6 +45,10 @@ const EventCard = ({
   };
 
   const textColorClass = getTextColor(colorClass);
+  const { events, updateEvent } = useDemoEvents();
+  const { toast } = useToast();
+  const featuredCount = (events || []).filter((e) => e.is_featured).length;
+  const disableFeature = featuredCount >= 3 && !event.is_featured;
 
   return (
     <div className="bg-card rounded-lg p-3 shadow-sm border hover:shadow-md transition-shadow">

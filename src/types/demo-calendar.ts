@@ -7,6 +7,8 @@ export interface DemoEvent {
   event_time: string | null;
   location: string | null;
   equipment_available: string | null;
+  thumbnail_url: string | null;
+  is_featured: boolean;
   company: string;
   created_at: string;
   updated_at: string;
@@ -20,6 +22,8 @@ export interface DemoEventInput {
   event_time?: string | null;
   location?: string | null;
   equipment_available?: string | null;
+  thumbnail_url?: string | null;
+  is_featured?: boolean;
   company: string;
 }
 

@@ -111,7 +111,9 @@ export type Database = {
           event_time: string | null
           gear_category: string
           id: string
+          is_featured: boolean
           location: string | null
+          thumbnail_url: string | null
           title: string
           updated_at: string
         }
@@ -124,7 +126,9 @@ export type Database = {
           event_time?: string | null
           gear_category: string
           id?: string
+          is_featured?: boolean
           location?: string | null
+          thumbnail_url?: string | null
           title: string
           updated_at?: string
         }
@@ -137,7 +141,9 @@ export type Database = {
           event_time?: string | null
           gear_category?: string
           id?: string
+          is_featured?: boolean
           location?: string | null
+          thumbnail_url?: string | null
           title?: string
           updated_at?: string
         }

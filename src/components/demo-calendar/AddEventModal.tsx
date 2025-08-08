@@ -5,6 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useIsAdmin } from "@/hooks/useUserRole";
+import { useDemoEvents } from "@/hooks/useDemoEvents";
+import { useToast } from "@/hooks/use-toast";
 import { DemoEvent, DemoEventInput } from "@/types/demo-calendar";
 
 interface AddEventModalProps {
@@ -31,8 +35,16 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
     location: '',
     equipment_available: '',
     company: '',
+    thumbnail_url: '',
+    is_featured: false,
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const { isAdmin } = useIsAdmin();
+  const { events } = useDemoEvents();
+  const { toast } = useToast();
+  const featuredCount = (events || []).filter((e) => e.is_featured).length;
+  const canFeatureMore = featuredCount < 3 || !!editEvent?.is_featured;
 
   useEffect(() => {
     if (editEvent) {
@@ -44,6 +56,8 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
         location: editEvent.location || '',
         equipment_available: editEvent.equipment_available || '',
         company: editEvent.company || '',
+        thumbnail_url: editEvent.thumbnail_url || '',
+        is_featured: !!editEvent.is_featured,
       });
     } else {
       setFormData({
@@ -54,6 +68,8 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
         location: '',
         equipment_available: '',
         company: '',
+        thumbnail_url: '',
+        is_featured: false,
       });
     }
     setErrors({});
@@ -85,14 +101,26 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
       return;
     }
 
+    // Enforce max 3 featured events
+    if (isAdmin && formData.is_featured && !canFeatureMore) {
+      toast({
+        title: "Limit reached",
+        description: "You can feature up to 3 events. Unfeature one to add another.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Clean up empty string values to null
-    const cleanedData = {
+    const cleanedData: DemoEventInput = {
       ...formData,
       event_date: formData.event_date?.trim() || null,
       event_time: formData.event_time?.trim() || null,
       location: formData.location?.trim() || null,
       equipment_available: formData.equipment_available?.trim() || null,
       company: formData.company?.trim() || '',
+      thumbnail_url: formData.thumbnail_url?.trim() || null,
+      is_featured: isAdmin ? !!formData.is_featured : false,
     };
 
     onSubmit(cleanedData);
@@ -107,6 +135,8 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
       location: '',
       equipment_available: '',
       company: '',
+      thumbnail_url: '',
+      is_featured: false,
     });
     setErrors({});
     onClose();
@@ -142,6 +172,31 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
             />
             {errors.company && <p className="text-sm text-destructive mt-1">{errors.company}</p>}
           </div>
+
+          <div>
+            <Label htmlFor="thumbnail_url">Thumbnail URL</Label>
+            <Input
+              id="thumbnail_url"
+              value={formData.thumbnail_url || ''}
+              onChange={(e) => setFormData(prev => ({ ...prev, thumbnail_url: e.target.value }))}
+              placeholder="https://example.com/image.jpg"
+            />
+            <p className="text-xs text-muted-foreground mt-1">Used for the homepage featured events section.</p>
+          </div>
+
+          {isAdmin && (
+            <div className="flex items-center gap-2">
+              <Checkbox
+                id="is_featured"
+                checked={!!formData.is_featured}
+                disabled={!canFeatureMore && !formData.is_featured}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_featured: !!checked }))}
+              />
+              <Label htmlFor="is_featured" className="text-sm">
+                Featured on homepage {!canFeatureMore && !formData.is_featured ? '(max 3 reached)' : ''}
+              </Label>
+            </div>
+          )}
 
           <div>
             <Label htmlFor="gear_category">Gear Category *</Label>
