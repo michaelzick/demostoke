@@ -16,7 +16,7 @@ const FeaturedEventsSection = () => {
   if (!featured || featured.length === 0) return null;
 
   return (
-    <section className="py-10 bg-white dark:bg-muted/20">
+    <section className="py-10 bg-white dark:bg-muted/50">
       <div className="container px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div>
@@ -43,11 +43,11 @@ const FeaturedEventsSection = () => {
               })}
               <Link to={`/demo-calendar`}>
                 <Button
-                  size="sm"
+                  size="lg"
                   variant="outline"
-                  className="bg-white/60 dark:bg-zinc-900/50 border-border hover:bg-muted/40 transition-colors"
+                  className="bg-white/20 dark:bg-zinc-900/50 border-white dark:border-zinc-600 hover:bg-white/30 hover:text-white dark:hover:bg-zinc-500/40 transition-colors"
                 >
-                  View Calendar
+                  View All Events
                 </Button>
               </Link>
             </div>
