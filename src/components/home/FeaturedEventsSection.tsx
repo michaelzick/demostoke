@@ -51,6 +51,18 @@ const FeaturedEventsSection = () => {
                 </Button>
               </Link>
             </div>
+            </div>
+          <div className="flex justify-end mt-12 md:mt-0">
+            <div className="relative">
+              <div className="absolute -top-6 -left-6 bg-white/10 dark:bg-white/20 rounded-full w-40 h-40 animate-float homepage-float-1"></div>
+              <div className="absolute -bottom-4 -right-4 bg-white/10 dark:bg-white/20 rounded-full w-24 h-24 animate-float"></div>
+              <img
+                src="https://today.usc.edu/wp-content/uploads/2023/03/skiteam_web-768x432.jpg"
+                alt="Person on surfboard"
+                loading="lazy"
+                className="rounded-lg relative z-10 max-h-80 object-cover"
+              />
+            </div>
           </div>
         </div>
       </div>
