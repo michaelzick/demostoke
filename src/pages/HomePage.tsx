@@ -5,7 +5,7 @@ import HeroSection from "@/components/HeroSection";
 import HowItWorksSection from "@/components/home/HowItWorksSection";
 import FeaturedGearSection from "@/components/home/FeaturedGearSection";
 import FeaturedPostsSection from "@/components/home/FeaturedPostsSection";
-
+import FeaturedEventsSection from "@/components/home/FeaturedEventsSection";
 import { useTrendingEquipment } from "@/hooks/useTrendingEquipment";
 import { useRecentEquipment } from "@/hooks/useRecentEquipment";
 import { useFeaturedEquipment } from "@/hooks/useFeaturedEquipment";
@@ -271,7 +271,7 @@ const HomePage = () => {
         </DialogContent>
       </Dialog>
       <HeroSection />
-      
+      <FeaturedEventsSection />
       <HowItWorksSection />
 
       {/* Featured section with admin-selected equipment */}
