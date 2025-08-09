@@ -13,20 +13,22 @@ const HeroSection = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  // const backgrounds = [
-  //   { type: 'video', url: getVideoUrl('surfers_compressed.mp4') },
-  //   { type: 'video', url: getVideoUrl('snowboarder_compressed.mp4') },
-  //   { type: 'video', url: getVideoUrl('skier_compressed.mp4') },
-  //   { type: 'video', url: getVideoUrl('skater_compressed.mp4') },
-  //   { type: 'video', url: getVideoUrl('sup_compressed.mp4') },
-  // ];
-
   const backgrounds = [
-    { type: '', url: 'https://images.unsplash.com/photo-1590461283969-47fedf408cfd?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-    { type: '', url: 'https://images.unsplash.com/photo-1509791413599-93ba127a66b7?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3' },
-    { type: '', url: 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-    { type: '', url: 'https://images.unsplash.com/photo-1506316940527-4d1c138978a0?q=80&w=3512&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+    { type: 'video', url: '/vid/surfers_compressed.mp4' },
+    { type: 'video', url: '/vid/snowboarder_compressed.mp4' },
+    { type: 'video', url: '/vid/mtb_compressed.mp4' },
+    { type: 'video', url: '/vid/skier_compressed.mp4' },
+    { type: 'video', url: '/vid/surfer_compressed.mp4' },
+    { type: 'video', url: '/vid/snowboarder_compressed_2.mp4' },
+    { type: 'video', url: '/vid/mtb_compressed_2.mp4' },
   ];
+
+  // const backgrounds = [
+  //   { type: '', url: 'https://images.unsplash.com/photo-1590461283969-47fedf408cfd?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+  //   { type: '', url: 'https://images.unsplash.com/photo-1509791413599-93ba127a66b7?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3' },
+  //   { type: '', url: 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+  //   { type: '', url: 'https://images.unsplash.com/photo-1506316940527-4d1c138978a0?q=80&w=3512&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+  // ];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -56,7 +58,6 @@ const HeroSection = () => {
         <div
           key={index}
           className={`absolute inset-0 transition-opacity duration-1000 ${index === activeIndex ? 'opacity-100' : 'opacity-0'}`}
-          style={{ clipPath: 'polygon(0 0, 100% 0, 0 100%)' }}
         >
           {bg.type === 'video' ? (
             <video
@@ -79,19 +80,19 @@ const HeroSection = () => {
         </div>
       ))}
       {/* Static image clipped to the bottom triangle */}
-      <div
+      {/* <div
         className="absolute inset-0 bg-cover bg-right"
         style={{
           clipPath: 'polygon(100% 0, 100% 100%, 0 100%)',
           backgroundImage:
             "url('https://qtlhqsqanbxgfbcjigrl.supabase.co/storage/v1/object/public/blog-images//admin-image-1753206825330-full-map-retailers.webp')",
         }}
-      />
+      /> */}
       {/* Overlay to darken the background */}
       {/* <div className="absolute inset-0 bg-black bg-opacity-30" /> */}
 
       {/* Diagonal divider */}
-      <svg
+      {/* <svg
         className="absolute inset-0 w-full h-full pointer-events-none"
         preserveAspectRatio="none"
       >
@@ -103,7 +104,7 @@ const HeroSection = () => {
           stroke="white"
           strokeWidth="8"
         />
-      </svg>
+      </svg> */}
       <div className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 text-white">
         <div className="max-w-3xl text-center bg-zinc-900/60 p-4 rounded-lg shadow-lg">
           <h1 className="text-6xl sm:text-8xl md:text-9xl font-bold mb-4 text-primary" style={{ fontFamily: 'Tahoma, sans-serif' }}>
