@@ -14,11 +14,11 @@ const HeroSection = () => {
   const navigate = useNavigate();
 
   const backgrounds = [
-    { type: 'video', url: '/vid/surfers_compressed.mp4' },
-    { type: 'video', url: '/vid/snowboarder_compressed.mp4' },
-    { type: 'video', url: '/vid/skier_compressed.mp4' },
-    { type: 'video', url: '/vid/surfer_compressed.mp4' },
-    { type: 'video', url: '/vid/mtb_compressed_2.mp4' },
+    { type: 'video', url: '/vid/surfers_compressed_1920.mp4' },
+    { type: 'video', url: '/vid/snowboarder_compressed_1920.mp4' },
+    { type: 'video', url: '/vid/skier_compressed_1920.mp4' },
+    { type: 'video', url: '/vid/surfer_compressed_1920.mp4' },
+    { type: 'video', url: '/vid/mtb_compressed_2_1920.mp4' },
   ];
 
   // const backgrounds = [
