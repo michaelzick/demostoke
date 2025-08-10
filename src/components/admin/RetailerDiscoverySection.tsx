@@ -14,6 +14,8 @@ interface BusinessResult {
   domain: string;
   snippet?: string;
   matchedCategories?: string[];
+  email?: string;
+  phone?: string;
 }
 
 const CATEGORY_KEYWORDS = [
@@ -57,7 +59,7 @@ export default function RetailerDiscoverySection() {
   const [loading, setLoading] = useState(false);
   const [businesses, setBusinesses] = useState<BusinessResult[]>([]);
   const [selected, setSelected] = useState<Record<string, boolean>>({});
-
+  const [enriching, setEnriching] = useState(false);
   const handleSearch = async () => {
     if (!zip) {
       toast({ title: "Zip required", description: "Enter a zip code.", variant: "destructive" });
@@ -158,6 +160,41 @@ export default function RetailerDiscoverySection() {
     );
   };
 
+  const handleEnrich = async () => {
+    const chosen = businesses.filter((b) => selected[b.domain]);
+    if (chosen.length === 0) {
+      toast({ title: "No businesses selected", description: "Select at least one.", variant: "destructive" });
+      return;
+    }
+    setEnriching(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("crawl-retailer-details", {
+        body: { urls: chosen.map((b) => b.url) },
+      });
+      if (error) throw error;
+      const results: Array<{ url: string; html?: string; markdown?: string }> = data?.results || [];
+      results.forEach((r) => {
+        const domain = getDomain(r.url);
+        const text = `${r.markdown || ""}\n${r.html || ""}`.toLowerCase();
+        const emailMatch = text.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i);
+        const phoneMatch = text.match(/(\+?\d{1,2}[\s.-]?)?(\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}/);
+        setBusinesses((prev) =>
+          prev.map((b) =>
+            b.domain === domain
+              ? { ...b, email: emailMatch ? emailMatch[0] : b.email, phone: phoneMatch ? phoneMatch[0] : b.phone }
+              : b
+          )
+        );
+      });
+      toast({ title: "Enrichment complete", description: "Extracted contact info where available." });
+    } catch (e: any) {
+      console.error(e);
+      toast({ title: "Enrichment failed", description: e?.message || "Unexpected error", variant: "destructive" });
+    } finally {
+      setEnriching(false);
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -194,7 +231,12 @@ export default function RetailerDiscoverySection() {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <p className="text-sm text-muted-foreground">{businesses.length} results</p>
-              <Button variant="secondary" onClick={handleGenerateSQL}>Generate SQL templates</Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={handleEnrich} disabled={enriching}>
+                  {enriching ? "Enriching..." : "Enrich selected"}
+                </Button>
+                <Button variant="secondary" onClick={handleGenerateSQL}>Generate SQL templates</Button>
+              </div>
             </div>
             <Table>
               <TableHeader>
@@ -203,6 +245,8 @@ export default function RetailerDiscoverySection() {
                   <TableHead>Business</TableHead>
                   <TableHead>URL</TableHead>
                   <TableHead>Categories detected</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Phone</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -224,6 +268,8 @@ export default function RetailerDiscoverySection() {
                     <TableCell>
                       {(b.matchedCategories || []).join(", ")}
                     </TableCell>
+                    <TableCell>{b.email || "—"}</TableCell>
+                    <TableCell>{b.phone || "—"}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
