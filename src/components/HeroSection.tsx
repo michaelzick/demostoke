@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Snowflake, Mountains, Waves, Bicycle } from "@phosphor-icons/react";
 import { useAuth } from "@/helpers";
-import { getVideoUrl } from "@/utils/videoUpload";
+// import { getVideoUrl } from "@/utils/videoUpload";
 
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -16,10 +16,8 @@ const HeroSection = () => {
   const backgrounds = [
     { type: 'video', url: '/vid/surfers_compressed.mp4' },
     { type: 'video', url: '/vid/snowboarder_compressed.mp4' },
-    { type: 'video', url: '/vid/mtb_compressed.mp4' },
     { type: 'video', url: '/vid/skier_compressed.mp4' },
     { type: 'video', url: '/vid/surfer_compressed.mp4' },
-    { type: 'video', url: '/vid/snowboarder_compressed_2.mp4' },
     { type: 'video', url: '/vid/mtb_compressed_2.mp4' },
   ];
 
