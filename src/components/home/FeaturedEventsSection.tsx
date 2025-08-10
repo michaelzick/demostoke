@@ -45,7 +45,7 @@ const FeaturedEventsSection = () => {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="bg-white/20 dark:bg-zinc-900/50 border-white dark:border-zinc-600 hover:bg-white/30 hover:text-white dark:hover:bg-zinc-500/40 transition-colors"
+                  className="bg-white/20 dark:bg-zinc-900/50 dark:border-white border-zinc-600 dark:hover:bg-white/30 dark:hover:bg-zinc-500/40 transition-colors"
                 >
                   View All Events
                 </Button>
