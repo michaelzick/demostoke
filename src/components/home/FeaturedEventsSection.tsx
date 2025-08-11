@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useMemo } from "react";
 import { useDemoEvents } from "@/hooks/useDemoEvents";
 import { generateEventSlug } from "@/utils/eventSlug";
+import { format } from "date-fns";
 
 const FeaturedEventsSection = () => {
   const { events } = useDemoEvents();
@@ -38,6 +39,14 @@ const FeaturedEventsSection = () => {
                     <h3 className="text-sm font-medium leading-tight group-hover:text-primary transition-colors">
                       {ev.title}
                     </h3>
+                    {(ev.event_date || ev.event_time) && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {[
+                          ev.event_date ? format(new Date(ev.event_date + 'T00:00:00'), 'MMM d, yyyy') : '',
+                          ev.event_time ? format(new Date(`1970-01-01T${ev.event_time}`), 'h:mm a') : ''
+                        ].filter(Boolean).join(' • ')}
+                      </p>
+                    )}
                   </Link>
                 );
               })}
