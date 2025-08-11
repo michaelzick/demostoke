@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/components/ui/use-toast";
-import { geocodeZipCode } from "@/utils/geocoding";
+import { geocodeZipCode, geocodeAddress } from "@/utils/geocoding";
 import { supabase } from "@/integrations/supabase/client";
 
 interface BusinessResult {
@@ -16,6 +16,10 @@ interface BusinessResult {
   matchedCategories?: string[];
   email?: string;
   phone?: string;
+  address?: string;
+  lat?: number;
+  lng?: number;
+  relevantPages?: Array<{ url: string; title?: string; categories?: string[] }>;
 }
 
 const CATEGORY_KEYWORDS = [
@@ -145,15 +149,34 @@ export default function RetailerDiscoverySection() {
       return;
     }
 
-    const now = new Date().toISOString();
     const values = chosen
       .flatMap((b) => (b.matchedCategories || []).map((cat) => ({ b, cat })))
-      .map(({ b, cat }) =>
-        ` (gen_random_uuid(), /* user_id */ 'REPLACE_WITH_USER_ID', '${b.title.replace(/'/g, "''")}', '${cat}', 0, /* price_per_day */ NULL, /* price_per_hour */ NULL, /* price_per_week */ NULL, '${(b.snippet || '').replace(/'/g, "''")}', true, 0, 0, 'available', now(), now(), NULL, NULL, NULL, NULL, NULL, NULL, NULL, '${zip}', NULL, NULL)`
-      )
+      .map(({ b, cat }) => {
+        const name = (b.relevantPages?.[0]?.title || b.title || "").replace(/'/g, "''");
+        const desc = (b.snippet || '').replace(/'/g, "''");
+        const address = (b.address || zip || '').replace(/'/g, "''");
+        const lat = b.lat != null ? b.lat.toString() : "NULL";
+        const lng = b.lng != null ? b.lng.toString() : "NULL";
+        return `(
+    gen_random_uuid(),
+    'REPLACE_WITH_USER_ID',
+    '${name}',
+    '${cat}',
+    '${desc}',
+    NULL, NULL, NULL,
+    NULL, NULL, NULL, NULL,
+    'available',
+    ${lat},
+    ${lng},
+    '${address}',
+    NULL,
+    NULL,
+    true
+  )`;
+      })
       .join(",\n");
 
-    const sql = `-- Template INSERTs for equipment (adjust values before running)\n-- Map categories to correct ones as needed and set user_id, prices, and coordinates.\nINSERT INTO public.equipment (id, user_id, name, category, price_per_day, price_per_hour, price_per_week, description, visible_on_map, rating, review_count, status, created_at, updated_at, suitable_skill_level, size, weight, material, subcategory, view_count, damage_deposit, location_address, location_lat, location_lng)\nVALUES\n${values};`;
+    const sql = `-- Template INSERTs for equipment (adjust values before running)\n-- Set user_id, prices, and refine fields as needed.\nINSERT INTO public.equipment (\n    id, user_id, name, category, description, price_per_day, price_per_hour, price_per_week,\n    size, weight, material, suitable_skill_level, status,\n    location_lat, location_lng, location_address, subcategory, damage_deposit, visible_on_map\n) VALUES\n${values};`;
 
     navigator.clipboard.writeText(sql).then(() =>
       toast({ title: "SQL copied", description: "Insert statements copied to clipboard." })
@@ -169,24 +192,47 @@ export default function RetailerDiscoverySection() {
     setEnriching(true);
     try {
       const { data, error } = await supabase.functions.invoke("crawl-retailer-details", {
-        body: { urls: chosen.map((b) => b.url) },
+        body: { urls: chosen.map((b) => b.url), keywords: CATEGORY_KEYWORDS, limit: 40 },
       });
       if (error) throw error;
-      const results: Array<{ url: string; html?: string; markdown?: string }> = data?.results || [];
-      results.forEach((r) => {
-        const domain = getDomain(r.url);
-        const text = `${r.markdown || ""}\n${r.html || ""}`.toLowerCase();
-        const emailMatch = text.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/i);
-        const phoneMatch = text.match(/(\+?\d{1,2}[\s.-]?)?(\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}/);
-        setBusinesses((prev) =>
-          prev.map((b) =>
-            b.domain === domain
-              ? { ...b, email: emailMatch ? emailMatch[0] : b.email, phone: phoneMatch ? phoneMatch[0] : b.phone }
-              : b
-          )
-        );
+      const results: Array<{ url: string; email?: string; phone?: string; address?: string; relevantPages?: any[]; matchedCategories?: string[] }> = data?.results || [];
+
+      // First pass: update contact info + address + categories + relevant pages
+      setBusinesses((prev) => {
+        const map = new Map(prev.map((p) => [p.domain, p] as const));
+        for (const r of results) {
+          const domain = getDomain(r.url);
+          const existing = map.get(domain);
+          if (!existing) continue;
+          map.set(domain, {
+            ...existing,
+            email: r.email || existing.email,
+            phone: r.phone || existing.phone,
+            address: r.address || existing.address,
+            matchedCategories: r.matchedCategories && r.matchedCategories.length > 0 ? r.matchedCategories : existing.matchedCategories,
+            relevantPages: r.relevantPages || existing.relevantPages,
+          });
+        }
+        return Array.from(map.values());
       });
-      toast({ title: "Enrichment complete", description: "Extracted contact info where available." });
+
+      // Second pass: geocode addresses for updated businesses
+      const updates = await Promise.all(
+        results.map(async (r) => {
+          if (!r.address) return null;
+          const coords = await geocodeAddress(r.address);
+          return { domain: getDomain(r.url), coords } as const;
+        })
+      );
+
+      setBusinesses((prev) =>
+        prev.map((b) => {
+          const up = updates.find((u) => u && u.domain === b.domain);
+          return up && up.coords ? { ...b, lat: up.coords.lat, lng: up.coords.lng } : b;
+        })
+      );
+
+      toast({ title: "Enrichment complete", description: "Extracted contact info and addresses where available." });
     } catch (e: any) {
       console.error(e);
       toast({ title: "Enrichment failed", description: e?.message || "Unexpected error", variant: "destructive" });
