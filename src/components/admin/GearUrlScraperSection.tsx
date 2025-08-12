@@ -1,17 +1,15 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { geocodeAddress } from "@/utils/geocoding";
 
-const escapeSqlString = (value: string) =>
-  `'${value.replace(/'/g, "''")}'`;
+const escapeSqlString = (value: string) => `'${value.replace(/'/g, "''")}'`;
 
 export default function GearUrlScraperSection() {
-  const [url, setUrl] = useState("");
+  const [html, setHtml] = useState("");
   const [sql, setSql] = useState("");
   const [loading, setLoading] = useState(false);
   const [insertLoading, setInsertLoading] = useState(false);
@@ -27,13 +25,24 @@ export default function GearUrlScraperSection() {
     const material = data.material ?? null;
     const suitable = data.suitable_skill_level ?? null;
     const subcategory = data.subcategory ?? null;
+
     const damage_deposit =
       data.damage_deposit !== undefined && data.damage_deposit !== null
         ? Number(data.damage_deposit)
         : null;
-    const price_per_day = data.price_per_day !== undefined && data.price_per_day !== null ? Number(data.price_per_day) : 0; // NOT NULL
-    const price_per_hour = data.price_per_hour !== undefined && data.price_per_hour !== null ? Number(data.price_per_hour) : null;
-    const price_per_week = data.price_per_week !== undefined && data.price_per_week !== null ? Number(data.price_per_week) : null;
+
+    const price_per_day =
+      data.price_per_day !== undefined && data.price_per_day !== null
+        ? Number(data.price_per_day)
+        : 0; // NOT NULL
+    const price_per_hour =
+      data.price_per_hour !== undefined && data.price_per_hour !== null
+        ? Number(data.price_per_hour)
+        : null;
+    const price_per_week =
+      data.price_per_week !== undefined && data.price_per_week !== null
+        ? Number(data.price_per_week)
+        : null;
 
     // Geocode if we have an address
     let location_lat: number | null = null;
@@ -81,25 +90,25 @@ export default function GearUrlScraperSection() {
     setSql(sqlStr);
   };
 
-  const handleScrape = async () => {
+  const handleProcessHtml = async () => {
     setMessage(null);
     setError(null);
     setSql("");
-    if (!url) {
-      setError("Please enter a URL");
+    if (!html.trim()) {
+      setError("Please paste HTML to process");
       return;
     }
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('scrape-gear-from-url', {
-        body: { url }
+      const { data, error } = await supabase.functions.invoke('extract-gear-from-html', {
+        body: { html }
       });
       if (error) throw error;
-      if (!data) throw new Error('No data returned from scraper');
+      if (!data) throw new Error('No data returned from extractor');
       await buildSql(data);
     } catch (e: any) {
       console.error(e);
-      setError(e?.message || 'Failed to scrape URL');
+      setError(e?.message || 'Failed to process HTML');
     } finally {
       setLoading(false);
     }
@@ -130,21 +139,25 @@ export default function GearUrlScraperSection() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Scrape Gear from URL</CardTitle>
+        <CardTitle>Paste HTML → Generate SQL</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex gap-3 items-end">
-          <div className="flex-1">
-            <label className="text-sm text-muted-foreground">URL</label>
-            <Input
-              placeholder="https://example.com/rentals/soft-top-66"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-            />
+        <div className="space-y-2">
+          <label className="text-sm text-muted-foreground">Page HTML</label>
+          <Textarea
+            value={html}
+            onChange={(e) => setHtml(e.target.value)}
+            placeholder="Paste the full HTML of the gear page here"
+            className="min-h-[220px] font-mono"
+          />
+          <div className="flex items-center gap-3">
+            <Button onClick={handleProcessHtml} disabled={loading}>
+              {loading ? 'Processing…' : 'Process HTML & Generate SQL'}
+            </Button>
           </div>
-          <Button onClick={handleScrape} disabled={loading}>
-            {loading ? 'Scraping…' : 'Scrape & Generate SQL'}
-          </Button>
+          <p className="text-xs text-muted-foreground">
+            Tip: Use the Zip Code Retailer Search to find shops. Open a link, navigate to the gear page, copy the page HTML, then paste it above.
+          </p>
         </div>
 
         <div className="space-y-2">

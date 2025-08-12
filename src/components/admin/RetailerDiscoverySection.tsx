@@ -31,6 +31,9 @@ const CATEGORY_KEYWORDS = [
 
 const RADIUS_OPTIONS = [10, 25, 50, 75, 100];
 
+// Toggle advanced actions/selection off for the simplified flow
+const HIDE_ACTIONS = true;
+
 // Helper to get root domain
 const getDomain = (url: string) => {
   try {
@@ -277,17 +280,19 @@ export default function RetailerDiscoverySection() {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <p className="text-sm text-muted-foreground">{businesses.length} results</p>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={handleEnrich} disabled={enriching}>
-                  {enriching ? "Enriching..." : "Enrich selected"}
-                </Button>
-                <Button variant="secondary" onClick={handleGenerateSQL}>Generate SQL templates</Button>
-              </div>
+              {!HIDE_ACTIONS && (
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={handleEnrich} disabled={enriching}>
+                    {enriching ? "Enriching..." : "Enrich selected"}
+                  </Button>
+                  <Button variant="secondary" onClick={handleGenerateSQL}>Generate SQL templates</Button>
+                </div>
+              )}
             </div>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Select</TableHead>
+                  {!HIDE_ACTIONS && <TableHead>Select</TableHead>}
                   <TableHead>Business</TableHead>
                   <TableHead>URL</TableHead>
                   <TableHead>Categories detected</TableHead>
@@ -298,13 +303,15 @@ export default function RetailerDiscoverySection() {
               <TableBody>
                 {businesses.map((b) => (
                   <TableRow key={b.domain}>
-                    <TableCell>
-                      <input
-                        type="checkbox"
-                        checked={!!selected[b.domain]}
-                        onChange={() => toggleSelect(b.domain)}
-                      />
-                    </TableCell>
+                    {!HIDE_ACTIONS && (
+                      <TableCell>
+                        <input
+                          type="checkbox"
+                          checked={!!selected[b.domain]}
+                          onChange={() => toggleSelect(b.domain)}
+                        />
+                      </TableCell>
+                    )}
                     <TableCell className="font-medium">{b.title}</TableCell>
                     <TableCell>
                       <a href={b.url} target="_blank" rel="noreferrer" className="text-primary underline">
