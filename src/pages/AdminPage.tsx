@@ -11,7 +11,7 @@ import GeocodingRecoverySection from "@/components/admin/GeocodingRecoverySectio
 import ImageConversionSection from "@/components/admin/ImageConversionSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import RetailerDiscoverySection from "@/components/admin/RetailerDiscoverySection";
+import GearUrlScraperSection from "@/components/admin/GearUrlScraperSection";
 
 const AdminPage = () => {
   usePageMetadata({
@@ -70,8 +70,9 @@ const AdminPage = () => {
         <TabsContent value="tools" className="space-y-6">
           <ImageConversionSection />
           <GeocodingRecoverySection />
-          {/* New Retailer Discovery Tool */}
-          <RetailerDiscoverySection />
+          <GearUrlScraperSection />
+          {/** Hidden for now, kept for future use */}
+          {/** <RetailerDiscoverySection /> */}
         </TabsContent>
       </Tabs>
     </div>

@@ -1,1 +1,7 @@
 project_id = "qtlhqsqanbxgfbcjigrl"
+
+[functions.scrape-gear-from-url]
+verify_jwt = true
+
+[functions.insert-equipment-from-sql]
+verify_jwt = true
