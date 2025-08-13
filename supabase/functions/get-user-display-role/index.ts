@@ -17,8 +17,20 @@ serve(async (req) => {
   }
 
   try {
-    const { searchParams } = new URL(req.url);
-    const userId = searchParams.get('user_id');
+    // Support both GET with query params and POST with JSON body
+    let userId: string | null = null;
+
+    if (req.method === 'GET') {
+      const { searchParams } = new URL(req.url);
+      userId = searchParams.get('user_id');
+    } else if (req.method === 'POST') {
+      try {
+        const body = await req.json();
+        userId = (body?.user_id as string) ?? null;
+      } catch (_) {
+        // ignore body parse errors
+      }
+    }
 
     if (!userId) {
       return new Response(

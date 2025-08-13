@@ -55,7 +55,8 @@ export const useUserProfileBySlug = (slug: string) => {
       if (roleError || !roleRow) {
         try {
           const { data: fnData, error: fnError } = await supabase.functions.invoke(
-            `get-user-display-role?user_id=${data.id}`
+            'get-user-display-role',
+            { body: { user_id: data.id } }
           );
           if (!fnError && (fnData as any)?.display_role) {
             displayRole = (fnData as any).display_role as string;

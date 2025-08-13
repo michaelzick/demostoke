@@ -8,3 +8,9 @@ verify_jwt = true
 
 [functions.extract-gear-from-html]
 verify_jwt = true
+
+[functions.get-user-display-role]
+verify_jwt = false
+
+[functions.set-user-display-role]
+verify_jwt = true
