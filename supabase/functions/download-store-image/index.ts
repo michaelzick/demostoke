@@ -22,6 +22,30 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const { imageUrl, sourceTable, sourceColumn, sourceRecordId } = await req.json();
 
+    // Auth: require admin
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const authClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: req.headers.get('Authorization') || '' } },
+    });
+    const { data: authData, error: authError } = await authClient.auth.getUser();
+    if (authError || !authData?.user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+    const { data: isAdmin, error: adminError } = await authClient.rpc('is_admin');
+    if (adminError || isAdmin !== true) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
+    // Whitelist allowed targets
+    const ALLOWED: Record<string, string[]> = {
+      equipment: ['image_url'],
+      equipment_images: ['image_url'],
+      profiles: ['avatar_url', 'hero_image_url']
+    };
+    if (!ALLOWED[sourceTable] || !ALLOWED[sourceTable].includes(sourceColumn)) {
+      return new Response(JSON.stringify({ error: 'Invalid target' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
     console.log('Downloading image:', { imageUrl, sourceTable, sourceColumn, sourceRecordId });
 
     // Step 1: Download the image
@@ -103,6 +127,15 @@ serve(async (req) => {
     if (updateError) {
       throw new Error(`Failed to update original record: ${updateError.message}`);
     }
+
+    // Security audit log
+    await supabase.rpc('log_security_event', {
+      action_type: 'download_store_image',
+      table_name: sourceTable,
+      record_id: sourceRecordId,
+      old_values: null,
+      new_values: { [sourceColumn]: downloadedUrl }
+    });
 
     console.log('Image download completed successfully');
 

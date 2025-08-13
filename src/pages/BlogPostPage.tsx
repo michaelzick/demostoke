@@ -195,14 +195,42 @@ const BlogPostPage = () => {
               </div>
             </header>
 
-            {post.videoEmbed && (
-              <div className="mb-8">
-                <div
-                  className="aspect-video w-full"
-                  dangerouslySetInnerHTML={{ __html: post.videoEmbed }}
-                />
-              </div>
-            )}
+            {post.videoEmbed && (() => {
+              const extractSrc = (html: string) => {
+                const m = html.match(/src="([^"]+)"/i);
+                return m ? m[1] : null;
+              };
+              let src = extractSrc(post.videoEmbed);
+              let safeSrc: string | null = null;
+              try {
+                if (src) {
+                  const u = new URL(src);
+                  const host = u.hostname.replace(/^www\./, '');
+                  if (host === 'youtube.com' || host === 'youtu.be' || host === 'player.vimeo.com') {
+                    if (host === 'youtu.be') {
+                      safeSrc = `https://www.youtube.com/embed/${u.pathname.replace('/', '')}`;
+                    } else if (host === 'youtube.com' && u.pathname.startsWith('/embed')) {
+                      safeSrc = u.toString();
+                    } else if (host === 'player.vimeo.com' && u.pathname.startsWith('/video/')) {
+                      safeSrc = u.toString();
+                    }
+                  }
+                }
+              } catch {}
+              return safeSrc ? (
+                <div className="mb-8">
+                  <iframe
+                    className="aspect-video w-full"
+                    src={safeSrc}
+                    title="Embedded video"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    allowFullScreen
+                  />
+                </div>
+              ) : null;
+            })()}
+
 
             {/* Article Body */}
             <div className="prose prose-lg max-w-none mb-8">

@@ -14,3 +14,21 @@ verify_jwt = false
 
 [functions.set-user-display-role]
 verify_jwt = true
+
+[functions.get-mapbox-token]
+verify_jwt = false
+
+[functions.send-contact-email]
+verify_jwt = false
+
+[functions.download-store-image]
+verify_jwt = true
+
+[functions.download-resize-image]
+verify_jwt = true
+
+[functions.convert-image-to-webp]
+verify_jwt = true
+
+[functions.convert-to-jpeg]
+verify_jwt = true

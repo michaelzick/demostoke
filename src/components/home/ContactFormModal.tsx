@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import HCaptcha from "@/components/HCaptcha";
 
 interface ContactFormModalProps {
   open: boolean;
@@ -28,19 +29,21 @@ const ContactFormModal = ({ open, onOpenChange, onDontShowAgain }: ContactFormMo
     subject: "",
     message: ""
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+const [isSubmitting, setIsSubmitting] = useState(false);
+const [captchaToken, setCaptchaToken] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const isFormValid =
+const isFormValid =
     formData.firstName &&
     formData.lastName &&
     formData.email &&
     formData.subject &&
-    formData.message;
+    formData.message &&
+    captchaToken;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +66,8 @@ const ContactFormModal = ({ open, onOpenChange, onDontShowAgain }: ContactFormMo
           lastName: formData.lastName,
           email: formData.email,
           subject: `[DemoStoke] ${formData.subject}`,
-          message: formData.message
+          message: formData.message,
+          captchaToken
         }
       });
 
@@ -167,7 +171,8 @@ const ContactFormModal = ({ open, onOpenChange, onDontShowAgain }: ContactFormMo
               className="min-h-[100px]"
             />
           </div>
-          <DialogFooter>
+            <HCaptcha siteKey="e30661ca-467c-43cc-899c-be56ab28c2a2" onVerify={setCaptchaToken} />
+            <DialogFooter>
             <Button
               type="button"
               variant="ghost"
