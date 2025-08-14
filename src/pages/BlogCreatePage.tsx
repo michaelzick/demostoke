@@ -18,6 +18,7 @@ import { generateBlogText } from "@/services/blog/generateBlogText";
 import { blogService } from "@/services/blogService";
 import { SidebarProvider, SidebarInset, useSidebar } from "@/components/ui/sidebar";
 import { BlogCreateSidebar } from "@/components/blog/BlogCreateSidebar";
+import BlogFooter from "@/components/BlogFooter";
 import { cn } from "@/lib/utils";
 
 const categories = [
@@ -111,6 +112,11 @@ function BlogCreatePageInner() {
 
       const readTime = Math.ceil(content.split(' ').length / 200);
 
+      const heroImg = imageUrl.trim();
+      const thumbImg = thumbnailUrl.trim();
+      const finalThumbnail = thumbImg || heroImg;
+      const finalHeroImage = useHeroImage ? heroImg : finalThumbnail;
+
       const postData = {
         title: title.trim(),
         excerpt: excerpt.trim(),
@@ -121,8 +127,8 @@ function BlogCreatePageInner() {
         slug,
         readTime,
         tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
-        heroImage: useHeroImage ? imageUrl : '',
-        thumbnail: useYoutubeThumbnail ? thumbnailUrl : imageUrl,
+        heroImage: finalHeroImage,
+        thumbnail: finalThumbnail,
         videoEmbed: youtubeUrl || '',
         publishedAt: publishedDate!.toISOString(),
       };
@@ -303,22 +309,22 @@ function BlogCreatePageInner() {
                       </div>
 
                       <div>
-                        <Label htmlFor="imageUrl">Hero Image URL</Label>
-                        <Input
-                          id="imageUrl"
-                          value={imageUrl}
-                          onChange={(e) => setImageUrl(e.target.value)}
-                          placeholder="Image URL"
-                        />
-                      </div>
-
-                      <div>
                         <Label htmlFor="thumbnailUrl">Thumbnail URL</Label>
                         <Input
                           id="thumbnailUrl"
                           value={thumbnailUrl}
                           onChange={(e) => setThumbnailUrl(e.target.value)}
                           placeholder="Thumbnail URL"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="imageUrl">Hero Image URL</Label>
+                        <Input
+                          id="imageUrl"
+                          value={imageUrl}
+                          onChange={(e) => setImageUrl(e.target.value)}
+                          placeholder="Image URL"
                         />
                       </div>
 
@@ -399,6 +405,7 @@ function BlogCreatePageInner() {
             </Card>
           </div>
         </div>
+        <BlogFooter />
       </div>
     </SidebarInset>
   </div>
