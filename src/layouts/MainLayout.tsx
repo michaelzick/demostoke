@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 
 const MainLayout = () => {
   const location = useLocation();
-  const isBlogPage = location.pathname === '/blog';
+  const showMainFooter = location.pathname !== '/blog' && location.pathname !== '/blog/create-blog-post';
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -13,7 +13,7 @@ const MainLayout = () => {
       <main className="flex-1">
         <Outlet />
       </main>
-      {!isBlogPage && <Footer />}
+      {showMainFooter && <Footer />}
     </div>
   );
 };
