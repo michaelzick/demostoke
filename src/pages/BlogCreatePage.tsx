@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 
 import { useNavigate } from "react-router-dom";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,13 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CalendarIcon, ArrowLeft } from "lucide-react";
+import { CalendarIcon, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/auth";
 import { generateBlogText } from "@/services/blog/generateBlogText";
 import { blogService } from "@/services/blogService";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset, useSidebar } from "@/components/ui/sidebar";
 import { BlogCreateSidebar } from "@/components/blog/BlogCreateSidebar";
 import { cn } from "@/lib/utils";
 
@@ -24,10 +25,11 @@ const categories = [
   "snowboards", "skis", "surfboards", "mountain-bikes", "gear-reviews", "stories-that-stoke"
 ];
 
-export default function BlogCreatePage() {
+function BlogCreatePageInner() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+  const { toggleSidebar } = useSidebar();
+
   // For now, we'll just check if user exists - userRole check can be added later
   useEffect(() => {
     if (!user) {
@@ -64,7 +66,7 @@ export default function BlogCreatePage() {
     setIsGenerating(true);
     try {
       const result = await generateBlogText({ prompt: prompt.trim(), category });
-      
+
       if (result.success && result.content && result.title && result.excerpt) {
         setContent(result.content);
         setTitle(result.title);
@@ -82,12 +84,14 @@ export default function BlogCreatePage() {
   };
 
   const isFormValid = () => {
-    return title.trim() && 
-           excerpt.trim() && 
-           content.trim() && 
-           category && 
-           author.trim() && 
-           publishedDate;
+    return (
+      title.trim() &&
+      excerpt.trim() &&
+      content.trim() &&
+      category &&
+      author.trim() &&
+      publishedDate
+    );
   };
 
   const handleCreatePost = async () => {
@@ -98,7 +102,8 @@ export default function BlogCreatePage() {
 
     setIsCreating(true);
     try {
-      const slug = title.toLowerCase()
+      const slug = title
+        .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, '')
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-')
@@ -124,7 +129,7 @@ export default function BlogCreatePage() {
 
       await blogService.createPost(postData);
       toast.success("Blog post created successfully!");
-      
+
       // Reset form
       setPrompt("");
       setCategory("");
@@ -139,7 +144,7 @@ export default function BlogCreatePage() {
       setContent("");
       setUseYoutubeThumbnail(false);
       setUseHeroImage(false);
-      
+
       // Navigate to blog page
       navigate('/blog');
     } catch (error) {
@@ -156,44 +161,52 @@ export default function BlogCreatePage() {
   }
 
   return (
-    <SidebarProvider>
-        <div className="flex min-h-screen w-full">
-          <BlogCreateSidebar 
-            title={title}
-            excerpt={excerpt}
-            content={content}
-            category={category}
-          />
-          
-          <SidebarInset className="flex-1">
-            <div className="flex flex-col min-h-screen">
-              {/* Header */}
-              <div className="flex items-center gap-4 border-b bg-background px-4 py-3">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => navigate('/blog')}
-                  className="gap-2"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Back to Blog
-                </Button>
-                <div className="flex-1">
-                  <h1 className="text-2xl font-bold">Create Blog Post</h1>
-                  <p className="text-sm text-muted-foreground">Write and publish new blog content with SEO optimization</p>
-                </div>
+    <div className="flex min-h-screen w-full">
+      <BlogCreateSidebar
+        title={title}
+        excerpt={excerpt}
+        content={content}
+        category={category}
+      />
+
+      <SidebarInset className="flex-1">
+        <div className="flex flex-col min-h-screen">
+          {/* Header */}
+          <div className="border-b bg-background px-4 py-3">
+            <Breadcrumbs
+              items={[
+                { label: "Blog", path: "/blog" },
+                { label: "Create", path: "/blog/create-blog-post" },
+              ]}
+            />
+          </div>
+
+          {/* Main Content */}
+          <div className="flex-1 p-6">
+            <div className="max-w-4xl mx-auto">
+              <div className="mb-6">
+                <h1 className="text-2xl font-bold">Create Blog Post</h1>
+                <p className="text-sm text-muted-foreground">
+                  Write and publish new blog content with SEO optimization
+                </p>
               </div>
 
-              {/* Main Content */}
-              <div className="flex-1 p-6">
-                <Card className="max-w-4xl mx-auto">
-                  <CardHeader>
-                    <CardTitle>Blog Post Creator</CardTitle>
-                    <CardDescription>
-                      Generate AI-powered blog content and optimize it for SEO performance
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
+              {/* Mobile SEO Button */}
+              <div className="mb-6 flex justify-center md:hidden">
+                <Button variant="outline" className="gap-2" onClick={toggleSidebar}>
+                  <TrendingUp className="h-4 w-4" />
+                  Show SEO
+                </Button>
+              </div>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Blog Post Creator</CardTitle>
+                  <CardDescription>
+                    Generate AI-powered blog content and optimize it for SEO performance
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
                     {/* AI Content Generation */}
                     <div className="space-y-4">
                       <div>
@@ -382,20 +395,28 @@ export default function BlogCreatePage() {
 
                     {/* Create Button */}
                     <div className="flex justify-end pt-4">
-                      <Button
-                        onClick={handleCreatePost}
-                        disabled={!isFormValid() || isCreating}
-                        size="lg"
-                      >
-                        {isCreating ? "Creating..." : "Create Blog Post"}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </SidebarInset>
+                  <Button
+                    onClick={handleCreatePost}
+                    disabled={!isFormValid() || isCreating}
+                    size="lg"
+                  >
+                    {isCreating ? "Creating..." : "Create Blog Post"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </SidebarProvider>
+      </div>
+    </SidebarInset>
+  </div>
+  );
+}
+
+export default function BlogCreatePage() {
+  return (
+    <SidebarProvider>
+      <BlogCreatePageInner />
+    </SidebarProvider>
   );
 }
