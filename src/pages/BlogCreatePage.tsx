@@ -18,6 +18,7 @@ import { generateBlogText } from "@/services/blog/generateBlogText";
 import { blogService } from "@/services/blogService";
 import { SidebarProvider, SidebarInset, useSidebar } from "@/components/ui/sidebar";
 import { BlogCreateSidebar } from "@/components/blog/BlogCreateSidebar";
+import BlogFooter from "@/components/BlogFooter";
 import { cn } from "@/lib/utils";
 
 const categories = [
@@ -404,6 +405,7 @@ function BlogCreatePageInner() {
             </Card>
           </div>
         </div>
+        <BlogFooter />
       </div>
     </SidebarInset>
   </div>
