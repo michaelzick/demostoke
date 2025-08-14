@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Checkbox } from "@/components/ui/checkbox";
 import { CalendarIcon, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
@@ -49,8 +48,6 @@ function BlogCreatePageInner() {
   const [title, setTitle] = useState("");
   const [excerpt, setExcerpt] = useState("");
   const [content, setContent] = useState("");
-  const [useYoutubeThumbnail, setUseYoutubeThumbnail] = useState(false);
-  const [useHeroImage, setUseHeroImage] = useState(false);
 
   // Loading states
   const [isGenerating, setIsGenerating] = useState(false);
@@ -121,8 +118,8 @@ function BlogCreatePageInner() {
         slug,
         readTime,
         tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
-        heroImage: useHeroImage ? imageUrl : '',
-        thumbnail: useYoutubeThumbnail ? thumbnailUrl : imageUrl,
+        heroImage: imageUrl.trim(),
+        thumbnail: thumbnailUrl.trim(),
         videoEmbed: youtubeUrl || '',
         publishedAt: publishedDate!.toISOString(),
       };
@@ -143,8 +140,6 @@ function BlogCreatePageInner() {
       setTitle("");
       setExcerpt("");
       setContent("");
-      setUseYoutubeThumbnail(false);
-      setUseHeroImage(false);
     } catch (error) {
       console.error("Error creating blog post:", error);
       toast.error("Failed to create blog post. Please try again.");
@@ -303,22 +298,22 @@ function BlogCreatePageInner() {
                       </div>
 
                       <div>
-                        <Label htmlFor="imageUrl">Hero Image URL</Label>
-                        <Input
-                          id="imageUrl"
-                          value={imageUrl}
-                          onChange={(e) => setImageUrl(e.target.value)}
-                          placeholder="Image URL"
-                        />
-                      </div>
-
-                      <div>
                         <Label htmlFor="thumbnailUrl">Thumbnail URL</Label>
                         <Input
                           id="thumbnailUrl"
                           value={thumbnailUrl}
                           onChange={(e) => setThumbnailUrl(e.target.value)}
                           placeholder="Thumbnail URL"
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="imageUrl">Hero Image URL</Label>
+                        <Input
+                          id="imageUrl"
+                          value={imageUrl}
+                          onChange={(e) => setImageUrl(e.target.value)}
+                          placeholder="Image URL"
                         />
                       </div>
 
@@ -356,27 +351,6 @@ function BlogCreatePageInner() {
                             />
                           </PopoverContent>
                         </Popover>
-                      </div>
-                    </div>
-
-                    {/* Image Options */}
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="useYoutubeThumbnail"
-                          checked={useYoutubeThumbnail}
-                          onCheckedChange={(checked) => setUseYoutubeThumbnail(checked === true)}
-                        />
-                        <Label htmlFor="useYoutubeThumbnail">Use YouTube thumbnail as post thumbnail</Label>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <Checkbox
-                          id="useHeroImage"
-                          checked={useHeroImage}
-                          onCheckedChange={(checked) => setUseHeroImage(checked === true)}
-                        />
-                        <Label htmlFor="useHeroImage">Use separate hero image</Label>
                       </div>
                     </div>
 

@@ -301,9 +301,9 @@ const BlogPageInner = () => {
             {/* Create Blog Post Button - Admin Only */}
             {user && isAdmin && (
               <div className="mb-8 flex justify-center">
-                <Button asChild className="w-auto">
+                <Button asChild className="w-auto gap-1">
                   <Link to="/blog/create-blog-post">
-                    <Plus className="h-4 w-4 mr-2" />
+                    <Plus className="h-4 w-4" />
                     Create Blog Post
                   </Link>
                 </Button>
