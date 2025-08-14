@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { useNavigate } from "react-router-dom";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -56,6 +55,7 @@ function BlogCreatePageInner() {
   // Loading states
   const [isGenerating, setIsGenerating] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [createdSlug, setCreatedSlug] = useState<string | null>(null);
 
   const handleGenerateText = async () => {
     if (!prompt.trim() || !category) {
@@ -128,6 +128,7 @@ function BlogCreatePageInner() {
       };
 
       await blogService.createPost(postData);
+      setCreatedSlug(slug);
       toast.success("Blog post created successfully!");
 
       // Reset form
@@ -144,9 +145,6 @@ function BlogCreatePageInner() {
       setContent("");
       setUseYoutubeThumbnail(false);
       setUseHeroImage(false);
-
-      // Navigate to blog page
-      navigate('/blog');
     } catch (error) {
       console.error("Error creating blog post:", error);
       toast.error("Failed to create blog post. Please try again.");
@@ -171,17 +169,6 @@ function BlogCreatePageInner() {
 
       <SidebarInset className="flex-1">
         <div className="flex flex-col min-h-screen">
-          {/* Header */}
-          <div className="border-b bg-background px-4 py-3">
-            <Breadcrumbs
-              items={[
-                { label: "Blog", path: "/blog" },
-                { label: "Create", path: "/blog/create-blog-post" },
-              ]}
-            />
-          </div>
-
-          {/* Main Content */}
           <div className="flex-1 p-6">
             <div className="max-w-4xl mx-auto">
               <div className="mb-6">
@@ -394,15 +381,20 @@ function BlogCreatePageInner() {
                     </div>
 
                     {/* Create Button */}
-                    <div className="flex justify-end pt-4">
-                  <Button
-                    onClick={handleCreatePost}
-                    disabled={!isFormValid() || isCreating}
-                    size="lg"
-                  >
-                    {isCreating ? "Creating..." : "Create Blog Post"}
-                  </Button>
-                </div>
+                    <div className="flex justify-end gap-2 pt-4">
+                      <Button
+                        onClick={handleCreatePost}
+                        disabled={!isFormValid() || isCreating}
+                        size="lg"
+                      >
+                        {isCreating ? "Creating..." : "Create Blog Post"}
+                      </Button>
+                      {createdSlug && (
+                        <Button asChild variant="outline" size="lg">
+                          <Link to={`/blog/${createdSlug}`}>View Blog Post</Link>
+                        </Button>
+                      )}
+                    </div>
               </CardContent>
             </Card>
           </div>
