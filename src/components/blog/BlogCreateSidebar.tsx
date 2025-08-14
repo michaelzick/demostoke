@@ -80,7 +80,7 @@ export function BlogCreateSidebar({ title, excerpt, content, category }: BlogCre
   const canAnalyze = title.trim() && content.trim();
 
   return (
-    <Sidebar className="w-80 border-r">
+    <Sidebar className="w-80 border-r top-20 h-[calc(100vh-5rem)]">
       <SidebarHeader>
         <div className="px-4 py-3">
           <h2 className="text-lg font-semibold flex items-center gap-2">

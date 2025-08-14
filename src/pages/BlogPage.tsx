@@ -270,7 +270,7 @@ const BlogPageInner = () => {
 
   return (
     <>
-      <Sidebar>
+      <Sidebar className="top-20 h-[calc(100vh-5rem)]">
         <BlogFilterSidebar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -290,18 +290,18 @@ const BlogPageInner = () => {
       {/* Hero Section */}
       <div className="py-16 text-gray-900 dark:text-white">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center relative">
+          <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               DemoStoke Blog
             </h1>
-            <p className="text-xl mb-8 text-gray-600 dark:text-blue-100">
+            <p className="text-xl mb-4 text-gray-600 dark:text-blue-100">
               Discover tips, techniques, and stories from the world of outdoor gear
             </p>
 
             {/* Create Blog Post Button - Admin Only */}
             {user && isAdmin && (
-              <div className="absolute top-0 right-0">
-                <Button asChild>
+              <div className="mb-8 flex justify-center">
+                <Button asChild className="w-auto">
                   <Link to="/blog/create-blog-post">
                     <Plus className="h-4 w-4 mr-2" />
                     Create Blog Post
@@ -311,7 +311,7 @@ const BlogPageInner = () => {
             )}
 
             <div className="flex justify-center md:hidden">
-              <Button size="lg" className="gap-2" onClick={toggleSidebar}>
+              <Button size="lg" variant="outline" className="gap-2" onClick={toggleSidebar}>
                 <Filter className="h-4 w-4" />
                 Search & Filter
               </Button>
