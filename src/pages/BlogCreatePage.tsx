@@ -400,15 +400,15 @@ function BlogCreatePageInner() {
                           <Link to={`/blog/${createdSlug}`}>View Blog Post</Link>
                         </Button>
                       )}
-                    </div>
+                     </div>
               </CardContent>
             </Card>
+            </div>
           </div>
+          <BlogFooter />
         </div>
-        <BlogFooter />
-      </div>
-    </SidebarInset>
-  </div>
+      </SidebarInset>
+    </div>
   );
 }
 
