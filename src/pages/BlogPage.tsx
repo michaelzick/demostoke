@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
+import { Plus } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { toast } from "@/hooks/use-toast";
 import { featuredPostsService } from "@/services/featuredPostsService";
 import BlogFooter from "@/components/BlogFooter";
+import { useAuth } from "@/contexts/auth";
 
 const BlogPageInner = () => {
   usePageMetadata({
@@ -29,6 +31,7 @@ const BlogPageInner = () => {
   });
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   // Initialize state from URL params
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || "");
@@ -287,13 +290,25 @@ const BlogPageInner = () => {
       {/* Hero Section */}
       <div className="py-16 text-gray-900 dark:text-white">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="max-w-3xl mx-auto text-center relative">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               DemoStoke Blog
             </h1>
             <p className="text-xl mb-8 text-gray-600 dark:text-blue-100">
               Discover tips, techniques, and stories from the world of outdoor gear
             </p>
+
+            {/* Create Blog Post Button - Admin Only */}
+            {user && isAdmin && (
+              <div className="absolute top-0 right-0">
+                <Button asChild>
+                  <Link to="/blog/create-blog-post">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Blog Post
+                  </Link>
+                </Button>
+              </div>
+            )}
 
             <div className="flex justify-center md:hidden">
               <Button size="lg" className="gap-2" onClick={toggleSidebar}>

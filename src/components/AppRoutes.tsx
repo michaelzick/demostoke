@@ -8,6 +8,7 @@ import HomePage from "../pages/HomePage";
 import AboutPage from "../pages/AboutPage";
 import BlogPage from "../pages/BlogPage";
 import BlogPostPage from "../pages/BlogPostPage";
+import BlogCreatePage from "../pages/BlogCreatePage";
 import ContactPage from "../pages/ContactUsPage";
 import HowItWorksPage from "../pages/HowItWorksPage";
 import PrivacyPolicyPage from "../pages/PrivacyPolicyPage";
@@ -45,8 +46,9 @@ const AppRoutes = () => {
           <Route path="how-it-works" element={<HowItWorksPage />} />
           <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="terms-of-service" element={<TermsOfServicePage />} />
-          <Route path="blog" element={<BlogPage />} />
-          <Route path="blog/:slug" element={<BlogPostPage />} />
+            <Route path="blog" element={<BlogPage />} />
+            <Route path="blog/create-blog-post" element={<BlogCreatePage />} />
+            <Route path="blog/:slug" element={<BlogPostPage />} />
           <Route path="contact-us" element={<ContactPage />} />
           <Route path="explore" element={<ExplorePage />} />
           <Route path=":category/:ownerSlug/:slug" element={<EquipmentDetailPage />} />

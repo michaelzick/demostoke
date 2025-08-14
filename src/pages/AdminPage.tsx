@@ -5,7 +5,7 @@ import UserManagementSection from "@/components/admin/UserManagementSection";
 import ManualUserCreationSection from "@/components/admin/ManualUserCreationSection";
 import ImageUploadSection from "@/components/admin/ImageUploadSection";
 import VideoUploadSection from "@/components/admin/VideoUploadSection";
-import BlogPostGeneratorSection from "@/components/admin/BlogPostGeneratorSection";
+
 import GlobalSearchSettings from "@/components/admin/GlobalSearchSettings";
 import GeocodingRecoverySection from "@/components/admin/GeocodingRecoverySection";
 import ImageConversionSection from "@/components/admin/ImageConversionSection";
@@ -59,7 +59,6 @@ const AdminPage = () => {
         </TabsContent>
 
         <TabsContent value="content" className="space-y-6">
-          <BlogPostGeneratorSection />
           <ImageUploadSection />
           <VideoUploadSection />
         </TabsContent>
