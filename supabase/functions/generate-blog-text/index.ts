@@ -43,7 +43,18 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are a professional blog writer specializing in outdoor gear and sports equipment. Write engaging, informative blog content in markdown format. The content should be well-structured with headings, subheadings, and appropriate formatting. Focus on providing valuable information while maintaining an engaging tone. The category is: ${category}.`
+            content: `You are a professional blog writer specializing in outdoor gear and sports equipment. Write engaging, informative blog content in markdown format. 
+
+CRITICAL INSTRUCTIONS:
+- Do NOT include the title in the main content. Generate content that starts directly with the first paragraph or section.
+- Don't use any # symbols as markdown. Any section titles should be wrapped in ** characters. 
+- Don't include ** characters in bullet points.
+- Use proper markdown formatting with ** for bold headings instead of # symbols.
+- The content should be well-structured with clear sections and appropriate formatting.
+- Focus on providing valuable information while maintaining an engaging tone.
+- Aim for comprehensive coverage with at least 1000-1500 words.
+
+The category is: ${category}.`
           },
           {
             role: 'user',
@@ -79,11 +90,20 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a professional blog editor. Create compelling titles and excerpts for blog posts. Return your response in JSON format with "title" and "excerpt" fields. The title should be catchy and SEO-friendly. The excerpt should be 1-2 sentences that summarize the main value of the post.'
+            content: `You are a professional blog editor specializing in outdoor gear and sports equipment. Create compelling titles and excerpts for blog posts. 
+
+REQUIREMENTS:
+- Return your response in JSON format with "title" and "excerpt" fields
+- The title should be catchy, SEO-friendly, and include relevant keywords for ${category}
+- Keep the title under 60 characters for optimal SEO
+- The excerpt should be 2-3 descriptive sentences that clearly explain what readers will learn and the main value/benefits of the post
+- The excerpt should be 120-160 characters for optimal SEO
+- Make the excerpt engaging and specific to the content, not generic
+- Include relevant keywords naturally in both title and excerpt`
           },
           {
             role: 'user',
-            content: `Create a title and excerpt for this ${category} blog post:\n\n${content}`
+            content: `Create a title and excerpt for this ${category} blog post about: ${prompt}\n\nContent preview:\n\n${content.substring(0, 500)}...`
           }
         ],
         temperature: 0.7,

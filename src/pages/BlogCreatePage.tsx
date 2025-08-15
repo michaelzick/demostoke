@@ -173,7 +173,7 @@ function BlogCreatePageInner() {
         category={category}
       />
 
-      <SidebarInset className="flex-1">
+      <SidebarInset className="flex-1 top-20 h-[calc(100vh-5rem)]">
         <div className="flex flex-col min-h-screen">
           <div className="flex-1 p-6">
             <div className="max-w-4xl mx-auto">
