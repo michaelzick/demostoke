@@ -22,7 +22,13 @@ import BlogFooter from "@/components/BlogFooter";
 import { cn } from "@/lib/utils";
 
 const categories = [
-  "snowboards", "skis", "surfboards", "mountain-bikes", "gear-reviews", "stories-that-stoke"
+  "snowboards",
+  "skis",
+  "surfboards",
+  "mountain bikes",
+  "gear reviews",
+  "stories that stoke",
+  "stories that suck",
 ];
 
 function BlogCreatePageInner() {
@@ -66,7 +72,11 @@ function BlogCreatePageInner() {
 
     setIsGenerating(true);
     try {
-      const result = await generateBlogText({ prompt: prompt.trim(), category });
+      const formattedCategory = category.replace(/-/g, " ");
+      const result = await generateBlogText({
+        prompt: prompt.trim(),
+        category: formattedCategory,
+      });
 
       if (result.success && result.content && result.title && result.excerpt) {
         setContent(result.content);
@@ -117,11 +127,12 @@ function BlogCreatePageInner() {
       const finalThumbnail = thumbImg || heroImg;
       const finalHeroImage = useHeroImage ? heroImg : finalThumbnail;
 
+      const formattedCategory = category.replace(/-/g, " ");
       const postData = {
         title: title.trim(),
         excerpt: excerpt.trim(),
         content: content.trim(),
-        category,
+        category: formattedCategory,
         author: author.trim(),
         authorId: user?.id || '',
         slug,
@@ -170,7 +181,7 @@ function BlogCreatePageInner() {
         title={title}
         excerpt={excerpt}
         content={content}
-        category={category}
+        category={category.replace(/-/g, ' ')}
       />
 
       <SidebarInset>
@@ -223,7 +234,10 @@ function BlogCreatePageInner() {
                             <SelectContent>
                               {categories.map((cat) => (
                                 <SelectItem key={cat} value={cat}>
-                                  {cat.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                  {cat
+                                    .split(' ')
+                                    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                                    .join(' ')}
                                 </SelectItem>
                               ))}
                             </SelectContent>
