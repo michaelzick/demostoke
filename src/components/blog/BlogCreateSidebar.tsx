@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
 import { AlertCircle, CheckCircle, TrendingUp, Eye, Target, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -111,7 +111,7 @@ export function BlogCreateSidebar({ title, excerpt, content, category }: BlogCre
     : "24px";
 
   return (
-    <>
+    <Sidebar className="top-20 h-[calc(100vh-5rem)]">
       <SidebarHeader className="p-6">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <TrendingUp className="h-5 w-5" />
@@ -312,7 +312,7 @@ export function BlogCreateSidebar({ title, excerpt, content, category }: BlogCre
           </Card>
         </div>
       </SidebarContent>
-      
+
       {(isMobile || hasAnalysis) && (
         <div
           className="fixed bottom-0 left-0 p-6 bg-sidebar border-t space-y-2 z-10"
@@ -325,6 +325,6 @@ export function BlogCreateSidebar({ title, excerpt, content, category }: BlogCre
           )}
         </div>
       )}
-    </>
+    </Sidebar>
   );
 }
