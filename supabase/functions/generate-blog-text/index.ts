@@ -54,6 +54,18 @@ CRITICAL INSTRUCTIONS:
 - Focus on providing valuable information while maintaining an engaging tone.
 - Aim for comprehensive coverage with at least 1000-1500 words.
 
+SEO OPTIMIZATION REQUIREMENTS (TARGET: 90+ SEO SCORE):
+- Include the main keyword naturally 5-7 times throughout the content
+- Use semantic keywords and related terms frequently
+- Write content that is comprehensive and in-depth (1200+ words minimum)
+- Include actionable advice, tips, and specific recommendations
+- Structure content with clear sections using ** for headings
+- Use bullet points and numbered lists for better readability
+- Include specific product names, brands, and technical details when relevant
+- Write engaging, helpful content that provides real value to readers
+- Use varied sentence lengths and paragraph structures for better flow
+- Include relevant statistics, facts, or expert insights where appropriate
+
 The category is: ${category}.`
           },
           {
