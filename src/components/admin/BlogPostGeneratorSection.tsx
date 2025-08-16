@@ -120,6 +120,34 @@ const BlogPostGeneratorSection = () => {
     const authorId = slugify(author);
 
     try {
+      // Handle image field mapping correctly
+      let finalThumbnail = '';
+      let finalHeroImage = '';
+      
+      if (useYoutubeThumb && youtubeUrl) {
+        // Extract YouTube thumbnail from URL
+        const youtubeId = youtubeUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
+        if (youtubeId) {
+          finalThumbnail = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+        }
+      } else if (thumbnail.trim()) {
+        finalThumbnail = thumbnail.trim();
+      } else if (heroImage.trim()) {
+        finalThumbnail = heroImage.trim();
+      }
+      
+      if (useYoutubeHero && youtubeUrl) {
+        // Extract YouTube thumbnail for hero as well
+        const youtubeId = youtubeUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
+        if (youtubeId) {
+          finalHeroImage = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+        }
+      } else if (heroImage.trim()) {
+        finalHeroImage = heroImage.trim();
+      } else {
+        finalHeroImage = finalThumbnail;
+      }
+
       const result = await blogService.createPost({
         title,
         slug: slugify(title), // Auto-generate slug from title
@@ -129,8 +157,8 @@ const BlogPostGeneratorSection = () => {
         author,
         authorId,
         tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
-        thumbnail,
-        heroImage,
+        thumbnail: finalThumbnail,
+        heroImage: finalHeroImage,
         videoEmbed: youtubeUrl || undefined,
         publishedAt: (publishedDate ?? new Date()).toISOString(),
         readTime: Math.ceil(blogText.split(' ').length / 200), // Auto-generate read time based on text

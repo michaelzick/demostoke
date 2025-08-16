@@ -122,10 +122,31 @@ function BlogCreatePageInner() {
 
       const readTime = Math.ceil(content.split(' ').length / 200);
 
+      // Handle image field mapping correctly
       const heroImg = imageUrl.trim();
       const thumbImg = thumbnailUrl.trim();
-      const finalThumbnail = thumbImg || heroImg;
-      const finalHeroImage = useHeroImage ? heroImg : finalThumbnail;
+      
+      // Determine final image URLs based on logic
+      let finalThumbnail = '';
+      let finalHeroImage = '';
+      
+      if (useYoutubeThumbnail && youtubeUrl) {
+        // Extract YouTube thumbnail from URL
+        const youtubeId = youtubeUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
+        if (youtubeId) {
+          finalThumbnail = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+        }
+      } else if (thumbImg) {
+        finalThumbnail = thumbImg;
+      } else if (heroImg) {
+        finalThumbnail = heroImg;
+      }
+      
+      if (useHeroImage && heroImg) {
+        finalHeroImage = heroImg;
+      } else {
+        finalHeroImage = finalThumbnail;
+      }
 
       const formattedCategory = category.replace(/-/g, " ");
       const postData = {

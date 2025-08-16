@@ -90,7 +90,7 @@ The category is: ${category}.`
     const contentData = await contentResponse.json();
     const content = contentData.choices[0].message.content;
 
-    // Generate title and excerpt based on the content
+    // Generate title and excerpt based on the content and prompt
     const metaResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -102,43 +102,83 @@ The category is: ${category}.`
         messages: [
           {
             role: 'system',
-            content: `You are a professional blog editor specializing in outdoor gear and sports equipment. Create compelling titles and excerpts for blog posts. 
+            content: `You are a professional blog editor specializing in outdoor gear and sports equipment. Create compelling titles and excerpts for blog posts.
 
-REQUIREMENTS:
-- Return your response in JSON format with "title" and "excerpt" fields
+CRITICAL REQUIREMENTS - MUST FOLLOW EXACTLY:
+- Return ONLY a valid JSON object with exactly this structure: {"title": "Your Title Here", "excerpt": "Your excerpt here"}
+- Do NOT include any other text, explanations, or markdown formatting
 - The title should be catchy, SEO-friendly, and include relevant keywords for ${category}
 - Keep the title under 60 characters for optimal SEO
 - The excerpt should be 2-3 descriptive sentences that clearly explain what readers will learn and the main value/benefits of the post
 - The excerpt should be 120-160 characters for optimal SEO
 - Make the excerpt engaging and specific to the content, not generic
-- Include relevant keywords naturally in both title and excerpt`
+- Include relevant keywords naturally in both title and excerpt
+
+SEO OPTIMIZATION REQUIREMENTS (TARGET: 90+ SEO SCORE):
+- Include the main keyword from the prompt naturally in both title and excerpt
+- Use action words and power words to increase click-through rate
+- Make the excerpt specific and value-driven to entice readers
+- Ensure title includes category-relevant keywords
+- Make both title and excerpt compelling for search engines and readers`
           },
           {
             role: 'user',
-            content: `Create a title and excerpt for this ${category} blog post about: ${prompt}\n\nContent preview:\n\n${content.substring(0, 500)}...`
+            content: `Create a title and excerpt for this ${category} blog post about: ${prompt}
+
+Content preview:
+${content.substring(0, 800)}...
+
+Please return ONLY the JSON object with title and excerpt fields.`
           }
         ],
         temperature: 0.7,
-        max_tokens: 200,
+        max_tokens: 300,
       }),
     });
 
-    let title = `${category.charAt(0).toUpperCase() + category.slice(1)} Guide`;
-    let excerpt = 'Discover expert insights and tips in this comprehensive guide.';
+    let title = `${category.charAt(0).toUpperCase() + category.slice(1)} Guide: ${prompt.substring(0, 30)}...`;
+    let excerpt = `Discover expert insights and tips in this comprehensive ${category} guide based on: ${prompt.substring(0, 80)}...`;
 
     if (metaResponse.ok) {
       const metaData = await metaResponse.json();
       const metaContent = metaData.choices[0]?.message?.content;
       
+      console.log('Raw meta content from OpenAI:', metaContent);
+      
       if (metaContent) {
         try {
-          const parsedMeta = JSON.parse(metaContent);
-          title = parsedMeta.title || title;
-          excerpt = parsedMeta.excerpt || excerpt;
+          // Clean the content to extract just the JSON
+          let cleanMetaContent = metaContent.trim();
+          
+          // Remove any markdown code blocks
+          cleanMetaContent = cleanMetaContent.replace(/```json\s*/, '').replace(/```\s*$/, '');
+          cleanMetaContent = cleanMetaContent.replace(/```\s*/, '').replace(/```\s*$/, '');
+          
+          // Find JSON object boundaries
+          const jsonStart = cleanMetaContent.indexOf('{');
+          const jsonEnd = cleanMetaContent.lastIndexOf('}') + 1;
+          
+          if (jsonStart !== -1 && jsonEnd > jsonStart) {
+            cleanMetaContent = cleanMetaContent.substring(jsonStart, jsonEnd);
+          }
+          
+          const parsedMeta = JSON.parse(cleanMetaContent);
+          
+          if (parsedMeta.title && typeof parsedMeta.title === 'string' && parsedMeta.title.trim()) {
+            title = parsedMeta.title.trim();
+          }
+          if (parsedMeta.excerpt && typeof parsedMeta.excerpt === 'string' && parsedMeta.excerpt.trim()) {
+            excerpt = parsedMeta.excerpt.trim();
+          }
+          
+          console.log('Successfully parsed meta content - Title:', title, 'Excerpt:', excerpt);
         } catch (error) {
-          console.warn('Failed to parse meta content as JSON, using fallback');
+          console.warn('Failed to parse meta content as JSON, using fallback. Error:', error);
+          console.warn('Content that failed to parse:', metaContent);
         }
       }
+    } else {
+      console.warn('Meta response not ok:', metaResponse.status, metaResponse.statusText);
     }
 
     console.log('Blog content, title, and excerpt generated successfully');
