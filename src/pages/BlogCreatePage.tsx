@@ -20,6 +20,7 @@ import { SidebarProvider, SidebarInset, useSidebar } from "@/components/ui/sideb
 import { BlogCreateSidebar } from "@/components/blog/BlogCreateSidebar";
 import BlogFooter from "@/components/BlogFooter";
 import { cn } from "@/lib/utils";
+import { slugify } from "@/utils/slugify";
 
 const categories = [
   "snowboards",
@@ -122,16 +123,12 @@ function BlogCreatePageInner() {
 
       const readTime = Math.ceil(content.split(' ').length / 200);
 
-      // Handle image field mapping correctly
+      // Prepare image URLs
       const heroImg = imageUrl.trim();
       const thumbImg = thumbnailUrl.trim();
-      
-      // Determine final image URLs based on logic
+
       let finalThumbnail = '';
-      let finalHeroImage = '';
-      
       if (useYoutubeThumbnail && youtubeUrl) {
-        // Extract YouTube thumbnail from URL
         const youtubeId = youtubeUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
         if (youtubeId) {
           finalThumbnail = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
@@ -141,21 +138,17 @@ function BlogCreatePageInner() {
       } else if (heroImg) {
         finalThumbnail = heroImg;
       }
-      
-      if (useHeroImage && heroImg) {
-        finalHeroImage = heroImg;
-      } else {
-        finalHeroImage = finalThumbnail;
-      }
 
+      const finalHeroImage = heroImg || finalThumbnail;
       const formattedCategory = category.replace(/-/g, " ");
+      const authorSlug = slugify(author.trim());
       const postData = {
         title: title.trim(),
         excerpt: excerpt.trim(),
         content: content.trim(),
         category: formattedCategory,
         author: author.trim(),
-        authorId: user?.id || '',
+        authorId: authorSlug,
         slug,
         readTime,
         tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
