@@ -5,7 +5,6 @@ export interface GenerateBlogPostParams {
   prompt: string;
   category: string;
   author: string;
-  authorId: string;
   tags: string[];
   thumbnail: string;
   heroImage: string;

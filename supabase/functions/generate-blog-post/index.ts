@@ -12,7 +12,6 @@ interface GenerateBlogPostRequest {
   prompt: string;
   category: string;
   author: string;
-  authorId: string;
   tags: string[];
   thumbnail: string;
   heroImage: string;
@@ -20,6 +19,13 @@ interface GenerateBlogPostRequest {
   useYoutubeThumbnail: boolean;
   useYoutubeHero: boolean;
   publishedAt: string;
+}
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 serve(async (req) => {
@@ -202,6 +208,7 @@ Format the response as a JSON object with the following structure:
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '');
 
+    const authorSlug = slugify(requestData.author);
     const { data: blogPost, error: insertError } = await supabase
       .from('blog_posts')
       .insert([{
@@ -211,7 +218,7 @@ Format the response as a JSON object with the following structure:
         content: parsedContent.content,
         category: requestData.category,
         author: requestData.author,
-        author_id: requestData.authorId,
+        author_id: authorSlug,
         tags: requestData.tags,
         thumbnail: requestData.thumbnail,
         hero_image: requestData.heroImage,
