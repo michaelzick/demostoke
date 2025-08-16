@@ -43,12 +43,12 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are a professional blog writer specializing in outdoor gear and sports equipment. Write engaging, informative blog content in markdown format. 
+            content: `You are a professional blog writer specializing in outdoor gear and sports equipment. Write engaging, informative blog content in markdown format.
 
 CRITICAL INSTRUCTIONS:
 - Do NOT include the title in the main content. Generate content that starts directly with the first paragraph or section.
-- Don't use any # symbols as markdown. Any section titles should be wrapped in ** characters. 
-- Don't include ** characters in bullet points.
+- Don't use any # symbols as markdown. Any section titles should be wrapped in ** characters.
+- Don't include ** characters in bullet points, meaning no formatting that looks like "- **Initial Learning**:".
 - Use proper markdown formatting with ** for bold headings instead of # symbols.
 - The content should be well-structured with clear sections and appropriate formatting.
 - Focus on providing valuable information while maintaining an engaging tone.
@@ -142,35 +142,35 @@ Please return ONLY the JSON object with title and excerpt fields.`
     if (metaResponse.ok) {
       const metaData = await metaResponse.json();
       const metaContent = metaData.choices[0]?.message?.content;
-      
+
       console.log('Raw meta content from OpenAI:', metaContent);
-      
+
       if (metaContent) {
         try {
           // Clean the content to extract just the JSON
           let cleanMetaContent = metaContent.trim();
-          
+
           // Remove any markdown code blocks
           cleanMetaContent = cleanMetaContent.replace(/```json\s*/, '').replace(/```\s*$/, '');
           cleanMetaContent = cleanMetaContent.replace(/```\s*/, '').replace(/```\s*$/, '');
-          
+
           // Find JSON object boundaries
           const jsonStart = cleanMetaContent.indexOf('{');
           const jsonEnd = cleanMetaContent.lastIndexOf('}') + 1;
-          
+
           if (jsonStart !== -1 && jsonEnd > jsonStart) {
             cleanMetaContent = cleanMetaContent.substring(jsonStart, jsonEnd);
           }
-          
+
           const parsedMeta = JSON.parse(cleanMetaContent);
-          
+
           if (parsedMeta.title && typeof parsedMeta.title === 'string' && parsedMeta.title.trim()) {
             title = parsedMeta.title.trim();
           }
           if (parsedMeta.excerpt && typeof parsedMeta.excerpt === 'string' && parsedMeta.excerpt.trim()) {
             excerpt = parsedMeta.excerpt.trim();
           }
-          
+
           console.log('Successfully parsed meta content - Title:', title, 'Excerpt:', excerpt);
         } catch (error) {
           console.warn('Failed to parse meta content as JSON, using fallback. Error:', error);
@@ -184,15 +184,15 @@ Please return ONLY the JSON object with title and excerpt fields.`
     console.log('Blog content, title, and excerpt generated successfully');
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         content,
         title,
         excerpt
       }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
+        status: 200
       }
     );
 
