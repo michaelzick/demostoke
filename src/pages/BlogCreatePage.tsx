@@ -33,16 +33,16 @@ const categories = [
 
 function BlogCreatePageInner() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const { toggleSidebar } = useSidebar();
 
-  // For now, we'll just check if user exists - userRole check can be added later
+  // Wait for auth to finish loading before checking user
   useEffect(() => {
-    if (!user) {
+    if (!isLoading && !user) {
       navigate('/auth/signin');
       return;
     }
-  }, [user, navigate]);
+  }, [user, isLoading, navigate]);
 
   // Form state
   const [prompt, setPrompt] = useState("");
@@ -190,6 +190,11 @@ function BlogCreatePageInner() {
       setIsCreating(false);
     }
   };
+
+  // Don't render until auth is loaded
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
 
   // Don't render if not authenticated
   if (!user) {
