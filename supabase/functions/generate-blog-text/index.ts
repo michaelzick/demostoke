@@ -52,7 +52,7 @@ CRITICAL INSTRUCTIONS:
 - Use proper markdown formatting with ** for bold headings instead of # symbols.
 - The content should be well-structured with clear sections and appropriate formatting.
 - Focus on providing valuable information while maintaining an engaging tone.
-- Aim for comprehensive coverage with at least 1000-1500 words.
+- Aim for comprehensive coverage with at least 2000 words.
 
 SEO OPTIMIZATION REQUIREMENTS (TARGET: 90+ SEO SCORE):
 - Include the main keyword naturally 5-7 times throughout the content
