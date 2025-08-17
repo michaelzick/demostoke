@@ -64,7 +64,7 @@ export default {
 				},
 				ocean: {
 					light: '#E5F2F8',
-					DEFAULT: '#0EA5E9', 
+					DEFAULT: '#0EA5E9',
 					deep: '#0C4A6E',
 				},
 				sand: {
@@ -73,7 +73,7 @@ export default {
 					dark: '#E0D2AA',
 				},
 				mountain: {
-					DEFAULT: '#6B7280', 
+					DEFAULT: '#6B7280',
 					dark: '#374151',
 				},
 				shop: {
@@ -115,5 +115,5 @@ export default {
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 } satisfies Config;

@@ -2,7 +2,7 @@ export type ContentFormat = 'html' | 'markdown' | 'plain';
 
 export const detectContentFormat = (content: string): ContentFormat => {
   // Check for HTML tags first
-  const htmlTagRegex = /<\s*(h[1-6]|p|div|strong|em|b|i|ul|ol|li|blockquote|a)\b[^>]*>/i;
+  const htmlTagRegex = /<\s*(h[1-6]|p|div|strong|em|b|i|ul|ol|li|blockquote|a|html|body)\b[^>]*>/i;
   if (htmlTagRegex.test(content)) {
     return 'html';
   }
@@ -12,7 +12,7 @@ export const detectContentFormat = (content: string): ContentFormat => {
     /\*\*[^*]+\*\*/,  // **bold**
     /\*[^*]+\*/,      // *italic*
     /\[[^\]]+\]\([^)]+\)/, // [link](url)
-    /#{1,6}\s+/,      // # headers
+    /^#{1,6}\s+.+$/m, // # headers (with multiline flag)
   ];
 
   if (markdownPatterns.some(pattern => pattern.test(content))) {

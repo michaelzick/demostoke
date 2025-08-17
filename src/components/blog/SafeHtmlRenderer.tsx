@@ -11,7 +11,7 @@ const SafeHtmlRenderer: React.FC<SafeHtmlRendererProps> = ({ html, className = "
     // Configure DOMPurify with strict allowlist of safe HTML tags
     const config = {
       ALLOWED_TAGS: [
-        'h2', 'h3', 'h4', 'h5', 'h6',
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
         'p', 'br', 'strong', 'em', 'b', 'i', 'u',
         'ul', 'ol', 'li',
         'blockquote',
@@ -28,17 +28,9 @@ const SafeHtmlRenderer: React.FC<SafeHtmlRendererProps> = ({ html, className = "
   }, [html]);
 
   return (
-    <div 
-      className={`prose prose-lg max-w-none ${className}`}
+    <div
+      className={`prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-a:text-primary prose-strong:text-foreground prose-em:text-foreground prose-blockquote:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground ${className}`}
       dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
-      style={{
-        // Apply custom styles for heading hierarchy
-        '--tw-prose-headings': 'var(--foreground)',
-        '--tw-prose-body': 'var(--foreground)',
-        '--tw-prose-links': 'var(--primary)',
-        '--tw-prose-bold': 'var(--foreground)',
-        '--tw-prose-quotes': 'var(--muted-foreground)',
-      } as React.CSSProperties}
     />
   );
 };
