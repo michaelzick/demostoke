@@ -11,7 +11,7 @@ const SafeHtmlRenderer: React.FC<SafeHtmlRendererProps> = ({ html, className = "
     // Configure DOMPurify with strict allowlist of safe HTML tags
     const config = {
       ALLOWED_TAGS: [
-        'h2', 'h3', 'h4', 'h5', 'h6',
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
         'p', 'br', 'strong', 'em', 'b', 'i', 'u',
         'ul', 'ol', 'li',
         'blockquote',

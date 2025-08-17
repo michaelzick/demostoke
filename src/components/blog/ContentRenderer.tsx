@@ -17,8 +17,11 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({ content, className = 
   const format = detectContentFormat(content);
 
   switch (format) {
-    case 'html':
-      return <SafeHtmlRenderer html={content} className={className} />;
+    case 'html': {
+      const bodyMatch = content.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+      const htmlContent = bodyMatch ? bodyMatch[1].trim() : content;
+      return <SafeHtmlRenderer html={htmlContent} className={className} />;
+    }
     case 'markdown':
       return <EnhancedMarkdownRenderer text={content} className={className} />;
     case 'plain':
