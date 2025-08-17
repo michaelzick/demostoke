@@ -250,8 +250,11 @@ const BlogPostGeneratorSection = () => {
             value={blogText}
             onChange={(e) => handleTextChange(e.target.value)}
             rows={12}
-            placeholder="Generated blog content will appear here, or you can write your own..."
+            placeholder="Generated blog content with HTML formatting will appear here, or you can write your own with HTML tags..."
           />
+          <p className="text-xs text-muted-foreground">
+            Supports HTML tags: &lt;h2&gt;, &lt;h3&gt;, &lt;h4&gt;, &lt;p&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;ul&gt;, &lt;ol&gt;, &lt;li&gt;, &lt;blockquote&gt;
+          </p>
         </div>
 
         <div className="space-y-2">

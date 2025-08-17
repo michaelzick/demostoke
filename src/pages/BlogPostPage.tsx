@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useRelatedGear } from "@/hooks/useRelatedGear";
 import RelatedGear from "@/components/equipment-detail/RelatedGear";
 import MarkdownTextRenderer from "@/components/blog/MarkdownTextRenderer";
+import SafeHtmlRenderer from "@/components/blog/SafeHtmlRenderer";
 import { BlogPost } from "@/lib/blog/types";
 
 const BlogPostPage = () => {
@@ -233,34 +234,10 @@ const BlogPostPage = () => {
 
 
             {/* Article Body */}
-            <div className="prose prose-lg max-w-none mb-8">
-              {post.content.split('\n\n').map((paragraph, index) => {
-                if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
-                  return (
-                    <h3 key={index} className="text-xl font-semibold mt-8 mb-4">
-                      {paragraph.replace(/\*\*/g, '')}
-                    </h3>
-                  );
-                }
-                if (paragraph.startsWith('- ')) {
-                  const listItems = paragraph.split('\n- ').map(item => item.replace(/^- /, ''));
-                  return (
-                    <ul key={index} className="list-disc list-inside space-y-2 mb-6">
-                      {listItems.map((item, itemIndex) => (
-                        <li key={itemIndex}>
-                          <MarkdownTextRenderer text={item} />
-                        </li>
-                      ))}
-                    </ul>
-                  );
-                }
-                return (
-                  <p key={index} className="mb-6 leading-relaxed">
-                    <MarkdownTextRenderer text={paragraph} />
-                  </p>
-                );
-              })}
-            </div>
+            <SafeHtmlRenderer 
+              html={post.content} 
+              className="mb-8"
+            />
 
             {/* Tags */}
             <div className="mb-8">
