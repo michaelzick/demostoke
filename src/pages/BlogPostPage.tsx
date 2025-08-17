@@ -167,7 +167,7 @@ const BlogPostPage = () => {
                 {post.title}
               </h1>
 
-              <p className="text-xl text-muted-foreground mb-6 leading-relaxed">
+              <p className="text-xl text-white mb-6 leading-relaxed">
                 <ContentRenderer content={post.excerpt} />
               </p>
 
@@ -233,8 +233,8 @@ const BlogPostPage = () => {
 
 
             {/* Article Body */}
-            <ContentRenderer 
-              content={post.content} 
+            <ContentRenderer
+              content={post.content}
               className="mb-8"
             />
 

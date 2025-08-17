@@ -29,7 +29,7 @@ const SafeHtmlRenderer: React.FC<SafeHtmlRendererProps> = ({ html, className = "
 
   return (
     <div
-      className={`prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-a:text-primary prose-strong:text-foreground prose-em:text-foreground prose-blockquote:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground ${className}`}
+      className={`prose prose-lg max-w-none prose-headings:text-white prose-p:text-white prose-a:text-primary prose-strong:text-white prose-em:text-white prose-blockquote:text-white prose-ul:text-white prose-ol:text-white prose-li:text-white prose-code:text-white ${className}`}
       dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
     />
   );

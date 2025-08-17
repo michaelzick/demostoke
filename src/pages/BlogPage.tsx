@@ -123,7 +123,7 @@ const BlogPageInner = () => {
       let filteredResults = filterTerm
         ? results.filter(post => post.category === filterTerm || post.tags.includes(filterTerm))
         : results;
-      
+
       // Apply date filter
       if (selectedDateFilter) {
         filteredResults = filteredResults.filter(post => {
@@ -131,10 +131,10 @@ const BlogPageInner = () => {
           return selectedDateFilter === `${postDate.getFullYear()}-${String(postDate.getMonth() + 1).padStart(2, '0')}`;
         });
       }
-      
+
       // Apply sorting
       filteredResults = sortPosts(filteredResults);
-      
+
       setSearchResults(filteredResults);
 
       // Update URL
@@ -176,7 +176,7 @@ const BlogPageInner = () => {
 
     // Apply sorting
     filtered = sortPosts(filtered);
-    
+
     setSearchResults(filtered);
 
     // Update URL
@@ -206,11 +206,11 @@ const BlogPageInner = () => {
         value: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
       };
     });
-    
-    const unique = dates.filter((date, index, arr) => 
+
+    const unique = dates.filter((date, index, arr) =>
       arr.findIndex(d => d.value === date.value) === index
     );
-    
+
     return unique.sort((a, b) => b.year - a.year || b.month - a.month);
   };
 
@@ -398,7 +398,7 @@ const BlogPageInner = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground mb-4 line-clamp-3">
+                  <p className="text-white mb-4 line-clamp-3">
                     {post.excerpt}
                   </p>
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
