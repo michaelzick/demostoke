@@ -39,7 +39,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5-2025-08-07',
         messages: [
           {
             role: 'system',
@@ -73,8 +73,7 @@ The category is: ${category}.`
             content: prompt
           }
         ],
-        temperature: 0.7,
-        max_tokens: 2000,
+        max_completion_tokens: 2000,
       }),
     });
 
@@ -98,7 +97,7 @@ The category is: ${category}.`
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5-2025-08-07',
         messages: [
           {
             role: 'system',
@@ -131,8 +130,7 @@ ${content.substring(0, 800)}...
 Please return ONLY the JSON object with title and excerpt fields.`
           }
         ],
-        temperature: 0.7,
-        max_tokens: 300,
+        max_completion_tokens: 300,
       }),
     });
 

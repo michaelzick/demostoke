@@ -97,8 +97,7 @@ Return JSON only.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
-        temperature: 0.2,
+        model: 'gpt-5-2025-08-07',
         messages: [
           { role: 'system', content: system },
           { role: 'user', content: user }

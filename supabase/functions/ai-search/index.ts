@@ -197,7 +197,7 @@ RESPOND WITH VALID JSON ONLY in this exact format:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5-2025-08-07',
         messages: [
           {
             role: 'system',
@@ -211,8 +211,7 @@ RESPOND WITH VALID JSON ONLY in this exact format:
             content: prompt
           }
         ],
-        temperature: 0.2,
-        max_tokens: 2000,
+        max_completion_tokens: 2000,
       }),
     });
 
