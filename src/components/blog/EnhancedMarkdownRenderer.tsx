@@ -1,5 +1,6 @@
 import React from 'react';
-import { parseMarkdownLinks, isExternalLink } from '@/utils/markdownLinkParser';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { ExternalLink } from 'lucide-react';
 
 interface EnhancedMarkdownRendererProps {
@@ -8,115 +9,93 @@ interface EnhancedMarkdownRendererProps {
 }
 
 const EnhancedMarkdownRenderer: React.FC<EnhancedMarkdownRendererProps> = ({ text, className = "" }) => {
-  const renderMarkdownContent = (content: string) => {
-    // Split content into paragraphs first
-    const paragraphs = content.split('\n\n').filter(p => p.trim());
-    
-    return paragraphs.map((paragraph, paragraphIndex) => {
-      // Check if this paragraph is a header (starts with **)
-      const headerMatch = paragraph.match(/^\*\*([^*]+)\*\*(.*)$/);
-      if (headerMatch) {
-        const headerText = headerMatch[1].trim();
-        const remainingText = headerMatch[2].trim();
-        
-        return (
-          <div key={paragraphIndex} className="mb-6">
-            <h3 className="text-xl font-semibold mb-3 text-foreground">{headerText}</h3>
-            {remainingText && (
-              <div className="space-y-2">
-                {renderTextWithFormatting(remainingText)}
-              </div>
-            )}
-          </div>
-        );
-      }
-      
-      // Regular paragraph
-      return (
-        <div key={paragraphIndex} className="mb-4">
-          {renderTextWithFormatting(paragraph)}
-        </div>
-      );
-    });
-  };
-
-  const renderTextWithFormatting = (text: string) => {
-    // Split by line breaks to handle individual lines
-    const lines = text.split('\n').filter(line => line.trim());
-    
-    return lines.map((line, lineIndex) => (
-      <p key={lineIndex} className="mb-2 last:mb-0">
-        {renderFormattedLine(line)}
-      </p>
-    ));
-  };
-
-  const renderFormattedLine = (line: string) => {
-    // Parse markdown links first
-    const linkParts = parseMarkdownLinks(line);
-    
-    return linkParts.map((part, index) => {
-      if (part.type === 'link' && part.url) {
-        const external = isExternalLink(part.url);
-        
-        return (
-          <a
-            key={index}
-            href={part.url}
-            target={external ? "_blank" : undefined}
-            rel={external ? "noopener noreferrer" : undefined}
-            className="text-primary hover:text-primary/80 underline underline-offset-2 transition-colors inline-flex items-center gap-1"
-          >
-            {renderBoldItalic(part.content)}
-            {external && <ExternalLink className="h-3 w-3" />}
-          </a>
-        );
-      }
-      
-      return <span key={index}>{renderBoldItalic(part.content)}</span>;
-    });
-  };
-
-  const renderBoldItalic = (text: string) => {
-    // Handle **bold** and *italic* formatting
-    const parts = [];
-    let currentIndex = 0;
-    
-    // Regex to match **bold** and *italic* (but not ***bold italic***)
-    const formatRegex = /(\*\*[^*]+\*\*|\*[^*]+\*)/g;
-    let match;
-    
-    while ((match = formatRegex.exec(text)) !== null) {
-      // Add text before the match
-      if (match.index > currentIndex) {
-        parts.push(text.slice(currentIndex, match.index));
-      }
-      
-      const matchedText = match[1];
-      if (matchedText.startsWith('**') && matchedText.endsWith('**')) {
-        // Bold text
-        const boldContent = matchedText.slice(2, -2);
-        parts.push(<strong key={`bold-${match.index}`} className="font-semibold">{boldContent}</strong>);
-      } else if (matchedText.startsWith('*') && matchedText.endsWith('*')) {
-        // Italic text
-        const italicContent = matchedText.slice(1, -1);
-        parts.push(<em key={`italic-${match.index}`} className="italic">{italicContent}</em>);
-      }
-      
-      currentIndex = match.index + matchedText.length;
-    }
-    
-    // Add remaining text
-    if (currentIndex < text.length) {
-      parts.push(text.slice(currentIndex));
-    }
-    
-    return parts.length > 0 ? parts : text;
-  };
-
   return (
     <div className={`prose prose-lg max-w-none ${className}`}>
-      {renderMarkdownContent(text)}
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          // Custom link component to handle external links
+          a: ({ href, children, ...props }) => {
+            const isExternal = href?.startsWith('http://') || href?.startsWith('https://');
+
+            return (
+              <a
+                href={href}
+                target={isExternal ? "_blank" : undefined}
+                rel={isExternal ? "noopener noreferrer" : undefined}
+                className="text-primary hover:text-primary/80 underline underline-offset-2 transition-colors inline-flex items-center gap-1"
+                {...props}
+              >
+                {children}
+                {isExternal && <ExternalLink className="h-3 w-3" />}
+              </a>
+            );
+          },
+          // Ensure headings have proper styling
+          h1: ({ children, ...props }) => (
+            <h1 className="text-3xl font-bold mb-4 text-foreground" {...props}>
+              {children}
+            </h1>
+          ),
+          h2: ({ children, ...props }) => (
+            <h2 className="text-2xl font-semibold mb-3 text-foreground" {...props}>
+              {children}
+            </h2>
+          ),
+          h3: ({ children, ...props }) => (
+            <h3 className="text-xl font-semibold mb-3 text-foreground" {...props}>
+              {children}
+            </h3>
+          ),
+          h4: ({ children, ...props }) => (
+            <h4 className="text-lg font-semibold mb-2 text-foreground" {...props}>
+              {children}
+            </h4>
+          ),
+          h5: ({ children, ...props }) => (
+            <h5 className="text-base font-semibold mb-2 text-foreground" {...props}>
+              {children}
+            </h5>
+          ),
+          h6: ({ children, ...props }) => (
+            <h6 className="text-sm font-semibold mb-2 text-foreground" {...props}>
+              {children}
+            </h6>
+          ),
+          // Ensure paragraphs have proper spacing
+          p: ({ children, ...props }) => (
+            <p className="mb-4 text-foreground leading-relaxed" {...props}>
+              {children}
+            </p>
+          ),
+          // Style blockquotes with muted text
+          blockquote: ({ children, ...props }) => (
+            <blockquote className="border-l-4 border-primary/20 pl-4 my-4 text-muted-foreground italic" {...props}>
+              {children}
+            </blockquote>
+          ),
+          // Style unordered lists with muted text
+          ul: ({ children, ...props }) => (
+            <ul className="list-disc list-inside mb-4 text-muted-foreground space-y-1" {...props}>
+              {children}
+            </ul>
+          ),
+          // Style ordered lists with muted text
+          ol: ({ children, ...props }) => (
+            <ol className="list-decimal list-inside mb-4 text-muted-foreground space-y-1" {...props}>
+              {children}
+            </ol>
+          ),
+          // Style list items
+          li: ({ children, ...props }) => (
+            <li className="text-muted-foreground" {...props}>
+              {children}
+            </li>
+          ),
+        }}
+      >
+        {text}
+      </ReactMarkdown>
     </div>
   );
 };

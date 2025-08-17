@@ -12,7 +12,7 @@ export const detectContentFormat = (content: string): ContentFormat => {
     /\*\*[^*]+\*\*/,  // **bold**
     /\*[^*]+\*/,      // *italic*
     /\[[^\]]+\]\([^)]+\)/, // [link](url)
-    /#{1,6}\s+/,      // # headers
+    /^#{1,6}\s+.+$/m, // # headers (with multiline flag)
   ];
 
   if (markdownPatterns.some(pattern => pattern.test(content))) {
