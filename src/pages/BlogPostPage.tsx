@@ -9,8 +9,7 @@ import { slugify } from "@/utils/slugify";
 import { useEffect, useState } from "react";
 import { useRelatedGear } from "@/hooks/useRelatedGear";
 import RelatedGear from "@/components/equipment-detail/RelatedGear";
-import MarkdownTextRenderer from "@/components/blog/MarkdownTextRenderer";
-import SafeHtmlRenderer from "@/components/blog/SafeHtmlRenderer";
+import ContentRenderer from "@/components/blog/ContentRenderer";
 import { BlogPost } from "@/lib/blog/types";
 
 const BlogPostPage = () => {
@@ -169,7 +168,7 @@ const BlogPostPage = () => {
               </h1>
 
               <p className="text-xl text-muted-foreground mb-6 leading-relaxed">
-                <MarkdownTextRenderer text={post.excerpt} />
+                <ContentRenderer content={post.excerpt} />
               </p>
 
               <div className="flex items-center justify-between flex-wrap gap-4">
@@ -234,8 +233,8 @@ const BlogPostPage = () => {
 
 
             {/* Article Body */}
-            <SafeHtmlRenderer 
-              html={post.content} 
+            <ContentRenderer 
+              content={post.content} 
               className="mb-8"
             />
 
