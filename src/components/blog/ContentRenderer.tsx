@@ -9,6 +9,11 @@ interface ContentRendererProps {
 }
 
 const ContentRenderer: React.FC<ContentRendererProps> = ({ content, className = "" }) => {
+  const htmlBlockMatch = content.match(/^```html\s*([\s\S]*?)\s*```$/i);
+  if (htmlBlockMatch) {
+    return <SafeHtmlRenderer html={htmlBlockMatch[1].trim()} className={className} />;
+  }
+
   const format = detectContentFormat(content);
 
   switch (format) {
