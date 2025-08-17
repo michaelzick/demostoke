@@ -39,7 +39,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-2025-08-07',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',
@@ -88,9 +88,9 @@ serve(async (req) => {
 
     if (!contentResponse.ok) {
       const errorData = await contentResponse.json();
-      console.error('OpenAI API error:', errorData);
+      console.error('OpenAI API error for content generation:', errorData);
       return new Response(
-        JSON.stringify({ success: false, error: 'Failed to generate content' }),
+        JSON.stringify({ success: false, error: `Failed to generate content: ${errorData.error?.message || 'Unknown error'}` }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       );
     }
@@ -106,7 +106,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-2025-08-07',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',
@@ -185,7 +185,8 @@ Please return ONLY the JSON object with title and excerpt fields.`
         }
       }
     } else {
-      console.warn('Meta response not ok:', metaResponse.status, metaResponse.statusText);
+      const metaErrorData = await metaResponse.json().catch(() => ({}));
+      console.warn('Meta response not ok:', metaResponse.status, metaResponse.statusText, metaErrorData);
     }
 
     console.log('Blog content, title, and excerpt generated successfully');
