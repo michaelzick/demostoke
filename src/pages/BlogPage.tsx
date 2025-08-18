@@ -398,7 +398,7 @@ const BlogPageInner = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-white mb-4 line-clamp-3">
+                  <p className="text-muted-foreground mb-4 line-clamp-3">
                     {post.excerpt}
                   </p>
                   <div className="flex items-center justify-between text-sm text-muted-foreground">

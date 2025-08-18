@@ -4,9 +4,10 @@ import DOMPurify from 'dompurify';
 interface SafeHtmlRendererProps {
   html: string;
   className?: string;
+  textColor?: string;
 }
 
-const SafeHtmlRenderer: React.FC<SafeHtmlRendererProps> = ({ html, className = "" }) => {
+const SafeHtmlRenderer: React.FC<SafeHtmlRendererProps> = ({ html, className = "", textColor = "text-foreground" }) => {
   const sanitizedHtml = useMemo(() => {
     // Configure DOMPurify with strict allowlist of safe HTML tags
     const config = {
@@ -27,9 +28,17 @@ const SafeHtmlRenderer: React.FC<SafeHtmlRendererProps> = ({ html, className = "
     return DOMPurify.sanitize(html, config);
   }, [html]);
 
+  // Convert textColor class to prose modifier format
+  const getProseTextClass = (textColor: string) => {
+    if (textColor === 'text-muted-foreground') {
+      return 'prose-headings:text-muted-foreground prose-p:text-muted-foreground prose-strong:text-muted-foreground prose-em:text-muted-foreground prose-blockquote:text-muted-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground prose-li:text-muted-foreground prose-code:text-muted-foreground';
+    }
+    return 'prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-em:text-foreground prose-blockquote:text-foreground prose-ul:text-foreground prose-ol:text-foreground prose-li:text-foreground prose-code:text-foreground';
+  };
+
   return (
     <div
-      className={`prose prose-lg max-w-none prose-headings:text-white prose-p:text-white prose-a:text-primary prose-strong:text-white prose-em:text-white prose-blockquote:text-white prose-ul:text-white prose-ol:text-white prose-li:text-white prose-code:text-white ${className}`}
+      className={`prose prose-lg max-w-none ${getProseTextClass(textColor)} prose-a:text-primary ${className}`}
       dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
     />
   );

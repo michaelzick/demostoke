@@ -167,9 +167,9 @@ const BlogPostPage = () => {
                 {post.title}
               </h1>
 
-              <p className="text-xl text-white mb-6 leading-relaxed">
-                <ContentRenderer content={post.excerpt} />
-              </p>
+              <div className="text-xl mb-6 leading-relaxed">
+                <ContentRenderer content={post.excerpt} textColor="text-muted-foreground" />
+              </div>
 
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
