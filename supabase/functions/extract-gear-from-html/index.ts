@@ -41,11 +41,13 @@ async function extractFromHtml(html: string) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "gpt-5-2025-08-07",
+      model: "gpt-4o",
       messages: [
         { role: "system", content: prompt },
         { role: "user", content: html.slice(0, 200000) },
       ],
+      max_tokens: 1000,
+      temperature: 0.3,
     }),
   });
 

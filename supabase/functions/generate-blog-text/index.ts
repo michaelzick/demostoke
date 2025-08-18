@@ -58,9 +58,15 @@ serve(async (req) => {
             - Use specific examples and actionable advice
             - Write for both beginners and experienced enthusiasts
             
-            IMPORTANT FORMATTING RULES:
+            CRITICAL CONTENT STRUCTURE RULES:
+            - NEVER include <!DOCTYPE>, <html>, <head>, <body>, or any full page HTML structure
+            - NEVER use <h1> tags - the title field will be the only H1 on the page
+            - ONLY generate content suitable for insertion into a page body
+            - Start directly with content paragraphs or <h2> sections
+            
+            REQUIRED HTML FORMATTING:
             - Use <h2> for main sections (2-4 sections recommended)
-            - Use <h3> for subsections within main sections
+            - Use <h3> for subsections within main sections  
             - Use <h4> for detailed points within subsections
             - Use <p> tags for paragraphs
             - Use <strong> for emphasis instead of **bold**
@@ -69,13 +75,14 @@ serve(async (req) => {
             - Use <ol> and <li> for numbered lists
             - Use <blockquote> for quotes
             
-            Structure should follow SEO best practices:
+            SEO-OPTIMIZED STRUCTURE:
             - Start with an engaging introduction paragraph
-            - Include 2-4 main <h2> sections
+            - Include 2-4 main <h2> sections with descriptive headings
             - Use <h3> and <h4> as needed for detailed organization
             - End with a conclusion or call-to-action
+            - Ensure proper heading hierarchy for SEO (H2 → H3 → H4)
             
-            Return properly formatted HTML content that's ready to render safely.`
+            Return ONLY the content HTML - no full page structure.`
           },
           {
             role: 'user',
