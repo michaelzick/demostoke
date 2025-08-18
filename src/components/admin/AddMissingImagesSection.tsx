@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Search, ImagePlus, AlertCircle, ExternalLink, X } from "lucide-react";
+import { Loader2, Search, ImagePlus, AlertCircle, ExternalLink, X, Globe } from "lucide-react";
 import { slugify } from "@/utils/slugify";
 import ImageSearchDialog from "@/components/gear-form/ImageSearchDialog";
 import { deleteEquipmentImage, addEquipmentImages } from "@/utils/multipleImageHandling";
@@ -114,10 +114,10 @@ const AddMissingImagesSection = () => {
       setGearItems(prev => prev.map(item =>
         item.id === selectedGear.id
           ? {
-              ...item,
-              current_images: [...item.current_images, ...selectedImageUrls],
-              image_count: item.current_images.length + selectedImageUrls.length
-            }
+            ...item,
+            current_images: [...item.current_images, ...selectedImageUrls],
+            image_count: item.current_images.length + selectedImageUrls.length
+          }
           : item
       ));
 
@@ -151,10 +151,10 @@ const AddMissingImagesSection = () => {
       setGearItems(prev => prev.map(item =>
         item.id === gearId
           ? {
-              ...item,
-              current_images: item.current_images.filter(url => url !== imageUrl),
-              image_count: Math.max(0, item.image_count - 1)
-            }
+            ...item,
+            current_images: item.current_images.filter(url => url !== imageUrl),
+            image_count: Math.max(0, item.image_count - 1)
+          }
           : item
       ));
 
@@ -248,6 +248,18 @@ const AddMissingImagesSection = () => {
                           <ExternalLink className="h-3 w-3" />
                           View Gear
                         </a>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const searchQuery = encodeURIComponent(gear.name);
+                          window.open(`https://www.google.com/search?q=${searchQuery}`, '_blank');
+                        }}
+                        className="flex items-center gap-1"
+                      >
+                        <Globe className="h-3 w-3" />
+                        Search on Google
                       </Button>
                       <Button
                         onClick={() => handleSearchImages(gear)}

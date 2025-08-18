@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import { X, Search } from "lucide-react";
+import { X, Search, Globe } from "lucide-react";
 import { useState, useEffect } from "react";
 import { deleteEquipmentImage } from "@/utils/multipleImageHandling";
 import ImageSearchDialog from "./ImageSearchDialog";
@@ -52,7 +52,7 @@ const MultipleGearMedia = ({
   // Initialize imageUrls with existing images when switching to URL mode
   useEffect(() => {
     if (useImageUrls && currentImages && currentImages.length > 0) {
-      // When toggling to URL mode, only set to currentImages (database images) 
+      // When toggling to URL mode, only set to currentImages (database images)
       // Don't merge with previous imageUrls to avoid duplication
       const newUrls = imageUrls.filter(url => url.trim() !== '' && !currentImages.includes(url));
       setImageUrls([...currentImages, ...newUrls]);
@@ -134,8 +134,8 @@ const MultipleGearMedia = ({
             onCheckedChange={(checked) => setUseImageUrls(checked as boolean)}
           />
           <Label htmlFor="useImageUrls" className="text-sm font-normal">
-            {currentImages && currentImages.length > 0 
-              ? "Add image URLs (will be added to existing images)" 
+            {currentImages && currentImages.length > 0
+              ? "Add image URLs (will be added to existing images)"
               : "Use image URLs instead of uploaded files"
             }
           </Label>
@@ -162,7 +162,7 @@ const MultipleGearMedia = ({
                 </Button>
               </div>
             ))}
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 type="button"
                 variant="outline"
@@ -180,6 +180,20 @@ const MultipleGearMedia = ({
               >
                 <Search className="h-4 w-4" />
                 Search Google Images
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const searchQuery = encodeURIComponent(gearName || '');
+                  window.open(`https://www.google.com/search?q=${searchQuery}`, '_blank');
+                }}
+                className="flex items-center gap-2"
+                disabled={!gearName?.trim()}
+              >
+                <Globe className="h-4 w-4" />
+                Search on Google
               </Button>
             </div>
           </div>
@@ -208,7 +222,7 @@ const MultipleGearMedia = ({
               // Determine if this is an existing image or new one
               const isExistingImage = currentImages && currentImages.includes(imageUrl);
               const isNewImage = useImageUrls && currentImages && !currentImages.includes(imageUrl);
-              
+
               return (
                 <div key={index} className="relative group w-24 flex flex-col items-center">
                   <img
