@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Search, ImagePlus, AlertCircle, ExternalLink, X, Globe } from "lucide-react";
 import { slugify } from "@/utils/slugify";
 import ImageSearchDialog from "@/components/gear-form/ImageSearchDialog";
+import ImageUrlManager from "@/components/gear-form/ImageUrlManager";
 import { deleteEquipmentImage, addEquipmentImages } from "@/utils/multipleImageHandling";
 
 interface GearWithoutImages {
@@ -18,6 +19,10 @@ interface GearWithoutImages {
   current_images: string[];
 }
 
+interface GearImageUrls {
+  [gearId: string]: string[];
+}
+
 const AddMissingImagesSection = () => {
   const [gearItems, setGearItems] = useState<GearWithoutImages[]>([]);
   const [loading, setLoading] = useState(false);
@@ -25,6 +30,7 @@ const AddMissingImagesSection = () => {
   const [showImageSearch, setShowImageSearch] = useState(false);
   const [selectedGear, setSelectedGear] = useState<GearWithoutImages | null>(null);
   const [updatingImages, setUpdatingImages] = useState<Set<string>>(new Set());
+  const [gearImageUrls, setGearImageUrls] = useState<GearImageUrls>({});
   const { toast } = useToast();
 
   const scanForNoImages = async () => {
@@ -79,6 +85,13 @@ const AddMissingImagesSection = () => {
 
       setGearItems(filteredResults);
       setScanComplete(true);
+
+      // Initialize empty URL arrays for each gear item
+      const initialUrls: GearImageUrls = {};
+      filteredResults.forEach(gear => {
+        initialUrls[gear.id] = [];
+      });
+      setGearImageUrls(initialUrls);
 
       toast({
         title: "Scan Complete",
@@ -167,6 +180,129 @@ const AddMissingImagesSection = () => {
       toast({
         title: "Error",
         description: "Failed to remove image",
+        variant: "destructive",
+      });
+    } finally {
+      setUpdatingImages(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(gearId);
+        return newSet;
+      });
+    }
+  };
+
+  const handleUrlImagesChange = async (gearId: string, urls: string[]) => {
+    const validUrls = urls.filter(url => url.trim() !== '');
+    const currentUrls = gearImageUrls[gearId] || [];
+    const currentValidUrls = currentUrls.filter(url => url.trim() !== '');
+
+    // Only update if there are actual changes
+    if (JSON.stringify(validUrls) === JSON.stringify(currentValidUrls)) {
+      return;
+    }
+
+    // Update local state immediately
+    setGearImageUrls(prev => ({
+      ...prev,
+      [gearId]: urls
+    }));
+
+    // If there are valid URLs, save them to the database
+    if (validUrls.length > 0) {
+      setUpdatingImages(prev => new Set([...prev, gearId]));
+
+      try {
+        await addEquipmentImages(gearId, validUrls);
+
+        // Update the gear item in our state
+        setGearItems(prev => prev.map(item =>
+          item.id === gearId
+            ? {
+              ...item,
+              current_images: [...item.current_images, ...validUrls],
+              image_count: item.current_images.length + validUrls.length
+            }
+            : item
+        ));
+
+        // Clear the URL fields after successful save
+        setGearImageUrls(prev => ({
+          ...prev,
+          [gearId]: []
+        }));
+
+        toast({
+          title: "Images Added",
+          description: `Added ${validUrls.length} image${validUrls.length > 1 ? 's' : ''} from URLs`,
+        });
+      } catch (error) {
+        console.error('Error adding images from URLs:', error);
+        toast({
+          title: "Error",
+          description: "Failed to add images from URLs",
+          variant: "destructive",
+        });
+      } finally {
+        setUpdatingImages(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(gearId);
+          return newSet;
+        });
+      }
+    }
+  };
+
+  const setGearUrls = (gearId: string, urls: string[]) => {
+    setGearImageUrls(prev => ({
+      ...prev,
+      [gearId]: urls
+    }));
+  };
+
+  const saveUrlImages = async (gearId: string) => {
+    const urls = gearImageUrls[gearId] || [];
+    const validUrls = urls.filter(url => url.trim() !== '');
+
+    if (validUrls.length === 0) {
+      toast({
+        title: "No URLs",
+        description: "Please add at least one valid image URL",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUpdatingImages(prev => new Set([...prev, gearId]));
+
+    try {
+      await addEquipmentImages(gearId, validUrls);
+
+      // Update the gear item in our state
+      setGearItems(prev => prev.map(item =>
+        item.id === gearId
+          ? {
+            ...item,
+            current_images: [...item.current_images, ...validUrls],
+            image_count: item.current_images.length + validUrls.length
+          }
+          : item
+      ));
+
+      // Clear the URL fields after successful save
+      setGearImageUrls(prev => ({
+        ...prev,
+        [gearId]: []
+      }));
+
+      toast({
+        title: "Images Added",
+        description: `Added ${validUrls.length} image${validUrls.length > 1 ? 's' : ''} from URLs`,
+      });
+    } catch (error) {
+      console.error('Error adding images from URLs:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add images from URLs",
         variant: "destructive",
       });
     } finally {
@@ -304,6 +440,22 @@ const AddMissingImagesSection = () => {
                       </div>
                     </div>
                   )}
+
+                  {/* Image URL Manager */}
+                  <div className="border-t pt-3">
+                    <div className="bg-muted/30 p-3 rounded-md space-y-3">
+                      <ImageUrlManager
+                        imageUrls={gearImageUrls[gear.id] || []}
+                        setImageUrls={(urls) => setGearUrls(gear.id, urls)}
+                        gearName={gear.name}
+                        gearType={gear.category}
+                        showLabel={true}
+                        showSaveButton={true}
+                        onSave={() => saveUrlImages(gear.id)}
+                        isSaving={updatingImages.has(gear.id)}
+                      />
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

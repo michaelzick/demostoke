@@ -98,6 +98,7 @@ const EditGearForm = () => {
     imageUrls: formState.imageUrls,
     useImageUrls: formState.useImageUrls,
     selectedSizes: formState.selectedSizes,
+    currentImages: currentImages,
   });
 
   // Handle error navigation

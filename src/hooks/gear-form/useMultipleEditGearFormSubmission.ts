@@ -28,6 +28,7 @@ interface UseMultipleEditGearFormSubmissionProps {
   imageUrls: string[];
   useImageUrls: boolean;
   selectedSizes?: string[];
+  currentImages?: string[];
 }
 
 export const useMultipleEditGearFormSubmission = ({
@@ -47,6 +48,7 @@ export const useMultipleEditGearFormSubmission = ({
   imageUrls,
   useImageUrls,
   selectedSizes = [],
+  currentImages = [],
 }: UseMultipleEditGearFormSubmissionProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -108,28 +110,15 @@ export const useMultipleEditGearFormSubmission = ({
     try {
       let finalImageUrls: string[] = [];
 
-      // Handle multiple images - merge existing with new instead of overwriting
+      // Handle multiple images - use current state as source of truth
       if (useImageUrls && imageUrls.some(url => url.trim())) {
-        // When using image URLs, merge with existing images instead of replacing
-        const existingImages = equipment?.images || [];
-        const newImageUrls = imageUrls.filter(url => url.trim());
-        
-        // Check if we're adding new URLs or if this includes existing ones
-        const existingSet = new Set(existingImages);
-        const newUrls = newImageUrls.filter(url => !existingSet.has(url));
-        
-        if (newUrls.length > 0) {
-          // We have new URLs to add - merge them
-          finalImageUrls = [...existingImages, ...newUrls];
-          console.log('Merging existing images with new URLs:', { existing: existingImages, new: newUrls, final: finalImageUrls });
-        } else {
-          // All URLs are from existing images (user might have removed some)
-          finalImageUrls = newImageUrls;
-          console.log('Using filtered existing image URLs:', finalImageUrls);
-        }
+        // When using image URLs, use the current imageUrls array as final list
+        // This respects any deletions the user made via thumbnail removal
+        finalImageUrls = imageUrls.filter(url => url.trim());
+        console.log('Using current image URLs as final list:', finalImageUrls);
       } else if (images.length > 0) {
         console.log('Uploading multiple images:', images.map(f => f.name));
-        
+
         try {
           finalImageUrls = await uploadMultipleGearImages(images, user!.id, (message) => {
             toast({
@@ -149,8 +138,8 @@ export const useMultipleEditGearFormSubmission = ({
           finalImageUrls = equipment?.images || [];
         }
       } else {
-        // Keep existing images
-        finalImageUrls = equipment?.images || [];
+        // Use current images state (respects any deletions made via thumbnails)
+        finalImageUrls = currentImages.length > 0 ? currentImages : (equipment?.images || []);
       }
 
       // Handle location updates
@@ -179,9 +168,9 @@ export const useMultipleEditGearFormSubmission = ({
       if (finalImageUrls.length > 0) {
         // Determine if we should merge or replace based on whether user added URLs to existing images
         const hasExistingImages = equipment?.images && equipment.images.length > 0;
-        const shouldMerge = useImageUrls && hasExistingImages && 
+        const shouldMerge = useImageUrls && hasExistingImages &&
                           imageUrls.some(url => url.trim() && !(equipment?.images || []).includes(url));
-        
+
         console.log('Image update strategy:', { shouldMerge, hasExistingImages, useImageUrls });
         await updateEquipmentImages(equipment!.id, finalImageUrls, false); // Always replace for now, merging logic is handled above
       }
@@ -200,7 +189,7 @@ export const useMultipleEditGearFormSubmission = ({
     } catch (error) {
       console.error('=== FORM SUBMISSION ERROR ===');
       console.error('Error updating equipment:', error);
-      
+
       // Provide more detailed error information
       let errorMessage = "Failed to update equipment. Please try again.";
       if (error instanceof Error) {
@@ -208,7 +197,7 @@ export const useMultipleEditGearFormSubmission = ({
         console.error('Detailed error:', error);
         console.error('Error stack:', error.stack);
       }
-      
+
       toast({
         title: "Error",
         description: errorMessage,

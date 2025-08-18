@@ -71,12 +71,12 @@ const MultipleGearMedia = ({
     setImageUrls(newUrls);
   };
 
-  const handleRemoveImage = async (index: number) => {
+  const handleRemoveImage = (index: number) => {
     const imageUrl = displayImages[index];
 
     if (!useImageUrls && currentImages) {
-      // Remove image from database and state
-      await deleteEquipmentImage(imageUrl);
+      // For existing database images, just remove from local state
+      // Don't delete from database until form submission
       setCurrentImages?.(currentImages.filter((_, i) => i !== index));
     } else {
       // Removing URL from input-based images
