@@ -9,6 +9,7 @@ import VideoUploadSection from "@/components/admin/VideoUploadSection";
 import GlobalSearchSettings from "@/components/admin/GlobalSearchSettings";
 import GeocodingRecoverySection from "@/components/admin/GeocodingRecoverySection";
 import ImageConversionSection from "@/components/admin/ImageConversionSection";
+import AddMissingImagesSection from "@/components/admin/AddMissingImagesSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GearUrlScraperSection from "@/components/admin/GearUrlScraperSection";
@@ -68,6 +69,7 @@ const AdminPage = () => {
         </TabsContent>
 
         <TabsContent value="tools" className="space-y-6">
+          <AddMissingImagesSection />
           <ImageConversionSection />
           <GeocodingRecoverySection />
           <RetailerDiscoverySection />

@@ -31,7 +31,7 @@ export const fetchEquipmentImages = async (
     const imageUrls = data.map((img) => img.image_url);
     console.log('Extracted image URLs:', imageUrls);
     console.log('=== END EQUIPMENT IMAGES FETCH ===');
-    
+
     return imageUrls;
   } catch (err) {
     console.error('Exception while fetching equipment images:', err);
@@ -129,11 +129,11 @@ export const uploadMultipleGearImages = async (
   onProgress?: (message: string) => void
 ): Promise<string[]> => {
   const uploadedUrls: string[] = [];
-  
+
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     onProgress?.(`Uploading image ${i + 1} of ${files.length}...`);
-    
+
     try {
       // Upload file to storage
       const fileExt = file.name.split('.').pop();
@@ -212,18 +212,49 @@ export const updateEquipmentImages = async (
   if (mergeWithExisting) {
     // Get existing images first
     const existingImages = await fetchEquipmentImages(equipmentId);
-    
+
     // Create a set for deduplication
     const existingSet = new Set(existingImages);
     const newUrls = imageUrls.filter(url => !existingSet.has(url));
-    
+
     // Merge existing with new images
     const finalUrls = [...existingImages, ...newUrls];
-    
+
     console.log('Merging images:', { existing: existingImages, new: newUrls, final: finalUrls });
     await saveEquipmentImages(equipmentId, finalUrls);
   } else {
     // Replace all images as before
     await saveEquipmentImages(equipmentId, imageUrls);
+  }
+};
+
+export const addEquipmentImages = async (
+  equipmentId: string,
+  imageUrls: string[]
+): Promise<void> => {
+  try {
+    // Get existing images to determine the next display order
+    const existingImages = await fetchEquipmentImages(equipmentId);
+    const nextDisplayOrder = existingImages.length;
+
+    // Insert new images
+    const imageRecords = imageUrls.map((url, index) => ({
+      equipment_id: equipmentId,
+      image_url: url,
+      display_order: nextDisplayOrder + index,
+      is_primary: existingImages.length === 0 && index === 0 // First image is primary if no existing images
+    }));
+
+    const { error: insertError } = await supabase
+      .from('equipment_images')
+      .insert(imageRecords);
+
+    if (insertError) {
+      console.error('Error inserting new images:', insertError);
+      throw new Error(`Failed to add images: ${insertError.message}`);
+    }
+  } catch (error) {
+    console.error('Exception adding equipment images:', error);
+    throw error;
   }
 };
