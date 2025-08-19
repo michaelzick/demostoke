@@ -43,6 +43,7 @@ const BlogPageInner = () => {
   const [featuredPosts, setFeaturedPosts] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<'latest' | 'oldest'>('latest');
   const [selectedDateFilter, setSelectedDateFilter] = useState<string>("");
+  const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
   const { data: userRole } = useUserRole();
   const isAdmin = userRole === 'admin';
   const { toggleSidebar } = useSidebar();
@@ -75,7 +76,7 @@ const BlogPageInner = () => {
     if (allPosts.length > 0) {
       handleSearch();
     }
-  }, [searchQuery, selectedFilter, sortBy, selectedDateFilter, allPosts]);
+  }, [searchQuery, selectedFilter, sortBy, selectedDateFilter, showFeaturedOnly, allPosts]);
 
   // Sync state with URL params (e.g. when navigating with browser controls)
   useEffect(() => {
@@ -132,6 +133,11 @@ const BlogPageInner = () => {
         });
       }
 
+      // Apply featured posts filter
+      if (showFeaturedOnly) {
+        filteredResults = filteredResults.filter(post => featuredPosts.includes(post.id));
+      }
+
       // Apply sorting
       filteredResults = sortPosts(filteredResults);
 
@@ -174,6 +180,11 @@ const BlogPageInner = () => {
       });
     }
 
+    // Apply featured posts filter
+    if (showFeaturedOnly) {
+      filtered = filtered.filter(post => featuredPosts.includes(post.id));
+    }
+
     // Apply sorting
     filtered = sortPosts(filtered);
 
@@ -190,6 +201,7 @@ const BlogPageInner = () => {
     setSearchQuery("");
     setSelectedFilter("");
     setSelectedDateFilter("");
+    setShowFeaturedOnly(false);
     setSortBy('latest');
     setSearchResults(sortPosts(allPosts));
     navigate('/blog', { replace: true });
@@ -258,6 +270,11 @@ const BlogPageInner = () => {
       const result = await featuredPostsService.removeFeaturedPost(postId);
       if (result.success) {
         setFeaturedPosts(result.posts);
+        
+        // If showing featured only and this post was unfeatured, refresh the filtered results
+        if (showFeaturedOnly) {
+          handleSearch();
+        }
       } else {
         toast({
           title: "Error",
@@ -283,6 +300,9 @@ const BlogPageInner = () => {
           getDateOptions={getDateOptions}
           clearSearch={clearSearch}
           filters={filters}
+          showFeaturedOnly={showFeaturedOnly}
+          setShowFeaturedOnly={setShowFeaturedOnly}
+          featuredPostIds={featuredPosts}
         />
       </Sidebar>
       <SidebarInset>

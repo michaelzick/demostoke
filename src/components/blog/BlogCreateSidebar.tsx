@@ -8,6 +8,7 @@ import { AlertCircle, CheckCircle, TrendingUp, Eye, Target, Zap } from "lucide-r
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { getContentStats } from "@/utils/textExtraction";
 
 interface SEOAnalysis {
   overall_score: number;
@@ -266,13 +267,13 @@ export function BlogCreateSidebar({ title, excerpt, content, category }: BlogCre
               </div>
               <div className="flex justify-between text-xs">
                 <span>Word Count:</span>
-                <span className={content.split(' ').length >= 1500 ? "text-green-500" : content.split(' ').length >= 1000 ? "text-amber-500" : "text-red-500"}>
-                  {content.split(' ').filter(word => word.length > 0).length} words
+                <span className={getContentStats(content).wordCount >= 1500 ? "text-green-500" : getContentStats(content).wordCount >= 1000 ? "text-amber-500" : "text-red-500"}>
+                  {getContentStats(content).wordCount} words
                 </span>
               </div>
               <div className="flex justify-between text-xs">
                 <span>Reading Time:</span>
-                <span>{Math.ceil(content.split(' ').length / 200)} min</span>
+                <span>{getContentStats(content).readingTime} min</span>
               </div>
             </CardContent>
           </Card>

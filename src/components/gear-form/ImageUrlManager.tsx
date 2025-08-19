@@ -89,7 +89,6 @@ const ImageUrlManager = ({
               value={url}
               onChange={(e) => updateImageUrl(index, e.target.value)}
               className="flex-1"
-              size="sm"
             />
             <Button
               type="button"

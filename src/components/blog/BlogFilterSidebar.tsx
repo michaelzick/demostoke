@@ -29,6 +29,9 @@ interface BlogFilterSidebarProps {
   getDateOptions: () => DateOption[];
   clearSearch: () => void;
   filters: FilterOption[];
+  showFeaturedOnly: boolean;
+  setShowFeaturedOnly: (value: boolean) => void;
+  featuredPostIds: string[];
 }
 
 export function BlogFilterSidebar({
@@ -43,6 +46,9 @@ export function BlogFilterSidebar({
   getDateOptions,
   clearSearch,
   filters,
+  showFeaturedOnly,
+  setShowFeaturedOnly,
+  featuredPostIds,
 }: BlogFilterSidebarProps) {
   const { setOpen, setOpenMobile } = useSidebar();
   const isMobile = useIsMobile();
@@ -69,6 +75,7 @@ export function BlogFilterSidebar({
     !!searchQuery ||
     !!selectedFilter ||
     !!selectedDateFilter ||
+    showFeaturedOnly ||
     sortBy !== "latest";
 
   const bottomPadding = isMobile
@@ -98,6 +105,17 @@ export function BlogFilterSidebar({
               />
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-500" />
             </div>
+          </div>
+
+          <div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowFeaturedOnly(!showFeaturedOnly)}
+              className={cn("w-full justify-start", showFeaturedOnly && "border-white text-white")}
+            >
+              Featured Posts
+            </Button>
           </div>
 
           <div>
