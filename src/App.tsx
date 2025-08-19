@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./contexts/auth/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ClientOnlyAmplitudeInit } from "./components/ClientOnlyAmplitudeInit";
+import GoogleTagManager from "./components/GoogleTagManager";
 import AppRoutes from "./components/AppRoutes";
 
 const queryClient = new QueryClient({
@@ -24,6 +25,7 @@ const App = () => {
           <TooltipProvider>
             <ClientOnlyToaster />
             <ClientOnlyAmplitudeInit />
+            <GoogleTagManager />
             <AppRoutes />
           </TooltipProvider>
         </AuthProvider>
