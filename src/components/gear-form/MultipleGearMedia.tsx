@@ -187,7 +187,8 @@ const MultipleGearMedia = ({
                 size="sm"
                 onClick={() => {
                   const searchQuery = encodeURIComponent(gearName || '');
-                  window.open(`https://www.google.com/search?q=${searchQuery}`, '_blank');
+                  const newWindow = window.open(`https://www.google.com/search?q=${searchQuery}`, '_blank', 'noopener,noreferrer');
+                  if (newWindow) newWindow.opener = null;
                 }}
                 className="flex items-center gap-2"
                 disabled={!gearName?.trim()}
