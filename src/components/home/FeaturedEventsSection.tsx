@@ -63,8 +63,8 @@ const FeaturedEventsSection = () => {
           </div>
           <div className="flex justify-end mt-12 md:mt-0">
             <div className="relative">
-              <div className="absolute -top-6 -left-6 bg-white/10 dark:bg-white/20 rounded-full w-40 h-40 animate-float homepage-float-1"></div>
-              <div className="absolute -bottom-4 -right-4 bg-white/10 dark:bg-white/20 rounded-full w-24 h-24 animate-float"></div>
+              <div className="absolute -top-6 -left-6 bg-zinc-700/10 dark:bg-white/20 rounded-full w-40 h-40 animate-float homepage-float-1"></div>
+              <div className="absolute -bottom-4 -right-4 bg-zinc-700/10 dark:bg-white/20 rounded-full w-24 h-24 animate-float"></div>
               <img
                 src="https://www.mayrhofen3000.at/wp-content/uploads/2024/01/Foto-Gruppenkurs-Snowboard-Fortgeschritten-scaled-900x600.jpg"
                 alt="Snowboarder"
