@@ -20,6 +20,7 @@ import { UserProfileNotFound } from "@/components/profile/UserProfileNotFound";
 import { ProfileFormSection } from "@/components/profile/ProfileFormSection";
 import { PasswordChangeSection } from "@/components/profile/PasswordChangeSection";
 import { HeroImageSection } from "@/components/profile/HeroImageSection";
+import { PrivacySettingsSection } from "@/components/profile/PrivacySettingsSection";
 import { ProfileLoadingSkeleton } from "@/components/profile/ProfileLoadingSkeleton";
 import { useProfileImageHandlers } from "@/hooks/useProfileImageHandlers";
 import { useHeroImageHandlers } from "@/hooks/useHeroImageHandlers";
@@ -140,6 +141,11 @@ const RealUserProfilePage = () => {
       location_lat: ownProfileData.location_lat,
       location_lng: ownProfileData.location_lng,
       website: ownProfileData.website, // Include website field
+      show_phone: ownProfileData.show_phone,
+      show_address: ownProfileData.show_address,
+      show_website: ownProfileData.show_website,
+      show_location: ownProfileData.show_location,
+      privacy_acknowledgment: ownProfileData.privacy_acknowledgment,
       member_since: new Date().toISOString(),
       created_at: new Date().toISOString(),
     } as UserProfile;
@@ -226,6 +232,18 @@ const RealUserProfilePage = () => {
           onHeroImageUpload={handleHeroImageUpload}
           onDeleteHeroImage={handleDeleteHeroImage}
         />
+
+        <PrivacySettingsSection
+          userId={user?.id || ''}
+          showPhone={profile?.show_phone ?? true}
+          showAddress={profile?.show_address ?? true}
+          showWebsite={profile?.show_website ?? true}
+          showLocation={profile?.show_location ?? true}
+          privacyAcknowledgment={profile?.privacy_acknowledgment ?? false}
+          onPrivacyUpdate={() => {
+            refetchOwnProfile();
+          }}
+        />
       </div>
     );
   }
@@ -256,7 +274,8 @@ const RealUserProfilePage = () => {
             <UserProfileSidebar 
               profile={profile} 
               stats={stats} 
-              memberSinceDate={memberSinceDate} 
+              memberSinceDate={memberSinceDate}
+              isOwnProfile={isOwnProfile}
             />
           </div>
           

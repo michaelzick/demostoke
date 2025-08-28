@@ -7,13 +7,40 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
   public: {
     Tables: {
+      app_privacy_settings: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_value: Json
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       app_settings: {
         Row: {
           created_at: string | null
@@ -556,6 +583,11 @@ export type Database = {
           member_since: string | null
           name: string | null
           phone: string | null
+          privacy_acknowledgment: boolean | null
+          show_address: boolean | null
+          show_location: boolean | null
+          show_phone: boolean | null
+          show_website: boolean | null
           website: string | null
         }
         Insert: {
@@ -570,6 +602,11 @@ export type Database = {
           member_since?: string | null
           name?: string | null
           phone?: string | null
+          privacy_acknowledgment?: boolean | null
+          show_address?: boolean | null
+          show_location?: boolean | null
+          show_phone?: boolean | null
+          show_website?: boolean | null
           website?: string | null
         }
         Update: {
@@ -584,6 +621,11 @@ export type Database = {
           member_since?: string | null
           name?: string | null
           phone?: string | null
+          privacy_acknowledgment?: boolean | null
+          show_address?: boolean | null
+          show_location?: boolean | null
+          show_phone?: boolean | null
+          show_website?: boolean | null
           website?: string | null
         }
         Relationships: []
@@ -747,8 +789,8 @@ export type Database = {
       find_unused_downloaded_images: {
         Args: Record<PropertyKey, never>
         Returns: {
-          file_path: string
           downloaded_url: string
+          file_path: string
           reason: string
         }[]
       }
@@ -778,10 +820,10 @@ export type Database = {
       log_security_event: {
         Args: {
           action_type: string
-          table_name?: string
-          record_id?: string
-          old_values?: Json
           new_values?: Json
+          old_values?: Json
+          record_id?: string
+          table_name?: string
         }
         Returns: undefined
       }

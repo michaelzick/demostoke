@@ -18,7 +18,7 @@ export const useProfileQuery = () => {
 
       const { data: profileData, error } = await supabase
         .from('profiles')
-        .select('name, avatar_url, hero_image_url, phone, address, about, website, location_lat, location_lng')
+        .select('name, avatar_url, hero_image_url, phone, address, about, website, location_lat, location_lng, show_phone, show_address, show_website, show_location, privacy_acknowledgment')
         .eq('id', user.id)
         .single();
 
@@ -36,6 +36,11 @@ export const useProfileQuery = () => {
           website: "",
           profileImage: generateRoleBasedAvatar(user.id, 'retail-store'),
           heroImage: null,
+          show_phone: true,
+          show_address: true,
+          show_website: true,
+          show_location: true,
+          privacy_acknowledgment: false,
         };
       }
 
@@ -62,6 +67,11 @@ export const useProfileQuery = () => {
         website: profileData.website || "",
         profileImage: avatarUrl,
         heroImage: profileData.hero_image_url,
+        show_phone: profileData.show_phone ?? true,
+        show_address: profileData.show_address ?? true,
+        show_website: profileData.show_website ?? true,
+        show_location: profileData.show_location ?? true,
+        privacy_acknowledgment: profileData.privacy_acknowledgment ?? false,
       };
     } catch (error) {
       console.error('Error in fetchProfileData:', error);
@@ -81,6 +91,11 @@ export const useProfileQuery = () => {
         website: "",
         profileImage: generateRoleBasedAvatar(user.id, 'retail-store'),
         heroImage: null,
+        show_phone: true,
+        show_address: true,
+        show_website: true,
+        show_location: true,
+        privacy_acknowledgment: false,
       };
     }
   };

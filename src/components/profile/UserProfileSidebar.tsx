@@ -16,6 +16,10 @@ interface UserProfileSidebarProps {
     location_lng?: number | null;
     website?: string | null;
     displayRole?: string;
+    show_phone?: boolean;
+    show_address?: boolean;
+    show_website?: boolean;
+    show_location?: boolean;
   };
   stats?: {
     averageRating: number;
@@ -23,9 +27,10 @@ interface UserProfileSidebarProps {
     responseRate: number;
   } | null;
   memberSinceDate: number;
+  isOwnProfile?: boolean;
 }
 
-export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProfileSidebarProps) => {
+export const UserProfileSidebar = ({ profile, stats, memberSinceDate, isOwnProfile }: UserProfileSidebarProps) => {
   const isPrivateParty = profile.displayRole === 'private-party';
 
   return (
@@ -46,12 +51,14 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
           </div>
 
           {/* Contact Information Section */}
-          {(profile.address || profile.phone || profile.website) && (
+          {((profile.address && (profile.show_address !== false || isOwnProfile)) || 
+            (profile.phone && (profile.show_phone !== false || isOwnProfile)) || 
+            (profile.website && (profile.show_website !== false || isOwnProfile))) && (
             <>
               <Separator />
               <div className="space-y-3">
                 <h4 className="font-medium text-sm">Contact Information</h4>
-                {profile.address && (
+                {(profile.address && (profile.show_address !== false || isOwnProfile)) && (
                   <div className="flex items-start gap-3">
                     <MapPinIcon className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                     <div>
@@ -66,7 +73,7 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
                     </div>
                   </div>
                 )}
-                {profile.phone && (
+                {(profile.phone && (profile.show_phone !== false || isOwnProfile)) && (
                   <div className="flex items-start gap-3">
                     <PhoneIcon className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                     <div>
@@ -74,7 +81,7 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
                     </div>
                   </div>
                 )}
-                {profile.website && (
+                {(profile.website && (profile.show_website !== false || isOwnProfile)) && (
                   <div className="flex items-start gap-3">
                     <GlobeIcon className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                     <div>
@@ -157,7 +164,7 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate }: UserProf
           )}
         </CardContent>
       </Card>
-      {profile.location_lat && profile.location_lng && (
+      {profile.location_lat && profile.location_lng && (profile.show_location !== false || isOwnProfile) && (
         <div className="h-40 rounded-md overflow-hidden mt-4">
           <MapComponent
             initialEquipment={[{

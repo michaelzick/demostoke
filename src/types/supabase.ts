@@ -61,6 +61,32 @@ export interface Database {
           view_count?: number;
         };
       };
+      app_privacy_settings: {
+        Row: {
+          id: string;
+          setting_key: string;
+          setting_value: any;
+          description: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          setting_key: string;
+          setting_value: any;
+          description?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          setting_key?: string;
+          setting_value?: any;
+          description?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       user_preferences: {
         Row: {
           id: string;
@@ -100,6 +126,14 @@ export interface Database {
           address: string;
           hero_image_url: string;
           member_since: string;
+          show_phone: boolean;
+          show_address: boolean;
+          show_website: boolean;
+          show_location: boolean;
+          privacy_acknowledgment: boolean;
+          website: string;
+          location_lat: number;
+          location_lng: number;
         };
         Insert: {
           id: string;
@@ -113,6 +147,14 @@ export interface Database {
           address?: string;
           hero_image_url?: string;
           member_since?: string;
+          show_phone?: boolean;
+          show_address?: boolean;
+          show_website?: boolean;
+          show_location?: boolean;
+          privacy_acknowledgment?: boolean;
+          website?: string;
+          location_lat?: number;
+          location_lng?: number;
         };
         Update: {
           id?: string;
@@ -126,6 +168,14 @@ export interface Database {
           address?: string;
           hero_image_url?: string;
           member_since?: string;
+          show_phone?: boolean;
+          show_address?: boolean;
+          show_website?: boolean;
+          show_location?: boolean;
+          privacy_acknowledgment?: boolean;
+          website?: string;
+          location_lat?: number;
+          location_lng?: number;
         };
       };
       pricing_options: {

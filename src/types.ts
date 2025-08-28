@@ -85,6 +85,11 @@ export interface UserProfile {
   member_since?: string;
   website?: string | null; // Add website field
   displayRole?: string;
+  show_phone?: boolean;
+  show_address?: boolean;
+  show_website?: boolean;
+  show_location?: boolean;
+  privacy_acknowledgment?: boolean;
 }
 
 // Add GearOwner interface (alias for Owner for backward compatibility)
