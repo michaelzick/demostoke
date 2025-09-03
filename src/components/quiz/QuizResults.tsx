@@ -99,9 +99,9 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
                 <div className="flex items-start justify-between">
                   <div>
                     <CardTitle className="text-lg">{rec.title}</CardTitle>
-                    {rec.category && (
-                      <Badge className={`mt-2 ${getSkillBadgeVariant(rec.category)}`}>
-                        {rec.category}
+                     {quizData?.skillLevel && (
+                      <Badge className={`mt-2 ${getSkillBadgeVariant(quizData.skillLevel)}`}>
+                        {quizData.skillLevel}
                       </Badge>
                     )}
                   </div>

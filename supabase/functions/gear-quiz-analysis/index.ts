@@ -41,19 +41,19 @@ serve(async (req) => {
 {
   "recommendations": [
     {
-      "category": "beginner/intermediate/advanced gear category",
+      "category": "${quizData.skillLevel}",
       "title": "Specific gear name/model if possible",
-      "description": "Detailed explanation of why this gear fits their profile",
+      "description": "Detailed explanation of why this gear fits their profile, including specific technical details and why it's perfect for their skill level and riding style",
       "keyFeatures": ["feature1", "feature2", "feature3"],
       "suitableFor": "Specific scenarios/conditions where this gear excels"
     }
   ],
-  "personalizedAdvice": "Custom advice based on their profile",
-  "skillDevelopment": "Tips for progressing with their current skill level",
-  "locationConsiderations": "Specific advice for their riding locations"
+  "personalizedAdvice": "Comprehensive personalized advice based on their skill level, physical characteristics, and riding style. Include specific recommendations for gear setup, maintenance, and progression tips.",
+  "skillDevelopment": "Detailed skill development advice with specific techniques, drills, and progression paths for ${quizData.skillLevel} level riders in ${quizData.category}.",
+  "locationConsiderations": "Specific advice for riding in ${quizData.locations}, including terrain considerations, weather factors, and gear adaptations needed for local conditions."
 }
 
-Focus on practical, actionable recommendations that match their skill level, physical characteristics, and local conditions.`;
+IMPORTANT: Always use "${quizData.skillLevel}" exactly as the category value. Provide detailed, specific advice that's actionable and tailored to their profile.`;
 
     const userPrompt = `Please analyze this user profile and provide gear recommendations:
 
@@ -100,15 +100,15 @@ Provide specific gear recommendations with explanations tailored to their profil
       // If JSON parsing fails, return as structured text
       parsedResult = {
         recommendations: [{
-          category: "General Recommendation",
+          category: quizData.skillLevel,
           title: "Personalized Gear Analysis",
           description: analysisResult,
           keyFeatures: [],
-          suitableFor: `${quizData.skillLevel} ${quizData.category} enthusiast`
+          suitableFor: `Perfect for ${quizData.skillLevel} level ${quizData.category} enthusiasts`
         }],
-        personalizedAdvice: "Based on your profile, focus on gear that matches your skill level and local conditions.",
-        skillDevelopment: `As a ${quizData.skillLevel} rider, continue developing your skills with appropriate gear.`,
-        locationConsiderations: `Consider the specific conditions in: ${quizData.locations}`
+        personalizedAdvice: `Based on your profile as a ${quizData.skillLevel} ${quizData.category} rider, focus on gear that matches your skill level and local riding conditions. Consider equipment that will help you progress while remaining comfortable with your current abilities.`,
+        skillDevelopment: `As a ${quizData.skillLevel} rider, focus on developing core techniques and building confidence. Consider taking lessons or riding with more experienced friends to accelerate your progression in ${quizData.category}.`,
+        locationConsiderations: `For riding in ${quizData.locations}, research local conditions, weather patterns, and terrain types. Connect with local riding communities and consider gear specific to your region's unique challenges.`
       };
     }
 
