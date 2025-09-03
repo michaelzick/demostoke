@@ -143,7 +143,7 @@ const GearQuizPage = () => {
       case 6:
         return <AdditionalNotes value={quizData.additionalNotes} onChange={(value) => updateQuizData('additionalNotes', value)} />;
       case 7:
-        return <QuizResults results={results} onRetakeQuiz={resetQuiz} />;
+        return <QuizResults results={results} onRetakeQuiz={resetQuiz} quizData={quizData} />;
       default:
         return null;
     }

@@ -3,13 +3,63 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { RefreshCw, CheckCircle, MapPin, TrendingUp, Target } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Equipment } from "@/types";
+import { fetchEquipmentFromSupabase } from "@/services/equipment/equipmentDataService";
+import CompactEquipmentCard from "@/components/CompactEquipmentCard";
 
 interface QuizResultsProps {
   results: any;
   onRetakeQuiz: () => void;
+  quizData?: {
+    category: string;
+    skillLevel: string;
+  };
 }
 
-const QuizResults = ({ results, onRetakeQuiz }: QuizResultsProps) => {
+const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
+  const [recommendedGear, setRecommendedGear] = useState<Equipment[]>([]);
+  const [loadingGear, setLoadingGear] = useState(true);
+
+  // Skill level badge colors
+  const getSkillBadgeVariant = (skillLevel: string) => {
+    switch (skillLevel?.toLowerCase()) {
+      case 'beginner':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case 'intermediate':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+      case 'advanced':
+        return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
+      case 'expert':
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+    }
+  };
+
+  useEffect(() => {
+    const fetchRecommendedGear = async () => {
+      if (!quizData?.category) return;
+      
+      try {
+        setLoadingGear(true);
+        const allEquipment = await fetchEquipmentFromSupabase();
+        
+        // Filter by category and limit to 4 items
+        const filteredGear = allEquipment
+          .filter(item => item.category === quizData.category)
+          .slice(0, 4);
+          
+        setRecommendedGear(filteredGear);
+      } catch (error) {
+        console.error('Error fetching recommended gear:', error);
+      } finally {
+        setLoadingGear(false);
+      }
+    };
+
+    fetchRecommendedGear();
+  }, [quizData?.category]);
   if (!results) {
     return (
       <div className="text-center py-8">
@@ -50,7 +100,7 @@ const QuizResults = ({ results, onRetakeQuiz }: QuizResultsProps) => {
                   <div>
                     <CardTitle className="text-lg">{rec.title}</CardTitle>
                     {rec.category && (
-                      <Badge variant="secondary" className="mt-2">
+                      <Badge className={`mt-2 ${getSkillBadgeVariant(rec.category)}`}>
                         {rec.category}
                       </Badge>
                     )}
@@ -129,6 +179,34 @@ const QuizResults = ({ results, onRetakeQuiz }: QuizResultsProps) => {
           </Card>
         )}
       </div>
+
+      <Separator />
+
+      {/* Recommended Gear from Database */}
+      {recommendedGear.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-xl font-semibold flex items-center gap-2">
+            <Target className="w-5 h-5 text-primary" />
+            Available Gear for You
+          </h3>
+          {loadingGear ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-64 bg-muted animate-pulse rounded-lg" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {recommendedGear.map((equipment) => (
+                <CompactEquipmentCard 
+                  key={equipment.id} 
+                  equipment={equipment}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       <Separator />
 
