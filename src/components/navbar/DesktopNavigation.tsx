@@ -88,6 +88,10 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
         List Your Gear
         <SquiggleUnderline />
       </button> */}
+      <Link to="/quiz" className="relative group text-base font-medium hover:text-primary transition-colors py-2">
+        Gear Quiz
+        <SquiggleUnderline />
+      </Link>
       <Link to="/demo-calendar" className="relative group text-base font-medium hover:text-primary transition-colors py-2">
         Demo Calendar
         <SquiggleUnderline />

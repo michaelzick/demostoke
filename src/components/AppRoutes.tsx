@@ -32,6 +32,7 @@ import ShopPage from "../pages/ShopPage";
 import PrivatePartyPage from "../pages/PrivatePartyPage";
 import SearchResultsPage from "../pages/SearchResultsPage";
 import DemoCalendarPage from "../pages/DemoCalendarPage";
+import GearQuizPage from "../pages/GearQuizPage";
 
 const AppRoutes = () => {
   return (
@@ -67,6 +68,7 @@ const AppRoutes = () => {
           <Route path="shop/:shopId" element={<ShopPage />} />
           <Route path="private-party/:partyId" element={<PrivatePartyPage />} />
           <Route path="search" element={<SearchResultsPage />} />
+          <Route path="quiz" element={<GearQuizPage />} />
           <Route path="demo-calendar" element={<DemoCalendarPage />} />
           <Route path="demo-calendar/event/:eventSlug" element={<DemoCalendarPage />} />
           <Route path="event/:eventSlug" element={<DemoCalendarPage />} />
