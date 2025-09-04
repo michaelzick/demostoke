@@ -33,9 +33,9 @@ const sanitizeText = (input: string): string => {
   return input
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     .replace(/<[^>]*>/g, '')
-    .replace(/[<>&"']/g, (match) => {
+    .replace(/[<>&]/g, (match) => {
       const escapeMap: { [key: string]: string } = {
-        '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#x27;'
+        '<': '&lt;', '>': '&gt;', '&': '&amp;'
       };
       return escapeMap[match] || match;
     })
@@ -44,35 +44,35 @@ const sanitizeText = (input: string): string => {
 
 const validateQuizData = (data: QuizData): { isValid: boolean; error?: string } => {
   const requiredFields = ['category', 'height', 'weight', 'age', 'sex', 'skillLevel', 'locations', 'currentGear'];
-  
+
   for (const field of requiredFields) {
     if (!data[field as keyof QuizData] || (typeof data[field as keyof QuizData] === 'string' && !data[field as keyof QuizData].trim())) {
       return { isValid: false, error: `${field} is required` };
     }
   }
-  
+
   const weight = parseInt(data.weight, 10);
   if (isNaN(weight) || weight < FIELD_LIMITS.weight.min || weight > FIELD_LIMITS.weight.max) {
     return { isValid: false, error: `Weight must be between ${FIELD_LIMITS.weight.min} and ${FIELD_LIMITS.weight.max}` };
   }
-  
+
   const age = parseInt(data.age, 10);
   if (isNaN(age) || age < FIELD_LIMITS.age.min || age > FIELD_LIMITS.age.max) {
     return { isValid: false, error: `Age must be between ${FIELD_LIMITS.age.min} and ${FIELD_LIMITS.age.max}` };
   }
-  
+
   if (data.locations.length > FIELD_LIMITS.locations) {
     return { isValid: false, error: `Locations must be ${FIELD_LIMITS.locations} characters or less` };
   }
-  
+
   if (data.currentGear.length > FIELD_LIMITS.currentGear) {
     return { isValid: false, error: `Current gear must be ${FIELD_LIMITS.currentGear} characters or less` };
   }
-  
+
   if (data.additionalNotes && data.additionalNotes.length > FIELD_LIMITS.additionalNotes) {
     return { isValid: false, error: `Additional notes must be ${FIELD_LIMITS.additionalNotes} characters or less` };
   }
-  
+
   return { isValid: true };
 };
 
@@ -188,40 +188,40 @@ Provide specific gear recommendations with explanations tailored to their profil
     try {
       // Clean up potential JSON formatting issues
       let cleanedResult = analysisResult;
-      
+
       // Remove any text before the first {
       const firstBrace = cleanedResult.indexOf('{');
       if (firstBrace > 0) {
         cleanedResult = cleanedResult.substring(firstBrace);
       }
-      
+
       // Remove any text after the last }
       const lastBrace = cleanedResult.lastIndexOf('}');
       if (lastBrace < cleanedResult.length - 1) {
         cleanedResult = cleanedResult.substring(0, lastBrace + 1);
       }
-      
+
       parsedResult = JSON.parse(cleanedResult);
-      
+
       // Validate the structure
       if (!parsedResult.recommendations || !Array.isArray(parsedResult.recommendations)) {
         throw new Error('Invalid response structure');
       }
-      
+
       console.log('Successfully parsed JSON response');
     } catch (parseError) {
       console.error('JSON parsing failed:', parseError);
       console.log('Attempting to extract useful content from raw response');
-      
+
       // Enhanced fallback with better content extraction
       let fallbackDescription = analysisResult;
-      
+
       // Try to extract meaningful content from malformed JSON
       const descriptionMatch = analysisResult.match(/"description":\s*"([^"]+)"/);
       if (descriptionMatch) {
         fallbackDescription = descriptionMatch[1];
       }
-      
+
       parsedResult = {
         recommendations: [{
           category: quizData.skillLevel,

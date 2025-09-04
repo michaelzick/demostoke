@@ -3,20 +3,24 @@
 // Sanitize text content for safe display
 export const sanitizeForDisplay = (content: string): string => {
   if (!content) return '';
-  
+
   return content
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
     .replace(/<[^>]*>/g, '') // Remove HTML tags
-    .replace(/[<>&"']/g, (match) => { // Escape dangerous characters
+    .replace(/[<>&]/g, (match) => { // Only escape truly dangerous characters for HTML injection
       const escapeMap: { [key: string]: string } = {
         '<': '&lt;',
         '>': '&gt;',
-        '&': '&amp;',
-        '"': '&quot;',
-        "'": '&#x27;'
+        '&': '&amp;'
       };
       return escapeMap[match] || match;
     })
+    // Decode any existing HTML entities back to normal characters for display
+    .replace(/&#x27;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
     .trim();
 };
 
