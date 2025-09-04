@@ -96,7 +96,7 @@ const GearQuizPage = () => {
       }
 
       const sanitizedData = sanitizeQuizData(quizData);
-      
+
       const { data, error } = await supabase.functions.invoke('gear-quiz-analysis', {
         body: sanitizedData
       });
@@ -138,7 +138,7 @@ const GearQuizPage = () => {
       case 1:
         return <CategorySelection value={quizData.category} onChange={(value) => updateQuizData('category', value)} />;
       case 2:
-        return <PhysicalStats 
+        return <PhysicalStats
           height={quizData.height}
           weight={quizData.weight}
           age={quizData.age}
@@ -150,8 +150,8 @@ const GearQuizPage = () => {
       case 4:
         return <LocationInput value={quizData.locations} onChange={(value) => updateQuizData('locations', value)} />;
       case 5:
-        return <CurrentGearInput 
-          value={quizData.currentGear} 
+        return <CurrentGearInput
+          value={quizData.currentGear}
           onChange={(value) => updateQuizData('currentGear', value)}
           category={quizData.category}
         />;
@@ -186,7 +186,7 @@ const GearQuizPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 py-8">
+    <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4">Gear Quiz</h1>
@@ -199,7 +199,7 @@ const GearQuizPage = () => {
           <QuizProgress currentStep={currentStep} totalSteps={totalSteps} />
         )}
 
-        <Card className="bg-card/80 backdrop-blur-sm border-border/50">
+        <Card className="bg-card rounded-lg shadow-sm border">
           <CardHeader>
             <CardTitle className="text-2xl text-center">
               {getStepTitle()}

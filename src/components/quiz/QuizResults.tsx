@@ -41,19 +41,19 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
   useEffect(() => {
     const fetchRecommendedGear = async () => {
       if (!quizData?.category || !quizData?.skillLevel) return;
-      
+
       try {
         setLoadingGear(true);
         const allEquipment = await fetchEquipmentFromSupabase();
-        
+
         // Filter by both category and skill level
         const filteredGear = allEquipment
-          .filter(item => 
-            item.category === quizData.category && 
+          .filter(item =>
+            item.category === quizData.category &&
             item.specifications?.suitable?.toLowerCase().includes(quizData.skillLevel.toLowerCase())
           )
           .slice(0, 4);
-          
+
         setRecommendedGear(filteredGear);
       } catch (error) {
         console.error('Error fetching recommended gear:', error);
@@ -101,7 +101,7 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
             Recommended Gear
           </h3>
           {recommendations.map((rec: any, index: number) => (
-            <Card key={index} className="bg-card/80 backdrop-blur-sm">
+            <Card key={index} className="bg-card rounded-lg shadow-sm border">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div>
@@ -116,7 +116,7 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-muted-foreground">{rec.description}</p>
-                
+
                 {rec.keyFeatures && rec.keyFeatures.length > 0 && (
                   <div>
                     <h4 className="font-medium mb-2">Key Features:</h4>
@@ -127,7 +127,7 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
                     </ul>
                   </div>
                 )}
-                
+
                 {rec.suitableFor && (
                   <div>
                     <h4 className="font-medium mb-2">Perfect For:</h4>
@@ -145,7 +145,7 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
       {/* Additional Advice Sections */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {personalizedAdvice && (
-          <Card className="bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+          <Card className="bg-card rounded-lg shadow-sm border">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <CheckCircle className="w-5 h-5 text-blue-500" />
@@ -159,7 +159,7 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
         )}
 
         {skillDevelopment && (
-          <Card className="bg-green-50/50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
+          <Card className="bg-card rounded-lg shadow-sm border">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-green-500" />
@@ -173,7 +173,7 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
         )}
 
         {locationConsiderations && (
-          <Card className="bg-orange-50/50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-800">
+          <Card className="bg-card rounded-lg shadow-sm border">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-orange-500" />
@@ -205,8 +205,8 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {recommendedGear.map((equipment) => (
-                <CompactEquipmentCard 
-                  key={equipment.id} 
+                <CompactEquipmentCard
+                  key={equipment.id}
                   equipment={equipment}
                 />
               ))}
@@ -231,7 +231,7 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
       {/* Disclaimer */}
       <div className="bg-muted/30 p-4 rounded-lg mt-8">
         <p className="text-xs text-muted-foreground text-center">
-          <span className="font-medium">Note:</span> These recommendations are AI-generated based on your profile. 
+          <span className="font-medium">Note:</span> These recommendations are AI-generated based on your profile.
           Always consult with gear experts and try equipment when possible before making purchase decisions.
         </p>
       </div>
