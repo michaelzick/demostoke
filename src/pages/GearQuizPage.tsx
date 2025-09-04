@@ -12,6 +12,7 @@ import QuizProgress from "@/components/quiz/QuizProgress";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { validateQuizData, sanitizeQuizData } from "@/utils/quizValidation";
 
 interface QuizData {
   category: string;
@@ -82,8 +83,22 @@ const GearQuizPage = () => {
   const submitQuiz = async () => {
     setIsLoading(true);
     try {
+      // Validate and sanitize data before submission
+      const validation = validateQuizData(quizData);
+      if (!validation.isValid) {
+        toast({
+          title: "Validation Error",
+          description: validation.error || "Please check your input and try again.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      const sanitizedData = sanitizeQuizData(quizData);
+      
       const { data, error } = await supabase.functions.invoke('gear-quiz-analysis', {
-        body: quizData
+        body: sanitizedData
       });
 
       if (error) throw error;

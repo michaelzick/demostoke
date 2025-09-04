@@ -26,6 +26,7 @@ const AdditionalNotes = ({ value, onChange }: AdditionalNotesProps) => {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="min-h-[100px] resize-none"
+          maxLength={1000}
         />
         <p className="text-sm text-muted-foreground">
           This is completely optional, but any additional context helps us provide more personalized recommendations.

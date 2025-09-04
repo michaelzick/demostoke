@@ -26,6 +26,7 @@ const LocationInput = ({ value, onChange }: LocationInputProps) => {
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="min-h-[120px] resize-none"
+          maxLength={500}
         />
         <p className="text-sm text-muted-foreground">
           Separate multiple locations with commas. Include details about terrain types, conditions, or specific mountains/beaches.

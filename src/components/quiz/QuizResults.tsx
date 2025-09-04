@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { Equipment } from "@/types";
 import { fetchEquipmentFromSupabase } from "@/services/equipment/equipmentDataService";
 import CompactEquipmentCard from "@/components/CompactEquipmentCard";
+import { sanitizeQuizResults } from "@/utils/contentSanitization";
 
 interface QuizResultsProps {
   results: any;
@@ -63,7 +64,10 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
 
     fetchRecommendedGear();
   }, [quizData?.category, quizData?.skillLevel]);
-  if (!results) {
+  // Sanitize results for safe display
+  const sanitizedResults = sanitizeQuizResults(results);
+
+  if (!sanitizedResults) {
     return (
       <div className="text-center py-8">
         <p className="text-muted-foreground">No results available. Please retake the quiz.</p>
@@ -74,7 +78,7 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
     );
   }
 
-  const { recommendations = [], personalizedAdvice, skillDevelopment, locationConsiderations } = results;
+  const { recommendations = [], personalizedAdvice, skillDevelopment, locationConsiderations } = sanitizedResults;
 
   return (
     <div className="space-y-6">

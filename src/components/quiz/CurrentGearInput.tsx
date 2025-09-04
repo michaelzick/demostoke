@@ -51,13 +51,14 @@ const CurrentGearInput = ({ value, onChange, category }: CurrentGearInputProps) 
 
       <div className="space-y-2">
         <Label htmlFor="currentGear">Current Gear & Preferences</Label>
-        <Textarea
-          id="currentGear"
-          placeholder={getCurrentGearPlaceholder(category)}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="min-h-[120px] resize-none"
-        />
+      <Textarea
+        id="currentGear"
+        placeholder={getCurrentGearPlaceholder(category)}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="min-h-[120px] resize-none"
+        maxLength={1000}
+      />
         <p className="text-sm text-muted-foreground">
           Include brands, models, sizes, what you love or dislike about each piece. Even gear you've just tried or borrowed is helpful!
         </p>
