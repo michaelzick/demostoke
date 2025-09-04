@@ -39,15 +39,18 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
 
   useEffect(() => {
     const fetchRecommendedGear = async () => {
-      if (!quizData?.category) return;
+      if (!quizData?.category || !quizData?.skillLevel) return;
       
       try {
         setLoadingGear(true);
         const allEquipment = await fetchEquipmentFromSupabase();
         
-        // Filter by category and limit to 4 items
+        // Filter by both category and skill level
         const filteredGear = allEquipment
-          .filter(item => item.category === quizData.category)
+          .filter(item => 
+            item.category === quizData.category && 
+            item.specifications?.suitable?.toLowerCase().includes(quizData.skillLevel.toLowerCase())
+          )
           .slice(0, 4);
           
         setRecommendedGear(filteredGear);
@@ -59,7 +62,7 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
     };
 
     fetchRecommendedGear();
-  }, [quizData?.category]);
+  }, [quizData?.category, quizData?.skillLevel]);
   if (!results) {
     return (
       <div className="text-center py-8">
