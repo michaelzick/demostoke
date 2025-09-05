@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import CategorySelection from "@/components/quiz/CategorySelection";
@@ -13,6 +13,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { validateQuizData, sanitizeQuizData } from "@/utils/quizValidation";
+import useScrollToTop from "@/hooks/useScrollToTop";
 
 interface QuizData {
   category: string;
@@ -27,6 +28,8 @@ interface QuizData {
 }
 
 const GearQuizPage = () => {
+  useScrollToTop();
+
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +47,11 @@ const GearQuizPage = () => {
     currentGear: '',
     additionalNotes: ''
   });
+
+  // Scroll to top when step changes, especially when moving to results
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentStep]);
 
   const updateQuizData = (field: keyof QuizData, value: string) => {
     setQuizData(prev => ({ ...prev, [field]: value }));
@@ -187,7 +195,8 @@ const GearQuizPage = () => {
 
   return (
     <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
+      <div className="container mx-auto px-4">
+        <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4">Gear Quiz</h1>
           <p className="text-muted-foreground text-lg">
@@ -242,6 +251,7 @@ const GearQuizPage = () => {
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );

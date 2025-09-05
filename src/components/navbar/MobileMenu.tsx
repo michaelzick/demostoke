@@ -101,7 +101,7 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
             </button> */}
 
             <Link
-              to="/quiz"
+              to="/gear-quiz"
               className="text-lg font-medium"
               onClick={handleLinkClick}
             >

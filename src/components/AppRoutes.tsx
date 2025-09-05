@@ -57,7 +57,6 @@ const AppRoutes = () => {
           <Route path="list-your-gear/add-gear-form" element={<AddGearForm />} />
           <Route path="list-your-gear/lightspeed-pos" element={<LightspeedPOSPage />} />
           <Route path="edit-gear/:id" element={<EditGearPage />} />
-          
           <Route path="my-gear" element={<MyEquipmentPage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="bookings" element={<BookingsPage />} />
@@ -68,7 +67,7 @@ const AppRoutes = () => {
           <Route path="shop/:shopId" element={<ShopPage />} />
           <Route path="private-party/:partyId" element={<PrivatePartyPage />} />
           <Route path="search" element={<SearchResultsPage />} />
-          <Route path="quiz" element={<GearQuizPage />} />
+          <Route path="gear-quiz" element={<GearQuizPage />} />
           <Route path="demo-calendar" element={<DemoCalendarPage />} />
           <Route path="demo-calendar/event/:eventSlug" element={<DemoCalendarPage />} />
           <Route path="event/:eventSlug" element={<DemoCalendarPage />} />
