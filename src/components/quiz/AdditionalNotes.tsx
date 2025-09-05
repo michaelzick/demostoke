@@ -18,23 +18,7 @@ const AdditionalNotes = ({ value, onChange }: AdditionalNotesProps) => {
         </div>
       </div>
 
-      <div className="space-y-2">
-        <p className="text-sm text-muted-foreground mb-4">
-          This is completely optional, but any additional context helps us provide more personalized recommendations.
-        </p>
-        
-        <Label htmlFor="additionalNotes">Additional Notes</Label>
-        <Textarea
-          id="additionalNotes"
-          placeholder="e.g., recovering from injury, prefer eco-friendly brands, budget considerations, specific goals like learning tricks, planning a big trip, looking for rental gear, want something family-friendly..."
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="min-h-[100px] resize-none"
-          maxLength={1000}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div className="bg-muted/20 p-4 rounded-lg">
           <h4 className="font-medium text-sm mb-2">Consider mentioning:</h4>
           <ul className="text-xs text-muted-foreground space-y-1">
@@ -53,6 +37,22 @@ const AdditionalNotes = ({ value, onChange }: AdditionalNotesProps) => {
             <li>• Storage or transport limitations</li>
           </ul>
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground mb-4">
+          This is completely optional, but any additional context helps us provide more personalized recommendations.
+        </p>
+
+        <Label htmlFor="additionalNotes">Additional Notes</Label>
+        <Textarea
+          id="additionalNotes"
+          placeholder="e.g., recovering from injury, prefer eco-friendly brands, budget considerations, specific goals like learning tricks, planning a big trip, looking for rental gear, want something family-friendly..."
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="min-h-[100px] resize-none"
+          maxLength={1000}
+        />
       </div>
     </div>
   );

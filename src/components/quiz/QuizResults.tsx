@@ -53,15 +53,15 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
             if (!suitable) return false;
             const suitableItems = suitable.toLowerCase().split(',').map(s => s.trim());
             const target = targetLevel.toLowerCase();
-            
+
             if (exact) {
               return suitableItems.includes(target);
             }
-            
+
             // Check if any suitable level matches or includes the target
-            return suitableItems.some(item => 
-              item === target || 
-              item.includes(target) || 
+            return suitableItems.some(item =>
+              item === target ||
+              item.includes(target) ||
               target.includes(item)
             );
           };
@@ -71,24 +71,24 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
             const levels = ['beginner', 'intermediate', 'advanced', 'expert'];
             const currentIndex = levels.indexOf(level.toLowerCase());
             const adjacent = [];
-            
+
             if (currentIndex > 0) adjacent.push(levels[currentIndex - 1]);
             if (currentIndex < levels.length - 1) adjacent.push(levels[currentIndex + 1]);
-            
+
             return adjacent;
           };
 
           // Step 1: Try exact skill level match
-          let filtered = equipment.filter(item => 
-            item.category === category && 
+          let filtered = equipment.filter(item =>
+            item.category === category &&
             matchesSkillLevel(item.specifications?.suitable, skillLevel, true)
           );
 
           // Step 2: If less than 3, include adjacent skill levels
           if (filtered.length < 3) {
             const adjacentLevels = getAdjacentSkillLevels(skillLevel);
-            const additionalGear = equipment.filter(item => 
-              item.category === category && 
+            const additionalGear = equipment.filter(item =>
+              item.category === category &&
               !filtered.find(f => f.id === item.id) && // Don't duplicate
               (matchesSkillLevel(item.specifications?.suitable, skillLevel) ||
                adjacentLevels.some(level => matchesSkillLevel(item.specifications?.suitable, level)))
@@ -98,15 +98,15 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
 
           // Step 3: If still less than 3, show all in category
           if (filtered.length < 3) {
-            const remainingGear = equipment.filter(item => 
-              item.category === category && 
+            const remainingGear = equipment.filter(item =>
+              item.category === category &&
               !filtered.find(f => f.id === item.id) // Don't duplicate
             );
             filtered = [...filtered, ...remainingGear];
           }
 
-          // Return up to 6 items, prioritizing exact matches
-          return filtered.slice(0, 6);
+          // Return up to 8 items, prioritizing exact matches
+          return filtered.slice(0, 8);
         };
 
         const filteredGear = getFilteredGear(allEquipment, quizData.category, quizData.skillLevel);
