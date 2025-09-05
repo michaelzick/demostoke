@@ -19,6 +19,10 @@ const AdditionalNotes = ({ value, onChange }: AdditionalNotesProps) => {
       </div>
 
       <div className="space-y-2">
+        <p className="text-sm text-muted-foreground mb-4">
+          This is completely optional, but any additional context helps us provide more personalized recommendations.
+        </p>
+        
         <Label htmlFor="additionalNotes">Additional Notes</Label>
         <Textarea
           id="additionalNotes"
@@ -28,9 +32,6 @@ const AdditionalNotes = ({ value, onChange }: AdditionalNotesProps) => {
           className="min-h-[100px] resize-none"
           maxLength={1000}
         />
-        <p className="text-sm text-muted-foreground">
-          This is completely optional, but any additional context helps us provide more personalized recommendations.
-        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">

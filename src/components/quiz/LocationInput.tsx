@@ -19,6 +19,17 @@ const LocationInput = ({ value, onChange }: LocationInputProps) => {
       </div>
 
       <div className="space-y-2">
+        <p className="text-sm text-muted-foreground mb-2">
+          Separate multiple locations with commas. Include details about terrain types, conditions, or specific mountains/beaches.
+        </p>
+        
+        <div className="bg-muted/30 p-4 rounded-lg mb-4">
+          <p className="text-sm text-muted-foreground">
+            <span className="font-medium">Tip:</span> Include information about typical conditions, elevation, terrain type, 
+            or any unique characteristics of where you ride. This helps us recommend gear suited to your local environment.
+          </p>
+        </div>
+
         <Label htmlFor="locations">Riding Locations</Label>
         <Textarea
           id="locations"
@@ -28,16 +39,6 @@ const LocationInput = ({ value, onChange }: LocationInputProps) => {
           className="min-h-[120px] resize-none"
           maxLength={500}
         />
-        <p className="text-sm text-muted-foreground">
-          Separate multiple locations with commas. Include details about terrain types, conditions, or specific mountains/beaches.
-        </p>
-      </div>
-
-      <div className="bg-muted/30 p-4 rounded-lg">
-        <p className="text-sm text-muted-foreground">
-          <span className="font-medium">Tip:</span> Include information about typical conditions, elevation, terrain type, 
-          or any unique characteristics of where you ride. This helps us recommend gear suited to your local environment.
-        </p>
       </div>
     </div>
   );

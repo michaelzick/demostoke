@@ -119,7 +119,9 @@ serve(async (req) => {
 
     const systemPrompt = `You are an expert outdoor gear consultant with extensive knowledge of ${quizData.category}. Analyze the user's profile and provide detailed, specific gear recommendations.
 
-CRITICAL: You MUST respond with a valid JSON object that exactly matches this structure. Do not include any text before or after the JSON:
+CRITICAL: You MUST respond with a valid JSON object that exactly matches this structure. Do not include any text before or after the JSON.
+
+IMPORTANT: Provide 2-3 different gear recommendations to give the user variety and options. Each recommendation should represent different styles, approaches, or price points within the category.
 
 {
   "recommendations": [
@@ -129,6 +131,20 @@ CRITICAL: You MUST respond with a valid JSON object that exactly matches this st
       "description": "Detailed explanation of why this gear fits their profile, including specific technical details and why it's perfect for their skill level and riding style",
       "keyFeatures": ["feature1", "feature2", "feature3"],
       "suitableFor": "Specific scenarios/conditions where this gear excels"
+    },
+    {
+      "category": "${quizData.skillLevel}",
+      "title": "Different gear name/model representing another style or approach",
+      "description": "Detailed explanation of why this alternative gear fits their profile, with different characteristics or use cases",
+      "keyFeatures": ["feature1", "feature2", "feature3"],
+      "suitableFor": "Different scenarios/conditions where this gear excels"
+    },
+    {
+      "category": "${quizData.skillLevel}",
+      "title": "Third gear option providing additional variety",
+      "description": "Detailed explanation of this third option, offering another perspective or specialty focus",
+      "keyFeatures": ["feature1", "feature2", "feature3"],
+      "suitableFor": "Unique scenarios/conditions where this gear excels"
     }
   ],
   "personalizedAdvice": "Comprehensive personalized advice based on their skill level, physical characteristics, and riding style. Include specific recommendations for gear setup, maintenance, and progression tips.",
@@ -168,7 +184,7 @@ Provide specific gear recommendations with explanations tailored to their profil
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        max_tokens: 2000,
+        max_tokens: 3000,
         temperature: 0.3,
       }),
     });

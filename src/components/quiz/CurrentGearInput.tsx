@@ -50,25 +50,26 @@ const CurrentGearInput = ({ value, onChange, category }: CurrentGearInputProps) 
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="currentGear">Current Gear & Preferences</Label>
-      <Textarea
-        id="currentGear"
-        placeholder={getCurrentGearPlaceholder(category)}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="min-h-[120px] resize-none"
-        maxLength={1000}
-      />
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground mb-2">
           Include brands, models, sizes, what you love or dislike about each piece. Even gear you've just tried or borrowed is helpful!
         </p>
-      </div>
+        
+        <div className="bg-muted/30 p-4 rounded-lg mb-4">
+          <p className="text-sm text-muted-foreground">
+            <span className="font-medium">Be specific:</span> Include details like flex patterns, sizes, what conditions you used them in, 
+            and how they performed. This helps us understand your preferences and recommend similar or upgraded options.
+          </p>
+        </div>
 
-      <div className="bg-muted/30 p-4 rounded-lg">
-        <p className="text-sm text-muted-foreground">
-          <span className="font-medium">Be specific:</span> Include details like flex patterns, sizes, what conditions you used them in, 
-          and how they performed. This helps us understand your preferences and recommend similar or upgraded options.
-        </p>
+        <Label htmlFor="currentGear">Current Gear & Preferences</Label>
+        <Textarea
+          id="currentGear"
+          placeholder={getCurrentGearPlaceholder(category)}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="min-h-[120px] resize-none"
+          maxLength={1000}
+        />
       </div>
     </div>
   );
