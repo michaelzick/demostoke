@@ -39,7 +39,15 @@ const skillLevels = [
 
 const SkillLevelSelection = ({ value, onChange }: SkillLevelSelectionProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="space-y-6">
+      <div className="text-center">
+        <h3 className="text-lg font-semibold mb-2">What's Your Skill Level?</h3>
+        <p className="text-muted-foreground">
+          Be honest about your current abilities. This helps us recommend gear that matches your experience and will help you progress safely.
+        </p>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {skillLevels.map((level) => {
         const Icon = level.icon;
         const isSelected = value === level.id;
@@ -67,6 +75,7 @@ const SkillLevelSelection = ({ value, onChange }: SkillLevelSelectionProps) => {
           </Card>
         );
       })}
+      </div>
     </div>
   );
 };

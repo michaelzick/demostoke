@@ -20,6 +20,12 @@ const PhysicalStats = ({ height, weight, age, sex, onChange }: PhysicalStatsProp
 
   return (
     <div className="space-y-6">
+      <div className="text-center">
+        <h3 className="text-lg font-semibold mb-2">Tell Us About Yourself</h3>
+        <p className="text-muted-foreground mb-4">
+          Physical characteristics help us recommend gear with appropriate sizing, flex patterns, and weight specifications that match your body type and riding style.
+        </p>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <Label htmlFor="height">Height</Label>
@@ -84,11 +90,6 @@ const PhysicalStats = ({ height, weight, age, sex, onChange }: PhysicalStatsProp
             </div>
           </RadioGroup>
         </div>
-      </div>
-
-      <div className="text-sm text-muted-foreground bg-muted/30 p-4 rounded-lg">
-        <p className="font-medium mb-1">Why we ask for this information:</p>
-        <p>Physical characteristics help us recommend gear with appropriate sizing, flex patterns, and weight specifications that match your body type and riding style.</p>
       </div>
     </div>
   );

@@ -35,7 +35,15 @@ const categories = [
 
 const CategorySelection = ({ value, onChange }: CategorySelectionProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="space-y-6">
+      <div className="text-center">
+        <h3 className="text-lg font-semibold mb-2">Choose Your Gear Category</h3>
+        <p className="text-muted-foreground">
+          Select the type of equipment you're looking for to get personalized recommendations.
+        </p>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {categories.map((category) => {
         const Icon = category.icon;
         const isSelected = value === category.id;
@@ -58,6 +66,7 @@ const CategorySelection = ({ value, onChange }: CategorySelectionProps) => {
           </Card>
         );
       })}
+      </div>
     </div>
   );
 };
