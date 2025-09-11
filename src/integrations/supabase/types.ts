@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
@@ -173,6 +173,330 @@ export type Database = {
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      design_system_components: {
+        Row: {
+          category: string
+          component_code: string
+          created_at: string
+          created_by: string
+          description: string | null
+          figma_file_id: string | null
+          id: string
+          is_public: boolean
+          name: string
+          props_schema: Json | null
+          status: string
+          stories: Json | null
+          tags: string[] | null
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          category: string
+          component_code: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          figma_file_id?: string | null
+          id?: string
+          is_public?: boolean
+          name: string
+          props_schema?: Json | null
+          status?: string
+          stories?: Json | null
+          tags?: string[] | null
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          category?: string
+          component_code?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          figma_file_id?: string | null
+          id?: string
+          is_public?: boolean
+          name?: string
+          props_schema?: Json | null
+          status?: string
+          stories?: Json | null
+          tags?: string[] | null
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      design_system_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          company: string | null
+          created_at: string
+          display_name: string | null
+          dribbble_url: string | null
+          github_url: string | null
+          id: string
+          updated_at: string
+          user_id: string
+          website_url: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          company?: string | null
+          created_at?: string
+          display_name?: string | null
+          dribbble_url?: string | null
+          github_url?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+          website_url?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          company?: string | null
+          created_at?: string
+          display_name?: string | null
+          dribbble_url?: string | null
+          github_url?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      design_system_settings: {
+        Row: {
+          accent_color: string | null
+          accent_color_dark: string | null
+          auto_publish: boolean | null
+          background_color: string | null
+          background_color_dark: string | null
+          base_font_size: string | null
+          border_color: string | null
+          border_color_dark: string | null
+          build_command: string | null
+          code_generation: string | null
+          created_at: string
+          default_theme: string | null
+          destructive_color: string | null
+          destructive_color_dark: string | null
+          font_body_lg: string | null
+          font_body_md: string | null
+          font_body_sm: string | null
+          font_caption: string | null
+          font_display_lg: string | null
+          font_display_md: string | null
+          font_display_sm: string | null
+          font_family: string | null
+          font_heading_lg: string | null
+          font_heading_md: string | null
+          font_heading_sm: string | null
+          foreground_color: string | null
+          foreground_color_dark: string | null
+          id: string
+          muted_color: string | null
+          muted_color_dark: string | null
+          notifications: boolean | null
+          primary_color: string | null
+          primary_color_dark: string | null
+          project_description: string | null
+          project_name: string | null
+          project_version: string | null
+          public_components: boolean | null
+          ring_color: string | null
+          ring_color_dark: string | null
+          secondary_color: string | null
+          secondary_color_dark: string | null
+          sidebar_accent: string | null
+          sidebar_accent_dark: string | null
+          sidebar_accent_foreground: string | null
+          sidebar_accent_foreground_dark: string | null
+          sidebar_background: string | null
+          sidebar_background_dark: string | null
+          sidebar_border: string | null
+          sidebar_border_dark: string | null
+          sidebar_foreground: string | null
+          sidebar_foreground_dark: string | null
+          sidebar_primary: string | null
+          sidebar_primary_dark: string | null
+          sidebar_primary_foreground: string | null
+          sidebar_primary_foreground_dark: string | null
+          sidebar_ring: string | null
+          sidebar_ring_dark: string | null
+          spacing_2xl: string | null
+          spacing_3xl: string | null
+          spacing_4xl: string | null
+          spacing_lg: string | null
+          spacing_md: string | null
+          spacing_sm: string | null
+          spacing_xl: string | null
+          spacing_xs: string | null
+          storybook_port: string | null
+          success_color: string | null
+          success_color_dark: string | null
+          test_command: string | null
+          updated_at: string
+          user_id: string
+          warning_color: string | null
+          warning_color_dark: string | null
+        }
+        Insert: {
+          accent_color?: string | null
+          accent_color_dark?: string | null
+          auto_publish?: boolean | null
+          background_color?: string | null
+          background_color_dark?: string | null
+          base_font_size?: string | null
+          border_color?: string | null
+          border_color_dark?: string | null
+          build_command?: string | null
+          code_generation?: string | null
+          created_at?: string
+          default_theme?: string | null
+          destructive_color?: string | null
+          destructive_color_dark?: string | null
+          font_body_lg?: string | null
+          font_body_md?: string | null
+          font_body_sm?: string | null
+          font_caption?: string | null
+          font_display_lg?: string | null
+          font_display_md?: string | null
+          font_display_sm?: string | null
+          font_family?: string | null
+          font_heading_lg?: string | null
+          font_heading_md?: string | null
+          font_heading_sm?: string | null
+          foreground_color?: string | null
+          foreground_color_dark?: string | null
+          id?: string
+          muted_color?: string | null
+          muted_color_dark?: string | null
+          notifications?: boolean | null
+          primary_color?: string | null
+          primary_color_dark?: string | null
+          project_description?: string | null
+          project_name?: string | null
+          project_version?: string | null
+          public_components?: boolean | null
+          ring_color?: string | null
+          ring_color_dark?: string | null
+          secondary_color?: string | null
+          secondary_color_dark?: string | null
+          sidebar_accent?: string | null
+          sidebar_accent_dark?: string | null
+          sidebar_accent_foreground?: string | null
+          sidebar_accent_foreground_dark?: string | null
+          sidebar_background?: string | null
+          sidebar_background_dark?: string | null
+          sidebar_border?: string | null
+          sidebar_border_dark?: string | null
+          sidebar_foreground?: string | null
+          sidebar_foreground_dark?: string | null
+          sidebar_primary?: string | null
+          sidebar_primary_dark?: string | null
+          sidebar_primary_foreground?: string | null
+          sidebar_primary_foreground_dark?: string | null
+          sidebar_ring?: string | null
+          sidebar_ring_dark?: string | null
+          spacing_2xl?: string | null
+          spacing_3xl?: string | null
+          spacing_4xl?: string | null
+          spacing_lg?: string | null
+          spacing_md?: string | null
+          spacing_sm?: string | null
+          spacing_xl?: string | null
+          spacing_xs?: string | null
+          storybook_port?: string | null
+          success_color?: string | null
+          success_color_dark?: string | null
+          test_command?: string | null
+          updated_at?: string
+          user_id: string
+          warning_color?: string | null
+          warning_color_dark?: string | null
+        }
+        Update: {
+          accent_color?: string | null
+          accent_color_dark?: string | null
+          auto_publish?: boolean | null
+          background_color?: string | null
+          background_color_dark?: string | null
+          base_font_size?: string | null
+          border_color?: string | null
+          border_color_dark?: string | null
+          build_command?: string | null
+          code_generation?: string | null
+          created_at?: string
+          default_theme?: string | null
+          destructive_color?: string | null
+          destructive_color_dark?: string | null
+          font_body_lg?: string | null
+          font_body_md?: string | null
+          font_body_sm?: string | null
+          font_caption?: string | null
+          font_display_lg?: string | null
+          font_display_md?: string | null
+          font_display_sm?: string | null
+          font_family?: string | null
+          font_heading_lg?: string | null
+          font_heading_md?: string | null
+          font_heading_sm?: string | null
+          foreground_color?: string | null
+          foreground_color_dark?: string | null
+          id?: string
+          muted_color?: string | null
+          muted_color_dark?: string | null
+          notifications?: boolean | null
+          primary_color?: string | null
+          primary_color_dark?: string | null
+          project_description?: string | null
+          project_name?: string | null
+          project_version?: string | null
+          public_components?: boolean | null
+          ring_color?: string | null
+          ring_color_dark?: string | null
+          secondary_color?: string | null
+          secondary_color_dark?: string | null
+          sidebar_accent?: string | null
+          sidebar_accent_dark?: string | null
+          sidebar_accent_foreground?: string | null
+          sidebar_accent_foreground_dark?: string | null
+          sidebar_background?: string | null
+          sidebar_background_dark?: string | null
+          sidebar_border?: string | null
+          sidebar_border_dark?: string | null
+          sidebar_foreground?: string | null
+          sidebar_foreground_dark?: string | null
+          sidebar_primary?: string | null
+          sidebar_primary_dark?: string | null
+          sidebar_primary_foreground?: string | null
+          sidebar_primary_foreground_dark?: string | null
+          sidebar_ring?: string | null
+          sidebar_ring_dark?: string | null
+          spacing_2xl?: string | null
+          spacing_3xl?: string | null
+          spacing_4xl?: string | null
+          spacing_lg?: string | null
+          spacing_md?: string | null
+          spacing_sm?: string | null
+          spacing_xl?: string | null
+          spacing_xs?: string | null
+          storybook_port?: string | null
+          success_color?: string | null
+          success_color_dark?: string | null
+          test_command?: string | null
+          updated_at?: string
+          user_id?: string
+          warning_color?: string | null
+          warning_color_dark?: string | null
         }
         Relationships: []
       }
