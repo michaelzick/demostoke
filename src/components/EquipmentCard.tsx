@@ -40,7 +40,7 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
   // Helper function to format sizes
   const formatSizes = (size: string | undefined) => {
     if (!size || size.trim() === '') return null;
-    
+
     const sizes = size.split(',').map(s => s.trim()).filter(s => s);
     if (sizes.length === 0) return null;
     if (sizes.length === 1) return `Size: ${sizes[0]}`;
