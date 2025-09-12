@@ -51,7 +51,7 @@ const RealUserProfilePage = () => {
   const [isDeletingImage, setIsDeletingImage] = useState(false);
   const [isUploadingHeroImage, setIsUploadingHeroImage] = useState(false);
   const [isDeletingHeroImage, setIsDeletingHeroImage] = useState(false);
-  
+
   // Use React Query profile data if viewing own profile
   const { data: dbProfile, isLoading: profileLoading } = useUserProfileBySlug(slug || "");
   const profileId = dbProfile?.id;
@@ -66,13 +66,13 @@ const RealUserProfilePage = () => {
   // Profile editing hooks (always call hooks, but conditionally use data)
   const profileDataResult = useProfileData();
   const profileData = isOwnProfile ? profileDataResult : {
-    name: '', setName: () => {}, email: '', setEmail: () => {}, 
+    name: '', setName: () => {}, email: '', setEmail: () => {},
     phone: '', setPhone: () => {}, address: '', setAddress: () => {},
     about: '', setAbout: () => {}, website: '', setWebsite: () => {},
     displayRole: '', setDisplayRole: () => {}, profileImage: null, setProfileImage: () => {},
     heroImage: null, setHeroImage: () => {}, profileLoaded: true
   };
-  
+
   const {
     name, setName, email, setEmail, phone, setPhone, address, setAddress,
     about, setAbout, website, setWebsite, displayRole, setDisplayRole,
@@ -130,7 +130,7 @@ const RealUserProfilePage = () => {
     setIsEditMode(!isEditMode);
   };
 
-  
+
   // Use the correct profile data - prioritize own profile data for current user
   let profile: UserProfile | undefined;
   if (isOwnProfile && ownProfileData) {
@@ -204,7 +204,7 @@ const RealUserProfilePage = () => {
             View Profile
           </Button>
         </div>
-        
+
         <ProfileFormSection
           profileImage={profileImage}
           name={name}
@@ -269,23 +269,23 @@ const RealUserProfilePage = () => {
 
   return (
     <div className="min-h-screen">
-      <UserProfileHeader 
-        profile={profile} 
-        stats={stats} 
-        memberSinceDate={memberSinceDate} 
+      <UserProfileHeader
+        profile={profile}
+        stats={stats}
+        memberSinceDate={memberSinceDate}
       />
-      
+
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1">
-            <UserProfileSidebar 
-              profile={profile} 
-              stats={stats} 
+            <UserProfileSidebar
+              profile={profile}
+              stats={stats}
               memberSinceDate={memberSinceDate}
               isOwnProfile={isOwnProfile}
             />
           </div>
-          
+
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-6">
               <h2 ref={availableEquipmentRef} className="text-2xl font-bold">Available Equipment</h2>
@@ -308,7 +308,7 @@ const RealUserProfilePage = () => {
             >
               Available Equipment
             </Button>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
               <div className="flex gap-4">
                 <CategorySelect
