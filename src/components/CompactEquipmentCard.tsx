@@ -52,7 +52,7 @@ const CompactEquipmentCard = ({
   // Helper function to format sizes
   const formatSizes = (size: string | undefined) => {
     if (!size || size.trim() === '') return null;
-    
+
     const sizes = size.split(',').map(s => s.trim()).filter(s => s);
     if (sizes.length === 0) return null;
     if (sizes.length === 1) return `Size: ${sizes[0]}`;
@@ -98,9 +98,9 @@ const CompactEquipmentCard = ({
           </div>
         )}
       </div>
-      <CardContent className="p-4">
+      <CardContent className="p-4 min-h-[14.5em]">
         <div className="flex justify-between items-start mb-1">
-          <h3 className="font-medium dark:text-white line-clamp-2 min-h-[3rem]">
+          <h3 className="font-medium dark:text-white line-clamp-2">
             {equipment.name}
           </h3>
           <span className="font-medium text-primary">${equipment.price_per_day}/day</span>
