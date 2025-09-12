@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { StarIcon, StoreIcon, UsersIcon, EditIcon, Ruler } from "lucide-react";
+import { StarIcon, UsersIcon, EditIcon, Ruler } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -85,7 +85,7 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
           variant: "destructive"
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to update featured status. Please try again.",
@@ -97,7 +97,7 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
   };
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden flex flex-col h-full">
       <div className="relative w-full overflow-hidden h-[290px]">
         {hasImages ? (
           hasMultipleImages ? (
@@ -151,7 +151,7 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
         )}
       </div>
 
-      <CardContent className="p-4">
+  <CardContent className="p-4 flex-1 flex flex-col">
         <div className="flex justify-between items-start gap-2 mb-1">
           <h3 className="font-medium text-lg truncate">{equipment.name}</h3>
           <div className="flex items-center gap-1 text-sm">
@@ -165,37 +165,44 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
             <span>{formatSizes(equipment.specifications.size)}</span>
           </div>
         )}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-              {equipment.description}
-            </p>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" align="start" className="max-w-[500px]">
-            {equipment.description}
-          </TooltipContent>
-        </Tooltip>
-        <div className="flex items-center justify-between mb-2">
+        {/* Wrap the remaining lower content so the footer can stay pinned to the bottom */}
+        <div className="flex-1 flex flex-col justify-between">
           <div>
-            <p className="text-sm font-medium">
-              ${equipment.price_per_day}/day
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {equipment.location.address}
-            </p>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <p className="text-sm text-muted-foreground mb-3 mt-2 line-clamp-2">
+                  {equipment.description}
+                </p>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" align="start" className="max-w-[500px]">
+                {equipment.description}
+              </TooltipContent>
+            </Tooltip>
+
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <p className="text-sm font-medium">
+                  ${equipment.price_per_day}/day
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {equipment.location.address}
+                </p>
+              </div>
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <DistanceDisplay equipment={equipment} showUnit={false} />
+              </div>
+            </div>
+
+            {/* Owner info with link */}
+            <div className="border-t pt-2">
+              <Link
+                to={ownerLinkPath}
+                className="underline text-sm text-muted-foreground hover:text-primary"
+              >
+                <span className="truncate">{equipment.owner.name}</span>
+              </Link>
+            </div>
           </div>
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <DistanceDisplay equipment={equipment} showUnit={false} />
-          </div>
-        </div>
-        {/* Owner info with link */}
-        <div className="border-t pt-2">
-          <Link
-            to={ownerLinkPath}
-            className="underline text-sm text-muted-foreground hover:text-primary"
-          >
-            <span className="truncate">{equipment.owner.name}</span>
-          </Link>
         </div>
       </CardContent>
 
