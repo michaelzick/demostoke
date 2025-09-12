@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { StarIcon, Car, Eye, EyeOff, Edit, Trash2 } from "lucide-react";
+import { StarIcon, Car, Eye, EyeOff, Edit, Trash2, Ruler } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -48,6 +48,16 @@ const CompactEquipmentCard = ({
     : `/user-profile/${slugify(equipment.owner.name)}`;
 
   const canEditDelete = showActions && (equipment.owner.id === currentUserId || isAdmin);
+
+  // Helper function to format sizes
+  const formatSizes = (size: string | undefined) => {
+    if (!size || size.trim() === '') return null;
+    
+    const sizes = size.split(',').map(s => s.trim()).filter(s => s);
+    if (sizes.length === 0) return null;
+    if (sizes.length === 1) return `Size: ${sizes[0]}`;
+    return `Sizes: ${sizes.join(', ')}`;
+  };
 
   const handleDelete = () => {
     if (window.confirm(`Are you sure you want to delete "${equipment.name}"? This action cannot be undone.`)) {
@@ -115,6 +125,12 @@ const CompactEquipmentCard = ({
           <Car className="h-3 w-3 mr-1" />
           <DistanceDisplay equipment={equipment} />
         </div>
+        {formatSizes(equipment.specifications?.size) && (
+          <div className="flex items-center text-xs text-muted-foreground mb-2">
+            <Ruler className="w-3 h-3 mr-1" />
+            <span>{formatSizes(equipment.specifications.size)}</span>
+          </div>
+        )}
         <div className="flex items-center justify-between mt-2">
           <div className="flex items-center text-xs">
             <StarIcon className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { StarIcon, StoreIcon, UsersIcon, EditIcon } from "lucide-react";
+import { StarIcon, StoreIcon, UsersIcon, EditIcon, Ruler } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -36,6 +36,16 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
   const { isAdmin } = useIsAdmin();
   const [isFeatured, setIsFeatured] = useState(equipment.is_featured || false);
   const [isUpdating, setIsUpdating] = useState(false);
+
+  // Helper function to format sizes
+  const formatSizes = (size: string | undefined) => {
+    if (!size || size.trim() === '') return null;
+    
+    const sizes = size.split(',').map(s => s.trim()).filter(s => s);
+    if (sizes.length === 0) return null;
+    if (sizes.length === 1) return `Size: ${sizes[0]}`;
+    return `Sizes: ${sizes.join(', ')}`;
+  };
 
 
   // Determine if this is from a shop or private party based on owner
@@ -167,6 +177,12 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
             <p className="text-xs text-muted-foreground">
               {equipment.location.address}
             </p>
+            {formatSizes(equipment.specifications?.size) && (
+              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                <Ruler className="w-3 h-3" />
+                <span>{formatSizes(equipment.specifications.size)}</span>
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <DistanceDisplay equipment={equipment} showUnit={false} />
