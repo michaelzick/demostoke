@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUserProfileBySlug } from "@/hooks/useUserProfileBySlug";
@@ -7,7 +7,6 @@ import { useUserStats } from "@/hooks/useUserStats";
 import { useUserEquipment } from "@/hooks/useUserEquipment";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
 import { useAuth } from "@/helpers";
-import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Settings } from "lucide-react";
@@ -26,7 +25,6 @@ import { useProfileImageHandlers } from "@/hooks/useProfileImageHandlers";
 import { useHeroImageHandlers } from "@/hooks/useHeroImageHandlers";
 import { useProfileData } from "@/hooks/useProfileData";
 import { useProfileUpdate } from "@/hooks/useProfileUpdate";
-import { slugify } from "@/utils/slugify";
 import type { UserProfile } from "@/types";
 import type { UserEquipment } from "@/types/equipment";
 
@@ -38,7 +36,16 @@ const RealUserProfilePage = () => {
   const { slug } = useParams();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const availableEquipmentRef = useRef<HTMLHeadingElement | null>(null);
+
+  const handleAvailableClick = () => {
+    if (availableEquipmentRef.current) {
+      const header = document.querySelector('header.sticky') as HTMLElement | null;
+      const headerHeight = header ? header.offsetHeight : 0;
+      const top = availableEquipmentRef.current.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  };
   const [isEditMode, setIsEditMode] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isDeletingImage, setIsDeletingImage] = useState(false);
@@ -46,7 +53,7 @@ const RealUserProfilePage = () => {
   const [isDeletingHeroImage, setIsDeletingHeroImage] = useState(false);
   
   // Use React Query profile data if viewing own profile
-  const { data: dbProfile, isLoading: profileLoading, error: profileError } = useUserProfileBySlug(slug || "");
+  const { data: dbProfile, isLoading: profileLoading } = useUserProfileBySlug(slug || "");
   const profileId = dbProfile?.id;
   const isOwnProfile = user?.id === profileId;
   const { data: ownProfileData, refetch: refetchOwnProfile } = useProfileQuery();
@@ -96,7 +103,7 @@ const RealUserProfilePage = () => {
     if (isOwnProfile && ownProfileData) {
       refetchOwnProfile();
     }
-  }, [isOwnProfile, profileId, refetchOwnProfile]);
+  }, [isOwnProfile, profileId, refetchOwnProfile, ownProfileData]);
 
   // Authentication check for unauthenticated users trying to edit
   useEffect(() => {
@@ -281,7 +288,7 @@ const RealUserProfilePage = () => {
           
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">Available Equipment</h2>
+              <h2 ref={availableEquipmentRef} className="text-2xl font-bold">Available Equipment</h2>
               <div className="flex items-center gap-2">
                 {userEquipment && <Badge variant="outline">{userEquipment.length} items</Badge>}
                 {isOwnProfile && (
@@ -292,6 +299,15 @@ const RealUserProfilePage = () => {
                 )}
               </div>
             </div>
+            {/* Mobile-only fixed button to jump to Available Equipment (mirrors Book Now pattern) */}
+            <Button
+              className="block lg:hidden fixed left-0 bottom-0 w-full z-40 rounded-none bg-primary text-white font-semibold hover:bg-primary hover:opacity-100 hover:shadow-none focus:outline-none h-12"
+              onClick={handleAvailableClick}
+              type="button"
+              id="available-equipment-mobile-button"
+            >
+              Available Equipment
+            </Button>
             
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
               <div className="flex gap-4">
