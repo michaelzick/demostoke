@@ -18,7 +18,6 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
   const { isAdmin, isLoading: isAdminLoading } = useIsAdmin();
   const navigate = useNavigate();
 
-
   const handleSearchClick = () => {
     onClose();
     onOpenSearch();
