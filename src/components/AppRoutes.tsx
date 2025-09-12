@@ -24,8 +24,8 @@ import AnalyticsPage from "../pages/AnalyticsPage";
 import BookingsPage from "../pages/BookingsPage";
 import AdminPage from "../pages/AdminPage";
 import SignInPage from "../pages/SignInPage";
-import SignUpPage from "../pages/SignUpPage";
 import RealUserProfilePage from "../pages/RealUserProfilePage";
+import ProfileRedirect from "../pages/ProfileRedirect";
 import ChadGProfilePage from "../pages/ChadGProfilePage";
 import ShopPage from "../pages/ShopPage";
 import PrivatePartyPage from "../pages/PrivatePartyPage";
@@ -61,6 +61,7 @@ const AppRoutes = () => {
           <Route path="bookings" element={<BookingsPage />} />
           <Route path="admin" element={<AdminPage />} />
           <Route path="user-profile/:slug" element={<RealUserProfilePage />} />
+          <Route path="profile" element={<ProfileRedirect />} />
           <Route path="profile/chad-g" element={<ChadGProfilePage />} />
           <Route path="shop/:shopId" element={<ShopPage />} />
           <Route path="private-party/:partyId" element={<PrivatePartyPage />} />

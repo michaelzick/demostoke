@@ -1,6 +1,7 @@
 
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/helpers";
+import { slugify } from "@/utils/slugify";
 import { Search, X, User, Package, BarChart3, Calendar, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsAdmin } from "@/hooks/useUserRole";
@@ -13,19 +14,10 @@ interface MobileMenuProps {
 }
 
 const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const { isAdmin, isLoading: isAdminLoading } = useIsAdmin();
   const navigate = useNavigate();
 
-  const handleListGearClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    onClose();
-    if (isAuthenticated) {
-      navigate("/list-your-gear");
-    } else {
-      navigate("/auth/signin");
-    }
-  };
 
   const handleSearchClick = () => {
     onClose();
@@ -130,7 +122,7 @@ const MobileMenu = ({ isOpen, onClose, onOpenSearch }: MobileMenuProps) => {
                 <h3 className="text-sm font-semibold text-muted-foreground mb-3">My Account</h3>
                 <div className="flex flex-col gap-2">
                   <Link
-                    to="/profile"
+                    to={`/user-profile/${user?.name ? slugify(user.name) : ""}`}
                     className="flex items-center gap-3 text-base hover:text-primary transition-colors"
                     onClick={handleLinkClick}
                   >
