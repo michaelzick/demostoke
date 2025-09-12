@@ -105,6 +105,12 @@ const CompactEquipmentCard = ({
           </h3>
           <span className="font-medium text-primary">${equipment.price_per_day}/day</span>
         </div>
+        {formatSizes(equipment.specifications?.size) && (
+          <div className="flex items-center text-xs text-muted-foreground mb-2">
+            <Ruler className="w-3 h-3 mr-1" />
+            <span>{formatSizes(equipment.specifications.size)}</span>
+          </div>
+        )}
         <Tooltip>
           <TooltipTrigger asChild>
             <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
@@ -125,12 +131,6 @@ const CompactEquipmentCard = ({
           <Car className="h-3 w-3 mr-1" />
           <DistanceDisplay equipment={equipment} />
         </div>
-        {formatSizes(equipment.specifications?.size) && (
-          <div className="flex items-center text-xs text-muted-foreground mb-2">
-            <Ruler className="w-3 h-3 mr-1" />
-            <span>{formatSizes(equipment.specifications.size)}</span>
-          </div>
-        )}
         <div className="flex items-center justify-between mt-2">
           <div className="flex items-center text-xs">
             <StarIcon className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />

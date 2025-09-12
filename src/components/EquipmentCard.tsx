@@ -152,13 +152,19 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
       </div>
 
       <CardContent className="p-4">
-        <div className="flex justify-between items-start gap-2 mb-2">
+        <div className="flex justify-between items-start gap-2 mb-1">
           <h3 className="font-medium text-lg truncate">{equipment.name}</h3>
           <div className="flex items-center gap-1 text-sm">
             <StarIcon className="h-4 w-4 text-yellow-500 fill-yellow-500" />
             <span>{equipment.rating}</span>
           </div>
         </div>
+        {formatSizes(equipment.specifications?.size) && (
+          <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
+            <Ruler className="w-3 h-3" />
+            <span>{formatSizes(equipment.specifications.size)}</span>
+          </div>
+        )}
         <Tooltip>
           <TooltipTrigger asChild>
             <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
@@ -177,12 +183,6 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
             <p className="text-xs text-muted-foreground">
               {equipment.location.address}
             </p>
-            {formatSizes(equipment.specifications?.size) && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                <Ruler className="w-3 h-3" />
-                <span>{formatSizes(equipment.specifications.size)}</span>
-              </div>
-            )}
           </div>
           <div className="flex items-center gap-1 text-xs text-muted-foreground">
             <DistanceDisplay equipment={equipment} showUnit={false} />
