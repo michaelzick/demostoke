@@ -18,7 +18,6 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/hooks/use-toast";
 
 interface CompactEquipmentCardProps {
   equipment: Equipment;
@@ -37,7 +36,7 @@ const CompactEquipmentCard = ({
   onDelete,
   onVisibilityToggle
 }: CompactEquipmentCardProps) => {
-  const { toast } = useToast();
+  // no-op: toast not required in this compact card
   const images = equipment.images && equipment.images.length > 0 ? equipment.images : [];
   const hasMultipleImages = images.length > 1;
   const hasImages = images.length > 0;
@@ -98,7 +97,7 @@ const CompactEquipmentCard = ({
           </div>
         )}
       </div>
-      <CardContent className="p-4 min-h-[14.5em]">
+  <CardContent className="p-4 min-h-[14.5em] flex flex-col">
         <div className="flex justify-between items-start mb-1">
           <h3 className="font-medium dark:text-white line-clamp-2">
             {equipment.name}
@@ -111,40 +110,49 @@ const CompactEquipmentCard = ({
             <span>{formatSizes(equipment.specifications.size)}</span>
           </div>
         )}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
-              {equipment.description}
-            </p>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" align="start" className="max-w-[500px]">
-            {equipment.description}
-          </TooltipContent>
-        </Tooltip>
-        <Link
-          to={ownerLinkPath}
-          className="underline text-sm text-muted-foreground hover:text-primary mb-2"
-        >
-          {equipment.owner.name}
-        </Link>
-        <div className="flex items-center text-xs text-muted-foreground mb-2">
-          <Car className="h-3 w-3 mr-1" />
-          <DistanceDisplay equipment={equipment} />
-        </div>
-        <div className="flex items-center justify-between mt-2">
-          <div className="flex items-center text-xs">
-            <StarIcon className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
-            <span>
-              {equipment.rating} ({equipment.review_count})
-            </span>
-          </div>
-          <Button size="sm" asChild className="text-xs h-8">
+
+  {/* Wrap the remaining lower content so the bottom area can be aligned across cards */}
+  <div className="flex-1 flex flex-col justify-between">
+          <div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <p className="text-xs text-muted-foreground line-clamp-2 mb-3 mt-2">
+                  {equipment.description}
+                </p>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" align="start" className="max-w-[500px]">
+                {equipment.description}
+              </TooltipContent>
+            </Tooltip>
+
             <Link
-              to={`/${equipment.category}/${slugify(equipment.owner.name)}/${slugify(equipment.name)}`}
+              to={ownerLinkPath}
+              className="underline text-sm text-muted-foreground hover:text-primary mb-2"
             >
-              View Details
+              {equipment.owner.name}
             </Link>
-          </Button>
+
+            <div className="flex items-center text-xs text-muted-foreground mb-2">
+              <Car className="h-3 w-3 mr-1" />
+              <DistanceDisplay equipment={equipment} />
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between mt-2">
+            <div className="flex items-center text-xs">
+              <StarIcon className="h-3 w-3 text-yellow-500 fill-yellow-500 mr-1" />
+              <span>
+                {equipment.rating} ({equipment.review_count})
+              </span>
+            </div>
+            <Button size="sm" asChild className="text-xs h-8">
+              <Link
+                to={`/${equipment.category}/${slugify(equipment.owner.name)}/${slugify(equipment.name)}`}
+              >
+                View Details
+              </Link>
+            </Button>
+          </div>
         </div>
         {canEditDelete && (
           <>
