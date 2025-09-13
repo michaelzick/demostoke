@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { StarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -17,6 +17,9 @@ interface SimilarEquipmentProps {
 }
 
 const SimilarEquipment = ({ similarEquipment }: SimilarEquipmentProps) => {
+  const location = useLocation();
+  const trackingData = "similar_equipment_view";
+  
   // Hide the section if no similar equipment is found
   if (!similarEquipment || similarEquipment.length === 0) {
     return null;
@@ -76,8 +79,8 @@ const SimilarEquipment = ({ similarEquipment }: SimilarEquipmentProps) => {
                     <Button size="sm" asChild className="text-xs h-6">
                       <Link
                         to={`/${item.category}/${slugify(item.owner.name)}/${slugify(item.name)}`}
-                        data-tracking="similar_equipment_view"
-                        id={`${item.name} - View Button - Similar Equipment`}
+                        data-tracking={trackingData}
+                        id={`${item.name} - View Button - ${location.pathname}`}
                         className="view-gear-button"
                       >
                         View

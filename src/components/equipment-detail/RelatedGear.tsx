@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { StarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -17,6 +17,9 @@ interface RelatedGearProps {
 }
 
 const RelatedGear = ({ relatedGear }: RelatedGearProps) => {
+  const location = useLocation();
+  const trackingData = "related_gear_view";
+  
   // Hide the section if no related gear is found
   if (!relatedGear || relatedGear.length === 0) {
     return null;
@@ -83,8 +86,8 @@ const RelatedGear = ({ relatedGear }: RelatedGearProps) => {
                     <Button size="sm" asChild className="text-xs h-6">
                       <Link
                         to={`/${item.category}/${slugify(item.owner.name)}/${slugify(item.name)}`}
-                        data-tracking="related_gear_view"
-                        id={`${item.name} - View Button - Related Gear`}
+                        data-tracking={trackingData}
+                        id={`${item.name} - View Button - ${location.pathname}`}
                         className="view-gear-button"
                       >
                         View

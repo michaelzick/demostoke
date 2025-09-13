@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { StarIcon, Car, Eye, EyeOff, Edit, Trash2, Ruler } from "lucide-react";
@@ -36,6 +36,9 @@ const CompactEquipmentCard = ({
   onDelete,
   onVisibilityToggle
 }: CompactEquipmentCardProps) => {
+  const location = useLocation();
+  const trackingData = "equipment_card_view_details";
+  
   // no-op: toast not required in this compact card
   const images = equipment.images && equipment.images.length > 0 ? equipment.images : [];
   const hasMultipleImages = images.length > 1;
@@ -148,8 +151,8 @@ const CompactEquipmentCard = ({
             <Button size="sm" asChild className="text-xs h-8">
               <Link
                 to={`/${equipment.category}/${slugify(equipment.owner.name)}/${slugify(equipment.name)}`}
-                data-tracking="equipment_card_view_details"
-                id={`${equipment.name} - View Details Button - Compact Card`}
+                data-tracking={trackingData}
+                id={`${equipment.name} - View Details Button - ${location.pathname}`}
                 className="view-gear-details-button"
               >
                 View Details

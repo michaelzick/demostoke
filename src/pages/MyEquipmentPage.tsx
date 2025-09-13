@@ -35,7 +35,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import {
   useUserEquipment,
@@ -53,8 +53,10 @@ const MyEquipmentPage = () => {
   });
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const { user } = useAuth();
+  const trackingData = "my_equipment_view_details";
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [visibilityFilter, setVisibilityFilter] = useState("all");
@@ -447,8 +449,8 @@ const MyEquipmentPage = () => {
                           <Button size="sm" asChild>
                             <Link
                               to={`/${item.category}/${slugify(user.name)}/${slugify(item.name)}`}
-                              data-tracking="my_equipment_view_details"
-                              id={`${item.name} - View Details Button - My Equipment`}
+                              data-tracking={trackingData}
+                              id={`${item.name} - View Details Button - ${location.pathname}`}
                               className="view-gear-details-button"
                             >
                               View Details

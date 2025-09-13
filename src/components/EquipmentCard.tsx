@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,8 +34,10 @@ interface EquipmentCardProps {
 const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardProps) => {
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const location = useLocation();
   const [isFeatured, setIsFeatured] = useState(equipment.is_featured || false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const trackingData = "equipment_card_view_details";
 
   // Helper function to format sizes
   const formatSizes = (size: string | undefined) => {
@@ -210,8 +212,8 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
         <Button asChild size="sm">
           <Link
             to={`/${equipment.category}/${slugify(equipment.owner.name)}/${slugify(equipment.name)}`}
-            data-tracking="equipment_card_view_details"
-            id={`${equipment.name} - View Details Button - Equipment Card`}
+            data-tracking={trackingData}
+            id={`${equipment.name} - View Details Button - ${location.pathname}`}
             className="view-gear-details-button"
           >
             View Details
