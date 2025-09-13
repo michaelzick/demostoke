@@ -3,7 +3,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import CustomerWaiverForm from "@/components/waiver/CustomerWaiverForm";
-import BookingCard from "@/components/equipment-detail/BookingCard";
 import EquipmentHeader from "@/components/equipment-detail/EquipmentHeader";
 import EquipmentSpecs from "@/components/equipment-detail/EquipmentSpecs";
 import LocationTab from "@/components/equipment-detail/LocationTab";
@@ -31,6 +30,7 @@ import { Edit, Eye, EyeOff, Trash2 } from "lucide-react";
 import { useDeleteEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { buildEquipmentTrackingFrom } from "@/utils/tracking";
 
 interface EquipmentDetailPageDbProps {
   equipment: Equipment;
@@ -76,7 +76,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
   };
 
   // Create tracking data for analytics
-  const trackingData = `${equipment.owner.name} - ${equipment.name}`;
+  const trackingData = buildEquipmentTrackingFrom(equipment);
 
   // Check if current user can edit this equipment
   const canEdit = user && (equipment.owner.id === user.id || isAdmin);

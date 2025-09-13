@@ -7,6 +7,7 @@ import DistanceDisplay from "@/components/DistanceDisplay";
 import { Link } from "react-router-dom";
 import { slugify } from "@/utils/slugify";
 import { cn } from "@/lib/utils";
+import { buildEquipmentTrackingFrom } from "@/utils/tracking";
 
 interface EquipmentHeaderProps {
   equipment: Equipment;
@@ -16,7 +17,7 @@ interface EquipmentHeaderProps {
 const EquipmentHeader = ({ equipment, stackOnMobile = false }: EquipmentHeaderProps) => {
 
   // Create tracking data for analytics
-  const trackingData = `${equipment.owner.name} - ${equipment.name}`;
+  const trackingData = buildEquipmentTrackingFrom(equipment);
 
   return (
     <div
