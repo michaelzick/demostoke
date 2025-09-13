@@ -83,6 +83,9 @@ const RelatedGear = ({ relatedGear }: RelatedGearProps) => {
                     <Button size="sm" asChild className="text-xs h-6">
                       <Link
                         to={`/${item.category}/${slugify(item.owner.name)}/${slugify(item.name)}`}
+                        data-tracking="related_gear_view"
+                        id={`${item.name} - View Button - Related Gear`}
+                        className="view-gear-button"
                       >
                         View
                       </Link>

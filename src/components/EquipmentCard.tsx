@@ -210,6 +210,9 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
         <Button asChild size="sm">
           <Link
             to={`/${equipment.category}/${slugify(equipment.owner.name)}/${slugify(equipment.name)}`}
+            data-tracking="equipment_card_view_details"
+            id={`${equipment.name} - View Details Button - Equipment Card`}
+            className="view-gear-details-button"
           >
             View Details
           </Link>

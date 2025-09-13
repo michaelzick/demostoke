@@ -76,6 +76,9 @@ const SimilarEquipment = ({ similarEquipment }: SimilarEquipmentProps) => {
                     <Button size="sm" asChild className="text-xs h-6">
                       <Link
                         to={`/${item.category}/${slugify(item.owner.name)}/${slugify(item.name)}`}
+                        data-tracking="similar_equipment_view"
+                        id={`${item.name} - View Button - Similar Equipment`}
+                        className="view-gear-button"
                       >
                         View
                       </Link>

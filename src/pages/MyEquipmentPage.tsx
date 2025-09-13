@@ -447,6 +447,9 @@ const MyEquipmentPage = () => {
                           <Button size="sm" asChild>
                             <Link
                               to={`/${item.category}/${slugify(user.name)}/${slugify(item.name)}`}
+                              data-tracking="my_equipment_view_details"
+                              id={`${item.name} - View Details Button - My Equipment`}
+                              className="view-gear-details-button"
                             >
                               View Details
                             </Link>
