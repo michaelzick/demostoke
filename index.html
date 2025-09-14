@@ -30,12 +30,21 @@
       animation: none !important;
     }
   </style>
+  <!-- Optional module script: expose Vite env to the IIFE so consumers can disable the fix at build time -->
+  <script type="module">
+    try {
+      // import.meta.env is only available in module scripts. Treat the string 'false' as explicit false.
+      window.__ENABLE_THEME_FLICKER_FIX = import.meta.env.VITE_ENABLE_THEME_FLICKER_FIX !== 'false';
+    } catch {}
+  </script>
+
   <script>
     (function () {
       try {
         var meta = document.querySelector('meta[name="enable-theme-flicker-fix"]');
         if (meta && meta.content === 'false') return;
       } catch {}
+      if (window.__ENABLE_THEME_FLICKER_FIX === false) return;
       try {
         // mark that theme resolution is in progress
         document.documentElement.classList.add('theme-resolving');

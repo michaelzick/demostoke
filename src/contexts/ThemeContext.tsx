@@ -1,60 +1,86 @@
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { ThemeContext, Theme } from './context';
 
-type Theme = "light" | "dark" | "system";
 
-interface ThemeContextProps {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-}
+const KEY = 'ui-theme';
 
-const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
+const safeGet = (key: string): string | null => {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+};
+
+const safeSet = (key: string, value: string) => {
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // ignore
+  }
+};
+
+const safeSetCookie = (key: string, value: string) => {
+  try {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() + 1);
+    document.cookie = key + '=' + encodeURIComponent(value) + '; expires=' + d.toUTCString() + '; path=/';
+  } catch {}
+};
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>("system");
-  const [mounted, setMounted] = useState(false);
 
-  // Initialize theme from localStorage only on client side
+  // Initialize theme from storage or cookie on first client render
   useEffect(() => {
-    setMounted(true);
-    if (typeof window !== "undefined") {
-      const savedTheme = localStorage.getItem("theme") as Theme;
-      if (savedTheme) {
-        setThemeState(savedTheme);
-      }
+    if (typeof window === "undefined") return;
+
+    // try localStorage first
+    let saved: string | null = null;
+    try { saved = safeGet(KEY); } catch {}
+
+    // fallback to cookie
+    if (!saved) {
+      try {
+        const m = document.cookie.match('(?:^|; )' + KEY + '=([^;]*)');
+        if (m) saved = decodeURIComponent(m[1]);
+      } catch {}
+    }
+
+    if (saved === 'light' || saved === 'dark' || saved === 'system') {
+      setThemeState(saved as Theme);
     }
   }, []);
 
   useEffect(() => {
-    if (!mounted || typeof window === "undefined") return;
-
+    if (typeof window === "undefined") return;
     const root = window.document.documentElement;
-    const applyTheme = (t: Theme) => {
-      if (t === "system") {
-        const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        root.classList.toggle("dark", isDark);
-      } else {
-        root.classList.toggle("dark", t === "dark");
-      }
+
+    const apply = (t: Theme) => {
+      try {
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const themeToApply = t === 'system' ? (prefersDark ? 'dark' : 'light') : t;
+        root.classList.remove('light', 'dark');
+        root.classList.add(themeToApply);
+        if (t === 'system') root.classList.add('system'); else root.classList.remove('system');
+      } catch {}
     };
 
-    applyTheme(theme);
+    apply(theme);
 
-    if (theme === "system") {
-      const listener = (e: MediaQueryListEvent) => {
-        root.classList.toggle("dark", e.matches);
-      };
-      const mql = window.matchMedia("(prefers-color-scheme: dark)");
-      mql.addEventListener("change", listener);
-      return () => mql.removeEventListener("change", listener);
+    if (theme === 'system' && window.matchMedia) {
+      const mql = window.matchMedia('(prefers-color-scheme: dark)');
+  const onChange = () => apply('system');
+      try { mql.addEventListener('change', onChange); } catch { try { mql.addListener(onChange as any); } catch {} }
+      return () => { try { mql.removeEventListener('change', onChange); } catch { try { mql.removeListener(onChange as any); } catch {} } };
     }
-  }, [theme, mounted]);
+  }, [theme]);
 
   const setTheme = (t: Theme) => {
     setThemeState(t);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("theme", t);
-    }
+    try { safeSet(KEY, t); } catch {}
+    try { safeSetCookie(KEY, t); } catch {}
   };
 
   return (
@@ -64,8 +90,4 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 };
 
-export const useTheme = () => {
-  const ctx = useContext(ThemeContext);
-  if (!ctx) throw new Error("useTheme must be used within ThemeProvider");
-  return ctx;
-};
+// useTheme is exported from a separate file for fast refresh compatibility

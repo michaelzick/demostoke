@@ -1,7 +1,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { useTheme } from "@/contexts/ThemeContext";
+import useTheme from "@/contexts/useTheme";
 
 interface SignatureFieldProps extends React.HTMLAttributes<HTMLDivElement> {
   onSignatureChange: (signatureData: string | null) => void;
@@ -36,11 +36,11 @@ const SignatureField = ({
 
     ctx.lineWidth = 2;
     ctx.lineCap = "round";
-    
+
     // Set stroke color based on theme
-    const isDarkMode = theme === "dark" || 
+    const isDarkMode = theme === "dark" ||
       (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    
+
     ctx.strokeStyle = isDarkMode ? "#FFFFFF" : "#000000";
   }, [theme]);
 
@@ -99,11 +99,11 @@ const SignatureField = ({
   const stopDrawing = () => {
     if (isDrawing) {
       setIsDrawing(false);
-      
+
       // Get signature data
       const canvas = canvasRef.current;
       if (!canvas) return;
-      
+
       const signatureData = canvas.toDataURL("image/png");
       onSignatureChange(signatureData);
     }
