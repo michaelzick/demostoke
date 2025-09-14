@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/auth";
 import { useIsAdmin } from "@/hooks/useUserRole";
 import { slugify } from "@/utils/slugify";
 import DistanceDisplay from "./DistanceDisplay";
+import { buildEquipmentTrackingFrom } from "@/utils/tracking";
 import { Checkbox } from "@/components/ui/checkbox";
 import { featuredGearService } from "@/services/featuredGearService";
 import { toast } from "@/hooks/use-toast";
@@ -37,7 +38,7 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
   const location = useLocation();
   const [isFeatured, setIsFeatured] = useState(equipment.is_featured || false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const trackingData = "equipment_card_view_details";
+  const trackingData = buildEquipmentTrackingFrom(equipment);
 
   // Helper function to format sizes
   const formatSizes = (size: string | undefined) => {

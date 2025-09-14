@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/carousel";
 import { Equipment } from "@/types";
 import { slugify } from "@/utils/slugify";
+import { buildEquipmentTrackingFrom } from "@/utils/tracking";
 
 interface RelatedGearProps {
   relatedGear: Equipment[];
@@ -18,7 +19,6 @@ interface RelatedGearProps {
 
 const RelatedGear = ({ relatedGear }: RelatedGearProps) => {
   const location = useLocation();
-  const trackingData = "related_gear_view";
   
   // Hide the section if no related gear is found
   if (!relatedGear || relatedGear.length === 0) {
@@ -34,6 +34,7 @@ const RelatedGear = ({ relatedGear }: RelatedGearProps) => {
           const images = item.images || [];
           const hasMultipleImages = images.length > 1;
           const hasImages = images.length > 0;
+          const trackingData = buildEquipmentTrackingFrom(item);
 
           return (
             <Card key={item.id} className="overflow-hidden">

@@ -12,6 +12,7 @@ import {
 import { Equipment } from "@/types";
 import { slugify } from "@/utils/slugify";
 import DistanceDisplay from "@/components/DistanceDisplay";
+import { buildEquipmentTrackingFrom } from "@/utils/tracking";
 import {
   Tooltip,
   TooltipTrigger,
@@ -37,7 +38,7 @@ const CompactEquipmentCard = ({
   onVisibilityToggle
 }: CompactEquipmentCardProps) => {
   const location = useLocation();
-  const trackingData = "equipment_card_view_details";
+  const trackingData = buildEquipmentTrackingFrom(equipment);
   
   // no-op: toast not required in this compact card
   const images = equipment.images && equipment.images.length > 0 ? equipment.images : [];

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/carousel";
 import { Equipment } from "@/types";
 import { slugify } from "@/utils/slugify";
+import { buildEquipmentTrackingFrom } from "@/utils/tracking";
 
 interface SimilarEquipmentProps {
   similarEquipment: Equipment[];
@@ -18,7 +19,6 @@ interface SimilarEquipmentProps {
 
 const SimilarEquipment = ({ similarEquipment }: SimilarEquipmentProps) => {
   const location = useLocation();
-  const trackingData = "similar_equipment_view";
   
   // Hide the section if no similar equipment is found
   if (!similarEquipment || similarEquipment.length === 0) {
@@ -33,6 +33,7 @@ const SimilarEquipment = ({ similarEquipment }: SimilarEquipmentProps) => {
           // Use images array from equipment_images table
           const images = item.images || [];
           const hasMultipleImages = images.length > 1;
+          const trackingData = buildEquipmentTrackingFrom(item);
 
           return (
             <Card key={item.id} className="overflow-hidden">

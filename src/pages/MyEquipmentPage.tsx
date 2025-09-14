@@ -45,6 +45,7 @@ import {
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useAuth } from "@/helpers";
 import type { UserEquipment } from "@/types/equipment";
+import { buildEquipmentTrackingFrom } from "@/utils/tracking";
 
 const MyEquipmentPage = () => {
   usePageMetadata({
@@ -56,7 +57,6 @@ const MyEquipmentPage = () => {
   const location = useLocation();
   const { toast } = useToast();
   const { user } = useAuth();
-  const trackingData = "my_equipment_view_details";
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [visibilityFilter, setVisibilityFilter] = useState("all");
@@ -290,6 +290,10 @@ const MyEquipmentPage = () => {
 
                 const hasMultipleImages = images.length > 1;
                 const hasImages = images.length > 0;
+                const trackingData = buildEquipmentTrackingFrom({ 
+                  owner: { name: user?.name || "User" },
+                  name: item.name 
+                });
 
                 return (
                   <Card key={item.id} className="group">
