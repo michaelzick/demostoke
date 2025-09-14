@@ -47,6 +47,34 @@
   <!-- End Google Tag Manager (noscript) -->
 
   <div id="root"><!--app-html--></div>
+  <!-- Pre-hydration theme resolver to avoid light->dark flicker. Disable by setting <meta name="enable-theme-flicker-fix" content="false"> -->
+  <script>
+    (function () {
+      try {
+        var meta = document.querySelector('meta[name="enable-theme-flicker-fix"]');
+        if (meta && meta.content === 'false') return;
+      } catch (e) {}
+      try {
+        var KEY = 'ui-theme';
+        var val = null;
+        try { val = localStorage.getItem(KEY); } catch (e) { val = null; }
+        if (!val) val = 'system';
+        if (!/^(light|dark|system)$/.test(val)) val = 'system';
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = val === 'system' ? (prefersDark ? 'dark' : 'light') : val;
+        var de = document.documentElement;
+        de.classList.remove('light', 'dark');
+        de.classList.add(theme);
+        if (val === 'system') de.classList.add('system'); else de.classList.remove('system');
+      } catch (e) {
+        try {
+          var de2 = document.documentElement;
+          var prefersDark2 = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          de2.classList.add(prefersDark2 ? 'dark' : 'light');
+        } catch (e) {}
+      }
+    })();
+  </script>
   <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
   <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
   <script type="module" src="/src/entry-client.tsx"></script>
