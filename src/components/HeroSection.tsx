@@ -66,8 +66,16 @@ const HeroSection = () => {
               playsInline
               poster="https://images.unsplash.com/photo-1590461283969-47fedf408cfd?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              onError={(e) => {
+                if (process.env.NODE_ENV === 'development') {
+                  console.warn(`Failed to load video: ${bg.url}`);
+                }
+                // Hide broken video and use poster instead
+                e.currentTarget.style.display = 'none';
+              }}
             >
               <source src={bg.url} type="video/mp4" />
+              Your browser does not support the video tag.
             </video>
           ) : (
             <div

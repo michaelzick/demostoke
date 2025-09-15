@@ -62,21 +62,25 @@ export const useGeolocation = () => {
         }
       },
       (error) => {
-        console.error('Geolocation error:', error);
         let errorMessage = 'Unable to retrieve location';
         let permissionDenied = false;
 
         switch (error.code) {
           case error.PERMISSION_DENIED:
-            errorMessage = 'Location access denied by user';
+            errorMessage = 'Location access denied';
             permissionDenied = true;
             break;
           case error.POSITION_UNAVAILABLE:
-            errorMessage = 'Location information unavailable';
+            errorMessage = 'Location unavailable';
             break;
           case error.TIMEOUT:
-            errorMessage = 'Location request timed out';
+            errorMessage = 'Location timeout';
             break;
+        }
+
+        // Only log errors in development to reduce console noise
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Geolocation error:', error.message);
         }
 
         setState({
@@ -117,11 +121,15 @@ export const useGeolocation = () => {
         }
       }
     } catch (error) {
-      console.error('Error parsing cached location:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Error parsing cached location:', error);
+      }
     }
 
-    // Auto-request location on first load
-    getCurrentLocation();
+    // Only auto-request location if user hasn't previously denied permission
+    if (!state.permissionDenied) {
+      getCurrentLocation();
+    }
   }, [mounted]);
 
   return {

@@ -29,6 +29,7 @@ export default defineConfig(({ mode, command }) => {
     build: {
       outDir: isSSRBuild ? 'dist/server' : 'dist/client',
       ssr: isSSRBuild ? 'src/entry-server.tsx' : undefined,
+      sourcemap: true, // Generate source maps for better debugging
     },
   };
 });
