@@ -112,6 +112,9 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
                       src={imageUrl}
                       alt={`${equipment.name} - Image ${index + 1}`}
                       className="h-[290px] w-full object-cover"
+                      loading="lazy"
+                      width="400"
+                      height="290"
                     />
                   </CarouselItem>
                 ))}
@@ -124,6 +127,9 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
               src={images[0]}
               alt={equipment.name}
               className="h-[290px] w-full object-cover"
+              loading="lazy"
+              width="400"
+              height="290"
             />
           )
         ) : (

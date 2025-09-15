@@ -29,7 +29,27 @@ export default defineConfig(({ mode, command }) => {
     build: {
       outDir: isSSRBuild ? 'dist/server' : 'dist/client',
       ssr: isSSRBuild ? 'src/entry-server.tsx' : undefined,
-      sourcemap: true, // Generate source maps for better debugging
+      sourcemap: true,
+      rollupOptions: {
+        output: {
+          chunkFileNames: 'assets/[name]-[hash].js',
+          entryFileNames: 'assets/[name]-[hash].js',
+          assetFileNames: 'assets/[name]-[hash].[ext]',
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+            router: ['react-router-dom'],
+            ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+          },
+        },
+      },
+      cssCodeSplit: true,
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: command === 'build',
+          drop_debugger: command === 'build',
+        },
+      },
     },
   };
 });

@@ -56,8 +56,44 @@ async function getBlogPostMeta(slug) {
 }
 
 const app = express();
-app.use(compression());
-app.use(sirv(clientDist, { extensions: [] }));
+
+// Security headers middleware
+app.use((req, res, next) => {
+  res.set({
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'X-XSS-Protection': '1; mode=block',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Content-Security-Policy': `
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://cdn.amplitude.com https://api2.amplitude.com;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data: https: http:;
+      media-src 'self' https: http:;
+      connect-src 'self' https://qtlhqsqanbxgfbcjigrl.supabase.co https://api2.amplitude.com https://api.mapbox.com;
+      frame-ancestors 'none';
+    `.replace(/\s+/g, ' ').trim(),
+  });
+  next();
+});
+
+app.use(compression({
+  level: 6,
+  threshold: 1024,
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  },
+}));
+
+app.use(sirv(clientDist, { 
+  extensions: [],
+  maxAge: 31536000, // 1 year for static assets
+  immutable: true,
+}));
 
 app.get('*', async (req, res) => {
   try {

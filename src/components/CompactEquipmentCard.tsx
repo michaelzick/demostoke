@@ -93,7 +93,14 @@ const CompactEquipmentCard = ({
               <CarouselNext className="right-2" />
             </Carousel>
           ) : (
-            <img src={images[0]} alt={equipment.name} className="h-48 w-full object-cover" />
+            <img 
+              src={images[0]} 
+              alt={equipment.name} 
+              className="h-48 w-full object-cover"
+              loading="lazy"
+              width="320"
+              height="192"
+            />
           )
         ) : (
           <div className="h-48 w-full bg-gray-200 flex items-center justify-center">

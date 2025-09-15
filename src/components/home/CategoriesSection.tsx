@@ -14,9 +14,12 @@ const CategoriesSection = () => {
             <div className="relative h-80">
               <img
                 src="https://images.unsplash.com/photo-1518608774889-b04d2abe7702?auto=format&fit=crop&w=800&q=80"
-                alt="Snowboards"
+                alt="Snowboards and winter sports equipment"
                 loading="lazy"
                 className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
+                width="800"
+                height="320"
+                fetchPriority="low"
               />
               <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                 <div className="text-center text-white">
@@ -33,9 +36,12 @@ const CategoriesSection = () => {
             <div className="relative h-80">
               <img
                 src="https://images.unsplash.com/photo-1531722569936-825d3dd91b15?auto=format&fit=crop&w=800&q=80"
-                alt="Surfboards"
+                alt="Surfboards and surfing equipment"
                 loading="lazy"
                 className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
+                width="800"
+                height="320"
+                fetchPriority="low"
               />
               <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                 <div className="text-center text-white">
@@ -52,9 +58,12 @@ const CategoriesSection = () => {
             <div className="relative h-80">
               <img
                 src="https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=800&q=80"
-                alt="Mountain Bikes"
+                alt="Mountain bikes and cycling equipment"
                 loading="lazy"
                 className="absolute inset-0 w-full h-full object-cover transition-transform group-hover:scale-105"
+                width="800"
+                height="320"
+                fetchPriority="low"
               />
               <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                 <div className="text-center text-white">
