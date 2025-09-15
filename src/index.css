@@ -99,8 +99,8 @@
 
 @layer components {
 
-  button.bg-primary,
-  a.bg-primary {
+  /* Use a plain .bg-primary class so Tailwind variants expand cleanly */
+  .bg-primary {
     background-color: hsl(var(--primary));
     color: #212121;
   }
