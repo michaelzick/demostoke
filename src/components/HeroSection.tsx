@@ -5,7 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Snowflake, Mountains, Waves, Bicycle } from "@phosphor-icons/react";
 import { useAuth } from "@/helpers";
-// import { getVideoUrl } from "@/utils/videoUpload";
 
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -20,13 +19,6 @@ const HeroSection = () => {
     { type: 'video', url: '/vid/surfer_compressed_1920.mp4' },
     { type: 'video', url: '/vid/mtb_compressed_2_1920.mp4' },
   ];
-
-  // const backgrounds = [
-  //   { type: '', url: 'https://images.unsplash.com/photo-1590461283969-47fedf408cfd?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  //   { type: '', url: 'https://images.unsplash.com/photo-1509791413599-93ba127a66b7?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3' },
-  //   { type: '', url: 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  //   { type: '', url: 'https://images.unsplash.com/photo-1506316940527-4d1c138978a0?q=80&w=3512&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  // ];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -51,7 +43,7 @@ const HeroSection = () => {
 
   return (
     <section className="relative h-[80vh] overflow-hidden">
-      {/* Rotating backgrounds clipped to the top triangle */}
+      {/* Rotating backgrounds */}
       {backgrounds.map((bg, index) => (
         <div
           key={index}
@@ -64,17 +56,18 @@ const HeroSection = () => {
               loop
               muted
               playsInline
+              preload={index === 0 ? "metadata" : "none"}
+              aria-label={`Background video ${index + 1} of ${backgrounds.length}`}
               poster="https://images.unsplash.com/photo-1590461283969-47fedf408cfd?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               onError={(e) => {
                 if (process.env.NODE_ENV === 'development') {
-                  console.warn(`Failed to load video: ${bg.url}`);
+                  console.warn(`Video failed to load: ${bg.url}`);
                 }
-                // Hide broken video and use poster instead
                 e.currentTarget.style.display = 'none';
               }}
             >
               <source src={bg.url} type="video/mp4" />
+              <track kind="captions" srcLang="en" label="No audio - background video" />
               Your browser does not support the video tag.
             </video>
           ) : (
@@ -85,32 +78,7 @@ const HeroSection = () => {
           )}
         </div>
       ))}
-      {/* Static image clipped to the bottom triangle */}
-      {/* <div
-        className="absolute inset-0 bg-cover bg-right"
-        style={{
-          clipPath: 'polygon(100% 0, 100% 100%, 0 100%)',
-          backgroundImage:
-            "url('https://qtlhqsqanbxgfbcjigrl.supabase.co/storage/v1/object/public/blog-images//admin-image-1753206825330-full-map-retailers.webp')",
-        }}
-      /> */}
-      {/* Overlay to darken the background */}
-      {/* <div className="absolute inset-0 bg-black bg-opacity-30" /> */}
-
-      {/* Diagonal divider */}
-      {/* <svg
-        className="absolute inset-0 w-full h-full pointer-events-none"
-        preserveAspectRatio="none"
-      >
-        <line
-          x1="100%"
-          y1="0"
-          x2="0"
-          y2="100%"
-          stroke="white"
-          strokeWidth="8"
-        />
-      </svg> */}
+      
       <div className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 text-white">
         <div className="max-w-3xl text-center bg-zinc-900/60 p-4 rounded-lg shadow-lg">
           <h1 className="text-6xl sm:text-8xl md:text-9xl font-bold mb-4 text-primary" style={{ fontFamily: 'Tahoma, sans-serif' }}>
@@ -172,13 +140,19 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+      
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-center space-x-2">
         {backgrounds.map((_, index) => (
           <button
             key={index}
-            className={`h-2 w-2 rounded-full transition-all ${index === activeIndex ? 'bg-white dark:bg-zinc-100 w-6' : 'bg-white/50 dark:bg-zinc-400/50'
-              }`}
             onClick={() => setActiveIndex(index)}
+            className={`w-4 h-4 rounded-full transition-all ${
+              index === activeIndex
+                ? 'bg-white scale-110'
+                : 'bg-white/50 hover:bg-white/70'
+            } focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent`}
+            aria-label={`Show background video ${index + 1}`}
+            aria-pressed={index === activeIndex}
           />
         ))}
       </div>

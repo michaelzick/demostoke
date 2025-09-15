@@ -43,13 +43,7 @@ export default defineConfig(({ mode, command }) => {
         },
       },
       cssCodeSplit: true,
-      minify: 'terser',
-      terserOptions: {
-        compress: {
-          drop_console: command === 'build',
-          drop_debugger: command === 'build',
-        },
-      },
+      minify: command === 'build' ? 'terser' : false,
     },
   };
 });

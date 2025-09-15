@@ -1,35 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DemoStoke</title>
-  <meta name="description"
-    content="DemoStoke is the go-to platform to find, try, and buy the gear you'll eventually fall in love with." />
-  <meta name="author" content="Michael Zick" />
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DemoStoke - Demo gear before you buy!</title>
+    <meta name="description" content="Find it. Ride it. Love it? Buy it." />
+    <meta name="author" content="DemoStoke" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://images.unsplash.com" />
+    <link rel="preconnect" href="https://qtlhqsqanbxgfbcjigrl.supabase.co" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/img/demostoke-logo-ds-transparent-cropped.webp" as="image" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://demostoke.com/" />
+    <meta property="og:title" content="DemoStoke - Demo gear before you buy!" />
+    <meta property="og:description" content="Find it. Ride it. Love it? Buy it." />
+    <meta property="og:image" content="https://demostoke.com/img/demostoke-square-transparent.webp" />
 
-  <meta property="og:title" content="DemoStoke" />
-  <meta property="og:description"
-    content="DemoStoke is the go-to platform to find, try, and buy the gear you'll eventually fall in love with." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="/img/demostoke-logo-ds-transparent-cropped.webp" />
-  <meta property="og:url" content="https://www.demostoke.com" />
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://demostoke.com/" />
+    <meta property="twitter:title" content="DemoStoke - Demo gear before you buy!" />
+    <meta property="twitter:description" content="Find it. Ride it. Love it? Buy it." />
+    <meta property="twitter:image" content="https://demostoke.com/img/demostoke-square-transparent.webp" />
 
-  <meta name="twitter:card" content="/img/demostoke-logo-ds-transparent-cropped.webp" />
-  <meta name="twitter:site" content="@DemoStoke" />
-  <meta name="twitter:title" content="DemoStoke" />
-  <meta name="twitter:description" content="DemoStoke is the go-to platform to find, try, and buy the gear you'll eventually fall in love with." />
-  <meta name="twitter:image" content="/img/demostoke-logo-ds-transparent-cropped.webp" />
-
-  <!-- Pre-hydration theme resolver & transition guard -->
-  <style>
-    /* Prevent theme transitions during initial paint */
-    html.theme-resolving *, html.theme-resolving *::before, html.theme-resolving *::after {
-      transition: none !important;
-      animation: none !important;
-    }
-  </style>
+    <!-- Pre-hydration theme resolver & transition guard -->
+    <style>
+      /* Prevent theme flash on load */
+      html {
+        transition: none !important;
+      }
+      .theme-transition {
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+      /* Improve button accessibility */
+      button:focus-visible,
+      [role="button"]:focus-visible {
+        outline: 2px solid hsl(var(--ring));
+        outline-offset: 2px;
+      }
+      /* Prevent theme transitions during initial paint */
+      html.theme-resolving *, html.theme-resolving *::before, html.theme-resolving *::after {
+        transition: none !important;
+        animation: none !important;
+      }
+    </style>
   <!-- Optional module script: expose Vite env to the IIFE so consumers can disable the fix at build time -->
   <script type="module">
     try {
