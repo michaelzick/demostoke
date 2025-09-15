@@ -69,9 +69,11 @@ app.use((req, res, next) => {
       script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://cdn.amplitude.com https://api2.amplitude.com;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       font-src 'self' https://fonts.gstatic.com;
-      img-src 'self' data: https: http:;
+      img-src 'self' data: https: http: https://*.mapbox.com;
       media-src 'self' https: http:;
-      connect-src 'self' https://qtlhqsqanbxgfbcjigrl.supabase.co https://api2.amplitude.com https://api.mapbox.com;
+      connect-src 'self' https://qtlhqsqanbxgfbcjigrl.supabase.co https://api2.amplitude.com https://api.mapbox.com https://events.mapbox.com https://*.tiles.mapbox.com;
+      worker-src 'self' blob:;
+      child-src 'self' blob:;
       frame-ancestors 'none';
     `.replace(/\s+/g, ' ').trim(),
   });
