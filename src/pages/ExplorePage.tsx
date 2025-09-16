@@ -208,6 +208,8 @@ const ExplorePage = () => {
         onRemovePriceRange={handleRemovePriceRange}
         onRemoveRatingRange={handleRemoveRatingRange}
         onRemoveFeatured={handleRemoveFeatured}
+        currentSortBy={sortBy}
+        showRelevanceSort={false}
       />
 
       {isEquipmentLoading ? (

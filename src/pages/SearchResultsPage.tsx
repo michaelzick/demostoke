@@ -307,6 +307,8 @@ const SearchResultsPage = () => {
         onRemovePriceRange={handleRemovePriceRange}
         onRemoveRatingRange={handleRemoveRatingRange}
         onRemoveFeatured={handleRemoveFeatured}
+        currentSortBy={sortBy}
+        showRelevanceSort={true}
       />
 
       {isLoading ? (

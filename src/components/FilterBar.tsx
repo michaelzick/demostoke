@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -26,6 +26,8 @@ interface FilterBarProps {
   onRemovePriceRange?: (rangeId: string) => void;
   onRemoveRatingRange?: (rangeId: string) => void;
   onRemoveFeatured?: () => void;
+  currentSortBy?: string;
+  showRelevanceSort?: boolean;
 }
 
 const FilterBar = ({
@@ -40,9 +42,16 @@ const FilterBar = ({
   onRemovePriceRange,
   onRemoveRatingRange,
   onRemoveFeatured,
+  currentSortBy = "distance",
+  showRelevanceSort = false,
 }: FilterBarProps) => {
-  const [sortBy, setSortBy] = useState("distance");
+  const [sortBy, setSortBy] = useState(currentSortBy);
   const [showAdvancedDrawer, setShowAdvancedDrawer] = useState(false);
+
+  // Sync internal state with parent state
+  useEffect(() => {
+    setSortBy(currentSortBy);
+  }, [currentSortBy]);
 
   // Shared styles for small screens to prevent filter overflow
   const smallButtonClasses =
@@ -156,7 +165,7 @@ const FilterBar = ({
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuRadioGroup value={sortBy} onValueChange={handleSortChange}>
-                  <DropdownMenuRadioItem value="relevance">Relevance</DropdownMenuRadioItem>
+                  {showRelevanceSort && <DropdownMenuRadioItem value="relevance">Relevance</DropdownMenuRadioItem>}
                   <DropdownMenuRadioItem value="distance">Nearest</DropdownMenuRadioItem>
                   <DropdownMenuRadioItem value="rating">Rating</DropdownMenuRadioItem>
                   <DropdownMenuRadioItem value="price_asc">Price: Low to High</DropdownMenuRadioItem>
@@ -256,7 +265,7 @@ const FilterBar = ({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuRadioGroup value={sortBy} onValueChange={handleSortChange}>
-                    <DropdownMenuRadioItem value="relevance">Relevance</DropdownMenuRadioItem>
+                    {showRelevanceSort && <DropdownMenuRadioItem value="relevance">Relevance</DropdownMenuRadioItem>}
                     <DropdownMenuRadioItem value="distance">Nearest</DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="rating">Rating</DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="price_asc">Price: Low to High</DropdownMenuRadioItem>
