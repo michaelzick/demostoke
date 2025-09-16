@@ -18,7 +18,6 @@ import { applyAdvancedFilters } from "@/utils/advancedFiltering";
 
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
 import { useUserLocations } from "@/hooks/useUserLocations";
-import { parseQueryForLocation } from "@/utils/queryParsing";
 import useScrollToTop from "@/hooks/useScrollToTop";
 
 const SearchResultsPage = () => {
@@ -32,15 +31,16 @@ const SearchResultsPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [viewMode, setViewMode] = useState<"map" | "list" | "hybrid">("hybrid");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const parsedQuery = parseQueryForLocation(query);
   const [sortBy, setSortBy] = useState<string>("relevance");
+  // Track whether the user explicitly changed the sort order so we don't overwrite it
+  const [userSelectedSort, setUserSelectedSort] = useState(false);
   const [searchInput, setSearchInput] = useState(query);
   const [isAISearch, setIsAISearch] = useState(false);
   const { toast } = useToast();
-  
+
   const { data: userLocations = [] } = useUserLocations();
   const [resetCounter, setResetCounter] = useState(0);
-  
+
   // Advanced filters state
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({
     priceRanges: [],
@@ -110,15 +110,21 @@ const SearchResultsPage = () => {
     fetchResults();
   }, [query, toast]);
 
-  // Set relevance as default sort for search results
-  useEffect(() => {
-    if (query) {
-      setSortBy("relevance");
-    }
-  }, [query]);
-
   // Get equipment with dynamic distances
   const { equipment: equipmentWithDynamicDistances, isLocationBased } = useEquipmentWithDynamicDistance(results);
+
+  // Set a sensible default sort after results load only if the user hasn't manually chosen a sort.
+  // Prefer "distance" if location-based distances are available, otherwise default to relevance.
+  useEffect(() => {
+    if (!query || userSelectedSort) return;
+    setSortBy(isLocationBased ? "distance" : "relevance");
+  }, [query, isLocationBased, userSelectedSort]);
+
+  // Handler that records when a user explicitly changes the sort
+  const handleSortChange = (value: string) => {
+    setSortBy(value);
+    setUserSelectedSort(true);
+  };
 
   // Filter results by category if selected
   const categoryFilteredResults = activeCategory
@@ -160,7 +166,8 @@ const SearchResultsPage = () => {
         }))
       );
     }
-  }, [sortBy, sortedResults]);
+    console.log('SearchResultsPage: sortBy changed ->', sortBy, 'isLocationBased:', isLocationBased);
+  }, [sortBy, sortedResults, isLocationBased]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -298,7 +305,7 @@ const SearchResultsPage = () => {
       <FilterBar
         activeCategory={activeCategory}
         setActiveCategory={setActiveCategory}
-        onSortChange={setSortBy}
+    onSortChange={handleSortChange}
         viewMode={viewMode}
         setViewMode={setViewMode}
         onReset={handleReset}
@@ -349,8 +356,8 @@ const SearchResultsPage = () => {
               {sortedResults.map((equipment) => (
                 <div key={equipment.id} className="relative">
                   <EquipmentCard equipment={equipment} />
-                  {'ai_relevance_score' in equipment && 
-                   typeof equipment.ai_relevance_score === 'number' && 
+                  {'ai_relevance_score' in equipment &&
+                   typeof equipment.ai_relevance_score === 'number' &&
                    equipment.ai_relevance_score > 70 && (
                     <div className="absolute top-2 right-2 bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
                       <Sparkles className="h-3 w-3" />
