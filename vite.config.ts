@@ -50,8 +50,14 @@ export default defineConfig(({ mode, command }) => {
       // only provide rollupOptions for client builds
       ...(rollupOptions ? { rollupOptions } : {}),
   cssCodeSplit: true,
-  // Use terser for production builds (keeps current behavior)
+  // Use terser for production builds with console removal
   minify: command === 'build' ? 'terser' : false,
+  terserOptions: command === 'build' ? {
+    compress: {
+      drop_console: true,
+      drop_debugger: true,
+    },
+  } : undefined,
     },
   };
 });
