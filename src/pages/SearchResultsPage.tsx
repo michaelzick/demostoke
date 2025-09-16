@@ -33,9 +33,7 @@ const SearchResultsPage = () => {
   const [viewMode, setViewMode] = useState<"map" | "list" | "hybrid">("hybrid");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const parsedQuery = parseQueryForLocation(query);
-  const [sortBy, setSortBy] = useState<string>(
-    parsedQuery.location || parsedQuery.nearMe ? "relevance" : "distance"
-  );
+  const [sortBy, setSortBy] = useState<string>("relevance");
   const [searchInput, setSearchInput] = useState(query);
   const [isAISearch, setIsAISearch] = useState(false);
   const { toast } = useToast();
@@ -112,10 +110,11 @@ const SearchResultsPage = () => {
     fetchResults();
   }, [query, toast]);
 
-  // Update default sorting when query changes
+  // Set relevance as default sort for search results
   useEffect(() => {
-    const parsed = parseQueryForLocation(query);
-    setSortBy(parsed.location || parsed.nearMe ? "relevance" : "distance");
+    if (query) {
+      setSortBy("relevance");
+    }
   }, [query]);
 
   // Get equipment with dynamic distances
