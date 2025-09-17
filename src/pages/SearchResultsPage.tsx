@@ -145,10 +145,17 @@ const SearchResultsPage = () => {
         return a.distance - b.distance;
       case "rating":
         return b.rating - a.rating;
-      default: // relevance - use AI score if available, otherwise keep original order
+      default: // relevance - use AI score if available, otherwise use fallback score
+        // For AI search results
         if (isAISearch && 'ai_relevance_score' in a && 'ai_relevance_score' in b) {
           const aScore = typeof a.ai_relevance_score === 'number' ? a.ai_relevance_score : 0;
           const bScore = typeof b.ai_relevance_score === 'number' ? b.ai_relevance_score : 0;
+          return bScore - aScore;
+        }
+        // For fallback search results (what we'll actually use)
+        if ('fallback_relevance_score' in a && 'fallback_relevance_score' in b) {
+          const aScore = typeof a.fallback_relevance_score === 'number' ? a.fallback_relevance_score : 0;
+          const bScore = typeof b.fallback_relevance_score === 'number' ? b.fallback_relevance_score : 0;
           return bScore - aScore;
         }
         return 0;

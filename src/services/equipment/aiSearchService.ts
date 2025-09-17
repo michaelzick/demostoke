@@ -1,6 +1,8 @@
 
 import { Equipment } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
+import { findCanonicalBrand, extractBrandFromQuery } from "@/data/brandAliases";
+import { fuzzySearchScore, calculateSimilarity } from "@/utils/textSimilarity";
 
 // Simple map of singular/plural synonyms for gear types
 const SEARCH_SYNONYMS: { [key: string]: string[] } = {
@@ -22,6 +24,7 @@ const expandSearchVariants = (term: string): string[] => {
 export interface AISearchResult extends Equipment {
   ai_relevance_score?: number;
   ai_reasoning?: string;
+  fallback_relevance_score?: number;
 }
 
 export const searchWithAI = async (query: string, equipmentData: Equipment[], userLocation?: { lat: number; lng: number }): Promise<AISearchResult[]> => {
@@ -127,12 +130,24 @@ export const fallbackSearch = (query: string, equipmentData: Equipment[]): AISea
       skillLevelMatch = checkSkillLevelMatch(lowerQuery, item.specifications.suitable);
     }
 
-    // Owner name matching for brand searches
+    // Enhanced brand matching using fuzzy search and aliases
     const ownerName = item.owner?.name?.toLowerCase() || "";
-    const ownerNameMatch = queryVariants.some(v => ownerName.includes(v));
+    let brandMatch = false;
+    
+    // Check for exact brand matches in query
+    const extractedBrand = extractBrandFromQuery(lowerQuery);
+    if (extractedBrand) {
+      brandMatch = ownerName.includes(extractedBrand.toLowerCase()) || 
+                   calculateSimilarity(ownerName, extractedBrand) > 70;
+    }
+    
+    // Fallback to simple owner name matching
+    if (!brandMatch) {
+      brandMatch = queryVariants.some(v => ownerName.includes(v));
+    }
 
     // Combined text matching
-    const textMatch = nameMatch || descriptionMatch || descriptionWordMatch || ownerNameMatch;
+    const textMatch = nameMatch || descriptionMatch || descriptionWordMatch || brandMatch;
 
     // If specific categories or skill levels are requested, require strict matching
     if (categoriesRequested.length > 0 || hasSkillLevelQuery) {
@@ -142,10 +157,17 @@ export const fallbackSearch = (query: string, equipmentData: Equipment[]): AISea
     // For general searches, allow broader matches
     return textMatch;
 
+  }).map(item => {
+    // Add fallback relevance score to each item
+    const relevanceScore = calculateRelevanceScore(lowerQuery, item, categoryMatches);
+    return {
+      ...item,
+      fallback_relevance_score: relevanceScore
+    };
   }).sort((a, b) => {
-    // Calculate relevance scores for better sorting
-    const aScore = calculateRelevanceScore(lowerQuery, a, categoryMatches);
-    const bScore = calculateRelevanceScore(lowerQuery, b, categoryMatches);
+    // Sort by relevance score
+    const aScore = a.fallback_relevance_score || 0;
+    const bScore = b.fallback_relevance_score || 0;
 
     if (aScore !== bScore) {
       return bScore - aScore; // Higher score first
@@ -160,33 +182,62 @@ export const fallbackSearch = (query: string, equipmentData: Equipment[]): AISea
 const calculateRelevanceScore = (query: string, item: Equipment, categoryMatches: { [key: string]: number; }): number => {
   let score = 0;
   const queryVariants = expandSearchVariants(query.toLowerCase());
-
-  // Exact name match gets highest score
   const itemName = item.name.toLowerCase();
-  if (queryVariants.some(v => itemName === v)) {
-    score += 10;
-  } else if (queryVariants.some(v => itemName.includes(v))) {
-    score += 5;
-  }
-
-  // Description matches
   const itemDescription = item.description?.toLowerCase() || "";
-  if (queryVariants.some(v => itemDescription.includes(v))) {
-    score += 3;
-  }
-
-  // Category relevance
-  score += categoryMatches[item.category] || 0;
-
-  // Skill level relevance
-  if (checkSkillLevelMatch(query, item.specifications.suitable)) {
-    score += 4;
-  }
-
-  // Owner/brand matches
   const ownerName = item.owner?.name?.toLowerCase() || "";
+
+  // Enhanced brand matching - highest priority
+  const extractedBrand = extractBrandFromQuery(query);
+  if (extractedBrand) {
+    const brandLower = extractedBrand.toLowerCase();
+    if (ownerName.includes(brandLower)) {
+      score += 20; // Very high score for exact brand match
+    } else {
+      // Use fuzzy matching for misspellings
+      const brandSimilarity = calculateSimilarity(ownerName, brandLower);
+      if (brandSimilarity > 70) {
+        score += 15; // High score for fuzzy brand match
+      }
+    }
+  }
+
+  // Fallback brand matching for simple owner name queries
   if (queryVariants.some(v => ownerName.includes(v))) {
-    score += 2;
+    score += 12; // Good score for general brand match
+  }
+
+  // Enhanced name matching with fuzzy search
+  const nameScore = fuzzySearchScore(query, itemName);
+  if (nameScore > 80) {
+    score += 10; // High score for very relevant name matches
+  } else if (nameScore > 60) {
+    score += 6; // Medium score for somewhat relevant matches
+  }
+
+  // Traditional exact/partial name matching as fallback
+  if (queryVariants.some(v => itemName === v)) {
+    score += 8; // High score for exact name match
+  } else if (queryVariants.some(v => itemName.includes(v))) {
+    score += 4; // Medium score for partial name match
+  }
+
+  // Description matches with enhanced scoring
+  const descriptionScore = fuzzySearchScore(query, itemDescription);
+  if (descriptionScore > 70) {
+    score += 5; // Good score for relevant description matches
+  } else if (queryVariants.some(v => itemDescription.includes(v))) {
+    score += 2; // Basic score for simple description matches
+  }
+
+  // Category relevance - boost for matching category
+  const categoryScore = categoryMatches[item.category] || 0;
+  if (categoryScore > 0) {
+    score += categoryScore * 2; // Double the category match importance
+  }
+
+  // Skill level relevance - important for beginner/intermediate/advanced queries
+  if (checkSkillLevelMatch(query, item.specifications.suitable)) {
+    score += 8; // High score for skill level matches
   }
 
   return score;

@@ -81,8 +81,8 @@ const FilterBar = ({
   const sortText =
     sortBy === "distance"
       ? "Nearest"
-      // : sortBy === "relevance"
-      // ? "Relevance"
+      : sortBy === "relevance"
+      ? "Relevance"
       : sortBy === "price_asc"
       ? "Price: Low to High"
       : sortBy === "rating"
@@ -265,7 +265,7 @@ const FilterBar = ({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuRadioGroup value={sortBy} onValueChange={handleSortChange}>
-                    {/* {showRelevanceSort && <DropdownMenuRadioItem value="relevance">Relevance</DropdownMenuRadioItem>} */}
+                    {showRelevanceSort && <DropdownMenuRadioItem value="relevance">Relevance</DropdownMenuRadioItem>}
                     <DropdownMenuRadioItem value="distance">Nearest</DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="rating">Rating</DropdownMenuRadioItem>
                     <DropdownMenuRadioItem value="price_asc">Price: Low to High</DropdownMenuRadioItem>
