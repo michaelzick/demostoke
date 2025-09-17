@@ -114,11 +114,11 @@ const SearchResultsPage = () => {
   const { equipment: equipmentWithDynamicDistances, isLocationBased } = useEquipmentWithDynamicDistance(results);
 
   // Set a sensible default sort after results load only if the user hasn't manually chosen a sort.
-  // Prefer "distance" if location-based distances are available, otherwise default to relevance.
+  // Always prefer "relevance" for search queries to prioritize content relevance over proximity.
   useEffect(() => {
     if (!query || userSelectedSort) return;
-    setSortBy(isLocationBased ? "distance" : "relevance");
-  }, [query, isLocationBased, userSelectedSort]);
+    setSortBy("relevance");
+  }, [query, userSelectedSort]);
 
   // Handler that records when a user explicitly changes the sort
   const handleSortChange = (value: string) => {
