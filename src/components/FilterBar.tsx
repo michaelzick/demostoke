@@ -1,12 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { RefreshCw, Filter } from "lucide-react";
@@ -17,7 +15,6 @@ import { AdvancedFilters } from "@/types/advancedFilters";
 interface FilterBarProps {
   activeCategory: string | null;
   setActiveCategory: (category: string | null) => void;
-  onSortChange: (value: string) => void;
   viewMode: 'map' | 'list' | 'hybrid';
   setViewMode: (mode: 'map' | 'list' | 'hybrid') => void;
   onReset?: () => void;
@@ -26,14 +23,11 @@ interface FilterBarProps {
   onRemovePriceRange?: (rangeId: string) => void;
   onRemoveRatingRange?: (rangeId: string) => void;
   onRemoveFeatured?: () => void;
-  currentSortBy?: string;
-  showRelevanceSort?: boolean;
 }
 
 const FilterBar = ({
   activeCategory,
   setActiveCategory,
-  onSortChange,
   viewMode,
   setViewMode,
   onReset,
@@ -42,25 +36,12 @@ const FilterBar = ({
   onRemovePriceRange,
   onRemoveRatingRange,
   onRemoveFeatured,
-  currentSortBy = "distance",
-  showRelevanceSort = false,
 }: FilterBarProps) => {
-  const [sortBy, setSortBy] = useState(currentSortBy);
   const [showAdvancedDrawer, setShowAdvancedDrawer] = useState(false);
-
-  // Sync internal state with parent state
-  useEffect(() => {
-    setSortBy(currentSortBy);
-  }, [currentSortBy]);
 
   // Shared styles for small screens to prevent filter overflow
   const smallButtonClasses =
     "max-[400px]:text-xs max-[400px]:px-2 max-[400px]:py-1 max-[400px]:h-7";
-
-  const handleSortChange = (value: string) => {
-    setSortBy(value);
-    onSortChange(value);
-  };
 
   const categoryLabels: Record<string, string> = {
     "snowboards": "Snowboards",
@@ -78,17 +59,6 @@ const FilterBar = ({
   const categoryText =
     activeCategory === null ? "All Equipment" : categoryLabels[activeCategory];
   const viewText = viewLabels[viewMode];
-  const sortText =
-    sortBy === "distance"
-      ? "Nearest"
-      : sortBy === "relevance"
-      ? "Relevance"
-      : sortBy === "price_asc"
-      ? "Price: Low to High"
-      : sortBy === "rating"
-      ? "Rating"
-      : "Price: High to Low";
-
   return (
     <div className="border-b sticky top-16 z-30 bg-background pb-2">
       <div className="px-4 md:px-6 py-4">
@@ -105,13 +75,13 @@ const FilterBar = ({
                   {`Category: ${categoryText}`}
                 </Button>
               </DropdownMenuTrigger>
-               <DropdownMenuContent>
-                 <DropdownMenuItem onClick={() => setActiveCategory(null)}>All Equipment</DropdownMenuItem>
-                 <DropdownMenuItem onClick={() => setActiveCategory('snowboards')}>Snowboards</DropdownMenuItem>
-                 <DropdownMenuItem onClick={() => setActiveCategory('skis')}>Skis</DropdownMenuItem>
-                 <DropdownMenuItem onClick={() => setActiveCategory('surfboards')}>Surfboards</DropdownMenuItem>
-                 <DropdownMenuItem onClick={() => setActiveCategory('mountain-bikes')}>Mountain Bikes</DropdownMenuItem>
-               </DropdownMenuContent>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => setActiveCategory(null)}>All Equipment</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setActiveCategory('snowboards')}>Snowboards</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setActiveCategory('skis')}>Skis</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setActiveCategory('surfboards')}>Surfboards</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setActiveCategory('mountain-bikes')}>Mountain Bikes</DropdownMenuItem>
+              </DropdownMenuContent>
             </DropdownMenu>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -152,27 +122,6 @@ const FilterBar = ({
               <RefreshCw size={14} />
               Reset
             </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={viewMode === 'map'}
-                  className={cn("flex-1 text-left", smallButtonClasses)}
-                >
-                  {`Sort: ${sortText}`}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuRadioGroup value={sortBy} onValueChange={handleSortChange}>
-                  {showRelevanceSort && <DropdownMenuRadioItem value="relevance">Relevance</DropdownMenuRadioItem>}
-                  <DropdownMenuRadioItem value="distance">Nearest</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="rating">Rating</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="price_asc">Price: Low to High</DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="price_desc">Price: High to Low</DropdownMenuRadioItem>
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
 
           {/* Mobile Advanced Filter Section - Only show for hybrid and list views */}
@@ -250,29 +199,13 @@ const FilterBar = ({
               >
                 List View
               </Button>
-              <Button
-                variant={viewMode === 'hybrid' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('hybrid')}
-              >
-                Hybrid View
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" disabled={viewMode === 'map'}>
-                    {`Sort: ${sortText}`}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuRadioGroup value={sortBy} onValueChange={handleSortChange}>
-                    {showRelevanceSort && <DropdownMenuRadioItem value="relevance">Relevance</DropdownMenuRadioItem>}
-                    <DropdownMenuRadioItem value="distance">Nearest</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="rating">Rating</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="price_asc">Price: Low to High</DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="price_desc">Price: High to Low</DropdownMenuRadioItem>
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
+            <Button
+              variant={viewMode === 'hybrid' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setViewMode('hybrid')}
+            >
+              Hybrid View
+            </Button>
             </div>
           </div>
 

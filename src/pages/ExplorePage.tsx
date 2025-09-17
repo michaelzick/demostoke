@@ -9,6 +9,7 @@ import MapLegend from "@/components/map/MapLegend";
 import EquipmentCard from "@/components/EquipmentCard";
 import FilterBar from "@/components/FilterBar";
 import HybridView from "@/components/HybridView";
+import SortDropdown from "@/components/SortDropdown";
 import { Equipment } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
@@ -199,7 +200,6 @@ const ExplorePage = () => {
       <FilterBar
         activeCategory={activeCategory}
         setActiveCategory={handleCategoryChange}
-        onSortChange={setSortBy}
         viewMode={viewMode}
         setViewMode={setViewMode}
         onReset={handleReset}
@@ -208,8 +208,6 @@ const ExplorePage = () => {
         onRemovePriceRange={handleRemovePriceRange}
         onRemoveRatingRange={handleRemoveRatingRange}
         onRemoveFeatured={handleRemoveFeatured}
-        currentSortBy={sortBy}
-        showRelevanceSort={false}
       />
 
       {isEquipmentLoading ? (
@@ -235,14 +233,21 @@ const ExplorePage = () => {
           userLocations={filteredUserLocations}
           viewMode={viewMode}
           resetSignal={resetCounter}
+          sortBy={sortBy}
+          onSortChange={setSortBy}
         />
       ) : (
         <div className="container px-4 md:px-6 py-8">
-          {isLocationBased && (
-            <div className="mb-4 text-sm text-muted-foreground">
-              Distances calculated from your location
+          <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            {isLocationBased && (
+              <div className="text-sm text-muted-foreground">
+                Distances calculated from your location
+              </div>
+            )}
+            <div className="w-full lg:w-auto lg:ml-auto mt-2 lg:mt-0">
+              <SortDropdown sortBy={sortBy} onSortChange={setSortBy} />
             </div>
-          )}
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEquipment.map((equipment) => (
               <EquipmentCard 

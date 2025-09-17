@@ -8,6 +8,7 @@ import MapComponent from "@/components/MapComponent";
 import MapLegend from "@/components/map/MapLegend";
 import FilterBar from "@/components/FilterBar";
 import HybridView from "@/components/HybridView";
+import SortDropdown from "@/components/SortDropdown";
 import { Button } from "@/components/ui/button";
 import { Loader2, Search, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -312,7 +313,6 @@ const SearchResultsPage = () => {
       <FilterBar
         activeCategory={activeCategory}
         setActiveCategory={setActiveCategory}
-    onSortChange={handleSortChange}
         viewMode={viewMode}
         setViewMode={setViewMode}
         onReset={handleReset}
@@ -321,8 +321,6 @@ const SearchResultsPage = () => {
         onRemovePriceRange={handleRemovePriceRange}
         onRemoveRatingRange={handleRemoveRatingRange}
         onRemoveFeatured={handleRemoveFeatured}
-        currentSortBy={sortBy}
-        showRelevanceSort={true}
       />
 
       {isLoading ? (
@@ -350,14 +348,26 @@ const SearchResultsPage = () => {
           userLocations={filteredUserLocations}
           viewMode={viewMode}
           resetSignal={resetCounter}
+          sortBy={sortBy}
+          onSortChange={handleSortChange}
+          showRelevanceOption
         />
       ) : (
         <div className="container px-4 md:px-6 py-8">
-          {isLocationBased && sortBy === "distance" && (
-            <div className="mb-4 text-sm text-muted-foreground">
-              Distances calculated from your location
+          <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            {isLocationBased && sortBy === "distance" && (
+              <div className="text-sm text-muted-foreground">
+                Distances calculated from your location
+              </div>
+            )}
+            <div className="w-full lg:w-auto lg:ml-auto mt-2 lg:mt-0">
+              <SortDropdown
+                sortBy={sortBy}
+                onSortChange={handleSortChange}
+                showRelevanceOption
+              />
             </div>
-          )}
+          </div>
           {sortedResults.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {sortedResults.map((equipment) => (

@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { initializeMap, fitMapBounds } from "@/utils/mapUtils";
 import { UserLocation } from "@/hooks/useUserLocations";
 import { getFilteredUserLocations } from "@/utils/equipmentLocationMapping";
+import SortDropdown from "./SortDropdown";
 
 interface HybridViewProps {
   filteredEquipment: Equipment[];
@@ -17,6 +18,9 @@ interface HybridViewProps {
   userLocations?: UserLocation[];
   viewMode?: 'map' | 'list' | 'hybrid';
   resetSignal?: number;
+  sortBy: string;
+  onSortChange: (value: string) => void;
+  showRelevanceOption?: boolean;
 }
 
 interface MapEquipment {
@@ -32,7 +36,17 @@ interface MapEquipment {
   ownerName: string;
 }
 
-const HybridView = ({ filteredEquipment, activeCategory, isLocationBased, userLocations = [], viewMode = 'hybrid', resetSignal }: HybridViewProps) => {
+const HybridView = ({
+  filteredEquipment,
+  activeCategory,
+  isLocationBased,
+  userLocations = [],
+  viewMode = 'hybrid',
+  resetSignal,
+  sortBy,
+  onSortChange,
+  showRelevanceOption = false,
+}: HybridViewProps) => {
   const isMobile = useIsMobile();
   const [selectedEquipmentId, setSelectedEquipmentId] = useState<string | null>(null);
   const [mapboxToken, setMapboxToken] = useState<string | null>(null);
@@ -193,11 +207,20 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased, userLo
         
         {/* Equipment list below map */}
         <div ref={listRef} className="p-4">
-          {isLocationBased && (
-            <div className="mb-4 text-sm text-muted-foreground">
-              Distances calculated from your location
+          <div className="mb-4 flex flex-col gap-3">
+            {isLocationBased && (
+              <div className="text-sm text-muted-foreground">
+                Distances calculated from your location
+              </div>
+            )}
+            <div className="w-full mt-2">
+              <SortDropdown
+                sortBy={sortBy}
+                onSortChange={onSortChange}
+                showRelevanceOption={showRelevanceOption}
+              />
             </div>
-          )}
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredEquipment.map((equipment) => (
               <div
@@ -224,11 +247,20 @@ const HybridView = ({ filteredEquipment, activeCategory, isLocationBased, userLo
     <div className="h-[calc(100vh-12rem)] flex">
       {/* Equipment list on left */}
       <div className="w-3/5 overflow-y-auto p-4">
-        {isLocationBased && (
-          <div className="mb-4 text-sm text-muted-foreground">
-            Distances calculated from your location
+        <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          {isLocationBased && (
+            <div className="text-sm text-muted-foreground">
+              Distances calculated from your location
+            </div>
+          )}
+          <div className="w-full lg:w-auto lg:ml-auto mt-2 lg:mt-0">
+            <SortDropdown
+              sortBy={sortBy}
+              onSortChange={onSortChange}
+              showRelevanceOption={showRelevanceOption}
+            />
           </div>
-        )}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredEquipment.map((equipment) => (
             <div
