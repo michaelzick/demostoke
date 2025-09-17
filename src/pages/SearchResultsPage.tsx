@@ -355,7 +355,7 @@ const SearchResultsPage = () => {
       ) : (
         <div className="container px-4 md:px-6 pt-4 pb-8">
           <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            {isLocationBased && sortBy === "distance" && (
+            {isLocationBased && (
               <div className="text-sm text-muted-foreground">
                 Distances calculated from your location
               </div>
