@@ -1,8 +1,6 @@
 // Update this page (the content is just a fallback if you fail to update the page)
 import usePageMetadata from "@/hooks/usePageMetadata";
 
-// trigger build comment
-
 const Index = () => {
   usePageMetadata({
     title: 'DemoStoke | Find it. Ride it. Love it? Buy it.',
