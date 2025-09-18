@@ -748,6 +748,129 @@ export type Database = {
           },
         ]
       }
+      figma_components: {
+        Row: {
+          component_data: Json | null
+          created_at: string
+          design_system_component_id: string | null
+          figma_component_id: string
+          figma_component_name: string
+          figma_file_id: string
+          id: string
+          mapping_status: string
+          updated_at: string
+        }
+        Insert: {
+          component_data?: Json | null
+          created_at?: string
+          design_system_component_id?: string | null
+          figma_component_id: string
+          figma_component_name: string
+          figma_file_id: string
+          id?: string
+          mapping_status?: string
+          updated_at?: string
+        }
+        Update: {
+          component_data?: Json | null
+          created_at?: string
+          design_system_component_id?: string | null
+          figma_component_id?: string
+          figma_component_name?: string
+          figma_file_id?: string
+          id?: string
+          mapping_status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "figma_components_design_system_component_id_fkey"
+            columns: ["design_system_component_id"]
+            isOneToOne: false
+            referencedRelation: "design_system_components"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "figma_components_figma_file_id_fkey"
+            columns: ["figma_file_id"]
+            isOneToOne: false
+            referencedRelation: "figma_files"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      figma_connections: {
+        Row: {
+          access_token: string
+          created_at: string
+          id: string
+          team_id: string | null
+          updated_at: string
+          user_id: string
+          user_info: Json
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          id?: string
+          team_id?: string | null
+          updated_at?: string
+          user_id: string
+          user_info: Json
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          id?: string
+          team_id?: string | null
+          updated_at?: string
+          user_id?: string
+          user_info?: Json
+        }
+        Relationships: []
+      }
+      figma_files: {
+        Row: {
+          component_count: number | null
+          created_at: string
+          figma_file_id: string
+          id: string
+          last_sync: string | null
+          metadata: Json | null
+          name: string
+          sync_status: string
+          updated_at: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          component_count?: number | null
+          created_at?: string
+          figma_file_id: string
+          id?: string
+          last_sync?: string | null
+          metadata?: Json | null
+          name: string
+          sync_status?: string
+          updated_at?: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          component_count?: number | null
+          created_at?: string
+          figma_file_id?: string
+          id?: string
+          last_sync?: string | null
+          metadata?: Json | null
+          name?: string
+          sync_status?: string
+          updated_at?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       jpeg_images: {
         Row: {
           created_at: string
