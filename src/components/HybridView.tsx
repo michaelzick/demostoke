@@ -10,6 +10,8 @@ import { initializeMap, fitMapBounds } from "@/utils/mapUtils";
 import { UserLocation } from "@/hooks/useUserLocations";
 import { getFilteredUserLocations } from "@/utils/equipmentLocationMapping";
 import SortDropdown from "./SortDropdown";
+import { useScrollToTopButton } from "@/hooks/useScrollToTopButton";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 
 interface HybridViewProps {
   filteredEquipment: Equipment[];
@@ -54,6 +56,18 @@ const HybridView = ({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const desktopListRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to top buttons for different layouts
+  const { showButton: showMobileScrollButton, scrollToTop: scrollMobileToTop } = useScrollToTopButton({
+    threshold: 200,
+    containerRef: listRef
+  });
+
+  const { showButton: showDesktopScrollButton, scrollToTop: scrollDesktopToTop } = useScrollToTopButton({
+    threshold: 200,
+    containerRef: desktopListRef
+  });
 
   // Convert equipment to map format
   const mapEquipment: MapEquipment[] = filteredEquipment
@@ -237,6 +251,9 @@ const HybridView = ({
               </div>
             ))}
           </div>
+          
+          {/* Scroll to top button for mobile */}
+          <ScrollToTopButton show={showMobileScrollButton} onClick={scrollMobileToTop} />
         </div>
       </div>
     );
@@ -246,7 +263,7 @@ const HybridView = ({
   return (
     <div className="h-[calc(100vh-12rem)] flex">
       {/* Equipment list on left */}
-      <div className="w-3/5 overflow-y-auto p-4">
+      <div ref={desktopListRef} className="w-3/5 overflow-y-auto p-4">
         <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           {isLocationBased && (
             <div className="text-sm text-muted-foreground">
@@ -285,6 +302,9 @@ const HybridView = ({
             </div>
           )}
         </div>
+
+        {/* Scroll to top button for desktop */}
+        <ScrollToTopButton show={showDesktopScrollButton} onClick={scrollDesktopToTop} />
       </div>
       
       {/* Map on right */}

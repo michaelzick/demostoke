@@ -20,6 +20,8 @@ import { applyAdvancedFilters } from "@/utils/advancedFiltering";
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
 import { useUserLocations } from "@/hooks/useUserLocations";
 import useScrollToTop from "@/hooks/useScrollToTop";
+import { useScrollToTopButton } from "@/hooks/useScrollToTopButton";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 
 const SearchResultsPage = () => {
   usePageMetadata({
@@ -233,6 +235,11 @@ const SearchResultsPage = () => {
   // Scroll to top on mount
   useScrollToTop();
 
+  // Scroll to top button for list view
+  const { showButton: showScrollButton, scrollToTop: scrollListToTop } = useScrollToTopButton({
+    threshold: 300
+  });
+
   // Convert AISearchResult[] to MapEquipment[] for the map component
   const mapEquipment = sortedResults
     .filter(item => item.location && typeof item.location.lat === 'number' && typeof item.location.lng === 'number')
@@ -404,6 +411,11 @@ const SearchResultsPage = () => {
             </div>
           )}
         </div>
+      )}
+
+      {/* Scroll to top button - only show in list view */}
+      {viewMode === "list" && (
+        <ScrollToTopButton show={showScrollButton} onClick={scrollListToTop} />
       )}
     </div>
   );

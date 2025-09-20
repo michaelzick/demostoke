@@ -46,6 +46,8 @@ import usePageMetadata from "@/hooks/usePageMetadata";
 import { useAuth } from "@/helpers";
 import type { UserEquipment } from "@/types/equipment";
 import { buildEquipmentTrackingFrom } from "@/utils/tracking";
+import { useScrollToTopButton } from "@/hooks/useScrollToTopButton";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 
 const MyEquipmentPage = () => {
   usePageMetadata({
@@ -207,6 +209,11 @@ const MyEquipmentPage = () => {
   const categories = [
     ...new Set(equipment?.map((item) => item.category) || []),
   ];
+
+  // Scroll to top button
+  const { showButton: showScrollButton, scrollToTop } = useScrollToTopButton({
+    threshold: 300
+  });
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -527,6 +534,9 @@ const MyEquipmentPage = () => {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Scroll to top button */}
+      <ScrollToTopButton show={showScrollButton} onClick={scrollToTop} />
     </div>
   );
 };

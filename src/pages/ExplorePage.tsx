@@ -14,6 +14,8 @@ import { Equipment } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
 import useScrollToTop from "@/hooks/useScrollToTop";
+import { useScrollToTopButton } from "@/hooks/useScrollToTopButton";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { useUserLocations } from "@/hooks/useUserLocations";
 import { getFilteredUserLocations } from "@/utils/equipmentLocationMapping";
 import { useIsAdmin } from "@/hooks/useUserRole";
@@ -47,6 +49,11 @@ const ExplorePage = () => {
 
   // Scroll to top on mount
   useScrollToTop();
+
+  // Scroll to top button for list view
+  const { showButton: showScrollButton, scrollToTop: scrollListToTop } = useScrollToTopButton({
+    threshold: 300
+  });
 
   // Load equipment data using global app settings
   useEffect(() => {
@@ -266,6 +273,11 @@ const ExplorePage = () => {
             </div>
           )}
         </div>
+      )}
+
+      {/* Scroll to top button - only show in list view */}
+      {viewMode === "list" && (
+        <ScrollToTopButton show={showScrollButton} onClick={scrollListToTop} />
       )}
     </div>
   );

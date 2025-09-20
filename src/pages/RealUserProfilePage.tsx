@@ -25,6 +25,8 @@ import { useProfileImageHandlers } from "@/hooks/useProfileImageHandlers";
 import { useHeroImageHandlers } from "@/hooks/useHeroImageHandlers";
 import { useProfileData } from "@/hooks/useProfileData";
 import { useProfileUpdate } from "@/hooks/useProfileUpdate";
+import { useScrollToTopButton } from "@/hooks/useScrollToTopButton";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import type { UserProfile } from "@/types";
 import type { UserEquipment } from "@/types/equipment";
 
@@ -95,6 +97,11 @@ const RealUserProfilePage = () => {
     setHeroImage,
     setIsUploadingHeroImage,
     setIsDeletingHeroImage,
+  });
+
+  // Scroll to top button
+  const { showButton: showScrollButton, scrollToTop } = useScrollToTopButton({
+    threshold: 300
   });
 
 
@@ -329,6 +336,9 @@ const RealUserProfilePage = () => {
           </div>
         </div>
       </div>
+
+      {/* Scroll to top button */}
+      <ScrollToTopButton show={showScrollButton} onClick={scrollToTop} />
     </div>
   );
 };
