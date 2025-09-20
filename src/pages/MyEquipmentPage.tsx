@@ -63,6 +63,11 @@ const MyEquipmentPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [visibilityFilter, setVisibilityFilter] = useState("all");
 
+  // Scroll to top button - must be called before any conditional returns
+  const { showButton: showScrollButton, scrollToTop } = useScrollToTopButton({
+    threshold: 300
+  });
+
   const { data: equipment, isLoading, error } = useUserEquipment(user?.id);
   const deleteEquipmentMutation = useDeleteEquipment();
   const updateVisibilityMutation = useUpdateEquipmentVisibility();
@@ -210,10 +215,6 @@ const MyEquipmentPage = () => {
     ...new Set(equipment?.map((item) => item.category) || []),
   ];
 
-  // Scroll to top button
-  const { showButton: showScrollButton, scrollToTop } = useScrollToTopButton({
-    threshold: 300
-  });
 
   return (
     <div className="container mx-auto px-4 py-8">
