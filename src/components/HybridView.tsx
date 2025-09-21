@@ -60,8 +60,8 @@ const HybridView = ({
 
   // Scroll to top buttons for different layouts
   const { showButton: showMobileScrollButton, scrollToTop: scrollMobileToTop } = useScrollToTopButton({
-    threshold: 200,
-    containerRef: listRef
+    threshold: 200
+    // No containerRef for mobile - it should scroll the window since mobile layout scrolls the whole page
   });
 
   const { showButton: showDesktopScrollButton, scrollToTop: scrollDesktopToTop } = useScrollToTopButton({
