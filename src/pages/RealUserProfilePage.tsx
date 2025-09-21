@@ -25,15 +25,15 @@ import { useProfileImageHandlers } from "@/hooks/useProfileImageHandlers";
 import { useHeroImageHandlers } from "@/hooks/useHeroImageHandlers";
 import { useProfileData } from "@/hooks/useProfileData";
 import { useProfileUpdate } from "@/hooks/useProfileUpdate";
+import useScrollToTop from "@/hooks/useScrollToTop";
 import { useScrollToTopButton } from "@/hooks/useScrollToTopButton";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import type { UserProfile } from "@/types";
 import type { UserEquipment } from "@/types/equipment";
 
 const RealUserProfilePage = () => {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  // Scroll to top on mount
+  useScrollToTop();
 
   const { slug } = useParams();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();

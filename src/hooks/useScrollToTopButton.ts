@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 interface UseScrollToTopButtonOptions {
   threshold?: number;
@@ -25,7 +25,6 @@ export const useScrollToTopButton = (options: UseScrollToTopButtonOptions = {}) 
       }
     };
 
-    const scrollTarget = containerRef?.current || window;
     
     if (containerRef?.current) {
       containerRef.current.addEventListener('scroll', handleScroll);
