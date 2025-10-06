@@ -274,18 +274,68 @@ export type Database = {
       }
       design_system_settings: {
         Row: {
+          auto_publish: boolean | null
+          build_command: string | null
+          code_generation: string | null
+          created_at: string
+          default_theme: string | null
+          id: string
+          notifications: boolean | null
+          project_description: string | null
+          project_name: string | null
+          project_version: string | null
+          public_components: boolean | null
+          storybook_port: string | null
+          test_command: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_publish?: boolean | null
+          build_command?: string | null
+          code_generation?: string | null
+          created_at?: string
+          default_theme?: string | null
+          id?: string
+          notifications?: boolean | null
+          project_description?: string | null
+          project_name?: string | null
+          project_version?: string | null
+          public_components?: boolean | null
+          storybook_port?: string | null
+          test_command?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_publish?: boolean | null
+          build_command?: string | null
+          code_generation?: string | null
+          created_at?: string
+          default_theme?: string | null
+          id?: string
+          notifications?: boolean | null
+          project_description?: string | null
+          project_name?: string | null
+          project_version?: string | null
+          public_components?: boolean | null
+          storybook_port?: string | null
+          test_command?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      design_system_tokens: {
+        Row: {
           accent_color: string | null
           accent_color_dark: string | null
-          auto_publish: boolean | null
           background_color: string | null
           background_color_dark: string | null
           base_font_size: string | null
           border_color: string | null
           border_color_dark: string | null
-          build_command: string | null
-          code_generation: string | null
           created_at: string
-          default_theme: string | null
           destructive_color: string | null
           destructive_color_dark: string | null
           font_body_lg: string | null
@@ -304,13 +354,8 @@ export type Database = {
           id: string
           muted_color: string | null
           muted_color_dark: string | null
-          notifications: boolean | null
           primary_color: string | null
           primary_color_dark: string | null
-          project_description: string | null
-          project_name: string | null
-          project_version: string | null
-          public_components: boolean | null
           ring_color: string | null
           ring_color_dark: string | null
           secondary_color: string | null
@@ -339,10 +384,8 @@ export type Database = {
           spacing_sm: string | null
           spacing_xl: string | null
           spacing_xs: string | null
-          storybook_port: string | null
           success_color: string | null
           success_color_dark: string | null
-          test_command: string | null
           updated_at: string
           user_id: string
           warning_color: string | null
@@ -351,16 +394,12 @@ export type Database = {
         Insert: {
           accent_color?: string | null
           accent_color_dark?: string | null
-          auto_publish?: boolean | null
           background_color?: string | null
           background_color_dark?: string | null
           base_font_size?: string | null
           border_color?: string | null
           border_color_dark?: string | null
-          build_command?: string | null
-          code_generation?: string | null
           created_at?: string
-          default_theme?: string | null
           destructive_color?: string | null
           destructive_color_dark?: string | null
           font_body_lg?: string | null
@@ -379,13 +418,8 @@ export type Database = {
           id?: string
           muted_color?: string | null
           muted_color_dark?: string | null
-          notifications?: boolean | null
           primary_color?: string | null
           primary_color_dark?: string | null
-          project_description?: string | null
-          project_name?: string | null
-          project_version?: string | null
-          public_components?: boolean | null
           ring_color?: string | null
           ring_color_dark?: string | null
           secondary_color?: string | null
@@ -414,10 +448,8 @@ export type Database = {
           spacing_sm?: string | null
           spacing_xl?: string | null
           spacing_xs?: string | null
-          storybook_port?: string | null
           success_color?: string | null
           success_color_dark?: string | null
-          test_command?: string | null
           updated_at?: string
           user_id: string
           warning_color?: string | null
@@ -426,16 +458,12 @@ export type Database = {
         Update: {
           accent_color?: string | null
           accent_color_dark?: string | null
-          auto_publish?: boolean | null
           background_color?: string | null
           background_color_dark?: string | null
           base_font_size?: string | null
           border_color?: string | null
           border_color_dark?: string | null
-          build_command?: string | null
-          code_generation?: string | null
           created_at?: string
-          default_theme?: string | null
           destructive_color?: string | null
           destructive_color_dark?: string | null
           font_body_lg?: string | null
@@ -454,13 +482,8 @@ export type Database = {
           id?: string
           muted_color?: string | null
           muted_color_dark?: string | null
-          notifications?: boolean | null
           primary_color?: string | null
           primary_color_dark?: string | null
-          project_description?: string | null
-          project_name?: string | null
-          project_version?: string | null
-          public_components?: boolean | null
           ring_color?: string | null
           ring_color_dark?: string | null
           secondary_color?: string | null
@@ -489,10 +512,8 @@ export type Database = {
           spacing_sm?: string | null
           spacing_xl?: string | null
           spacing_xs?: string | null
-          storybook_port?: string | null
           success_color?: string | null
           success_color_dark?: string | null
-          test_command?: string | null
           updated_at?: string
           user_id?: string
           warning_color?: string | null
@@ -633,6 +654,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipment_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -808,6 +836,7 @@ export type Database = {
           updated_at: string
           user_id: string
           user_info: Json
+          vault_secret_id: string | null
         }
         Insert: {
           access_token: string
@@ -817,6 +846,7 @@ export type Database = {
           updated_at?: string
           user_id: string
           user_info: Json
+          vault_secret_id?: string | null
         }
         Update: {
           access_token?: string
@@ -826,6 +856,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
           user_info?: Json
+          vault_secret_id?: string | null
         }
         Relationships: []
       }
@@ -1223,7 +1254,66 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          about: string | null
+          address: string | null
+          avatar_url: string | null
+          created_at: string | null
+          hero_image_url: string | null
+          id: string | null
+          location_lat: number | null
+          location_lng: number | null
+          member_since: string | null
+          name: string | null
+          phone: string | null
+          privacy_acknowledgment: boolean | null
+          show_address: boolean | null
+          show_location: boolean | null
+          show_phone: boolean | null
+          show_website: boolean | null
+          website: string | null
+        }
+        Insert: {
+          about?: string | null
+          address?: never
+          avatar_url?: string | null
+          created_at?: string | null
+          hero_image_url?: string | null
+          id?: string | null
+          location_lat?: never
+          location_lng?: never
+          member_since?: string | null
+          name?: string | null
+          phone?: never
+          privacy_acknowledgment?: boolean | null
+          show_address?: boolean | null
+          show_location?: boolean | null
+          show_phone?: boolean | null
+          show_website?: boolean | null
+          website?: never
+        }
+        Update: {
+          about?: string | null
+          address?: never
+          avatar_url?: string | null
+          created_at?: string | null
+          hero_image_url?: string | null
+          id?: string | null
+          location_lat?: never
+          location_lng?: never
+          member_since?: string | null
+          name?: string | null
+          phone?: never
+          privacy_acknowledgment?: boolean | null
+          show_address?: boolean | null
+          show_location?: boolean | null
+          show_phone?: boolean | null
+          show_website?: boolean | null
+          website?: never
+        }
+        Relationships: []
+      }
     }
     Functions: {
       cleanup_unused_downloaded_images: {
@@ -1232,6 +1322,10 @@ export type Database = {
           deleted_files: number
           deleted_records: number
         }[]
+      }
+      delete_figma_token_encrypted: {
+        Args: { p_user_id: string }
+        Returns: undefined
       }
       find_unused_downloaded_images: {
         Args: Record<PropertyKey, never>
@@ -1244,6 +1338,10 @@ export type Database = {
       get_app_setting: {
         Args: { key: string }
         Returns: Json
+      }
+      get_figma_token_decrypted: {
+        Args: { p_user_id: string }
+        Returns: string
       }
       get_trending_equipment: {
         Args: { limit_count?: number }
@@ -1274,9 +1372,22 @@ export type Database = {
         }
         Returns: undefined
       }
+      migrate_figma_tokens_to_vault: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       refresh_performance_views: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      store_figma_token_encrypted: {
+        Args: {
+          p_access_token: string
+          p_team_id?: string
+          p_user_id: string
+          p_user_info: Json
+        }
+        Returns: string
       }
     }
     Enums: {
