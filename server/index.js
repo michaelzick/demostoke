@@ -73,8 +73,8 @@ app.use((req, res, next) => {
       media-src 'self' https: http:;
       connect-src 'self' https://qtlhqsqanbxgfbcjigrl.supabase.co https://api2.amplitude.com https://sr-client-cfg.amplitude.com https://cdn.amplitude.com https://api-sr.amplitude.com https://www.google-analytics.com https://www.googletagmanager.com https://analytics.google.com https://api.mapbox.com https://events.mapbox.com https://*.tiles.mapbox.com https://*.mapbox.com https://cdn.gpteng.co https://hcaptcha.com https://*.hcaptcha.com https://js.hcaptcha.com;
       worker-src 'self' blob:;
-      child-src 'self' blob: https://hcaptcha.com https://*.hcaptcha.com;
-      frame-src 'self' https://hcaptcha.com https://*.hcaptcha.com;
+      child-src 'self' blob: https://hcaptcha.com https://*.hcaptcha.com https://www.youtube.com;
+      frame-src 'self' https://hcaptcha.com https://*.hcaptcha.com https://www.youtube.com;
       frame-ancestors 'none';
     `.replace(/\s+/g, ' ').trim(),
   });
