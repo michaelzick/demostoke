@@ -829,34 +829,31 @@ export type Database = {
       }
       figma_connections: {
         Row: {
-          access_token: string | null
           created_at: string
           id: string
           team_id: string | null
           updated_at: string
           user_id: string
           user_info: Json
-          vault_secret_id: string | null
+          vault_secret_id: string
         }
         Insert: {
-          access_token?: string | null
           created_at?: string
           id?: string
           team_id?: string | null
           updated_at?: string
           user_id: string
           user_info: Json
-          vault_secret_id?: string | null
+          vault_secret_id: string
         }
         Update: {
-          access_token?: string | null
           created_at?: string
           id?: string
           team_id?: string | null
           updated_at?: string
           user_id?: string
           user_info?: Json
-          vault_secret_id?: string | null
+          vault_secret_id?: string
         }
         Relationships: []
       }
