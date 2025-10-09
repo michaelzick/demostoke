@@ -13,6 +13,15 @@ import {
   SidebarProvider,
   useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import BlogFilterSidebar from "@/components/blog/BlogFilterSidebar";
 import { BlogPost } from "@/lib/blog";
 import { blogService } from "@/services/blogService";
@@ -23,6 +32,8 @@ import { toast } from "@/hooks/use-toast";
 import { featuredPostsService } from "@/services/featuredPostsService";
 import BlogFooter from "@/components/BlogFooter";
 import { useAuth } from "@/contexts/auth";
+
+const POSTS_PER_PAGE = 12;
 
 const BlogPageInner = () => {
   usePageMetadata({
@@ -44,9 +55,15 @@ const BlogPageInner = () => {
   const [sortBy, setSortBy] = useState<'latest' | 'oldest'>('latest');
   const [selectedDateFilter, setSelectedDateFilter] = useState<string>("");
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1', 10));
   const { data: userRole } = useUserRole();
   const isAdmin = userRole === 'admin';
   const { toggleSidebar } = useSidebar();
+
+  // Pagination calculations
+  const totalPages = Math.ceil(searchResults.length / POSTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+  const paginatedResults = searchResults.slice(startIndex, startIndex + POSTS_PER_PAGE);
 
   // Load all posts and featured posts on mount
   useEffect(() => {
@@ -82,9 +99,18 @@ const BlogPageInner = () => {
   useEffect(() => {
     const urlSearch = searchParams.get('search') || "";
     const urlCategory = searchParams.get('category') || "";
+    const urlPage = parseInt(searchParams.get('page') || '1', 10);
     setSearchQuery(urlSearch);
     setSelectedFilter(urlCategory);
+    setCurrentPage(urlPage);
   }, [searchParams]);
+
+  // Reset to page 1 when search results change
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(1);
+    }
+  }, [searchResults.length, totalPages, currentPage]);
 
   const filters = [
     { label: "Gear Reviews", value: "gear reviews" },
@@ -142,6 +168,7 @@ const BlogPageInner = () => {
       filteredResults = sortPosts(filteredResults);
 
       setSearchResults(filteredResults);
+      setCurrentPage(1);
 
       // Update URL
       const params = new URLSearchParams();
@@ -189,6 +216,7 @@ const BlogPageInner = () => {
     filtered = sortPosts(filtered);
 
     setSearchResults(filtered);
+    setCurrentPage(1);
 
     // Update URL
     const params = new URLSearchParams();
@@ -203,8 +231,105 @@ const BlogPageInner = () => {
     setSelectedDateFilter("");
     setShowFeaturedOnly(false);
     setSortBy('latest');
+    setCurrentPage(1);
     setSearchResults(sortPosts(allPosts));
     navigate('/blog', { replace: true });
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    const params = new URLSearchParams(searchParams);
+    params.set('page', page.toString());
+    navigate(`/blog?${params.toString()}`, { replace: true });
+  };
+
+  const renderPaginationItems = () => {
+    const items = [];
+    const showEllipsisStart = currentPage > 3;
+    const showEllipsisEnd = currentPage < totalPages - 2;
+
+    // Always show first page
+    items.push(
+      <PaginationItem key={1}>
+        <PaginationLink
+          onClick={() => handlePageChange(1)}
+          isActive={currentPage === 1}
+        >
+          1
+        </PaginationLink>
+      </PaginationItem>
+    );
+
+    // Show ellipsis or page 2
+    if (showEllipsisStart) {
+      items.push(<PaginationEllipsis key="ellipsis-start" />);
+    } else if (totalPages > 1) {
+      items.push(
+        <PaginationItem key={2}>
+          <PaginationLink
+            onClick={() => handlePageChange(2)}
+            isActive={currentPage === 2}
+          >
+            2
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    // Show current page and surrounding pages
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+    
+    for (let i = start; i <= end; i++) {
+      if (i === 1 || i === totalPages) continue; // Skip first and last as they're always shown
+      if (i === 2 && showEllipsisStart) continue; // Skip if we showed ellipsis
+      if (i === totalPages - 1 && showEllipsisEnd) continue; // Skip if we'll show ellipsis
+      
+      items.push(
+        <PaginationItem key={i}>
+          <PaginationLink
+            onClick={() => handlePageChange(i)}
+            isActive={currentPage === i}
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    // Show ellipsis or second-to-last page
+    if (showEllipsisEnd) {
+      items.push(<PaginationEllipsis key="ellipsis-end" />);
+    } else if (totalPages > 2 && currentPage < totalPages - 1) {
+      items.push(
+        <PaginationItem key={totalPages - 1}>
+          <PaginationLink
+            onClick={() => handlePageChange(totalPages - 1)}
+            isActive={currentPage === totalPages - 1}
+          >
+            {totalPages - 1}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    // Always show last page if more than 1 page
+    if (totalPages > 1) {
+      items.push(
+        <PaginationItem key={totalPages}>
+          <PaginationLink
+            onClick={() => handlePageChange(totalPages)}
+            isActive={currentPage === totalPages}
+          >
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    return items;
   };
 
   // Get unique months/years from all posts
@@ -348,7 +473,7 @@ const BlogPageInner = () => {
               {searchQuery ? `Search Results for "${searchQuery}"` : `Filtered by: ${filters.find(f => f.value === selectedFilter)?.label || selectedFilter}`}
             </h2>
             <p className="text-muted-foreground">
-              {searchResults.length} {searchResults.length === 1 ? "post" : "posts"} found
+              Showing {startIndex + 1}-{Math.min(startIndex + POSTS_PER_PAGE, searchResults.length)} of {searchResults.length} {searchResults.length === 1 ? "post" : "posts"}
             </p>
           </div>
         )}
@@ -368,87 +493,109 @@ const BlogPageInner = () => {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {searchResults.map((post) => (
-              <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <Link to={`/blog/${post.id}`} className="block">
-                  <div className="aspect-video overflow-hidden">
-                    <img
-                      src={post.thumbnail}
-                      alt={post.title}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                </Link>
-                <CardHeader>
-                  {isAdmin && (
-                    <div className="flex items-center gap-2 mb-3">
-                      <Checkbox
-                        id={`featured-${post.id}`}
-                        checked={featuredPosts.includes(post.id)}
-                        onCheckedChange={(checked) => handleFeatureToggle(post.id, checked as boolean)}
-                        disabled={!featuredPosts.includes(post.id) && featuredPosts.length >= 3}
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {paginatedResults.map((post) => (
+                <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                  <Link to={`/blog/${post.id}`} className="block">
+                    <div className="aspect-video overflow-hidden">
+                      <img
+                        src={post.thumbnail}
+                        alt={post.title}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                       />
-                      <label
-                        htmlFor={`featured-${post.id}`}
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                      >
-                        Feature on homepage
-                      </label>
                     </div>
-                  )}
-                  <div className="flex items-center gap-2 mb-2">
-                    <Link to={`/blog?category=${encodeURIComponent(post.category)}`}>
-                      <Badge className={`${getCategoryColor(post.category)} transition-colors cursor-pointer`}>
-                        {post.category}
-                      </Badge>
-                    </Link>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      {formatDate(post.publishedAt)}
-                    </div>
-                  </div>
-                  <CardTitle className="line-clamp-2">
-                    <Link
-                      to={`/blog/${post.id}`}
-                      className="hover:text-primary transition-colors"
-                    >
-                      {post.title}
-                    </Link>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground mb-4 line-clamp-3">
-                    {post.excerpt}
-                  </p>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <div className="flex items-center">
-                      <User className="h-3 w-3 mr-1" />
-                      <Link
-                        to={post.authorId === 'chad-g' ? '/profile/chad-g' : `/user-profile/${slugify(post.author)}`}
-                        className="hover:text-primary transition-colors"
-                      >
-                        {post.author}
-                      </Link>
-                    </div>
-                    <div className="flex items-center">
-                      {/* <Clock className="h-3 w-3 mr-1" /> */}
-                      {/* {post.readTime} min read */}
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-1 mt-3">
-                    {Array.from(new Set(post.tags)).map((tag) => (
-                      <Link key={tag} to={`/blog?search=${encodeURIComponent(tag)}`}>
-                        <Badge variant="outline" className="text-xs hover:text-primary hover:border-primary hover:bg-transparent transition-colors cursor-pointer">
-                          {tag}
+                  </Link>
+                  <CardHeader>
+                    {isAdmin && (
+                      <div className="flex items-center gap-2 mb-3">
+                        <Checkbox
+                          id={`featured-${post.id}`}
+                          checked={featuredPosts.includes(post.id)}
+                          onCheckedChange={(checked) => handleFeatureToggle(post.id, checked as boolean)}
+                          disabled={!featuredPosts.includes(post.id) && featuredPosts.length >= 3}
+                        />
+                        <label
+                          htmlFor={`featured-${post.id}`}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Feature on homepage
+                        </label>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 mb-2">
+                      <Link to={`/blog?category=${encodeURIComponent(post.category)}`}>
+                        <Badge className={`${getCategoryColor(post.category)} transition-colors cursor-pointer`}>
+                          {post.category}
                         </Badge>
                       </Link>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        {formatDate(post.publishedAt)}
+                      </div>
+                    </div>
+                    <CardTitle className="line-clamp-2">
+                      <Link
+                        to={`/blog/${post.id}`}
+                        className="hover:text-primary transition-colors"
+                      >
+                        {post.title}
+                      </Link>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground mb-4 line-clamp-3">
+                      {post.excerpt}
+                    </p>
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <div className="flex items-center">
+                        <User className="h-3 w-3 mr-1" />
+                        <Link
+                          to={post.authorId === 'chad-g' ? '/profile/chad-g' : `/user-profile/${slugify(post.author)}`}
+                          className="hover:text-primary transition-colors"
+                        >
+                          {post.author}
+                        </Link>
+                      </div>
+                      <div className="flex items-center">
+                        {/* <Clock className="h-3 w-3 mr-1" /> */}
+                        {/* {post.readTime} min read */}
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-1 mt-3">
+                      {Array.from(new Set(post.tags)).map((tag) => (
+                        <Link key={tag} to={`/blog?search=${encodeURIComponent(tag)}`}>
+                          <Badge variant="outline" className="text-xs hover:text-primary hover:border-primary hover:bg-transparent transition-colors cursor-pointer">
+                            {tag}
+                          </Badge>
+                        </Link>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="mt-12 flex justify-center">
+                <Pagination>
+                  <PaginationContent>
+                    {currentPage > 1 && (
+                      <PaginationPrevious
+                        onClick={() => handlePageChange(currentPage - 1)}
+                      />
+                    )}
+                    {renderPaginationItems()}
+                    {currentPage < totalPages && (
+                      <PaginationNext
+                        onClick={() => handlePageChange(currentPage + 1)}
+                      />
+                    )}
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
