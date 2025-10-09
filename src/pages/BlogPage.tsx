@@ -284,8 +284,8 @@ const BlogPageInner = () => {
     
     for (let i = start; i <= end; i++) {
       if (i === 1 || i === totalPages) continue; // Skip first and last as they're always shown
-      if (i === 2 && showEllipsisStart) continue; // Skip if we showed ellipsis
-      if (i === totalPages - 1 && showEllipsisEnd) continue; // Skip if we'll show ellipsis
+        if (i === 2 && !showEllipsisStart) continue; // Skip if we already showed page 2
+        if (i === totalPages - 1 && !showEllipsisEnd) continue; // Skip if we'll show totalPages-1 later
       
       items.push(
         <PaginationItem key={i}>
