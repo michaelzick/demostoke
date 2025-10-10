@@ -302,7 +302,7 @@ const BlogPageInner = () => {
     // Show ellipsis or second-to-last page
     if (showEllipsisEnd) {
       items.push(<PaginationEllipsis key="ellipsis-end" />);
-    } else if (totalPages > 2 && currentPage < totalPages - 1) {
+    } else if (totalPages > 2 && currentPage < totalPages - 2) {
       items.push(
         <PaginationItem key={totalPages - 1}>
           <PaginationLink
