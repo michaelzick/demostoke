@@ -40,7 +40,6 @@ serve(async (req) => {
 
     // Whitelist allowed targets
     const ALLOWED: Record<string, string[]> = {
-      equipment: ['image_url'],
       equipment_images: ['image_url'],
       profiles: ['avatar_url', 'hero_image_url']
     };
@@ -208,12 +207,6 @@ serve(async (req) => {
       old_values: null,
       new_values: { [sourceColumn]: processedUrl }
     });
-
-    // Step 11: Clean up any temp records
-    await supabase
-      .from('temp_images')
-      .delete()
-      .eq('original_url', imageUrl);
 
     console.log('Image processing completed successfully');
 

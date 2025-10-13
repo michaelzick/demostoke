@@ -40,7 +40,6 @@ serve(async (req) => {
 
     // Whitelist allowed targets
     const ALLOWED: Record<string, string[]> = {
-      equipment: ['image_url'],
       equipment_images: ['image_url'],
       profiles: ['avatar_url', 'hero_image_url']
     };
@@ -143,29 +142,7 @@ serve(async (req) => {
     const webpUrl = urlData.publicUrl;
     console.log('WebP uploaded to:', webpUrl);
 
-    // Step 8: Save conversion record to database
-    const { error: dbError } = await supabase
-      .from('webp_images')
-      .insert({
-        original_url: imageUrl,
-        webp_url: webpUrl,
-        source_table: sourceTable,
-        source_column: sourceColumn,
-        source_record_id: sourceRecordId,
-        original_size: originalSize,
-        webp_size: webpSize,
-        original_width: originalWidth,
-        original_height: originalHeight,
-        webp_width: newWidth,
-        webp_height: newHeight,
-      });
-
-    if (dbError) {
-      console.error('Failed to save conversion record:', dbError);
-      // Continue even if logging fails
-    }
-
-    // Step 9: Update the original record with new WebP URL
+    // Step 8: Update the original record with new WebP URL
     console.log('Updating original record...');
     const { error: updateError } = await supabase
       .from(sourceTable)
@@ -184,12 +161,6 @@ serve(async (req) => {
       old_values: null,
       new_values: { [sourceColumn]: webpUrl }
     });
-
-    // Step 10: Clean up any temp records
-    await supabase
-      .from('temp_images')
-      .delete()
-      .eq('original_url', imageUrl);
 
     console.log('Conversion completed successfully');
 

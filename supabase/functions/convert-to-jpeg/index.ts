@@ -42,7 +42,6 @@ serve(async (req) => {
 
     // Whitelist allowed targets
     const ALLOWED: Record<string, string[]> = {
-      equipment: ['image_url'],
       equipment_images: ['image_url'],
       profiles: ['avatar_url', 'hero_image_url']
     };
@@ -160,29 +159,7 @@ serve(async (req) => {
     const jpegUrl = urlData.publicUrl;
     console.log('JPEG uploaded to:', jpegUrl);
 
-    // Step 10: Save conversion record to database
-    const { error: dbError } = await supabase
-      .from('jpeg_images')
-      .insert({
-        original_url: imageUrl,
-        jpeg_url: jpegUrl,
-        source_table: sourceTable,
-        source_column: sourceColumn,
-        source_record_id: sourceRecordId,
-        original_size: originalSize,
-        jpeg_size: jpegSize,
-        original_width: originalWidth!,
-        original_height: originalHeight!,
-        jpeg_width: newWidth!,
-        jpeg_height: newHeight!,
-      });
-
-    if (dbError) {
-      console.error('Failed to save conversion record:', dbError);
-      // Continue even if logging fails
-    }
-
-    // Step 11: Update the original record with new JPEG URL
+    // Step 8: Update the original record with new JPEG URL
     console.log('Updating original record...');
     const { error: updateError } = await supabase
       .from(sourceTable)
@@ -201,12 +178,6 @@ serve(async (req) => {
       old_values: null,
       new_values: { [sourceColumn]: jpegUrl }
     });
-
-    // Step 12: Clean up any temp records
-    await supabase
-      .from('temp_images')
-      .delete()
-      .eq('original_url', imageUrl);
 
     console.log('JPEG conversion completed successfully');
 
