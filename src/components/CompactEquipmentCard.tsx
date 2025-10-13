@@ -39,7 +39,7 @@ const CompactEquipmentCard = ({
 }: CompactEquipmentCardProps) => {
   const location = useLocation();
   const trackingData = buildEquipmentTrackingFrom(equipment);
-  
+
   // no-op: toast not required in this compact card
   const images = equipment.images && equipment.images.length > 0 ? equipment.images : [];
   const hasMultipleImages = images.length > 1;
@@ -93,9 +93,9 @@ const CompactEquipmentCard = ({
               <CarouselNext className="right-2" />
             </Carousel>
           ) : (
-            <img 
-              src={images[0]} 
-              alt={equipment.name} 
+            <img
+              src={images[0]}
+              alt={equipment.name}
               className="h-48 w-full object-cover"
               loading="lazy"
               width="320"
@@ -108,7 +108,7 @@ const CompactEquipmentCard = ({
           </div>
         )}
       </div>
-  <CardContent className="p-4 min-h-[14.5em] flex flex-col">
+      <CardContent className="p-4 min-h-[14.5em] flex flex-col">
         <div className="flex justify-between items-start mb-1">
           <h3 className="font-medium dark:text-white line-clamp-2">
             {equipment.name}
@@ -122,8 +122,8 @@ const CompactEquipmentCard = ({
           </div>
         )}
 
-  {/* Wrap the remaining lower content so the bottom area can be aligned across cards */}
-  <div className="flex-1 flex flex-col justify-between">
+        {/* Wrap the remaining lower content so the bottom area can be aligned across cards */}
+        <div className="flex-1 flex flex-col justify-between">
           <div>
             <Tooltip>
               <TooltipTrigger asChild>
