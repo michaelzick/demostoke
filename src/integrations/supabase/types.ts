@@ -931,69 +931,6 @@ export type Database = {
           },
         ]
       }
-      processed_images: {
-        Row: {
-          created_at: string
-          error_message: string | null
-          id: string
-          original_format: string | null
-          original_height: number | null
-          original_size: number | null
-          original_url: string
-          original_width: number | null
-          processed_format: string | null
-          processed_height: number | null
-          processed_size: number | null
-          processed_url: string
-          processed_width: number | null
-          source_column: string
-          source_record_id: string | null
-          source_table: string
-          updated_at: string
-          was_resized: boolean | null
-        }
-        Insert: {
-          created_at?: string
-          error_message?: string | null
-          id?: string
-          original_format?: string | null
-          original_height?: number | null
-          original_size?: number | null
-          original_url: string
-          original_width?: number | null
-          processed_format?: string | null
-          processed_height?: number | null
-          processed_size?: number | null
-          processed_url: string
-          processed_width?: number | null
-          source_column: string
-          source_record_id?: string | null
-          source_table: string
-          updated_at?: string
-          was_resized?: boolean | null
-        }
-        Update: {
-          created_at?: string
-          error_message?: string | null
-          id?: string
-          original_format?: string | null
-          original_height?: number | null
-          original_size?: number | null
-          original_url?: string
-          original_width?: number | null
-          processed_format?: string | null
-          processed_height?: number | null
-          processed_size?: number | null
-          processed_url?: string
-          processed_width?: number | null
-          source_column?: string
-          source_record_id?: string | null
-          source_table?: string
-          updated_at?: string
-          was_resized?: boolean | null
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           about: string | null
