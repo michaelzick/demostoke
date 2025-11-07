@@ -29,14 +29,20 @@ const CalendarHeader = ({
   return (
     <div className="flex flex-wrap items-center justify-between gap-y-2 p-4 border-b">
       <div className="flex items-center gap-4 w-full sm:w-auto">
-        <h2 className="text-xl font-semibold">
-          {format(currentDate, 'MMMM yyyy')}
-        </h2>
         <div className="flex items-center gap-1">
           <Button
             size="sm"
             variant="outline"
+            onClick={onGoToToday}
+          >
+            <Calendar className="h-4 w-4 mr-1" />
+            Today
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
             onClick={onPreviousMonth}
+            className="ml-2"
           >
             <ChevronLeft className="h-4 w-4" />
           </Button>
@@ -47,16 +53,10 @@ const CalendarHeader = ({
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={onGoToToday}
-            className="ml-2"
-          >
-            <Calendar className="h-4 w-4 mr-1" />
-            Today
-          </Button>
         </div>
+        <h2 className="text-xl font-semibold">
+          {format(currentDate, 'MMMM yyyy')}
+        </h2>
       </div>
       <div className="flex items-center gap-2 w-full sm:w-auto justify-end sm:justify-normal">
         <div className="flex items-center gap-1">

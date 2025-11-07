@@ -38,15 +38,6 @@ const ProximityFilter = ({
       )}
 
       <div className="flex flex-wrap gap-2">
-        <Button
-          variant={selectedRadius === null ? "default" : "outline"}
-          size="sm"
-          onClick={() => onRadiusChange(null)}
-          className="flex-1 min-w-[60px]"
-        >
-          All
-        </Button>
-
         {radiusOptions.map((radius) => (
           <Button
             key={radius}
@@ -59,6 +50,15 @@ const ProximityFilter = ({
             {radius}
           </Button>
         ))}
+
+        <Button
+          variant={selectedRadius === null ? "default" : "outline"}
+          size="sm"
+          onClick={() => onRadiusChange(null)}
+          className="flex-1 min-w-[60px]"
+        >
+          All
+        </Button>
       </div>
 
       {userLocation && !loading && (
