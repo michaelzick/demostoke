@@ -27,36 +27,38 @@ const CalendarHeader = ({
   isLoadingRole
 }: CalendarHeaderProps) => {
   return (
-    <div className="flex flex-col gap-2 p-4 border-b">
-      <div className="flex items-center gap-1">
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={onGoToToday}
-        >
-          <Calendar className="h-4 w-4 mr-1" />
-          Today
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={onPreviousMonth}
-          className="ml-2"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={onNextMonth}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 p-4 border-b">
+      <div className="flex flex-col md:flex-row md:items-center gap-2">
+        <div className="flex items-center gap-1">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onGoToToday}
+          >
+            <Calendar className="h-4 w-4 mr-1" />
+            Today
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onPreviousMonth}
+            className="ml-2"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onNextMonth}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+        
+        <h2 className="text-xl font-semibold md:ml-2">
+          {format(currentDate, 'MMMM yyyy')}
+        </h2>
       </div>
-      
-      <h2 className="text-xl font-semibold">
-        {format(currentDate, 'MMMM yyyy')}
-      </h2>
 
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1">
