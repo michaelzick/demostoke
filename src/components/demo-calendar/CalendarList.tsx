@@ -1,5 +1,6 @@
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay } from "date-fns";
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
+import { calculateDistance, isValidCoordinate } from "@/utils/distanceCalculation";
 import CalendarHeader from "./CalendarHeader";
 import TBDEventsSection from "./TBDEventsSection";
 import EventListItem from "./EventListItem";
@@ -8,6 +9,9 @@ interface CalendarListProps {
   currentDate: Date;
   events: DemoEvent[];
   categoryFilters: CategoryFilter[];
+  proximityRadius: number | null;
+  userLatitude: number | null;
+  userLongitude: number | null;
   onPreviousMonth: () => void;
   onNextMonth: () => void;
   onGoToToday: () => void;
@@ -30,6 +34,9 @@ const CalendarList = ({
   currentDate,
   events,
   categoryFilters,
+  proximityRadius,
+  userLatitude,
+  userLongitude,
   onPreviousMonth,
   onNextMonth,
   onGoToToday,
@@ -47,7 +54,21 @@ const CalendarList = ({
   const monthEnd = endOfMonth(currentDate);
 
   const enabledCategories = categoryFilters.filter(f => f.enabled).map(f => f.category);
-  const filteredEvents = events.filter(event => enabledCategories.includes(event.gear_category));
+  let filteredEvents = events.filter(event => enabledCategories.includes(event.gear_category));
+
+  // Apply proximity filter if active
+  if (proximityRadius !== null && userLatitude && userLongitude) {
+    filteredEvents = filteredEvents.filter(event => {
+      if (!isValidCoordinate(event.location_lat, event.location_lng)) return false;
+      const distance = calculateDistance(
+        userLatitude,
+        userLongitude,
+        event.location_lat!,
+        event.location_lng!
+      );
+      return distance <= proximityRadius;
+    });
+  }
 
   const eventsInMonth = filteredEvents.filter(event => {
     if (!event.event_date) return false;

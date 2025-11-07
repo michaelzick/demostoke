@@ -33,6 +33,8 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
     event_date: '',
     event_time: '',
     location: '',
+    location_lat: null,
+    location_lng: null,
     equipment_available: '',
     company: '',
     thumbnail_url: '',
@@ -54,6 +56,8 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
         event_date: editEvent.event_date || '',
         event_time: editEvent.event_time || '',
         location: editEvent.location || '',
+        location_lat: editEvent.location_lat || null,
+        location_lng: editEvent.location_lng || null,
         equipment_available: editEvent.equipment_available || '',
         company: editEvent.company || '',
         thumbnail_url: editEvent.thumbnail_url || '',
@@ -66,6 +70,8 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
         event_date: '',
         event_time: '',
         location: '',
+        location_lat: null,
+        location_lng: null,
         equipment_available: '',
         company: '',
         thumbnail_url: '',
@@ -117,6 +123,8 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
       event_date: formData.event_date?.trim() || null,
       event_time: formData.event_time?.trim() || null,
       location: formData.location?.trim() || null,
+      location_lat: formData.location_lat,
+      location_lng: formData.location_lng,
       equipment_available: formData.equipment_available?.trim() || null,
       company: formData.company?.trim() || '',
       thumbnail_url: formData.thumbnail_url?.trim() || null,
@@ -133,6 +141,8 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
       event_date: '',
       event_time: '',
       location: '',
+      location_lat: null,
+      location_lng: null,
       equipment_available: '',
       company: '',
       thumbnail_url: '',
@@ -246,6 +256,33 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
               onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value || '' }))}
               placeholder="Enter event location"
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="location_lat">Latitude</Label>
+              <Input
+                id="location_lat"
+                type="number"
+                step="any"
+                value={formData.location_lat || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, location_lat: e.target.value ? parseFloat(e.target.value) : null }))}
+                placeholder="40.7128"
+              />
+              <p className="text-xs text-muted-foreground mt-1">For proximity filter</p>
+            </div>
+            <div>
+              <Label htmlFor="location_lng">Longitude</Label>
+              <Input
+                id="location_lng"
+                type="number"
+                step="any"
+                value={formData.location_lng || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, location_lng: e.target.value ? parseFloat(e.target.value) : null }))}
+                placeholder="-74.0060"
+              />
+              <p className="text-xs text-muted-foreground mt-1">For proximity filter</p>
+            </div>
           </div>
 
           <div>

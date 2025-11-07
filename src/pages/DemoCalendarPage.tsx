@@ -5,12 +5,14 @@ import useScrollToTop from "@/hooks/useScrollToTop";
 import { useAuth } from "@/helpers";
 import { useDemoEvents } from "@/hooks/useDemoEvents";
 import { useCalendarNavigation } from "@/hooks/useCalendarNavigation";
+import { useGeolocation } from "@/hooks/useGeolocation";
 import { useIsAdmin } from "@/hooks/useUserRole";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { DemoEvent, DemoEventInput, CategoryFilter as CategoryFilterType } from "@/types/demo-calendar";
 import CalendarGrid from "@/components/demo-calendar/CalendarGrid";
 import CalendarList from "@/components/demo-calendar/CalendarList";
 import CategoryFilter from "@/components/demo-calendar/CategoryFilter";
+import ProximityFilter from "@/components/demo-calendar/ProximityFilter";
 import AddEventModal from "@/components/demo-calendar/AddEventModal";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useParams } from "react-router-dom";
@@ -41,6 +43,10 @@ const DemoCalendarPage = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<DemoEvent | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<DemoEvent | null>(null);
+  const [proximityRadius, setProximityRadius] = useState<number | null>(null);
+
+  // Get user location for proximity filtering
+  const { latitude, longitude, loading: locationLoading, permissionDenied } = useGeolocation();
 
   const [categoryFilters, setCategoryFilters] = useState<CategoryFilterType[]>([
     { category: 'snowboards', name: 'Snowboards', color: 'bg-rose-500', enabled: true },
@@ -173,7 +179,15 @@ const DemoCalendarPage = () => {
 
       <div className="grid lg:grid-cols-4 gap-6">
         {/* Sidebar */}
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 space-y-4">
+          <ProximityFilter
+            selectedRadius={proximityRadius}
+            onRadiusChange={setProximityRadius}
+            userLocation={latitude && longitude ? { latitude, longitude } : null}
+            loading={locationLoading}
+            permissionDenied={permissionDenied}
+          />
+          
           <CategoryFilter
             filters={categoryFilters}
             onToggle={handleToggleCategory}
@@ -187,6 +201,9 @@ const DemoCalendarPage = () => {
               currentDate={currentDate}
               events={events}
               categoryFilters={categoryFilters}
+              proximityRadius={proximityRadius}
+              userLatitude={latitude}
+              userLongitude={longitude}
               onPreviousMonth={goToPreviousMonth}
               onNextMonth={goToNextMonth}
               onGoToToday={goToToday}
@@ -205,6 +222,9 @@ const DemoCalendarPage = () => {
               currentDate={currentDate}
               events={events}
               categoryFilters={categoryFilters}
+              proximityRadius={proximityRadius}
+              userLatitude={latitude}
+              userLongitude={longitude}
               onPreviousMonth={goToPreviousMonth}
               onNextMonth={goToNextMonth}
               onGoToToday={goToToday}

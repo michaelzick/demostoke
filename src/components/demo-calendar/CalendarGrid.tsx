@@ -1,6 +1,7 @@
 
 import { startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, startOfWeek, endOfWeek } from "date-fns";
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
+import { calculateDistance, isValidCoordinate } from "@/utils/distanceCalculation";
 import CalendarHeader from "./CalendarHeader";
 import CalendarDaysHeader from "./CalendarDaysHeader";
 import CalendarDay from "./CalendarDay";
@@ -11,6 +12,9 @@ interface CalendarGridProps {
   currentDate: Date;
   events: DemoEvent[];
   categoryFilters: CategoryFilter[];
+  proximityRadius: number | null;
+  userLatitude: number | null;
+  userLongitude: number | null;
   onPreviousMonth: () => void;
   onNextMonth: () => void;
   onGoToToday: () => void;
@@ -35,6 +39,9 @@ const CalendarGrid = ({
   currentDate,
   events,
   categoryFilters,
+  proximityRadius,
+  userLatitude,
+  userLongitude,
   onPreviousMonth,
   onNextMonth,
   onGoToToday,
@@ -60,7 +67,21 @@ const CalendarGrid = ({
 
   // Filter events based on enabled categories
   const enabledCategories = categoryFilters.filter(f => f.enabled).map(f => f.category);
-  const filteredEvents = events.filter(event => enabledCategories.includes(event.gear_category));
+  let filteredEvents = events.filter(event => enabledCategories.includes(event.gear_category));
+
+  // Apply proximity filter if active
+  if (proximityRadius !== null && userLatitude && userLongitude) {
+    filteredEvents = filteredEvents.filter(event => {
+      if (!isValidCoordinate(event.location_lat, event.location_lng)) return false;
+      const distance = calculateDistance(
+        userLatitude,
+        userLongitude,
+        event.location_lat!,
+        event.location_lng!
+      );
+      return distance <= proximityRadius;
+    });
+  }
 
 
   // Get events for a specific date

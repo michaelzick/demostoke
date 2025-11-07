@@ -140,6 +140,8 @@ export type Database = {
           id: string
           is_featured: boolean
           location: string | null
+          location_lat: number | null
+          location_lng: number | null
           thumbnail_url: string | null
           title: string
           updated_at: string
@@ -155,6 +157,8 @@ export type Database = {
           id?: string
           is_featured?: boolean
           location?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
           thumbnail_url?: string | null
           title: string
           updated_at?: string
@@ -170,6 +174,8 @@ export type Database = {
           id?: string
           is_featured?: boolean
           location?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
@@ -996,7 +1002,7 @@ export type Database = {
           action: string
           created_at: string | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           new_values: Json | null
           old_values: Json | null
           record_id: string | null
@@ -1008,7 +1014,7 @@ export type Database = {
           action: string
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           new_values?: Json | null
           old_values?: Json | null
           record_id?: string | null
@@ -1020,7 +1026,7 @@ export type Database = {
           action?: string
           created_at?: string | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           new_values?: Json | null
           old_values?: Json | null
           record_id?: string | null
@@ -1122,7 +1128,7 @@ export type Database = {
     }
     Functions: {
       cleanup_unused_downloaded_images: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           deleted_files: number
           deleted_records: number
@@ -1133,17 +1139,14 @@ export type Database = {
         Returns: undefined
       }
       find_unused_downloaded_images: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           downloaded_url: string
           file_path: string
           reason: string
         }[]
       }
-      get_app_setting: {
-        Args: { key: string }
-        Returns: Json
-      }
+      get_app_setting: { Args: { key: string }; Returns: Json }
       get_figma_token_decrypted: {
         Args: { p_user_id: string }
         Returns: string
@@ -1163,10 +1166,7 @@ export type Database = {
         Args: { equipment_id: string }
         Returns: undefined
       }
-      is_admin: {
-        Args: { user_id?: string }
-        Returns: boolean
-      }
+      is_admin: { Args: { user_id?: string }; Returns: boolean }
       log_security_event: {
         Args: {
           action_type: string
@@ -1177,14 +1177,8 @@ export type Database = {
         }
         Returns: undefined
       }
-      migrate_figma_tokens_to_vault: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      refresh_performance_views: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      migrate_figma_tokens_to_vault: { Args: never; Returns: undefined }
+      refresh_performance_views: { Args: never; Returns: undefined }
       store_figma_token_encrypted: {
         Args: {
           p_access_token: string
