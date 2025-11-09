@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,8 +6,12 @@ import { Search } from "lucide-react";
 import { Snowflake, Mountains, Waves, Bicycle } from "@phosphor-icons/react";
 import { useAuth } from "@/helpers";
 
+const SLIDE_DURATION = 5000;
+
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [progress, setProgress] = useState(1);
+  const [animationCycle, setAnimationCycle] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -20,12 +24,50 @@ const HeroSection = () => {
     { type: 'video', url: '/vid/mtb_compressed_2_1920.mp4' },
   ];
 
+  const totalSlides = backgrounds.length;
+
+  const goToNextSlide = useCallback(() => {
+    setActiveIndex((prev) => (prev + 1) % totalSlides);
+    setProgress(1);
+    setAnimationCycle((prev) => prev + 1);
+  }, [totalSlides]);
+
+  const goToSlide = useCallback((index: number) => {
+    setActiveIndex(index);
+    setProgress(1);
+    setAnimationCycle((prev) => prev + 1);
+  }, []);
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % backgrounds.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [backgrounds.length]);
+    const timeout = setTimeout(() => {
+      goToNextSlide();
+    }, SLIDE_DURATION);
+
+    return () => clearTimeout(timeout);
+  }, [goToNextSlide, activeIndex, animationCycle]);
+
+  useEffect(() => {
+    let frameId: number | null = null;
+    const startTime = performance.now();
+
+    const animate = (now: number) => {
+      const elapsed = now - startTime;
+      const remaining = Math.max(1 - elapsed / SLIDE_DURATION, 0);
+      setProgress(remaining);
+
+      if (remaining > 0) {
+        frameId = requestAnimationFrame(animate);
+      }
+    };
+
+    frameId = requestAnimationFrame(animate);
+
+    return () => {
+      if (frameId !== null) {
+        cancelAnimationFrame(frameId);
+      }
+    };
+  }, [activeIndex, animationCycle]);
 
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -141,20 +183,33 @@ const HeroSection = () => {
         </div>
       </div>
       
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-center space-x-2">
-        {backgrounds.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setActiveIndex(index)}
-            className={`w-4 h-4 rounded-full transition-all ${
-              index === activeIndex
-                ? 'bg-white scale-110'
-                : 'bg-white/50 hover:bg-white/70'
-            } focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent`}
-            aria-label={`Show background video ${index + 1}`}
-            aria-pressed={index === activeIndex}
-          />
-        ))}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3">
+        {backgrounds.map((_, index) => {
+          const isActive = index === activeIndex;
+          const fillAmount = isActive ? progress : 1;
+
+          return (
+            <button
+              key={index}
+              type="button"
+              onClick={() => goToSlide(index)}
+              className={`relative h-[10px] overflow-hidden rounded-full border border-white/70 bg-white/10 backdrop-blur-md shadow-[0_8px_24px_rgba(0,0,0,0.35)] transition-all duration-500 ease-out focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${
+                isActive ? 'w-16 sm:w-20 opacity-100' : 'w-10 sm:w-12 opacity-75'
+              }`}
+              aria-label={`Show background video ${index + 1}`}
+              aria-pressed={isActive}
+            >
+              <span
+                aria-hidden="true"
+                className="absolute inset-0 rounded-full bg-gradient-to-r from-white/80 via-white/60 to-white/45 origin-right will-change-transform"
+                style={{
+                  transform: `scaleX(${fillAmount})`,
+                  transition: isActive ? "transform 0.1s linear" : "transform 0.3s ease-out",
+                }}
+              />
+            </button>
+          );
+        })}
       </div>
     </section>
   );
