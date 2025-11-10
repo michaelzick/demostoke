@@ -119,17 +119,17 @@ const HeroSection = () => {
           )}
         </div>
       ))}
-      
+
       <div className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 text-white">
-        <div className="max-w-3xl text-center bg-zinc-900/60 p-4 rounded-lg shadow-lg">
-          <h1 className="text-6xl sm:text-8xl md:text-9xl font-bold mb-4 text-primary" style={{ fontFamily: 'Tahoma, sans-serif' }}>
+        <div className="w-full max-w-3xl mx-auto text-center rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.45)] py-5 px-2.5 sm:py-8 sm:px-4">
+          <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 text-primary tracking-tight" style={{ fontFamily: 'Tahoma, sans-serif' }}>
             DemoStoke
           </h1>
-          <h2 className="text-2xl sm:text-4xl mb-8 max-w-2xl mx-auto text-shop">
+          <h2 className="text-lg sm:text-2xl md:text-3xl mb-8 max-w-2xl mx-auto text-shop">
             Find it. Ride it. Love it? Buy it.
           </h2>
           <div className="w-full max-w-2xl mx-auto mb-8">
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-2">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
                 <Input
@@ -137,13 +137,13 @@ const HeroSection = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="What can I help you find?"
-                  className="pl-10 h-12 text-base bg-white/90 dark:bg-zinc-900/90 border-white/20 dark:border-zinc-700/50 text-foreground"
+                  className="w-full pl-10 h-12 text-base bg-white/90 dark:bg-zinc-900/90 border-white/20 dark:border-zinc-700/50 text-foreground"
                 />
               </div>
               <Button
                 size="lg"
                 onClick={() => handleSearch()}
-                className="bg-primary hover:bg-primary/90 h-12 px-6"
+                className="bg-primary hover:bg-primary/90 h-12 px-6 w-full sm:w-auto"
               >
                 Search
               </Button>
@@ -181,7 +181,7 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-      
+
       <HeroVideoIndicators
         count={backgrounds.length}
         activeIndex={activeIndex}
