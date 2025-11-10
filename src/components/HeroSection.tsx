@@ -121,7 +121,7 @@ const HeroSection = () => {
       ))}
 
       <div className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-6 text-white">
-        <div className="w-full max-w-3xl mx-auto text-center rounded-2xl border border-white/20 bg-white/10 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.45)] py-5 px-2.5 sm:py-8 sm:px-4">
+        <div className="w-full max-w-3xl mx-auto text-center rounded-2xl border border-white/30 bg-[hsl(var(--background)_/_0.4)] backdrop-blur-2xl shadow-[0_25px_80px_rgba(0,0,0,0.55)] py-5 px-2.5 sm:py-8 sm:px-4">
           <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 text-primary tracking-tight" style={{ fontFamily: 'Tahoma, sans-serif' }}>
             DemoStoke
           </h1>
