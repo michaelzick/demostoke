@@ -8,11 +8,16 @@ const AuthLayout = () => {
       <div className="container flex h-16 items-center px-4 md:px-6">
         <Link to="/" className="flex items-center justify-center">
           <img
-            src="/logo.svg"
+            src="/img/demostoke-logo-ds-transparent-cropped.webp"
             alt="DemoStoke Logo"
             className="h-8 w-auto"
           />
-          <span className="ml-2 text-xl font-bold dark:text-white">DemoStoke</span>
+          <span
+            className="ml-2 text-xl font-bold"
+            style={{ color: "hsl(186 100% 48%)" }}
+          >
+            DemoStoke
+          </span>
         </Link>
         <div className="ml-auto">
           <Button variant="ghost" asChild className="dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-800">
