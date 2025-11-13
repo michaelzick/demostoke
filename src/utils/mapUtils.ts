@@ -7,7 +7,7 @@ export const getCategoryColor = (category: string): string => {
     case 'snowboards':
       return 'bg-rose-500';
     case 'skis':
-      return 'bg-lime-300';
+      return 'bg-fuchsia-500';
     case 'surfboards':
       return 'bg-sky-500';
     case 'mountain-bikes':
@@ -21,7 +21,7 @@ export const getCategoryColor = (category: string): string => {
 export const getUserRoleColor = (role: string): string => {
   switch (role.toLowerCase()) {
     case 'retail-store':
-      return 'bg-lime-300';
+      return 'bg-fuchsia-500';
     case 'builder':
       return 'bg-orange-400';
     case 'private-party':

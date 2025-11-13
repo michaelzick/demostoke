@@ -33,8 +33,8 @@ const EventCard = ({
     switch (bgColor) {
       case 'bg-rose-500':
         return 'text-rose-500';
-      case 'bg-lime-300':
-        return 'text-lime-300';
+      case 'bg-fuchsia-500':
+        return 'text-fuchsia-500';
       case 'bg-sky-500':
         return 'text-sky-500';
       case 'bg-orange-400':

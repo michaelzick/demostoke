@@ -238,7 +238,7 @@ const BlogPageInner = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    
+
     const params = new URLSearchParams(searchParams);
     params.set('page', page.toString());
     navigate(`/blog?${params.toString()}`, { replace: true });
@@ -280,12 +280,12 @@ const BlogPageInner = () => {
     // Show current page and surrounding pages
     const start = Math.max(2, currentPage - 1);
     const end = Math.min(totalPages - 1, currentPage + 1);
-    
+
     for (let i = start; i <= end; i++) {
       if (i === 1 || i === totalPages) continue; // Skip first and last as they're always shown
         if (i === 2 && !showEllipsisStart) continue; // Skip if we already showed page 2
         if (i === totalPages - 1 && !showEllipsisEnd) continue; // Skip if we'll show totalPages-1 later
-      
+
       items.push(
         <PaginationItem key={i}>
           <PaginationLink
@@ -394,7 +394,7 @@ const BlogPageInner = () => {
       const result = await featuredPostsService.removeFeaturedPost(postId);
       if (result.success) {
         setFeaturedPosts(result.posts);
-        
+
         // If showing featured only and this post was unfeatured, refresh the filtered results
         if (showFeaturedOnly) {
           handleSearch();

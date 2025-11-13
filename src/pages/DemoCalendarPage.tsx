@@ -50,7 +50,7 @@ const DemoCalendarPage = () => {
 
   const [categoryFilters, setCategoryFilters] = useState<CategoryFilterType[]>([
     { category: 'snowboards', name: 'Snowboards', color: 'bg-rose-500', enabled: true },
-    { category: 'skis', name: 'Skis', color: 'bg-lime-300', enabled: true },
+    { category: 'skis', name: 'Skis', color: 'bg-fuchsia-500', enabled: true },
     { category: 'surfboards', name: 'Surfboards', color: 'bg-sky-500', enabled: true },
     { category: 'mountain-bikes', name: 'Mountain Bikes', color: 'bg-orange-400', enabled: true },
   ]);
@@ -187,7 +187,7 @@ const DemoCalendarPage = () => {
             loading={locationLoading}
             permissionDenied={permissionDenied}
           />
-          
+
           <CategoryFilter
             filters={categoryFilters}
             onToggle={handleToggleCategory}
