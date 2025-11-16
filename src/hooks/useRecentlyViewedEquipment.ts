@@ -29,8 +29,8 @@ export const useRecentlyViewedEquipment = (userId?: string) => {
 
       const recentlyViewed = (profile.recently_viewed_equipment as unknown as RecentlyViewedItem[]) || [];
       
-      // Get top 3 equipment IDs
-      const recentIds = recentlyViewed.slice(0, 3).map(item => item.equipment_id);
+      // Get top 5 equipment IDs
+      const recentIds = recentlyViewed.slice(0, 5).map(item => item.equipment_id);
 
       if (recentIds.length === 0) {
         return [];
