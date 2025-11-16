@@ -6,37 +6,33 @@ const recentViews = new Map<string, number>();
 
 export const trackEquipmentView = async (equipmentId: string, userId?: string) => {
   try {
-    // Simple deduplication using in-memory cache
-    // Create a key based on equipment ID and timestamp (rounded to nearest hour)
+    // Increment view count with deduplication (once per hour)
     const currentHour = Math.floor(Date.now() / (60 * 60 * 1000));
     const viewKey = `${equipmentId}-${currentHour}`;
     
-    // Check if we've already tracked a view for this equipment in this hour
-    if (recentViews.has(viewKey)) {
-      return;
-    }
+    // Only increment view count if we haven't done so this hour
+    if (!recentViews.has(viewKey)) {
+      const { error: incrementError } = await supabase
+        .rpc('increment_equipment_view_count', { equipment_id: equipmentId });
 
-    // Increment the view count in the equipment table
-    const { error: incrementError } = await supabase
-      .rpc('increment_equipment_view_count', { equipment_id: equipmentId });
-
-    if (incrementError) {
-      console.error('❌ Error incrementing view count:', incrementError);
-      return;
-    }
-
-    // Mark this equipment as viewed in this hour
-    recentViews.set(viewKey, Date.now());
-    
-    // Clean up old entries (older than 2 hours)
-    const twoHoursAgo = Date.now() - (2 * 60 * 60 * 1000);
-    for (const [key, timestamp] of recentViews.entries()) {
-      if (timestamp < twoHoursAgo) {
-        recentViews.delete(key);
+      if (incrementError) {
+        console.error('❌ Error incrementing view count:', incrementError);
+      } else {
+        // Mark this equipment as viewed in this hour
+        recentViews.set(viewKey, Date.now());
+        
+        // Clean up old entries (older than 2 hours)
+        const twoHoursAgo = Date.now() - (2 * 60 * 60 * 1000);
+        for (const [key, timestamp] of recentViews.entries()) {
+          if (timestamp < twoHoursAgo) {
+            recentViews.delete(key);
+          }
+        }
       }
     }
 
-    // Update user's recently viewed equipment if userId is provided
+    // Always update user's recently viewed equipment (no deduplication)
+    // Deduplication is handled within trackUserEquipmentView
     if (userId) {
       trackUserEquipmentView(equipmentId, userId).catch(error => {
         console.error('❌ Error updating user recently viewed:', error);
