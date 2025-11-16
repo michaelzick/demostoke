@@ -1,10 +1,11 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { QueryClient } from "@tanstack/react-query";
 
 // Simple in-memory cache for view deduplication
 const recentViews = new Map<string, number>();
 
-export const trackEquipmentView = async (equipmentId: string, userId?: string) => {
+export const trackEquipmentView = async (equipmentId: string, userId?: string, queryClient?: QueryClient) => {
   console.log('🔍 trackEquipmentView called:', { equipmentId, userId, hasUserId: !!userId });
   
   try {
@@ -39,7 +40,7 @@ export const trackEquipmentView = async (equipmentId: string, userId?: string) =
     // Deduplication is handled within trackUserEquipmentView
     if (userId) {
       console.log('✅ Calling trackUserEquipmentView with:', { equipmentId, userId });
-      trackUserEquipmentView(equipmentId, userId).catch(error => {
+      trackUserEquipmentView(equipmentId, userId, queryClient).catch(error => {
         console.error('❌ Error updating user recently viewed:', error);
         // Don't throw - this is non-blocking
       });
@@ -52,7 +53,7 @@ export const trackEquipmentView = async (equipmentId: string, userId?: string) =
 };
 
 // Track equipment view in user's profile
-const trackUserEquipmentView = async (equipmentId: string, userId: string) => {
+const trackUserEquipmentView = async (equipmentId: string, userId: string, queryClient?: QueryClient) => {
   console.log('🔵 trackUserEquipmentView started:', { equipmentId, userId });
   
   try {
@@ -107,6 +108,11 @@ const trackUserEquipmentView = async (equipmentId: string, userId: string) => {
       console.error('❌ Error updating profile:', updateError);
     } else {
       console.log('✅ Profile successfully updated with recently viewed equipment');
+      // Invalidate the recently viewed equipment query cache
+      if (queryClient) {
+        console.log('🔄 Invalidating recently viewed equipment cache');
+        queryClient.invalidateQueries({ queryKey: ['recentlyViewedEquipment', userId] });
+      }
     }
   } catch (error) {
     console.error('Exception in trackUserEquipmentView:', error);

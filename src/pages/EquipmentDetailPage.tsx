@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { trackEquipmentView } from "@/services/viewTrackingService";
 import { getCategoryDisplayName } from "@/helpers";
 import { useAuth } from "@/contexts/auth";
+import { useQueryClient } from "@tanstack/react-query";
 
 // Import component modules
 import EquipmentDetailPageDb from "./EquipmentDetailPageDb";
@@ -23,6 +24,7 @@ const EquipmentDetailPage = () => {
   const [showWaiver, setShowWaiver] = useState(false);
   const bookingCardRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const {
     data: equipment,
@@ -45,9 +47,9 @@ const EquipmentDetailPage = () => {
     });
     
     if (equipment) {
-      trackEquipmentView(equipment.id, user?.id);
+      trackEquipmentView(equipment.id, user?.id, queryClient);
     }
-  }, [equipment, user?.id]);
+  }, [equipment, user?.id, queryClient]);
 
   // Helper to ensure pricing_options is a tuple
   const ensurePricingOptionsTuple = (options: unknown, fallbackPrice: number): [import("@/types").PricingOption] => {
