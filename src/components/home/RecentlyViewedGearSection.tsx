@@ -15,10 +15,10 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
   }
 
   return (
-    <section className="py-12 bg-white dark:bg-muted/20">
+    <section className="py-12 bg-muted/50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-2xl font-semibold mb-6">Recently Viewed</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div className="flex overflow-x-auto gap-5 pb-4 snap-x snap-mandatory sm:grid sm:grid-cols-3 lg:grid-cols-5 scrollbar-hide">
           {equipment.map((item) => {
             const ownerSlug = slugify(item.owner.name);
             const equipmentSlug = slugify(item.name);
@@ -28,7 +28,7 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
               <Link
                 key={item.id}
                 to={detailUrl}
-                className="group block max-w-[208px]"
+                className="group block max-w-[208px] min-w-[208px] snap-start"
               >
                 <div className="aspect-square overflow-hidden rounded-lg mb-2 max-w-[208px] max-h-[208px]">
                   <img

@@ -10,7 +10,7 @@ interface FeaturedGearSectionProps {
   className?: string;
 }
 
-const FeaturedGearSection = ({ title, equipment, className = "bg-muted/50" }: FeaturedGearSectionProps) => {
+const FeaturedGearSection = ({ title, equipment, className = "bg-ocean-deep text-white" }: FeaturedGearSectionProps) => {
   return (
     <section className={`py-12 ${className}`}>
       <div className="container px-4 md:px-6">
