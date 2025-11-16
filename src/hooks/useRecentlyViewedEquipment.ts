@@ -117,5 +117,6 @@ export const useRecentlyViewedEquipment = (userId?: string) => {
     },
     enabled: !!userId,
     staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnMount: 'always', // Always fetch fresh data when component mounts
   });
 };
