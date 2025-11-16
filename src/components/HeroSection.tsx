@@ -5,8 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Snowflake, Mountains, Waves, Bicycle } from "@phosphor-icons/react";
 import HeroVideoIndicators from "@/components/HeroVideoIndicators";
-import RecentlyViewedSection from "@/components/home/RecentlyViewedSection";
-import { useAuth } from "@/contexts/auth";
 
 const SLIDE_DURATION = 5000;
 
@@ -16,7 +14,6 @@ const HeroSection = () => {
   const [animationCycle, setAnimationCycle] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   const backgrounds = [
     { type: 'video', url: '/vid/surfers_compressed_1920.mp4' },
@@ -182,13 +179,6 @@ const HeroSection = () => {
               <span className="text-sm font-medium">Mountain Bikes</span>
             </Link>
           </div>
-
-          {/* Recently Viewed Gear - Only shown to logged-in users */}
-          {user && (
-            <div className="mt-8 w-full">
-              <RecentlyViewedSection userId={user.id} />
-            </div>
-          )}
         </div>
       </div>
 

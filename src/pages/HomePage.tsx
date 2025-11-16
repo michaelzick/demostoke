@@ -6,7 +6,9 @@ import HowItWorksSection from "@/components/home/HowItWorksSection";
 import FeaturedGearSection from "@/components/home/FeaturedGearSection";
 import FeaturedPostsSection from "@/components/home/FeaturedPostsSection";
 import FeaturedEventsSection from "@/components/home/FeaturedEventsSection";
+import RecentlyViewedGearSection from "@/components/home/RecentlyViewedGearSection";
 import { useTrendingEquipment } from "@/hooks/useTrendingEquipment";
+import { useAuth } from "@/contexts/auth";
 import { useRecentEquipment } from "@/hooks/useRecentEquipment";
 import { useFeaturedEquipment } from "@/hooks/useFeaturedEquipment";
 import {
@@ -63,6 +65,7 @@ const HomePage = () => {
   const [captchaToken, setCaptchaToken] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!mounted) return;
@@ -273,6 +276,7 @@ const HomePage = () => {
       <HeroSection />
       <FeaturedEventsSection />
       <HowItWorksSection />
+      <RecentlyViewedGearSection userId={user?.id} />
 
       {/* Featured section with admin-selected equipment */}
       {!featuredLoading && featuredEquipment && featuredEquipment.length > 0 && (
