@@ -27,9 +27,9 @@ export default function RecentlyViewedSection({ userId }: RecentlyViewedSectionP
             <Link
               key={item.id}
               to={detailUrl}
-              className="group block"
+              className="group block max-w-[208px]"
             >
-              <div className="aspect-square overflow-hidden rounded-lg mb-2">
+              <div className="aspect-square overflow-hidden rounded-lg mb-2 max-w-[208px] max-h-[208px]">
                 <img
                   src={item.images[0]}
                   alt={item.name}
@@ -37,10 +37,10 @@ export default function RecentlyViewedSection({ userId }: RecentlyViewedSectionP
                   loading="lazy"
                 />
               </div>
-              <h3 className="text-sm font-medium leading-tight group-hover:text-primary transition-colors line-clamp-1">
+              <h3 className="text-sm font-medium leading-tight group-hover:text-primary transition-colors line-clamp-1 text-left">
                 {item.name}
               </h3>
-              <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+              <p className="text-xs text-muted-foreground mt-1 line-clamp-1 text-left">
                 {item.owner.name}
               </p>
             </Link>
