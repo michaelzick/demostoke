@@ -37,6 +37,13 @@ const EquipmentDetailPage = () => {
 
   // Track view when equipment is loaded
   useEffect(() => {
+    console.log('🎯 Equipment detail view effect triggered:', { 
+      hasEquipment: !!equipment, 
+      equipmentId: equipment?.id, 
+      hasUser: !!user, 
+      userId: user?.id 
+    });
+    
     if (equipment) {
       trackEquipmentView(equipment.id, user?.id);
     }
