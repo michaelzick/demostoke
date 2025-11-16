@@ -108,7 +108,7 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
           {equipment.map((item) => {
             const ownerSlug = slugify(item.owner.name);
             const equipmentSlug = slugify(item.name);
-            const detailUrl = `/gear/${item.category}/${ownerSlug}/${equipmentSlug}?id=${item.id}`;
+            const detailUrl = `/${item.category}/${ownerSlug}/${equipmentSlug}`;
 
             return (
               <Link
