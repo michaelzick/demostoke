@@ -951,6 +951,7 @@ export type Database = {
           name: string | null
           phone: string | null
           privacy_acknowledgment: boolean | null
+          recently_viewed_equipment: Json | null
           show_address: boolean | null
           show_location: boolean | null
           show_phone: boolean | null
@@ -970,6 +971,7 @@ export type Database = {
           name?: string | null
           phone?: string | null
           privacy_acknowledgment?: boolean | null
+          recently_viewed_equipment?: Json | null
           show_address?: boolean | null
           show_location?: boolean | null
           show_phone?: boolean | null
@@ -989,6 +991,7 @@ export type Database = {
           name?: string | null
           phone?: string | null
           privacy_acknowledgment?: boolean | null
+          recently_viewed_equipment?: Json | null
           show_address?: boolean | null
           show_location?: boolean | null
           show_phone?: boolean | null

@@ -1,4 +1,3 @@
-
 import { useParams } from "react-router-dom";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import { trackEquipmentView } from "@/services/viewTrackingService";
 import { getCategoryDisplayName } from "@/helpers";
+import { useAuth } from "@/contexts/auth";
 
 // Import component modules
 import EquipmentDetailPageDb from "./EquipmentDetailPageDb";
@@ -22,6 +22,7 @@ const EquipmentDetailPage = () => {
   const [waiverCompleted, setWaiverCompleted] = useState(false);
   const [showWaiver, setShowWaiver] = useState(false);
   const bookingCardRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
 
   const {
     data: equipment,
@@ -37,9 +38,9 @@ const EquipmentDetailPage = () => {
   // Track view when equipment is loaded
   useEffect(() => {
     if (equipment) {
-      trackEquipmentView(equipment.id);
+      trackEquipmentView(equipment.id, user?.id);
     }
-  }, [equipment]);
+  }, [equipment, user?.id]);
 
   // Helper to ensure pricing_options is a tuple
   const ensurePricingOptionsTuple = (options: unknown, fallbackPrice: number): [import("@/types").PricingOption] => {
