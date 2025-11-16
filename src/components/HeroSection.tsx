@@ -182,15 +182,15 @@ const HeroSection = () => {
               <span className="text-sm font-medium">Mountain Bikes</span>
             </Link>
           </div>
+
+          {/* Recently Viewed Gear - Only shown to logged-in users */}
+          {user && (
+            <div className="mt-8 w-full">
+              <RecentlyViewedSection userId={user.id} />
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Recently Viewed Gear - Only shown to logged-in users */}
-      {user && (
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-full max-w-5xl px-4">
-          <RecentlyViewedSection userId={user.id} />
-        </div>
-      )}
 
       <HeroVideoIndicators
         count={backgrounds.length}
