@@ -16,7 +16,7 @@ export default function RecentlyViewedSection({ userId }: RecentlyViewedSectionP
 
   return (
     <div className="w-full">
-      <h3 className="text-sm font-medium text-foreground mb-3 px-1">Recently Viewed</h3>
+      <h3 className="text-sm font-medium text-foreground mb-3">Recently Viewed</h3>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         {equipment.map((item) => {
           const ownerSlug = slugify(item.owner.name);
@@ -29,23 +29,20 @@ export default function RecentlyViewedSection({ userId }: RecentlyViewedSectionP
               to={detailUrl}
               className="group block"
             >
-              <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
+              <div className="aspect-square overflow-hidden rounded-lg mb-2">
                 <img
                   src={item.images[0]}
                   alt={item.name}
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               </div>
-              <div className="mt-2 space-y-0.5">
-                <p className="text-sm font-medium text-foreground line-clamp-1">
-                  {item.name}
-                </p>
-                <p className="text-xs text-muted-foreground line-clamp-1">
-                  {item.owner.name}
-                </p>
-              </div>
+              <h3 className="text-sm font-medium leading-tight group-hover:text-primary transition-colors line-clamp-1">
+                {item.name}
+              </h3>
+              <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                {item.owner.name}
+              </p>
             </Link>
           );
         })}
