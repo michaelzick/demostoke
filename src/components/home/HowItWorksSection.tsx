@@ -8,7 +8,7 @@ const HowItWorksSection = () => {
   return (
     <section className="py-8 bg-zinc-900/10 dark:bg-muted/20">
       <div className="container px-4 md:px-6">
-        <div className="text-center mb-12">
+        <div className="text-center mb-6 md:mb-8">
           <h2 className="text-3xl font-bold mb-3">How It Works</h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
             Browse gear based on where you ride, how you ride, and what makes you feel alive.
@@ -17,7 +17,7 @@ const HowItWorksSection = () => {
             If it clicks, keep riding it. If not, try again — until you find <em>the one.</em>
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-6">
           <div className="flex flex-col items-center text-center p-4">
             <div className="bg-ocean-light p-4 rounded-full mb-4">
               <MapPin className="h-8 w-8 how-it-works-icon" />
@@ -46,7 +46,7 @@ const HowItWorksSection = () => {
             </p>
           </div>
         </div>
-        <div className="text-center mt-12">
+        <div className="text-center mt-6 md:mt-8">
           <Button size="lg" asChild>
             <Link to="/explore">Get Started</Link>
           </Button>
