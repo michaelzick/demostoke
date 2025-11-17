@@ -78,7 +78,7 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
           <h2 className="text-2xl font-semibold">Recently Viewed</h2>
           
           {/* Navigation buttons - only visible on mobile */}
-          <div className="flex gap-2 sm:hidden">
+          <div className="flex gap-2 md:hidden">
             <Button
               onClick={scrollLeft}
               disabled={!canScrollLeft}
@@ -103,7 +103,7 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
         </div>
         <div 
           ref={scrollContainerRef}
-          className="flex overflow-x-auto gap-5 pb-4 snap-x snap-mandatory sm:grid sm:grid-cols-3 lg:grid-cols-5 scrollbar-hide"
+          className="flex overflow-x-auto gap-5 pb-4 snap-x snap-mandatory md:grid md:[grid-template-columns:repeat(auto-fit,minmax(208px,1fr))] md:gap-6 md:overflow-visible md:snap-none scrollbar-hide"
         >
           {equipment.map((item) => {
             const ownerSlug = slugify(item.owner.name);
@@ -114,9 +114,9 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
               <Link
                 key={item.id}
                 to={detailUrl}
-                className="group block max-w-[208px] min-w-[208px] snap-start"
+                className="group block snap-start w-[208px] min-w-[208px] shrink-0 md:w-full md:max-w-[208px] md:min-w-[208px] md:mx-auto"
               >
-                <div className="aspect-square overflow-hidden rounded-lg mb-2 max-w-[208px] max-h-[208px]">
+                <div className="aspect-square overflow-hidden rounded-lg mb-2">
                   <img
                     src={item.images[0]}
                     alt={item.name}
