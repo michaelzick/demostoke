@@ -17,19 +17,19 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
 
   const updateScrollButtons = () => {
     if (!scrollContainerRef.current) return;
-    
+
     const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
-    
+
     // Can scroll left if not at the start (with small threshold for rounding)
     setCanScrollLeft(scrollLeft > 1);
-    
+
     // Can scroll right if not at the end (with small threshold for rounding)
     setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
   };
 
   const scrollLeft = () => {
     if (!scrollContainerRef.current) return;
-    
+
     // Scroll by card width (208px) + gap (20px) = 228px
     scrollContainerRef.current.scrollBy({
       left: -228,
@@ -39,7 +39,7 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
 
   const scrollRight = () => {
     if (!scrollContainerRef.current) return;
-    
+
     // Scroll by card width (208px) + gap (20px) = 228px
     scrollContainerRef.current.scrollBy({
       left: 228,
@@ -50,16 +50,16 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
-    
+
     // Initial check
     updateScrollButtons();
-    
+
     // Update on scroll
     container.addEventListener('scroll', updateScrollButtons);
-    
+
     // Update on resize (important for responsive behavior)
     window.addEventListener('resize', updateScrollButtons);
-    
+
     return () => {
       container.removeEventListener('scroll', updateScrollButtons);
       window.removeEventListener('resize', updateScrollButtons);
@@ -76,7 +76,7 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-semibold">Recently Viewed</h2>
-          
+
           {/* Navigation buttons - only visible on mobile */}
           <div className="flex gap-2 md:hidden">
             <Button
@@ -101,7 +101,7 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
             </Button>
           </div>
         </div>
-        <div 
+        <div
           ref={scrollContainerRef}
           className="flex overflow-x-auto gap-5 pb-4 snap-x snap-mandatory md:grid md:[grid-template-columns:repeat(auto-fit,minmax(208px,1fr))] md:gap-6 md:overflow-visible md:snap-none scrollbar-hide"
         >
