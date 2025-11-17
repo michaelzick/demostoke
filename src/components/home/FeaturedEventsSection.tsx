@@ -61,7 +61,7 @@ const FeaturedEventsSection = () => {
               </Link>
             </div>
           </div>
-          <div className="flex justify-end mt-12 md:mt-0">
+          <div className="hidden md:flex justify-end mt-12 md:mt-0">
             <div className="relative">
               <div className="absolute -top-6 -left-6 bg-zinc-700/10 dark:bg-white/20 rounded-full w-40 h-40 animate-float homepage-float-1"></div>
               <div className="absolute -bottom-4 -right-4 bg-zinc-700/10 dark:bg-white/20 rounded-full w-24 h-24 animate-float"></div>
