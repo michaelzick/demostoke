@@ -26,7 +26,7 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
           <Link
             key={item.id}
             to={detailUrl}
-            className="group block snap-start w-[208px] min-w-[208px] shrink-0 md:w-full"
+            className="group block snap-start w-[208px] min-w-[208px] shrink-0 md:w-full md:min-w-0"
           >
             <div className="aspect-square overflow-hidden rounded-lg mb-2">
               <img

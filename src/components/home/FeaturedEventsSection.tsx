@@ -29,10 +29,10 @@ const FeaturedEventsSection = () => {
           const thumb = ev.thumbnail_url || "/placeholder.svg";
 
           return (
-            <Link
-              key={ev.id}
-              to={href}
-              className="group block snap-start w-[208px] min-w-[208px] shrink-0 md:w-full"
+            <Link 
+              key={ev.id} 
+              to={href} 
+              className="group block snap-start w-[208px] min-w-[208px] shrink-0 md:w-full md:min-w-0"
             >
               <div className="aspect-square overflow-hidden rounded-lg mb-2">
                 <img

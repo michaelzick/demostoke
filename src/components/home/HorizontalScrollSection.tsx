@@ -20,6 +20,19 @@ export function HorizontalScrollSection<T>({
   sectionClassName = "py-12 bg-muted/50",
   desktopCols = { md: 3, lg: 5 }
 }: HorizontalScrollSectionProps<T>) {
+  const mdGridClass =
+    desktopCols.md === 2 ? "md:grid-cols-2" :
+    desktopCols.md === 4 ? "md:grid-cols-4" :
+    desktopCols.md === 5 ? "md:grid-cols-5" :
+    "md:grid-cols-3";
+
+  const lgGridClass =
+    desktopCols.lg === 2 ? "lg:grid-cols-2" :
+    desktopCols.lg === 3 ? "lg:grid-cols-3" :
+    desktopCols.lg === 4 ? "lg:grid-cols-4" :
+    desktopCols.lg === 6 ? "lg:grid-cols-6" :
+    "lg:grid-cols-5";
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -108,7 +121,8 @@ export function HorizontalScrollSection<T>({
           className={cn(
             "flex overflow-x-auto gap-5 pb-4 snap-x snap-mandatory",
             "md:grid md:gap-6 md:overflow-visible md:snap-none scrollbar-hide",
-            `md:grid-cols-${desktopCols.md} lg:grid-cols-${desktopCols.lg}`
+            mdGridClass,
+            lgGridClass
           )}
         >
           {items.map((item, index) => renderItem(item, index))}
