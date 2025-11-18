@@ -46,7 +46,8 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
   const { events } = useDemoEvents();
   const { toast } = useToast();
   const featuredCount = (events || []).filter((e) => e.is_featured).length;
-  const canFeatureMore = featuredCount < 3 || !!editEvent?.is_featured;
+  const MAX_FEATURED_EVENTS = 5;
+  const canFeatureMore = featuredCount < MAX_FEATURED_EVENTS || !!editEvent?.is_featured;
 
   useEffect(() => {
     if (editEvent) {
@@ -107,11 +108,11 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
       return;
     }
 
-    // Enforce max 3 featured events
+    // Enforce max featured events
     if (isAdmin && formData.is_featured && !canFeatureMore) {
       toast({
         title: "Limit reached",
-        description: "You can feature up to 3 events. Unfeature one to add another.",
+        description: `You can feature up to ${MAX_FEATURED_EVENTS} events. Unfeature one to add another.`,
         variant: "destructive",
       });
       return;
@@ -203,7 +204,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
                 onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_featured: !!checked }))}
               />
               <Label htmlFor="is_featured" className="text-sm">
-                Featured on homepage {!canFeatureMore && !formData.is_featured ? '(max 3 reached)' : ''}
+                Featured on homepage {!canFeatureMore && !formData.is_featured ? `(max ${MAX_FEATURED_EVENTS} reached)` : ''}
               </Label>
             </div>
           )}

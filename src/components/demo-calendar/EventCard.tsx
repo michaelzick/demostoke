@@ -48,7 +48,7 @@ const EventCard = ({
   const { events, updateEvent } = useDemoEvents();
   const { toast } = useToast();
   const featuredCount = (events || []).filter((e) => e.is_featured).length;
-  const disableFeature = featuredCount >= 3 && !event.is_featured;
+  const disableFeature = featuredCount >= 5 && !event.is_featured;
 
   return (
     <div className="bg-card rounded-lg p-3 shadow-sm border hover:shadow-md transition-shadow">
