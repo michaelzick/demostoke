@@ -27,7 +27,7 @@ const FeaturedPostsSection = () => {
   }
 
   return (
-    <section className="py-16 bg-ocean-deep text-white">
+    <section className="py-10 bg-ocean-deep text-white">
       <div className="container px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div>
