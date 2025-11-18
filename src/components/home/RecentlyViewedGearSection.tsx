@@ -66,8 +66,8 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
     };
   }, [equipment]);
 
-  // Don't show section if not logged in or no equipment viewed
-  if (!userId || isLoading || !equipment || equipment.length === 0) {
+  // Don't show section if no equipment viewed
+  if (isLoading || !equipment || equipment.length === 0) {
     return null;
   }
 

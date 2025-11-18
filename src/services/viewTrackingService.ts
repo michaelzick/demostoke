@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { QueryClient } from "@tanstack/react-query";
+import { addLocalRVI } from "./localStorageRVIService";
 
 // Simple in-memory cache for view deduplication
 const recentViews = new Map<string, number>();
@@ -36,16 +37,20 @@ export const trackEquipmentView = async (equipmentId: string, userId?: string, q
       }
     }
 
-    // Always update user's recently viewed equipment (no deduplication)
-    // Deduplication is handled within trackUserEquipmentView
+    // Track to database or localStorage
     if (userId) {
-      console.log('✅ Calling trackUserEquipmentView with:', { equipmentId, userId });
+      console.log('✅ Calling trackUserEquipmentView (database) with:', { equipmentId, userId });
       trackUserEquipmentView(equipmentId, userId, queryClient).catch(error => {
         console.error('❌ Error updating user recently viewed:', error);
         // Don't throw - this is non-blocking
       });
     } else {
-      console.log('⚠️ No userId provided - skipping user profile update');
+      console.log('💾 Tracking to localStorage (no userId)');
+      addLocalRVI(equipmentId);
+      // Invalidate query to refresh display
+      queryClient?.invalidateQueries({ 
+        queryKey: ['recentlyViewedEquipment', undefined] 
+      });
     }
   } catch (error) {
     console.error('❌ Exception tracking equipment view:', error);

@@ -78,10 +78,51 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
     try {
       const userData = await AuthService.fetchUserProfile(session);
       setUser(userData);
+      
+      // Sync localStorage RVI to database on login
+      setTimeout(() => {
+        syncLocalRVIToDatabase(session.user.id);
+      }, 0);
     } catch (error) {
       console.error("Error handling session change:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const syncLocalRVIToDatabase = async (userId: string) => {
+    try {
+      // Dynamically import to avoid issues during SSR
+      const { getLocalRVI, mergeRVIArrays } = await import("@/services/localStorageRVIService");
+      
+      const localRVI = getLocalRVI();
+      if (localRVI.length === 0) return;
+      
+      // Fetch current database RVI
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('recently_viewed_equipment')
+        .eq('id', userId)
+        .single();
+      
+      const dbRVI = (profile?.recently_viewed_equipment || []) as Array<{
+        equipment_id: string;
+        viewed_at: string;
+      }>;
+      
+      // Merge (local items take precedence for duplicates)
+      const merged = mergeRVIArrays(localRVI, dbRVI);
+      
+      // Update database
+      await supabase
+        .from('profiles')
+        .update({ recently_viewed_equipment: merged as any })
+        .eq('id', userId);
+      
+      // Keep localStorage (Option B) - provides fallback on logout
+      console.log('✅ Synced localStorage RVI to database');
+    } catch (error) {
+      console.error('Error syncing localStorage RVI:', error);
     }
   };
 
