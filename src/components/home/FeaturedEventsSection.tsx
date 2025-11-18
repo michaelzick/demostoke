@@ -22,16 +22,16 @@ const FeaturedEventsSection = () => {
       <HorizontalScrollSection
         title="Featured Demo Events"
         items={featured}
-        sectionClassName="py-10 bg-white dark:bg-muted/50"
+        sectionClassName="pt-10 pb-5 bg-white dark:bg-muted/50"
         desktopCols={{ md: 3, lg: 5 }}
         renderItem={(ev) => {
           const href = `/event/${generateEventSlug(ev)}`;
           const thumb = ev.thumbnail_url || "/placeholder.svg";
-          
+
           return (
-            <Link 
-              key={ev.id} 
-              to={href} 
+            <Link
+              key={ev.id}
+              to={href}
               className="group block snap-start w-[208px] min-w-[208px] shrink-0 md:w-full"
             >
               <div className="aspect-square overflow-hidden rounded-lg mb-2">
@@ -57,7 +57,7 @@ const FeaturedEventsSection = () => {
           );
         }}
       />
-      
+
       {/* View All Events button */}
       <div className="bg-white dark:bg-muted/50 pb-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
