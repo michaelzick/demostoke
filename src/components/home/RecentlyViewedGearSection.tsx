@@ -66,6 +66,13 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
     };
   }, [equipment]);
 
+  // Reset scroll position when equipment changes to show newest item
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollLeft = 0;
+    }
+  }, [equipment]);
+
   // Don't show section if no equipment viewed
   if (isLoading || !equipment || equipment.length === 0) {
     return null;
@@ -103,7 +110,7 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
         </div>
         <div
           ref={scrollContainerRef}
-          className="flex overflow-x-auto gap-5 pb-4 snap-x snap-mandatory md:grid md:[grid-template-columns:repeat(auto-fit,minmax(208px,1fr))] md:gap-6 md:overflow-visible md:snap-none scrollbar-hide"
+          className="flex overflow-x-auto gap-5 pb-4 snap-x snap-mandatory md:grid md:grid-cols-3 lg:grid-cols-5 md:gap-6 md:overflow-visible md:snap-none scrollbar-hide"
         >
           {equipment.map((item) => {
             const ownerSlug = slugify(item.owner.name);
@@ -114,7 +121,7 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
               <Link
                 key={item.id}
                 to={detailUrl}
-                className="group block snap-start w-[208px] min-w-[208px] shrink-0 md:w-full md:max-w-[208px] md:min-w-[208px] md:mx-auto"
+                className="group block snap-start w-[208px] min-w-[208px] shrink-0 md:w-full"
               >
                 <div className="aspect-square overflow-hidden rounded-lg mb-2">
                   <img

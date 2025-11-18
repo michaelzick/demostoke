@@ -119,22 +119,10 @@ const trackUserEquipmentView = async (equipmentId: string, userId: string, query
       
       // Invalidate the recently viewed equipment query cache
       if (queryClient) {
-        console.log('🔄 Invalidating recently viewed equipment cache for userId:', userId);
         queryClient.invalidateQueries({ 
           queryKey: ['recentlyViewedEquipment', userId],
           exact: true 
         });
-        
-        // Also refetch if query is currently active
-        queryClient.refetchQueries({ 
-          queryKey: ['recentlyViewedEquipment', userId],
-          exact: true,
-          type: 'active' 
-        });
-        
-        console.log('✅ Query invalidation and refetch completed');
-      } else {
-        console.warn('⚠️ No queryClient available for invalidation');
       }
     }
   } catch (error) {
