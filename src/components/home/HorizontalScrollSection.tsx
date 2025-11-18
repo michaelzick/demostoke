@@ -85,7 +85,7 @@ export function HorizontalScrollSection<T>({
               size="icon"
               onClick={scrollLeft}
               disabled={!canScrollLeft}
-              className="h-8 w-8"
+              className="h-8 w-8 border-zinc-500 text-zinc-700 dark:border-zinc-200 dark:text-zinc-100 hover:border-zinc-700 hover:text-zinc-900 dark:hover:border-zinc-50 dark:hover:text-white disabled:border-zinc-300 disabled:text-zinc-400 dark:disabled:border-zinc-700 dark:disabled:text-zinc-600"
               aria-label="Scroll left"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -95,7 +95,7 @@ export function HorizontalScrollSection<T>({
               size="icon"
               onClick={scrollRight}
               disabled={!canScrollRight}
-              className="h-8 w-8"
+              className="h-8 w-8 border-zinc-500 text-zinc-700 dark:border-zinc-200 dark:text-zinc-100 hover:border-zinc-700 hover:text-zinc-900 dark:hover:border-zinc-50 dark:hover:text-white disabled:border-zinc-300 disabled:text-zinc-400 dark:disabled:border-zinc-700 dark:disabled:text-zinc-600"
               aria-label="Scroll right"
             >
               <ChevronRight className="h-4 w-4" />
