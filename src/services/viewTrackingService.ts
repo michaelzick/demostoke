@@ -104,19 +104,37 @@ const trackUserEquipmentView = async (equipmentId: string, userId: string, query
 
     // Update profile
     console.log('💾 Attempting to update profile...');
-    const { error: updateError } = await supabase
+    const { error: updateError, data: updateData } = await supabase
       .from('profiles')
       .update({ recently_viewed_equipment: updated })
-      .eq('id', userId);
+      .eq('id', userId)
+      .select('recently_viewed_equipment')
+      .single();
 
     if (updateError) {
       console.error('❌ Error updating profile:', updateError);
     } else {
-      console.log('✅ Profile successfully updated with recently viewed equipment');
+      console.log('✅ Profile successfully updated:', updateData);
+      console.log('✅ New recently_viewed_equipment:', updateData?.recently_viewed_equipment);
+      
       // Invalidate the recently viewed equipment query cache
       if (queryClient) {
-        console.log('🔄 Invalidating recently viewed equipment cache');
-        queryClient.invalidateQueries({ queryKey: ['recentlyViewedEquipment', userId] });
+        console.log('🔄 Invalidating recently viewed equipment cache for userId:', userId);
+        queryClient.invalidateQueries({ 
+          queryKey: ['recentlyViewedEquipment', userId],
+          exact: true 
+        });
+        
+        // Also refetch if query is currently active
+        queryClient.refetchQueries({ 
+          queryKey: ['recentlyViewedEquipment', userId],
+          exact: true,
+          type: 'active' 
+        });
+        
+        console.log('✅ Query invalidation and refetch completed');
+      } else {
+        console.warn('⚠️ No queryClient available for invalidation');
       }
     }
   } catch (error) {

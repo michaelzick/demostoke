@@ -116,7 +116,9 @@ export const useRecentlyViewedEquipment = (userId?: string) => {
         return fetchEquipmentDetailsByIds(recentIds);
       }
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: userId ? 0 : 1000 * 60 * 5, // No stale time for logged-in users, 5 min for logged-out
     refetchOnMount: 'always', // Always fetch fresh data when component mounts
+    refetchOnWindowFocus: true, // Refetch when user returns to tab
+    refetchOnReconnect: true, // Refetch when network reconnects
   });
 };
