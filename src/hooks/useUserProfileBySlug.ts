@@ -29,7 +29,7 @@ export const useUserProfileBySlug = (slug: string) => {
       const pattern = `%${name.split(/\s+/).join('%')}%`;
 
       const { data, error } = await supabase
-        .from('profiles')
+        .from('public_profiles')
         .select('*')
         .ilike('name', pattern)
         .limit(1)
