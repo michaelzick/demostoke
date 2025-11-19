@@ -29,7 +29,7 @@ import { slugify } from "@/utils/slugify";
 import { searchBlogPostsWithNLP } from "@/services/blogSearchService";
 import { useUserRole } from "@/hooks/useUserRole";
 import { toast } from "@/hooks/use-toast";
-import { featuredPostsService } from "@/services/featuredPostsService";
+import { featuredPostsService, MAX_FEATURED_POSTS } from "@/services/featuredPostsService";
 import BlogFooter from "@/components/BlogFooter";
 import { useAuth } from "@/contexts/auth";
 
@@ -372,10 +372,10 @@ const BlogPageInner = () => {
 
   const handleFeatureToggle = async (postId: string, checked: boolean) => {
     if (checked) {
-      if (featuredPosts.length >= 3) {
+      if (featuredPosts.length >= MAX_FEATURED_POSTS) {
         toast({
           title: "Maximum Featured Posts",
-          description: "You can only feature up to 3 blog posts on the homepage.",
+          description: `You can only feature up to ${MAX_FEATURED_POSTS} blog posts on the homepage.`,
           variant: "destructive"
         });
         return;
@@ -512,7 +512,7 @@ const BlogPageInner = () => {
                           id={`featured-${post.id}`}
                           checked={featuredPosts.includes(post.id)}
                           onCheckedChange={(checked) => handleFeatureToggle(post.id, checked as boolean)}
-                          disabled={!featuredPosts.includes(post.id) && featuredPosts.length >= 3}
+                          disabled={!featuredPosts.includes(post.id) && featuredPosts.length >= MAX_FEATURED_POSTS}
                         />
                         <label
                           htmlFor={`featured-${post.id}`}

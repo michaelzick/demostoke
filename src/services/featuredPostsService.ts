@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
 const FEATURED_POSTS_KEY = "featured_blog_posts";
+export const MAX_FEATURED_POSTS = 5;
 
 export const featuredPostsService = {
   // Get featured blog posts from Supabase
@@ -53,7 +54,7 @@ export const featuredPostsService = {
       return { success: true, posts: currentPosts };
     }
 
-    if (currentPosts.length >= 3) {
+    if (currentPosts.length >= MAX_FEATURED_POSTS) {
       return { success: false, posts: currentPosts };
     }
 
