@@ -37,7 +37,7 @@ const HomePage = () => {
 
   // Client-only state
   const [mounted, setMounted] = useState(false);
-  
+
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -296,13 +296,13 @@ const HomePage = () => {
       )}
 
       {/* Fresh Picks section with recent equipment */}
-      {!recentLoading && recentEquipment && recentEquipment.length > 0 && (
+      {/* {!recentLoading && recentEquipment && recentEquipment.length > 0 && (
         <FeaturedGearSection
           title="Fresh Picks"
           equipment={recentEquipment}
           className="bg-white dark:bg-muted/20"
         />
-      )}
+      )} */}
 
       <FeaturedPostsSection />
     </div>
