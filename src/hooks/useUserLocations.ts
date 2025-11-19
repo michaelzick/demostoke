@@ -21,17 +21,10 @@ export const useUserLocations = () => {
     queryFn: async (): Promise<UserLocation[]> => {
       console.log('🔍 Fetching user locations with visible equipment categories...');
       
+      // First, fetch privacy-filtered profiles with locations
       const { data, error } = await supabase
-        .from('profiles')
-        .select(`
-          id,
-          name,
-          address,
-          location_lat,
-          location_lng,
-          avatar_url,
-          equipment:equipment!equipment_user_id_fkey(category, visible_on_map)
-        `)
+        .from('public_profiles')
+        .select('id, name, address, location_lat, location_lng, avatar_url')
         .not('address', 'is', null)
         .not('address', 'eq', '')
         .not('location_lat', 'is', null)
@@ -42,9 +35,11 @@ export const useUserLocations = () => {
         throw error;
       }
 
-      console.log('📍 Raw profile data with equipment:', data);
+      console.log('📍 Raw profile data:', data);
 
       const userIds = data.map(profile => profile.id);
+      
+      // Fetch user roles
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
         .select('user_id, display_role')
@@ -55,20 +50,42 @@ export const useUserLocations = () => {
         throw roleError;
       }
 
+      // Fetch equipment for these users
+      const { data: equipmentData, error: equipmentError } = await supabase
+        .from('equipment')
+        .select('user_id, category, visible_on_map')
+        .in('user_id', userIds)
+        .eq('visible_on_map', true);
+
+      if (equipmentError) {
+        console.error('❌ Error fetching equipment:', equipmentError);
+        throw equipmentError;
+      }
+
+      console.log('🎿 Equipment data:', equipmentData);
+
       const roleMap = new Map(roleData.map(item => [item.user_id, item.display_role]));
+      
+      // Group equipment by user_id
+      const equipmentByUser = new Map<string, string[]>();
+      equipmentData?.forEach(eq => {
+        const categories = equipmentByUser.get(eq.user_id) || [];
+        if (!categories.includes(eq.category)) {
+          categories.push(eq.category);
+        }
+        equipmentByUser.set(eq.user_id, categories);
+      });
 
       const userLocations: UserLocation[] = data
         .filter(profile => profile.location_lat && profile.location_lng)
         .map(profile => {
-          // Extract unique categories from user's VISIBLE equipment only
-          const visibleEquipment = profile.equipment?.filter((eq: { category: string; visible_on_map?: boolean }) => eq.visible_on_map) || [];
-          const equipmentCategories = Array.from(new Set(visibleEquipment.map((eq) => eq.category)));
+          const equipmentCategories = equipmentByUser.get(profile.id) || [];
 
           return {
             id: profile.id,
             name: profile.name || 'Unknown User',
             role: roleMap.get(profile.id) || 'retail-store',
-            address: profile.address,
+            address: profile.address || '',
             location: {
               lat: Number(profile.location_lat),
               lng: Number(profile.location_lng)
