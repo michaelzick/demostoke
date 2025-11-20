@@ -49,7 +49,7 @@ const FeaturedPostsSection = () => {
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
               />
             </div>
-            <h3 className="text-sm font-medium leading-tight group-hover:text-primary transition-colors line-clamp-1 text-left">
+            <h3 className="text-sm font-medium leading-tight group-hover:text-primary transition-colors line-clamp-2 text-left">
               {post.title}
             </h3>
           </Link>
