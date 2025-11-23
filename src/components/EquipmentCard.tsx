@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { StarIcon, UsersIcon, EditIcon, Ruler } from "lucide-react";
+import { StarIcon, UsersIcon, EditIcon, Ruler, Heart } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -21,6 +21,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { featuredGearService } from "@/services/featuredGearService";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { useFavorites } from "@/hooks/useFavorites";
 import {
   Tooltip,
   TooltipTrigger,
@@ -39,6 +40,8 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
   const [isFeatured, setIsFeatured] = useState(equipment.is_featured || false);
   const [isUpdating, setIsUpdating] = useState(false);
   const trackingData = buildEquipmentTrackingFrom(equipment);
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const isFavorited = isFavorite(equipment.id);
 
   // Helper function to format sizes
   const formatSizes = (size: string | undefined) => {
@@ -102,6 +105,25 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
   return (
     <Card className="overflow-hidden flex flex-col h-full">
       <div className="relative w-full overflow-hidden h-[290px]">
+        {/* Heart button */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleFavorite(equipment.id);
+          }}
+          className="absolute top-2 right-14 z-20 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all"
+          aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+        >
+          <Heart
+            className={`h-5 w-5 transition-all duration-200 ${
+              isFavorited
+                ? "fill-red-500 text-red-500"
+                : "text-gray-600"
+            }`}
+          />
+        </button>
+        
         {hasImages ? (
           hasMultipleImages ? (
             <Carousel className="w-full h-full" opts={{ loop: true }}>

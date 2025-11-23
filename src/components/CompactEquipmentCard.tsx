@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { StarIcon, Car, Eye, EyeOff, Edit, Trash2, Ruler } from "lucide-react";
+import { StarIcon, Car, Eye, EyeOff, Edit, Trash2, Ruler, Heart } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -19,6 +19,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
+import { useFavorites } from "@/hooks/useFavorites";
 
 interface CompactEquipmentCardProps {
   equipment: Equipment;
@@ -39,6 +40,8 @@ const CompactEquipmentCard = ({
 }: CompactEquipmentCardProps) => {
   const location = useLocation();
   const trackingData = buildEquipmentTrackingFrom(equipment);
+  const { toggleFavorite, isFavorite } = useFavorites();
+  const isFavorited = isFavorite(equipment.id);
 
   // no-op: toast not required in this compact card
   const images = equipment.images && equipment.images.length > 0 ? equipment.images : [];
@@ -74,7 +77,26 @@ const CompactEquipmentCard = ({
 
   return (
     <Card className="overflow-hidden">
-      <div className="h-48 overflow-hidden">
+      <div className="h-48 overflow-hidden relative">
+        {/* Heart button */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleFavorite(equipment.id);
+          }}
+          className="absolute top-2 right-2 z-20 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all"
+          aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+        >
+          <Heart
+            className={`h-5 w-5 transition-all duration-200 ${
+              isFavorited
+                ? "fill-red-500 text-red-500"
+                : "text-gray-600"
+            }`}
+          />
+        </button>
+        
         {hasImages ? (
           hasMultipleImages ? (
             <Carousel className="w-full h-full" opts={{ loop: true }}>

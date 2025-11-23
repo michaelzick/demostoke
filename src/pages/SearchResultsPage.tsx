@@ -48,7 +48,8 @@ const SearchResultsPage = () => {
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({
     priceRanges: [],
     ratingRanges: [],
-    featured: false
+    featured: false,
+    myFavorites: false
   });
 
   // Perform search when query changes
@@ -191,7 +192,7 @@ const SearchResultsPage = () => {
     setSearchParams({});
     setActiveCategory(null);
     setSortBy("relevance");
-    setAdvancedFilters({ priceRanges: [], ratingRanges: [], featured: false });
+    setAdvancedFilters({ priceRanges: [], ratingRanges: [], featured: false, myFavorites: false });
     setResetCounter((c) => c + 1);
     toast({
       title: "Filters Reset",
@@ -228,7 +229,7 @@ const SearchResultsPage = () => {
     // Clear existing filters and search, then perform new search
     setSearchInput(searchQuery);
     setActiveCategory(null);
-    setAdvancedFilters({ priceRanges: [], ratingRanges: [], featured: false });
+    setAdvancedFilters({ priceRanges: [], ratingRanges: [], featured: false, myFavorites: false });
     setSearchParams({ q: searchQuery });
   };
 

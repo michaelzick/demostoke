@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useFavorites } from "@/hooks/useFavorites";
 
 type MobileExploreMenuProps = {
   onClose: () => void;
@@ -16,6 +17,7 @@ const gearCategories = [
 
 const MobileExploreMenu = ({ onClose }: MobileExploreMenuProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { hasFavorites } = useFavorites();
 
   const handleCategoryClick = () => {
     setIsExpanded(false);
@@ -46,6 +48,23 @@ const MobileExploreMenu = ({ onClose }: MobileExploreMenuProps) => {
           >
             All Equipment
           </Link>
+          
+          <Link
+            to="/explore?view=hybrid&myFavorites=true"
+            className={`block text-base font-medium py-1 ${
+              !hasFavorites ? 'text-muted-foreground cursor-not-allowed' : ''
+            }`}
+            onClick={(e) => {
+              if (!hasFavorites) {
+                e.preventDefault();
+              } else {
+                handleCategoryClick();
+              }
+            }}
+          >
+            My Favorites {!hasFavorites && '(empty)'}
+          </Link>
+          
           {gearCategories.map((gear) => (
             <Link
               key={gear.category}

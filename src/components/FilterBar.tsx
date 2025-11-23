@@ -31,12 +31,18 @@ const FilterBar = ({
   viewMode,
   setViewMode,
   onReset,
-  advancedFilters = { priceRanges: [], ratingRanges: [], featured: false },
+  advancedFilters = { priceRanges: [], ratingRanges: [], featured: false, myFavorites: false },
   onAdvancedFiltersChange,
   onRemovePriceRange,
   onRemoveRatingRange,
   onRemoveFeatured,
 }: FilterBarProps) => {
+  
+  const handleRemoveMyFavorites = () => {
+    if (onAdvancedFiltersChange) {
+      onAdvancedFiltersChange({ ...advancedFilters, myFavorites: false });
+    }
+  };
   const [showAdvancedDrawer, setShowAdvancedDrawer] = useState(false);
 
   // Shared styles for small screens to prevent filter overflow
@@ -133,6 +139,7 @@ const FilterBar = ({
                   onRemovePriceRange={onRemovePriceRange}
                   onRemoveRatingRange={onRemoveRatingRange}
                   onRemoveFeatured={onRemoveFeatured}
+                  onRemoveMyFavorites={handleRemoveMyFavorites}
                 />
               )}
             </div>
@@ -240,6 +247,7 @@ const FilterBar = ({
                   onRemovePriceRange={onRemovePriceRange}
                   onRemoveRatingRange={onRemoveRatingRange}
                   onRemoveFeatured={onRemoveFeatured}
+                  onRemoveMyFavorites={handleRemoveMyFavorites}
                 />
               )}
             </div>

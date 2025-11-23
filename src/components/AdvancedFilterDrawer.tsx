@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { AdvancedFilters, PRICE_RANGES, RATING_RANGES } from "@/types/advancedFilters";
+import { useFavorites } from "@/hooks/useFavorites";
 
 interface AdvancedFilterDrawerProps {
   open: boolean;
@@ -27,8 +28,8 @@ export function AdvancedFilterDrawer({
   onFiltersChange,
 }: AdvancedFilterDrawerProps) {
   const [tempFilters, setTempFilters] = useState<AdvancedFilters>(filters);
+  const { hasFavorites } = useFavorites();
 
-  // Sync tempFilters with filters prop when it changes (e.g., when pills are removed)
   useEffect(() => {
     setTempFilters(filters);
   }, [filters]);
@@ -64,14 +65,14 @@ export function AdvancedFilterDrawer({
   };
 
   const handleClearAll = () => {
-    const clearedFilters = { priceRanges: [], ratingRanges: [], featured: false };
+    const clearedFilters = { priceRanges: [], ratingRanges: [], featured: false, myFavorites: false };
     setTempFilters(clearedFilters);
     onFiltersChange(clearedFilters);
     onOpenChange(false);
   };
 
   const handleCancel = () => {
-    setTempFilters(filters); // Reset to current filters
+    setTempFilters(filters);
     onOpenChange(false);
   };
 
@@ -81,12 +82,37 @@ export function AdvancedFilterDrawer({
         <div className="mx-auto w-full max-w-sm">
           <DrawerHeader>
             <DrawerTitle>Advanced Filters</DrawerTitle>
-          <DrawerDescription>
-            Refine your search with additional filters
-          </DrawerDescription>
+            <DrawerDescription>
+              Refine your search with additional filters
+            </DrawerDescription>
           </DrawerHeader>
 
           <div className="p-4 pb-0 pt-0 space-y-5">
+            {/* My Favorites Section */}
+            <div>
+              <h3 className="font-medium mb-3">My Favorites</h3>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="my-favorites"
+                    checked={tempFilters.myFavorites}
+                    onCheckedChange={(checked) =>
+                      setTempFilters(prev => ({ ...prev, myFavorites: checked as boolean }))
+                    }
+                    disabled={!hasFavorites}
+                  />
+                  <Label
+                    htmlFor="my-favorites"
+                    className={`text-sm ${!hasFavorites ? 'text-muted-foreground' : ''}`}
+                  >
+                    Only show my favorited items {!hasFavorites && '(no favorites)'}
+                  </Label>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
             {/* Featured Section */}
             <div>
               <h3 className="font-medium mb-3">Featured</h3>
