@@ -21,6 +21,7 @@ import { getFilteredUserLocations } from "@/utils/equipmentLocationMapping";
 import { useIsAdmin } from "@/hooks/useUserRole";
 import { AdvancedFilters } from "@/types/advancedFilters";
 import { applyAdvancedFilters } from "@/utils/advancedFiltering";
+import { useFavorites } from "@/hooks/useFavorites";
 
 const ExplorePage = () => {
   usePageMetadata({
@@ -44,8 +45,10 @@ const ExplorePage = () => {
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>({
     priceRanges: [],
     ratingRanges: [],
-    featured: false
+    featured: false,
+    myFavorites: false
   });
+  const { favorites: favoriteIds, hasFavorites } = useFavorites();
 
   // Scroll to top on mount
   useScrollToTop();
@@ -77,8 +80,20 @@ const ExplorePage = () => {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const categoryFromUrl = queryParams.get("category");
+    const myFavoritesFromUrl = queryParams.get("myFavorites") === "true";
+    const viewFromUrl = queryParams.get("view") as "map" | "list" | "hybrid" | null;
+    
     setActiveCategory(categoryFromUrl);
-    setHasShownNoEquipmentToast(false); // Reset toast flag when category changes
+    
+    if (myFavoritesFromUrl) {
+      setAdvancedFilters(prev => ({ ...prev, myFavorites: true }));
+    }
+    
+    if (viewFromUrl) {
+      setViewMode(viewFromUrl);
+    }
+    
+    setHasShownNoEquipmentToast(false);
   }, [location.search]);
 
   // Get equipment with dynamic distances
@@ -113,7 +128,7 @@ const ExplorePage = () => {
 
 
     // Apply advanced filters
-    results = applyAdvancedFilters(results, advancedFilters);
+    results = applyAdvancedFilters(results, advancedFilters, favoriteIds);
 
     switch (sortBy) {
       case "distance":
@@ -160,7 +175,7 @@ const ExplorePage = () => {
   const handleReset = () => {
     setActiveCategory(null);
     setSortBy("distance");
-    setAdvancedFilters({ priceRanges: [], ratingRanges: [], featured: false });
+    setAdvancedFilters({ priceRanges: [], ratingRanges: [], featured: false, myFavorites: false });
     setHasShownNoEquipmentToast(false);
     setResetCounter((c) => c + 1);
     const newParams = new URLSearchParams(location.search);
@@ -175,6 +190,35 @@ const ExplorePage = () => {
   // Handle advanced filter changes
   const handleAdvancedFiltersChange = (filters: AdvancedFilters) => {
     setAdvancedFilters(filters);
+    setHasShownNoEquipmentToast(false);
+  };
+
+  // Handle removing individual filters
+  const handleRemoveFilter = (filterType: 'priceRange' | 'ratingRange' | 'featured' | 'myFavorites', value?: string) => {
+    switch (filterType) {
+      case 'priceRange':
+        if (value) {
+          setAdvancedFilters(prev => ({
+            ...prev,
+            priceRanges: prev.priceRanges.filter(id => id !== value)
+          }));
+        }
+        break;
+      case 'ratingRange':
+        if (value) {
+          setAdvancedFilters(prev => ({
+            ...prev,
+            ratingRanges: prev.ratingRanges.filter(id => id !== value)
+          }));
+        }
+        break;
+      case 'featured':
+        setAdvancedFilters(prev => ({ ...prev, featured: false }));
+        break;
+      case 'myFavorites':
+        setAdvancedFilters(prev => ({ ...prev, myFavorites: false }));
+        break;
+    }
     setHasShownNoEquipmentToast(false);
   };
 
@@ -212,9 +256,9 @@ const ExplorePage = () => {
         onReset={handleReset}
         advancedFilters={advancedFilters}
         onAdvancedFiltersChange={handleAdvancedFiltersChange}
-        onRemovePriceRange={handleRemovePriceRange}
-        onRemoveRatingRange={handleRemoveRatingRange}
-        onRemoveFeatured={handleRemoveFeatured}
+        onRemovePriceRange={(id) => handleRemoveFilter('priceRange', id)}
+        onRemoveRatingRange={(id) => handleRemoveFilter('ratingRange', id)}
+        onRemoveFeatured={() => handleRemoveFilter('featured')}
       />
 
       {isEquipmentLoading ? (

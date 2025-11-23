@@ -11,6 +11,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { useState } from "react";
+import { useFavorites } from "@/hooks/useFavorites";
 
 type DesktopNavigationProps = {
   onOpenSearch: () => void;
@@ -27,6 +28,7 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [isExploreOpen, setIsExploreOpen] = useState(false);
+  const { hasFavorites } = useFavorites();
 
   const handleListGearClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -65,6 +67,25 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
                 >
                   All Equipment
                 </Link>
+                
+                <Link
+                  to="/explore?view=hybrid&myFavorites=true"
+                  className={`block px-3 py-2 text-sm font-medium rounded-sm transition-colors ${
+                    hasFavorites
+                      ? 'hover:bg-accent hover:text-accent-foreground'
+                      : 'text-muted-foreground cursor-not-allowed'
+                  }`}
+                  onClick={(e) => {
+                    if (!hasFavorites) {
+                      e.preventDefault();
+                    } else {
+                      handleCategoryClick();
+                    }
+                  }}
+                >
+                  My Favorites {!hasFavorites && '(empty)'}
+                </Link>
+                
                 {gearCategories.map((gear) => (
                   <Link
                     key={gear.category}

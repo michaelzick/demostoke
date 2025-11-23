@@ -16,6 +16,7 @@ export interface AdvancedFilters {
   priceRanges: string[];
   ratingRanges: string[];
   featured: boolean;
+  myFavorites: boolean;
 }
 
 export const PRICE_RANGES: PriceRange[] = [

@@ -943,6 +943,7 @@ export type Database = {
           address: string | null
           avatar_url: string | null
           created_at: string
+          favorite_equipment: Json | null
           hero_image_url: string | null
           id: string
           location_lat: number | null
@@ -963,6 +964,7 @@ export type Database = {
           address?: string | null
           avatar_url?: string | null
           created_at?: string
+          favorite_equipment?: Json | null
           hero_image_url?: string | null
           id: string
           location_lat?: number | null
@@ -983,6 +985,7 @@ export type Database = {
           address?: string | null
           avatar_url?: string | null
           created_at?: string
+          favorite_equipment?: Json | null
           hero_image_url?: string | null
           id?: string
           location_lat?: number | null

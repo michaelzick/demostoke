@@ -3,9 +3,15 @@ import { AdvancedFilters, PRICE_RANGES, RATING_RANGES } from "@/types/advancedFi
 
 export function applyAdvancedFilters(
   equipment: Equipment[],
-  filters: AdvancedFilters
+  filters: AdvancedFilters,
+  favoriteIds?: string[]
 ): Equipment[] {
   let results = [...equipment];
+
+  // Apply My Favorites filter first
+  if (filters.myFavorites && favoriteIds) {
+    results = results.filter(item => favoriteIds.includes(item.id));
+  }
 
   // Apply price range filters
   if (filters.priceRanges.length > 0) {
