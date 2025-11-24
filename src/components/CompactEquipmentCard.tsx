@@ -19,7 +19,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
-import { useFavorites } from "@/hooks/useFavorites";
+import { useFavorites } from "@/contexts/FavoritesContext";
 
 interface CompactEquipmentCardProps {
   equipment: Equipment;
