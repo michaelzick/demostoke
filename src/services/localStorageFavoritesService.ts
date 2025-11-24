@@ -1,6 +1,6 @@
 import { safeLocalStorage } from "@/utils/ssrSafe";
 
-interface FavoriteItem {
+export interface FavoriteItem {
   equipment_id: string;
   favorited_at: string;
 }

@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
 import { AuthContextType } from "./types";
 import { AuthService } from "./AuthService";
+import { getLocalFavorites, mergeFavoritesArrays } from "@/services/localStorageFavoritesService";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -82,6 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
       // Sync localStorage RVI to database on login
       setTimeout(() => {
         syncLocalRVIToDatabase(session.user.id);
+        syncLocalFavoritesToDatabase(session.user.id);
       }, 0);
     } catch (error) {
       console.error("Error handling session change:", error);
@@ -123,6 +125,38 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
       console.log('✅ Synced localStorage RVI to database');
     } catch (error) {
       console.error('Error syncing localStorage RVI:', error);
+    }
+  };
+
+  const syncLocalFavoritesToDatabase = async (userId: string) => {
+    try {
+      const localFavorites = getLocalFavorites();
+      
+      if (localFavorites.length === 0) return;
+      
+      // Fetch current DB favorites
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('favorite_equipment')
+        .eq('id', userId)
+        .single();
+      
+      const dbFavorites = Array.isArray(profile?.favorite_equipment) 
+        ? (profile.favorite_equipment as any[])
+        : [];
+      
+      // Merge (local items take precedence for duplicates)
+      const merged = mergeFavoritesArrays(localFavorites, dbFavorites);
+      
+      // Update database
+      await supabase
+        .from('profiles')
+        .update({ favorite_equipment: merged as any })
+        .eq('id', userId);
+      
+      console.log('✅ Synced localStorage favorites to database');
+    } catch (error) {
+      console.error('Error syncing localStorage favorites:', error);
     }
   };
 

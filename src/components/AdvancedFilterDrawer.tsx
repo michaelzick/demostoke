@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { AdvancedFilters, PRICE_RANGES, RATING_RANGES } from "@/types/advancedFilters";
-import { useFavorites } from "@/hooks/useFavorites";
+import { useFavorites } from "@/contexts/FavoritesContext";
 
 interface AdvancedFilterDrawerProps {
   open: boolean;

@@ -21,7 +21,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { featuredGearService } from "@/services/featuredGearService";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
-import { useFavorites } from "@/hooks/useFavorites";
+import { useFavorites } from "@/contexts/FavoritesContext";
 import {
   Tooltip,
   TooltipTrigger,

@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./contexts/auth/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { FavoritesProvider } from "./contexts/FavoritesContext";
 import { ClientOnlyAmplitudeInit } from "./components/ClientOnlyAmplitudeInit";
 import GoogleTagManager from "./components/GoogleTagManager";
 import AppRoutes from "./components/AppRoutes";
@@ -22,12 +23,14 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <TooltipProvider>
-            <ClientOnlyToaster />
-            <ClientOnlyAmplitudeInit />
-            <GoogleTagManager />
-            <AppRoutes />
-          </TooltipProvider>
+          <FavoritesProvider>
+            <TooltipProvider>
+              <ClientOnlyToaster />
+              <ClientOnlyAmplitudeInit />
+              <GoogleTagManager />
+              <AppRoutes />
+            </TooltipProvider>
+          </FavoritesProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

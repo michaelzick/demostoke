@@ -21,7 +21,7 @@ import { getFilteredUserLocations } from "@/utils/equipmentLocationMapping";
 import { useIsAdmin } from "@/hooks/useUserRole";
 import { AdvancedFilters } from "@/types/advancedFilters";
 import { applyAdvancedFilters } from "@/utils/advancedFiltering";
-import { useFavorites } from "@/hooks/useFavorites";
+import { useFavorites } from "@/contexts/FavoritesContext";
 
 const ExplorePage = () => {
   usePageMetadata({
