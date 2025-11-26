@@ -9,6 +9,7 @@ import {
   mergeFavoritesArrays,
 } from '@/services/localStorageFavoritesService';
 import type { FavoriteItem } from '@/services/localStorageFavoritesService';
+import { safeLocalStorage } from '@/utils/ssrSafe';
 
 interface FavoritesContextType {
   favorites: string[];
@@ -43,14 +44,18 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
           .eq('id', user.id)
           .single();
 
-        const dbFavorites = Array.isArray(profile?.favorite_equipment) 
-          ? (profile.favorite_equipment as unknown as FavoriteItem[])
-          : [];
-        
-        // Merge local and DB favorites
-        const merged = mergeFavoritesArrays(localFavs, dbFavorites);
-        const favoriteIds = merged.map(item => item.equipment_id);
-        setFavorites(favoriteIds);
+      const dbFavorites = Array.isArray(profile?.favorite_equipment) 
+        ? (profile.favorite_equipment as unknown as FavoriteItem[])
+        : [];
+      
+      // Merge local and DB favorites
+      const merged = mergeFavoritesArrays(localFavs, dbFavorites);
+      
+      // Save merged result back to localStorage to keep it in sync
+      safeLocalStorage.setItem('favorite_equipment', JSON.stringify(merged));
+      
+      const favoriteIds = merged.map(item => item.equipment_id);
+      setFavorites(favoriteIds);
       } else {
         // Use local storage only
         const favoriteIds = localFavs.map(item => item.equipment_id);
