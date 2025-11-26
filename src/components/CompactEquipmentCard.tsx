@@ -85,7 +85,7 @@ const CompactEquipmentCard = ({
             e.stopPropagation();
             toggleFavorite(equipment.id);
           }}
-          className="absolute top-2 right-2 z-20 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all"
+          className="absolute bottom-2 right-2 z-20 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg transition-all"
           aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
         >
           <Heart
