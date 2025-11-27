@@ -13,4 +13,8 @@ export interface BlogPost {
   thumbnail: string;
   videoEmbed?: string;
   tags: string[];
+  status?: 'draft' | 'scheduled' | 'published' | 'archived';
+  userId?: string;
+  scheduledFor?: string;
+  lastAutoSavedAt?: string;
 }

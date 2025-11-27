@@ -9,6 +9,8 @@ import AboutPage from "../pages/AboutPage";
 import BlogPage from "../pages/BlogPage";
 import BlogPostPage from "../pages/BlogPostPage";
 import BlogCreatePage from "../pages/BlogCreatePage";
+import MyDraftsPage from "../pages/MyDraftsPage";
+import BlogEditPage from "../pages/BlogEditPage";
 import ContactPage from "../pages/ContactUsPage";
 import HowItWorksPage from "../pages/HowItWorksPage";
 import PrivacyPolicyPage from "../pages/PrivacyPolicyPage";
@@ -48,6 +50,9 @@ const AppRoutes = () => {
           <Route path="terms-of-service" element={<TermsOfServicePage />} />
             <Route path="blog" element={<BlogPage />} />
             <Route path="blog/create-blog-post" element={<BlogCreatePage />} />
+            <Route path="blog/drafts" element={<MyDraftsPage />} />
+            <Route path="blog/edit/:id" element={<BlogEditPage />} />
+            <Route path="blog/preview/:id" element={<BlogPostPage />} />
             <Route path="blog/:slug" element={<BlogPostPage />} />
           <Route path="contact-us" element={<ContactPage />} />
           <Route path="explore" element={<ExplorePage />} />

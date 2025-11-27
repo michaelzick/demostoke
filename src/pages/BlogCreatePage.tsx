@@ -21,6 +21,7 @@ import { BlogCreateSidebar } from "@/components/blog/BlogCreateSidebar";
 import BlogFooter from "@/components/BlogFooter";
 import { cn } from "@/lib/utils";
 import { slugify } from "@/utils/slugify";
+import { useAutoSave } from "@/hooks/useAutoSave";
 
 const categories = [
   "snowboards",
@@ -63,7 +64,38 @@ function BlogCreatePageInner() {
   // Loading states
   const [isGenerating, setIsGenerating] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
   const [createdSlug, setCreatedSlug] = useState<string | null>(null);
+  const [draftId, setDraftId] = useState<string | null>(null);
+
+  // Auto-save functionality
+  const handleAutoSave = async (data: typeof formData) => {
+    if (!user?.id) return;
+    await blogService.saveDraft({
+      id: draftId || undefined,
+      userId: user.id,
+      ...data
+    });
+  };
+
+  const formData = {
+    title,
+    excerpt,
+    content,
+    category,
+    author,
+    tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+    heroImage: imageUrl,
+    thumbnail: thumbnailUrl,
+    videoEmbed: youtubeUrl
+  };
+
+  const { isSaving: isAutoSaving, lastSaved, error: autoSaveError } = useAutoSave({
+    data: formData,
+    onSave: handleAutoSave,
+    delay: 30000,
+    enabled: !!user?.id && !isGenerating && !isCreating
+  });
 
   const handleGenerateText = async () => {
     if (!prompt.trim() || !category) {
@@ -109,6 +141,11 @@ function BlogCreatePageInner() {
   const handleCreatePost = async () => {
     if (!isFormValid()) {
       toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    if (!user?.id) {
+      toast.error("You must be logged in to publish posts.");
       return;
     }
 
@@ -159,8 +196,14 @@ function BlogCreatePageInner() {
       };
 
       await blogService.createPost(postData);
+
+      // If this was a draft, publish it
+      if (draftId) {
+        await blogService.publishDraft(draftId, readTime);
+      }
+
       setCreatedSlug(slug);
-      toast.success("Blog post created successfully!");
+      toast.success("Blog post published successfully!");
 
       // Reset form
       setPrompt("");
@@ -176,11 +219,49 @@ function BlogCreatePageInner() {
       setContent("");
       setUseYoutubeThumbnail(false);
       setUseHeroImage(false);
+      setDraftId(null);
     } catch (error) {
       console.error("Error creating blog post:", error);
       toast.error("Failed to create blog post. Please try again.");
     } finally {
       setIsCreating(false);
+    }
+  };
+
+  const handleSaveDraft = async () => {
+    if (!user?.id) {
+      toast.error("You must be logged in to save drafts.");
+      return;
+    }
+
+    setIsSavingDraft(true);
+    try {
+      const result = await blogService.saveDraft({
+        id: draftId || undefined,
+        userId: user.id,
+        title: title || "Untitled Draft",
+        excerpt,
+        content,
+        category,
+        author: author || user.name,
+        authorId: user.id,
+        tags: tags.split(',').map(t => t.trim()).filter(Boolean),
+        heroImage: imageUrl,
+        thumbnail: thumbnailUrl,
+        videoEmbed: youtubeUrl
+      });
+
+      if (result.success && result.post) {
+        setDraftId(result.post.id);
+        toast.success("Draft saved successfully!");
+      } else {
+        toast.error(result.error || "Failed to save draft");
+      }
+    } catch (error) {
+      console.error("Error saving draft:", error);
+      toast.error("An unexpected error occurred while saving draft.");
+    } finally {
+      setIsSavingDraft(false);
     }
   };
 
@@ -420,20 +501,44 @@ function BlogCreatePageInner() {
                     </div>
 
                     {/* Create Button */}
-                    <div className="flex justify-end gap-2 pt-4">
-                      <Button
-                        onClick={handleCreatePost}
-                        disabled={!isFormValid() || isCreating}
-                        size="lg"
-                      >
-                        {isCreating ? "Creating..." : "Create Blog Post"}
-                      </Button>
-                      {createdSlug && (
-                        <Button asChild variant="outline" size="lg">
-                          <Link to={`/blog/${createdSlug}`}>View Blog Post</Link>
+                    <div className="space-y-4 pt-4">
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm text-muted-foreground">
+                          {isAutoSaving && "Auto-saving..."}
+                          {!isAutoSaving && lastSaved && `Last saved: ${format(lastSaved, "h:mm a")}`}
+                          {autoSaveError && <span className="text-destructive">Auto-save failed</span>}
+                        </div>
+                        <Button
+                          variant="link"
+                          size="sm"
+                          onClick={() => navigate("/blog/drafts")}
+                        >
+                          View My Drafts
                         </Button>
-                      )}
-                     </div>
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          onClick={handleSaveDraft}
+                          disabled={isSavingDraft || isAutoSaving}
+                          variant="outline"
+                          size="lg"
+                        >
+                          {isSavingDraft ? "Saving..." : "Save Draft"}
+                        </Button>
+                        <Button
+                          onClick={handleCreatePost}
+                          disabled={!isFormValid() || isCreating}
+                          size="lg"
+                        >
+                          {isCreating ? "Publishing..." : "Publish Now"}
+                        </Button>
+                        {createdSlug && (
+                          <Button asChild variant="outline" size="lg">
+                            <Link to={`/blog/${createdSlug}`}>View Post</Link>
+                          </Button>
+                        )}
+                      </div>
+                    </div>
               </CardContent>
             </Card>
             </div>
