@@ -341,6 +341,18 @@ export const blogService = {
   // Unpublish a post (revert to draft)
   async unpublishPost(postId: string): Promise<{ success: boolean; error?: string }> {
     try {
+      // First, get the post's slug
+      const { data: post, error: fetchError } = await supabase
+        .from('blog_posts')
+        .select('slug')
+        .eq('id', postId)
+        .single();
+
+      if (fetchError) {
+        console.error('Error fetching post for unpublish:', fetchError);
+        return { success: false, error: fetchError.message };
+      }
+
       // Update post status and clear featured flag
       const { error } = await supabase
         .from('blog_posts')
@@ -355,9 +367,11 @@ export const blogService = {
         return { success: false, error: error.message };
       }
 
-      // Remove from featured posts list in app_settings
-      const { featuredPostsService } = await import('./featuredPostsService');
-      await featuredPostsService.removeFeaturedPost(postId);
+      // Remove from featured posts list in app_settings using slug
+      if (post?.slug) {
+        const { featuredPostsService } = await import('./featuredPostsService');
+        await featuredPostsService.removeFeaturedPost(post.slug);
+      }
 
       return { success: true };
     } catch (error) {
