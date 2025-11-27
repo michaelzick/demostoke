@@ -16,7 +16,11 @@ const FeaturedGearSection = ({ title, equipment, className = "bg-ocean-deep text
       <div className="container px-4 md:px-6">
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-3xl font-bold">{title}</h2>
-          <Button variant="outline" asChild>
+          <Button
+            variant="outline"
+            className="bg-white text-slate-900 hover:bg-slate-100 hover:text-slate-900"
+            asChild
+          >
             <Link to="/explore">View All</Link>
           </Button>
         </div>
