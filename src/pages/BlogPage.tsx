@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Plus, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -442,13 +442,19 @@ const BlogPageInner = () => {
               Discover tips, techniques, and stories from the world of outdoor gear
             </p>
 
-            {/* Create Blog Post Button - Admin Only */}
+            {/* Admin Buttons */}
             {user && isAdmin && (
-              <div className="mb-8 flex justify-center">
+              <div className="mb-8 flex justify-center gap-2">
                 <Button asChild className="w-auto gap-1">
                   <Link to="/blog/create">
                     <Plus className="h-4 w-4" />
-                    Create Blog Post
+                    New Post
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="w-auto gap-1">
+                  <Link to="/blog/drafts">
+                    <FileText className="h-4 w-4" />
+                    View Drafts
                   </Link>
                 </Button>
               </div>
