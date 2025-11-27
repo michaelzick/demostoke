@@ -70,60 +70,72 @@ export type Database = {
       }
       blog_posts: {
         Row: {
-          author: string
-          author_id: string
-          category: string
-          content: string
+          author: string | null
+          author_id: string | null
+          category: string | null
+          content: string | null
           created_at: string
-          excerpt: string
+          excerpt: string | null
           hero_image: string | null
           id: string
           is_featured: boolean | null
+          last_auto_saved_at: string | null
           published_at: string
           read_time: number
+          scheduled_for: string | null
           slug: string | null
+          status: string
           tags: string[] | null
           thumbnail: string | null
           title: string
           updated_at: string
+          user_id: string | null
           video_embed: string | null
         }
         Insert: {
-          author: string
-          author_id: string
-          category: string
-          content: string
+          author?: string | null
+          author_id?: string | null
+          category?: string | null
+          content?: string | null
           created_at?: string
-          excerpt: string
+          excerpt?: string | null
           hero_image?: string | null
           id?: string
           is_featured?: boolean | null
+          last_auto_saved_at?: string | null
           published_at?: string
           read_time?: number
+          scheduled_for?: string | null
           slug?: string | null
+          status?: string
           tags?: string[] | null
           thumbnail?: string | null
           title: string
           updated_at?: string
+          user_id?: string | null
           video_embed?: string | null
         }
         Update: {
-          author?: string
-          author_id?: string
-          category?: string
-          content?: string
+          author?: string | null
+          author_id?: string | null
+          category?: string | null
+          content?: string | null
           created_at?: string
-          excerpt?: string
+          excerpt?: string | null
           hero_image?: string | null
           id?: string
           is_featured?: boolean | null
+          last_auto_saved_at?: string | null
           published_at?: string
           read_time?: number
+          scheduled_for?: string | null
           slug?: string | null
+          status?: string
           tags?: string[] | null
           thumbnail?: string | null
           title?: string
           updated_at?: string
+          user_id?: string | null
           video_embed?: string | null
         }
         Relationships: []

@@ -4,13 +4,14 @@ import { BlogPost } from "@/lib/blog/types";
 import { blogPosts as staticBlogPosts } from "@/lib/blog";
 
 export const blogService = {
-  // Get all blog posts (database + static)
+  // Get all published blog posts (database + static)
   async getAllPosts(): Promise<BlogPost[]> {
     try {
-      // Get database posts
+      // Get database posts (published only)
       const { data: dbPosts, error } = await supabase
         .from('blog_posts')
         .select('*')
+        .eq('status', 'published')
         .order('published_at', { ascending: false });
 
       if (error) {
@@ -137,5 +138,250 @@ export const blogService = {
       console.error('Error in updateFeaturedStatus:', error);
       return { success: false, error: 'Failed to update featured status' };
     }
+  },
+
+  // Save or update a draft
+  async saveDraft(postData: Partial<BlogPost> & { id?: string; userId: string }): Promise<{ success: boolean; post?: BlogPost; error?: string }> {
+    try {
+      const now = new Date().toISOString();
+      
+      if (postData.id) {
+        // Update existing draft
+        const { data, error } = await supabase
+          .from('blog_posts')
+          .update({
+            title: postData.title,
+            slug: postData.id,
+            excerpt: postData.excerpt,
+            content: postData.content,
+            category: postData.category,
+            author: postData.author,
+            author_id: postData.authorId,
+            hero_image: postData.heroImage,
+            thumbnail: postData.thumbnail,
+            video_embed: postData.videoEmbed,
+            tags: postData.tags,
+            last_auto_saved_at: now,
+            updated_at: now
+          })
+          .eq('id', postData.id)
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Error updating draft:', error);
+          return { success: false, error: error.message };
+        }
+
+        return { success: true, post: this.formatDbPost(data) };
+      } else {
+        // Create new draft
+        const { data, error } = await supabase
+          .from('blog_posts')
+          .insert([{
+            title: postData.title || 'Untitled Draft',
+            slug: postData.id,
+            excerpt: postData.excerpt,
+            content: postData.content,
+            category: postData.category,
+            author: postData.author,
+            author_id: postData.authorId,
+            hero_image: postData.heroImage,
+            thumbnail: postData.thumbnail,
+            video_embed: postData.videoEmbed,
+            tags: postData.tags,
+            status: 'draft',
+            user_id: postData.userId,
+            last_auto_saved_at: now,
+            published_at: now,
+            read_time: 5
+          }])
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Error creating draft:', error);
+          return { success: false, error: error.message };
+        }
+
+        return { success: true, post: this.formatDbPost(data) };
+      }
+    } catch (error) {
+      console.error('Error in saveDraft:', error);
+      return { success: false, error: 'Failed to save draft' };
+    }
+  },
+
+  // Get user's drafts
+  async getDrafts(userId: string): Promise<BlogPost[]> {
+    try {
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .select('*')
+        .eq('user_id', userId)
+        .in('status', ['draft', 'scheduled', 'archived'])
+        .order('updated_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching drafts:', error);
+        return [];
+      }
+
+      return (data || []).map(post => this.formatDbPost(post));
+    } catch (error) {
+      console.error('Error in getDrafts:', error);
+      return [];
+    }
+  },
+
+  // Get single draft by ID
+  async getDraftById(postId: string): Promise<BlogPost | null> {
+    try {
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .select('*')
+        .eq('id', postId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching draft:', error);
+        return null;
+      }
+
+      return data ? this.formatDbPost(data) : null;
+    } catch (error) {
+      console.error('Error in getDraftById:', error);
+      return null;
+    }
+  },
+
+  // Publish a draft
+  async publishDraft(postId: string, readTime?: number): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { error } = await supabase
+        .from('blog_posts')
+        .update({
+          status: 'published',
+          published_at: new Date().toISOString(),
+          read_time: readTime || 5
+        })
+        .eq('id', postId);
+
+      if (error) {
+        console.error('Error publishing draft:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error in publishDraft:', error);
+      return { success: false, error: 'Failed to publish draft' };
+    }
+  },
+
+  // Schedule a draft for future publishing
+  async scheduleDraft(postId: string, scheduledFor: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { error } = await supabase
+        .from('blog_posts')
+        .update({
+          status: 'scheduled',
+          scheduled_for: scheduledFor
+        })
+        .eq('id', postId);
+
+      if (error) {
+        console.error('Error scheduling draft:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error in scheduleDraft:', error);
+      return { success: false, error: 'Failed to schedule draft' };
+    }
+  },
+
+  // Archive a post
+  async archivePost(postId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { error } = await supabase
+        .from('blog_posts')
+        .update({ status: 'archived' })
+        .eq('id', postId);
+
+      if (error) {
+        console.error('Error archiving post:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error in archivePost:', error);
+      return { success: false, error: 'Failed to archive post' };
+    }
+  },
+
+  // Unpublish a post (revert to draft)
+  async unpublishPost(postId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { error } = await supabase
+        .from('blog_posts')
+        .update({ status: 'draft' })
+        .eq('id', postId);
+
+      if (error) {
+        console.error('Error unpublishing post:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error in unpublishPost:', error);
+      return { success: false, error: 'Failed to unpublish post' };
+    }
+  },
+
+  // Delete a draft permanently
+  async deleteDraft(postId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { error } = await supabase
+        .from('blog_posts')
+        .delete()
+        .eq('id', postId);
+
+      if (error) {
+        console.error('Error deleting draft:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error in deleteDraft:', error);
+      return { success: false, error: 'Failed to delete draft' };
+    }
+  },
+
+  // Helper to format DB post to BlogPost type
+  formatDbPost(post: any): BlogPost {
+    return {
+      id: post.slug || post.id,
+      title: post.title || 'Untitled',
+      excerpt: post.excerpt || '',
+      content: post.content || '',
+      category: post.category || '',
+      author: post.author || '',
+      authorId: post.author_id || '',
+      publishedAt: post.published_at,
+      readTime: post.read_time || 5,
+      heroImage: post.hero_image || '',
+      thumbnail: post.thumbnail || '',
+      videoEmbed: post.video_embed || undefined,
+      tags: post.tags || [],
+      status: post.status || 'published',
+      userId: post.user_id,
+      scheduledFor: post.scheduled_for,
+      lastAutoSavedAt: post.last_auto_saved_at
+    };
   }
 };
