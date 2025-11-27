@@ -34,6 +34,7 @@ function BlogEditPageInner() {
   const { user, isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(true);
   const [publishing, setPublishing] = useState(false);
+  const [lastManualSaved, setLastManualSaved] = useState<Date | null>(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -102,6 +103,7 @@ function BlogEditPageInner() {
         throw new Error(result.error || "Failed to save draft");
       }
       
+      setLastManualSaved(new Date());
       toast.success("Draft saved successfully!");
     } catch (error) {
       console.error("Save draft error:", error);
@@ -180,8 +182,13 @@ function BlogEditPageInner() {
                   <span>Saving...</span>
                 </>
               )}
-              {!isSaving && lastSaved && (
-                <span>Last saved: {format(lastSaved, "h:mm a")}</span>
+              {!isSaving && (lastManualSaved || lastSaved) && (
+                <span>Last saved: {format(
+                  lastManualSaved && lastSaved 
+                    ? (lastManualSaved > lastSaved ? lastManualSaved : lastSaved)
+                    : lastManualSaved || lastSaved!, 
+                  "h:mm a"
+                )}</span>
               )}
               {autoSaveError && (
                 <span className="text-destructive">Auto-save failed</span>
