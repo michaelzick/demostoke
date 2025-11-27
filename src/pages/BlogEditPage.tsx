@@ -15,6 +15,18 @@ import { BlogPost } from "@/lib/blog/types";
 import BlogFooter from "@/components/BlogFooter";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { BlogCreateSidebar } from "@/components/blog/BlogCreateSidebar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { slugify } from "@/utils/slugify";
+
+const categories = [
+  "snowboards",
+  "skis",
+  "surfboards",
+  "mountain bikes",
+  "gear reviews",
+  "stories that stoke",
+  "stories that suck",
+];
 
 function BlogEditPageInner() {
   const { id } = useParams<{ id: string }>();
@@ -34,6 +46,8 @@ function BlogEditPageInner() {
     thumbnail: "",
     videoEmbed: ""
   });
+  
+  const [tagsString, setTagsString] = useState("");
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -68,21 +82,31 @@ function BlogEditPageInner() {
       thumbnail: draft.thumbnail,
       videoEmbed: draft.videoEmbed || ""
     });
+    setTagsString(draft.tags.join(", "));
     setLoading(false);
   };
 
   const handleSaveDraft = async () => {
     if (!user?.id || !id) return;
 
-    const result = await blogService.saveDraft({
-      id,
-      userId: user.id,
-      ...formData,
-      authorId: user.id
-    });
+    try {
+      const result = await blogService.saveDraft({
+        id,
+        userId: user.id,
+        ...formData,
+        tags: tagsString.split(",").map(t => t.trim()).filter(Boolean),
+        authorId: user.id
+      });
 
-    if (!result.success) {
-      throw new Error(result.error || "Failed to save draft");
+      if (!result.success) {
+        throw new Error(result.error || "Failed to save draft");
+      }
+      
+      toast.success("Draft saved successfully!");
+    } catch (error) {
+      console.error("Save draft error:", error);
+      toast.error(error instanceof Error ? error.message : "Failed to save draft");
+      throw error;
     }
   };
 
@@ -121,14 +145,15 @@ function BlogEditPageInner() {
 
     const wordCount = formData.content.split(/\s+/).length;
     const readTime = Math.ceil(wordCount / 200);
+    const slug = slugify(formData.title);
 
-    const result = await blogService.publishDraft(id, readTime);
+    const result = await blogService.publishDraft(id, readTime, formData.title);
     
     setPublishing(false);
 
     if (result.success) {
       toast.success("Blog post published successfully!");
-      navigate(`/blog/${id}`);
+      navigate(`/blog/${slug}`);
     } else {
       toast.error(result.error || "Failed to publish post");
     }
@@ -167,7 +192,17 @@ function BlogEditPageInner() {
             <Button variant="outline" onClick={() => navigate("/blog/drafts")}>
               Cancel
             </Button>
-            <Button variant="outline" onClick={handleSaveDraft} disabled={isSaving}>
+            <Button 
+              variant="outline" 
+              onClick={async () => {
+                try {
+                  await handleSaveDraft();
+                } catch (error) {
+                  // Error already handled in handleSaveDraft
+                }
+              }} 
+              disabled={isSaving}
+            >
               <Save className="mr-2 h-4 w-4" />
               Save Now
             </Button>
@@ -190,12 +225,21 @@ function BlogEditPageInner() {
           <CardContent className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
-              <Input
-                id="category"
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                placeholder="e.g., Surfboards, Mountain Bikes"
-              />
+              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat
+                        .split(' ')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ')}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
@@ -245,11 +289,8 @@ function BlogEditPageInner() {
               <Label htmlFor="tags">Tags (comma-separated)</Label>
               <Input
                 id="tags"
-                value={formData.tags.join(", ")}
-                onChange={(e) => setFormData({ 
-                  ...formData, 
-                  tags: e.target.value.split(",").map(t => t.trim()).filter(Boolean)
-                })}
+                value={tagsString}
+                onChange={(e) => setTagsString(e.target.value)}
                 placeholder="skiing, powder, gear review"
               />
             </div>

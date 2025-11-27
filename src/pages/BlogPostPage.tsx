@@ -3,7 +3,7 @@ import usePageMetadata from "@/hooks/usePageMetadata";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { Clock, User, Calendar, Share2, ArrowUp } from "lucide-react";
+import { Clock, User, Calendar, Share2, ArrowUp, Edit, ArrowLeft } from "lucide-react";
 import { blogService } from "@/services/blogService";
 import { slugify } from "@/utils/slugify";
 import { useEffect, useState } from "react";
@@ -140,6 +140,29 @@ const BlogPostPage = () => {
 
   return (
     <div className="min-h-screen">
+      {/* Preview Mode Banner */}
+      {isPreviewMode && (
+        <div className="bg-amber-500 text-white py-3 px-4">
+          <div className="container mx-auto flex items-center justify-between max-w-4xl">
+            <span className="font-semibold">Preview Mode - Draft Not Published</span>
+            <div className="flex gap-2">
+              <Button asChild variant="secondary" size="sm">
+                <Link to="/blog/drafts">
+                  <ArrowLeft className="h-4 w-4 mr-1" />
+                  Back to Drafts
+                </Link>
+              </Button>
+              <Button asChild variant="secondary" size="sm">
+                <Link to={`/blog/edit/${id}`}>
+                  <Edit className="h-4 w-4 mr-1" />
+                  Edit Draft
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Image */}
       <div className="relative h-96 bg-cover bg-center" style={{ backgroundImage: `url(${post.heroImage})` }}>
         <div className="absolute inset-0" />
