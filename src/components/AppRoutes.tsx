@@ -49,7 +49,7 @@ const AppRoutes = () => {
           <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
           <Route path="terms-of-service" element={<TermsOfServicePage />} />
             <Route path="blog" element={<BlogPage />} />
-            <Route path="blog/create-blog-post" element={<BlogCreatePage />} />
+            <Route path="blog/create" element={<BlogCreatePage />} />
             <Route path="blog/drafts" element={<MyDraftsPage />} />
             <Route path="blog/edit/:id" element={<BlogEditPage />} />
             <Route path="blog/preview/:id" element={<BlogPostPage />} />
