@@ -3,7 +3,7 @@ import usePageMetadata from "@/hooks/usePageMetadata";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { Clock, User, Calendar, Share2, ArrowUp, Edit, ArrowLeft } from "lucide-react";
+import { Clock, User, Calendar, Share2, ArrowUp, Edit, ArrowLeft, FileText } from "lucide-react";
 import { blogService } from "@/services/blogService";
 import { slugify } from "@/utils/slugify";
 import { useEffect, useState } from "react";
@@ -204,16 +204,27 @@ const BlogPostPage = () => {
                     <Calendar className="h-3 w-3 mr-1" />
                     {formatDate(post.publishedAt)}
                   </div>
-                  {isAdmin && !isPreviewMode && databaseId && (
-                    <Button asChild variant="outline" size="sm">
-                      <Link to={`/blog/edit/${databaseId}`}>
-                        <Edit className="h-4 w-4 mr-1" />
-                        Edit
-                      </Link>
-                    </Button>
-                  )}
                 </div>
               </div>
+
+              {/* Admin Action Row */}
+              {isAdmin && !isPreviewMode && databaseId && (
+                <div className="flex items-center gap-2 mb-6 p-3 bg-muted/50 rounded-lg border border-border">
+                  <span className="text-sm font-medium text-muted-foreground mr-2">Admin:</span>
+                  <Button asChild variant="outline" size="sm">
+                    <Link to={`/blog/edit/${databaseId}`}>
+                      <Edit className="h-4 w-4 mr-1" />
+                      Edit Post
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/blog/drafts">
+                      <FileText className="h-4 w-4 mr-1" />
+                      View Drafts
+                    </Link>
+                  </Button>
+                </div>
+              )}
 
               <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
                 {post.title}
