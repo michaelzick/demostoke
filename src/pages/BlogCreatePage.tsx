@@ -71,11 +71,16 @@ function BlogCreatePageInner() {
   // Auto-save functionality
   const handleAutoSave = async (data: typeof formData) => {
     if (!user?.id) return;
-    await blogService.saveDraft({
+    const result = await blogService.saveDraft({
       id: draftId || undefined,
       userId: user.id,
       ...data
     });
+    
+    // Capture draft ID if this was a new draft
+    if (result.success && result.post && !draftId) {
+      setDraftId(result.post.id);
+    }
   };
 
   const formData = {
