@@ -64,7 +64,7 @@ export default function MyDraftsPage() {
   const handlePublish = async () => {
     if (!selectedDraftId) return;
 
-    const draft = drafts.find(d => d.id === selectedDraftId);
+    const draft = drafts.find(d => d.databaseId === selectedDraftId);
     if (!draft) return;
 
     // Calculate read time
@@ -128,7 +128,7 @@ export default function MyDraftsPage() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {drafts.map((draft) => (
-            <Card key={draft.id} className="flex flex-col">
+            <Card key={draft.databaseId} className="flex flex-col">
               <CardHeader>
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="font-semibold line-clamp-2">{draft.title}</h3>
@@ -150,7 +150,7 @@ export default function MyDraftsPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => navigate(`/blog/edit/${draft.id}`)}
+                  onClick={() => navigate(`/blog/edit/${draft.databaseId}`)}
                   className="flex-1"
                 >
                   <Edit className="mr-1 h-3 w-3" />
@@ -159,7 +159,7 @@ export default function MyDraftsPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  onClick={() => navigate(`/blog/preview/${draft.id}`)}
+                  onClick={() => navigate(`/blog/preview/${draft.databaseId}`)}
                 >
                   <Eye className="h-3 w-3" />
                 </Button>
@@ -167,7 +167,7 @@ export default function MyDraftsPage() {
                   size="sm"
                   variant="default"
                   onClick={() => {
-                    setSelectedDraftId(draft.id);
+                    setSelectedDraftId(draft.databaseId);
                     setPublishDialogOpen(true);
                   }}
                 >
@@ -177,7 +177,7 @@ export default function MyDraftsPage() {
                   size="sm"
                   variant="destructive"
                   onClick={() => {
-                    setSelectedDraftId(draft.id);
+                    setSelectedDraftId(draft.databaseId);
                     setDeleteDialogOpen(true);
                   }}
                 >
