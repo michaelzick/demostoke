@@ -446,7 +446,7 @@ const BlogPageInner = () => {
             {user && isAdmin && (
               <div className="mb-8 flex justify-center">
                 <Button asChild className="w-auto gap-1">
-                  <Link to="/blog/create-blog-post">
+                  <Link to="/blog/create">
                     <Plus className="h-4 w-4" />
                     Create Blog Post
                   </Link>
