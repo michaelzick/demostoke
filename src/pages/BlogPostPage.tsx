@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,23 +13,35 @@ import ContentRenderer from "@/components/blog/ContentRenderer";
 import { BlogPost } from "@/lib/blog/types";
 
 const BlogPostPage = () => {
-  const { slug } = useParams<{ slug: string; }>();
+  const { slug, id } = useParams<{ slug?: string; id?: string }>();
+  const location = useLocation();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [allPosts, setAllPosts] = useState<BlogPost[]>([]);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  
+  const isPreviewMode = location.pathname.startsWith('/blog/preview/');
 
   useEffect(() => {
     const loadPost = async () => {
-      console.log('Loading post with slug:', slug);
-      const posts = await blogService.getAllPosts();
-      console.log('All posts loaded:', posts.length);
-      setAllPosts(posts);
-      const foundPost = posts.find(p => p.id === slug);
-      console.log('Found post:', foundPost ? { id: foundPost.id, author: foundPost.author, title: foundPost.title } : 'NOT FOUND');
-      setPost(foundPost || null);
+      if (isPreviewMode && id) {
+        // Preview mode: load draft by ID
+        console.log('Loading draft preview with ID:', id);
+        const draft = await blogService.getDraftById(id);
+        console.log('Draft loaded:', draft ? { id: draft.id, title: draft.title, status: draft.status } : 'NOT FOUND');
+        setPost(draft);
+      } else if (slug) {
+        // Regular mode: load published post by slug
+        console.log('Loading published post with slug:', slug);
+        const posts = await blogService.getAllPosts();
+        console.log('All published posts loaded:', posts.length);
+        setAllPosts(posts);
+        const foundPost = posts.find(p => p.id === slug);
+        console.log('Found post:', foundPost ? { id: foundPost.id, author: foundPost.author, title: foundPost.title } : 'NOT FOUND');
+        setPost(foundPost || null);
+      }
     };
     loadPost();
-  }, [slug]);
+  }, [slug, id, isPreviewMode]);
 
   // Debug the post data when it changes
   useEffect(() => {
