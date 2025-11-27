@@ -341,15 +341,23 @@ export const blogService = {
   // Unpublish a post (revert to draft)
   async unpublishPost(postId: string): Promise<{ success: boolean; error?: string }> {
     try {
+      // Update post status and clear featured flag
       const { error } = await supabase
         .from('blog_posts')
-        .update({ status: 'draft' })
+        .update({ 
+          status: 'draft',
+          is_featured: false
+        })
         .eq('id', postId);
 
       if (error) {
         console.error('Error unpublishing post:', error);
         return { success: false, error: error.message };
       }
+
+      // Remove from featured posts list in app_settings
+      const { featuredPostsService } = await import('./featuredPostsService');
+      await featuredPostsService.removeFeaturedPost(postId);
 
       return { success: true };
     } catch (error) {
