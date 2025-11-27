@@ -1,6 +1,7 @@
 
 export interface BlogPost {
   id: string;
+  databaseId?: string;
   title: string;
   excerpt: string;
   content: string;
