@@ -84,7 +84,7 @@ function BlogEditPageInner() {
       return;
     }
 
-    setDatabaseId(id);
+    setDatabaseId(draft.databaseId || id);
     setFormData({
       title: draft.title,
       excerpt: draft.excerpt,
@@ -166,7 +166,7 @@ function BlogEditPageInner() {
       }
       
       toast.success("New draft created from this post!");
-      navigate(`/blog/edit/${result.post.id}`);
+      navigate(`/blog/edit/${result.post.databaseId}`);
     } catch (error) {
       console.error("Save as new draft error:", error);
       toast.error(error instanceof Error ? error.message : "Failed to create new draft");

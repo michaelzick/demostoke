@@ -152,7 +152,6 @@ export const blogService = {
           .from('blog_posts')
           .update({
             title: postData.title,
-            slug: postData.id,
             excerpt: postData.excerpt,
             content: postData.content,
             category: postData.category,
@@ -181,7 +180,6 @@ export const blogService = {
           .from('blog_posts')
           .insert([{
             title: postData.title || 'Untitled Draft',
-            slug: postData.id,
             excerpt: postData.excerpt,
             content: postData.content,
             category: postData.category,
@@ -560,6 +558,7 @@ export const blogService = {
   formatDbPost(post: any): BlogPost {
     return {
       id: post.slug || post.id,
+      databaseId: post.id, // Always the actual UUID
       title: post.title || 'Untitled',
       excerpt: post.excerpt || '',
       content: post.content || '',
