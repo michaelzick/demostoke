@@ -11,6 +11,7 @@ import { useRelatedGear } from "@/hooks/useRelatedGear";
 import RelatedGear from "@/components/equipment-detail/RelatedGear";
 import ContentRenderer from "@/components/blog/ContentRenderer";
 import { BlogPost } from "@/lib/blog/types";
+import { useIsAdmin } from "@/hooks/useUserRole";
 
 const BlogPostPage = () => {
   const { slug, id } = useParams<{ slug?: string; id?: string }>();
@@ -18,6 +19,8 @@ const BlogPostPage = () => {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [allPosts, setAllPosts] = useState<BlogPost[]>([]);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [databaseId, setDatabaseId] = useState<string | null>(null);
+  const { isAdmin } = useIsAdmin();
   
   const isPreviewMode = location.pathname.startsWith('/blog/preview/');
 
@@ -38,6 +41,12 @@ const BlogPostPage = () => {
         const foundPost = posts.find(p => p.id === slug);
         console.log('Found post:', foundPost ? { id: foundPost.id, author: foundPost.author, title: foundPost.title } : 'NOT FOUND');
         setPost(foundPost || null);
+        
+        // Fetch database ID for admin edit functionality
+        if (foundPost && !isPreviewMode) {
+          const dbId = await blogService.getPublishedPostBySlug(slug);
+          setDatabaseId(dbId);
+        }
       }
     };
     loadPost();
@@ -195,6 +204,14 @@ const BlogPostPage = () => {
                     <Calendar className="h-3 w-3 mr-1" />
                     {formatDate(post.publishedAt)}
                   </div>
+                  {isAdmin && !isPreviewMode && databaseId && (
+                    <Button asChild variant="outline" size="sm">
+                      <Link to={`/blog/edit/${databaseId}`}>
+                        <Edit className="h-4 w-4 mr-1" />
+                        Edit
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </div>
 
