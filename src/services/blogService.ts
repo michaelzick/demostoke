@@ -256,15 +256,31 @@ export const blogService = {
   },
 
   // Publish a draft
-  async publishDraft(postId: string, readTime?: number): Promise<{ success: boolean; error?: string }> {
+  async publishDraft(postId: string, readTime?: number, title?: string): Promise<{ success: boolean; error?: string }> {
     try {
+      let slug: string | undefined;
+      
+      // Generate slug from title if provided
+      if (title) {
+        slug = title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+      }
+
+      const updateData: any = {
+        status: 'published',
+        published_at: new Date().toISOString(),
+        read_time: readTime || 5
+      };
+
+      if (slug) {
+        updateData.slug = slug;
+      }
+
       const { error } = await supabase
         .from('blog_posts')
-        .update({
-          status: 'published',
-          published_at: new Date().toISOString(),
-          read_time: readTime || 5
-        })
+        .update(updateData)
         .eq('id', postId);
 
       if (error) {
