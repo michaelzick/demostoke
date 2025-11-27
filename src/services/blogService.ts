@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { BlogPost } from "@/lib/blog/types";
 import { blogPosts as staticBlogPosts } from "@/lib/blog";
+import { slugify } from "@/utils/slugify";
 
 export const blogService = {
   // Get all published blog posts (database + static)
@@ -141,7 +142,7 @@ export const blogService = {
   },
 
   // Save or update a draft
-  async saveDraft(postData: Partial<BlogPost> & { id?: string; userId: string }): Promise<{ success: boolean; post?: BlogPost; error?: string }> {
+  async saveDraft(postData: Partial<BlogPost> & { id?: string; userId: string; createdFromPostId?: string }): Promise<{ success: boolean; post?: BlogPost; error?: string }> {
     try {
       const now = new Date().toISOString();
       
@@ -192,6 +193,7 @@ export const blogService = {
             tags: postData.tags,
             status: 'draft',
             user_id: postData.userId,
+            created_from_post_id: postData.createdFromPostId || null,
             last_auto_saved_at: now,
             published_at: now,
             read_time: 5
@@ -378,6 +380,182 @@ export const blogService = {
     }
   },
 
+  // Check if slug exists for other posts (excluding specific post IDs)
+  async checkSlugExists(slug: string, excludeIds: string[] = []): Promise<boolean> {
+    try {
+      const filteredIds = excludeIds.filter(id => id); // Remove null/undefined
+      
+      let query = supabase
+        .from('blog_posts')
+        .select('id')
+        .eq('slug', slug);
+      
+      if (filteredIds.length > 0) {
+        query = query.not('id', 'in', `(${filteredIds.join(',')})`);
+      }
+      
+      const { data, error } = await query.maybeSingle();
+
+      if (error) {
+        console.error('Error checking slug:', error);
+        return false;
+      }
+
+      return !!data;
+    } catch (error) {
+      console.error('Error in checkSlugExists:', error);
+      return false;
+    }
+  },
+
+  // Update post slug
+  async updatePostSlug(postId: string, newSlug: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      const { error } = await supabase
+        .from('blog_posts')
+        .update({ slug: newSlug })
+        .eq('id', postId);
+
+      if (error) {
+        console.error('Error updating post slug:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error in updatePostSlug:', error);
+      return { success: false, error: 'Failed to update slug' };
+    }
+  },
+
+  // Get original post details
+  async getOriginalPostDetails(createdFromPostId: string): Promise<{ title: string; slug: string; status: string } | null> {
+    try {
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .select('title, slug, status')
+        .eq('id', createdFromPostId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching original post:', error);
+        return null;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error in getOriginalPostDetails:', error);
+      return null;
+    }
+  },
+
+  // Publish draft from existing post (handles slug updates and un-publishing)
+  async publishDraftFromExistingPost(
+    draftId: string,
+    newPostSlug: string,
+    originalPostId: string,
+    originalPostSlug: string,
+    unpublishOriginal: boolean,
+    readTime: number
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      // Update original post's slug
+      const slugUpdateResult = await this.updatePostSlug(originalPostId, originalPostSlug);
+      if (!slugUpdateResult.success) {
+        return { success: false, error: `Failed to update original post slug: ${slugUpdateResult.error}` };
+      }
+
+      // Un-publish original post if requested
+      if (unpublishOriginal) {
+        const unpublishResult = await this.unpublishPost(originalPostId);
+        if (!unpublishResult.success) {
+          return { success: false, error: `Failed to un-publish original post: ${unpublishResult.error}` };
+        }
+      }
+
+      // Publish the new draft with new slug
+      const { error } = await supabase
+        .from('blog_posts')
+        .update({
+          status: 'published',
+          slug: newPostSlug,
+          published_at: new Date().toISOString(),
+          read_time: readTime
+        })
+        .eq('id', draftId);
+
+      if (error) {
+        console.error('Error publishing draft:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error in publishDraftFromExistingPost:', error);
+      return { success: false, error: 'Failed to publish draft from existing post' };
+    }
+  },
+
+  // Get published post by slug (returns database ID)
+  async getPublishedPostBySlug(slug: string): Promise<string | null> {
+    try {
+      const { data, error } = await supabase
+        .from('blog_posts')
+        .select('id')
+        .eq('slug', slug)
+        .eq('status', 'published')
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error fetching post by slug:', error);
+        return null;
+      }
+
+      return data?.id || null;
+    } catch (error) {
+      console.error('Error in getPublishedPostBySlug:', error);
+      return null;
+    }
+  },
+
+  // Update published post (in-place editing)
+  async updatePublishedPost(postId: string, postData: Partial<BlogPost>): Promise<{ success: boolean; error?: string }> {
+    try {
+      const updateData: any = {
+        title: postData.title,
+        excerpt: postData.excerpt,
+        content: postData.content,
+        category: postData.category,
+        author: postData.author,
+        hero_image: postData.heroImage,
+        thumbnail: postData.thumbnail,
+        video_embed: postData.videoEmbed,
+        tags: postData.tags,
+        updated_at: new Date().toISOString()
+      };
+
+      // Update slug if title changed
+      if (postData.title) {
+        updateData.slug = slugify(postData.title);
+      }
+
+      const { error } = await supabase
+        .from('blog_posts')
+        .update(updateData)
+        .eq('id', postId);
+
+      if (error) {
+        console.error('Error updating published post:', error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error in updatePublishedPost:', error);
+      return { success: false, error: 'Failed to update post' };
+    }
+  },
+
   // Helper to format DB post to BlogPost type
   formatDbPost(post: any): BlogPost {
     return {
@@ -397,7 +575,8 @@ export const blogService = {
       status: post.status || 'published',
       userId: post.user_id,
       scheduledFor: post.scheduled_for,
-      lastAutoSavedAt: post.last_auto_saved_at
+      lastAutoSavedAt: post.last_auto_saved_at,
+      createdFromPostId: post.created_from_post_id
     };
   }
 };

@@ -75,6 +75,7 @@ export type Database = {
           category: string | null
           content: string | null
           created_at: string
+          created_from_post_id: string | null
           excerpt: string | null
           hero_image: string | null
           id: string
@@ -98,6 +99,7 @@ export type Database = {
           category?: string | null
           content?: string | null
           created_at?: string
+          created_from_post_id?: string | null
           excerpt?: string | null
           hero_image?: string | null
           id?: string
@@ -121,6 +123,7 @@ export type Database = {
           category?: string | null
           content?: string | null
           created_at?: string
+          created_from_post_id?: string | null
           excerpt?: string | null
           hero_image?: string | null
           id?: string
@@ -138,7 +141,15 @@ export type Database = {
           user_id?: string | null
           video_embed?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "blog_posts_created_from_post_id_fkey"
+            columns: ["created_from_post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       demo_calendar: {
         Row: {

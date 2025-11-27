@@ -17,4 +17,5 @@ export interface BlogPost {
   userId?: string;
   scheduledFor?: string;
   lastAutoSavedAt?: string;
+  createdFromPostId?: string;
 }
