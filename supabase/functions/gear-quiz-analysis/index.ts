@@ -179,12 +179,12 @@ Provide specific gear recommendations with explanations tailored to their profil
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5',
+        model: 'gpt-5-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        max_completion_tokens: 3000,
+        max_completion_tokens: 5000,
       }),
     });
 

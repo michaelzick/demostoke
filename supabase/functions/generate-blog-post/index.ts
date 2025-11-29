@@ -94,12 +94,12 @@ Format the response as a JSON object with the following structure:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5',
+        model: 'gpt-5-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        max_completion_tokens: 3000,
+        max_completion_tokens: 6000,
       }),
     });
 

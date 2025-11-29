@@ -113,12 +113,12 @@ Provide detailed SEO analysis with actionable suggestions for 2024-2025 search o
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5',
+        model: 'gpt-5-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        max_completion_tokens: 2000,
+        max_completion_tokens: 3000,
       }),
     });
 
