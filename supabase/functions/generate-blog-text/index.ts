@@ -103,7 +103,19 @@ serve(async (req) => {
     }
 
     const contentData = await contentResponse.json();
-    const content = contentData.choices[0].message.content;
+    console.log('Content response status:', contentResponse.ok, contentResponse.status);
+    console.log('Full contentData response:', JSON.stringify(contentData, null, 2));
+    
+    const content = contentData.choices?.[0]?.message?.content;
+    console.log('Extracted content (first 200 chars):', content?.substring(0, 200));
+    
+    if (!content || content.trim().length === 0) {
+      console.error('Content generation failed - empty or undefined content');
+      return new Response(
+        JSON.stringify({ success: false, error: 'GPT-5 returned empty content. Please try again.' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
+    }
 
     // Generate title and excerpt based on the content and prompt
     const metaResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -155,8 +167,10 @@ Please return ONLY the JSON object with title and excerpt fields.`
 
     if (metaResponse.ok) {
       const metaData = await metaResponse.json();
-      const metaContent = metaData.choices[0]?.message?.content;
-
+      console.log('Meta response status:', metaResponse.ok, metaResponse.status);
+      console.log('Full metaData response:', JSON.stringify(metaData, null, 2));
+      
+      const metaContent = metaData.choices?.[0]?.message?.content;
       console.log('Raw meta content from OpenAI:', metaContent);
 
       if (metaContent) {
@@ -197,6 +211,9 @@ Please return ONLY the JSON object with title and excerpt fields.`
     }
 
     console.log('Blog content, title, and excerpt generated successfully');
+    console.log('Final content length:', content.length);
+    console.log('Final title:', title);
+    console.log('Final excerpt:', excerpt);
 
     return new Response(
       JSON.stringify({
