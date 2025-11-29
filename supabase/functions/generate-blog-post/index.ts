@@ -94,7 +94,7 @@ Format the response as a JSON object with the following structure:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-2025-08-07',
+        model: 'gpt-5',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
