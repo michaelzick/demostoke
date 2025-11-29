@@ -39,49 +39,12 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5',
+        model: 'gpt-5-mini',
         messages: [
           {
             role: 'system',
             content: `You are an expert outdoor gear and adventure sports content writer. 
-            Create engaging, informative blog posts about ${category} topics.
-            
-            Guidelines:
-            - Write in a conversational, engaging tone
-            - Include practical tips and insights
-            - Use personal experiences and storytelling where appropriate
-            - Aim for 800-1200 words
-            - Structure content with clear sections using proper HTML heading hierarchy
-            - Include relevant keywords naturally
-            - Make it SEO-friendly with good readability
-            - Focus on value for readers interested in outdoor adventures
-            - Use specific examples and actionable advice
-            - Write for both beginners and experienced enthusiasts
-            
-            CRITICAL CONTENT STRUCTURE RULES:
-            - NEVER include <!DOCTYPE>, <html>, <head>, <body>, or any full page HTML structure
-            - NEVER use <h1> tags - the title field will be the only H1 on the page
-            - ONLY generate content suitable for insertion into a page body
-            - Start directly with content paragraphs or <h2> sections
-            
-            REQUIRED HTML FORMATTING:
-            - Use <h2> for main sections (2-4 sections recommended)
-            - Use <h3> for subsections within main sections  
-            - Use <h4> for detailed points within subsections
-            - Use <p> tags for paragraphs
-            - Use <strong> for emphasis instead of **bold**
-            - Use <em> for italics
-            - Use <ul> and <li> for bullet points
-            - Use <ol> and <li> for numbered lists
-            - Use <blockquote> for quotes
-            
-            SEO-OPTIMIZED STRUCTURE:
-            - Start with an engaging introduction paragraph
-            - Include 2-4 main <h2> sections with descriptive headings
-            - Use <h3> and <h4> as needed for detailed organization
-            - End with a conclusion or call-to-action
-            - Ensure proper heading hierarchy for SEO (H2 → H3 → H4)
-            
+...
             Return ONLY the content HTML - no full page structure.`
           },
           {
@@ -89,7 +52,7 @@ serve(async (req) => {
             content: prompt
           }
         ],
-        max_completion_tokens: 2000,
+        max_completion_tokens: 4000,
       }),
     });
 
@@ -125,27 +88,12 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5',
+        model: 'gpt-5-mini',
         messages: [
           {
             role: 'system',
             content: `You are a professional blog editor specializing in outdoor gear and sports equipment. Create compelling titles and excerpts for blog posts.
-
-CRITICAL REQUIREMENTS - MUST FOLLOW EXACTLY:
-- Return ONLY a valid JSON object with exactly this structure: {"title": "Your Title Here", "excerpt": "Your excerpt here"}
-- Do NOT include any other text, explanations, or markdown formatting
-- The title should be catchy, SEO-friendly, and include relevant keywords for ${category}
-- Keep the title under 60 characters for optimal SEO
-- The excerpt should be 2-3 descriptive sentences that clearly explain what readers will learn and the main value/benefits of the post
-- The excerpt should be 120-160 characters for optimal SEO
-- Make the excerpt engaging and specific to the content, not generic
-- Include relevant keywords naturally in both title and excerpt
-
-SEO OPTIMIZATION REQUIREMENTS (TARGET: 90+ SEO SCORE):
-- Include the main keyword from the prompt naturally in both title and excerpt
-- Use action words and power words to increase click-through rate
-- Make the excerpt specific and value-driven to entice readers
-- Ensure title includes category-relevant keywords
+...
 - Make both title and excerpt compelling for search engines and readers`
           },
           {
@@ -158,7 +106,7 @@ ${content.substring(0, 800)}...
 Please return ONLY the JSON object with title and excerpt fields.`
           }
         ],
-        max_completion_tokens: 300,
+        max_completion_tokens: 1500,
       }),
     });
 

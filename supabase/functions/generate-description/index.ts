@@ -59,7 +59,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5',
+        model: 'gpt-5-mini',
         messages: [
           { 
             role: 'system', 
@@ -69,7 +69,7 @@ serve(async (req) => {
           },
           { role: 'user', content: prompt }
         ],
-        max_completion_tokens: 100,
+        max_completion_tokens: 1000,
       }),
     });
 

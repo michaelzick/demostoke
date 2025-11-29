@@ -97,12 +97,12 @@ Return JSON only.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5',
+        model: 'gpt-5-mini',
         messages: [
           { role: 'system', content: system },
           { role: 'user', content: user }
         ],
-        max_completion_tokens: 1000,
+        max_completion_tokens: 2000,
       }),
     });
 
