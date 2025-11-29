@@ -18,7 +18,8 @@ const FeaturedGearSection = ({ title, equipment, className = "bg-ocean-deep text
           <h2 className="text-3xl font-bold">{title}</h2>
           <Button
             variant="outline"
-            className="bg-white text-slate-900 hover:bg-slate-100 hover:text-slate-900"
+            size="lg"
+            className="bg-white/20 dark:bg-zinc-900/50 dark:border-white border-zinc-600 dark:hover:bg-white/30 dark:hover:bg-zinc-500/40 transition-colors"
             asChild
           >
             <Link to="/explore">View All</Link>
