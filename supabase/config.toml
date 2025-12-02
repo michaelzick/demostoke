@@ -1,1 +1,4 @@
 project_id = "qtlhqsqanbxgfbcjigrl"
+
+[functions.rental-discovery-agent]
+verify_jwt = false
