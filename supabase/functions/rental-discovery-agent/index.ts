@@ -1,5 +1,5 @@
 // Supabase Edge Function: rental-discovery-agent
-// Orchestrates 4 agents to discover, scrape, parse, and store ski/snowboard rental shops
+// Orchestrates 4 agents to discover, scrape, parse, and store ski/snowboard/surfboard/mountain bike rental shops
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
@@ -193,7 +193,7 @@ async function parserAgent(scrapedData: any[], shopUserId: string) {
       
       try {
         // Call GPT-5-mini to extract equipment data
-        const prompt = `Extract ski and snowboard rental equipment from this HTML. Return a JSON array of equipment objects with these fields: name, category (skis/snowboards), description, price_per_day, price_per_hour, price_per_week, size, material, suitable_skill_level (beginner/intermediate/advanced), subcategory, damage_deposit. If pricing is bundled (e.g., "$100 for 2 days"), calculate daily rate. Return empty array if no rental equipment found.`;
+        const prompt = `Extract ski, snowboard, surfboard, and mountain bike rental equipment from this HTML. Return a JSON array of equipment objects with these fields: name, category (skis/snowboards/surfboards/mountain-bikes), description, price_per_day, price_per_hour, price_per_week, size, material, suitable_skill_level (beginner/intermediate/advanced), subcategory, damage_deposit. Valid subcategories: skis (all-mountain, powder, carving, racing, touring), snowboards (all-mountain, freestyle, freeride, powder, splitboard), surfboards (shortboard, longboard, funboard, fish, hybrid, foam), mountain-bikes (trail, enduro, downhill, cross-country, hardtail, full-suspension). If pricing is bundled (e.g., "$100 for 2 days"), calculate daily rate. Return empty array if no rental equipment found.`;
         
         const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
@@ -364,7 +364,7 @@ serve(async (req) => {
     const payload: DiscoveryPayload = await req.json().catch(() => ({}));
     
     const region = payload.region || "los-angeles";
-    const categories = payload.categories || ["ski", "snowboard"];
+    const categories = payload.categories || ["ski", "snowboard", "surfboard", "mountain bike"];
     const maxShops = payload.maxShops || 20;
 
     console.log("🚀 Starting Rental Discovery Agent");
@@ -372,15 +372,54 @@ serve(async (req) => {
     console.log(`  Categories: ${categories.join(", ")}`);
     console.log(`  Max shops: ${maxShops}`);
 
+    // Build comprehensive keyword list for all categories
+    const buildKeywords = (cats: string[]): string[] => {
+      const keywords: string[] = [];
+      
+      for (const cat of cats) {
+        if (cat === "ski") {
+          keywords.push(
+            "ski rental los angeles",
+            "ski equipment rental la county",
+            "ski shop rental big bear",
+            "ski rental mammoth"
+          );
+        } else if (cat === "snowboard") {
+          keywords.push(
+            "snowboard rental los angeles",
+            "snowboard shop rental la county",
+            "snowboard rental big bear",
+            "snowboard rental mammoth"
+          );
+        } else if (cat === "surfboard") {
+          keywords.push(
+            "surfboard rental los angeles",
+            "surf shop rental venice beach",
+            "surfboard rental santa monica",
+            "surf rental malibu",
+            "surfboard rental manhattan beach",
+            "surf shop rental hermosa beach"
+          );
+        } else if (cat === "mountain bike" || cat === "mtb") {
+          keywords.push(
+            "mountain bike rental los angeles",
+            "mtb rental la county",
+            "bike rental angeles national forest",
+            "mountain bike rental santa monica mountains",
+            "bike shop rental la",
+            "mountain bike rental griffith park"
+          );
+        }
+      }
+      
+      return keywords;
+    };
+
     // LA County configuration
     const LA_CONFIG = {
       location: "Los Angeles County, CA",
       radiusMiles: 50,
-      keywords: categories.flatMap(cat => [
-        `${cat} rental los angeles`,
-        `${cat} shop rental la county`,
-        `${cat} rental store los angeles`,
-      ]),
+      keywords: buildKeywords(categories),
     };
 
     // Step 1: Search for shops
