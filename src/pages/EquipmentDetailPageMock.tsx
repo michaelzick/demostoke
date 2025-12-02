@@ -162,7 +162,7 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
             <EquipmentHeader equipment={equipment} />
             {/* Book Now button: only visible on mobile (columns stacked) */}
             <Button
-              className="block lg:hidden fixed left-0 bottom-0 w-full z-40 rounded-none bg-primary text-primary-foreground font-semibold hover:bg-primary hover:opacity-100 hover:shadow-none focus:outline-none h-12"
+              className="block lg:hidden fixed left-0 bottom-0 w-full z-40 rounded-none bg-primary text-primary-foreground font-semibold focus:outline-none h-12"
               onClick={handleBookNowClick}
               type="button"
               id="book-now-mobile-button"
