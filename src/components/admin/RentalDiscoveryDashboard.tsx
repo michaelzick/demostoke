@@ -124,11 +124,6 @@ export function RentalDiscoveryDashboard() {
           </div>
         </div>
 
-        <Alert>
-          <AlertDescription>
-            The agent runs automatically at midnight PT. Manual runs are useful for testing.
-          </AlertDescription>
-        </Alert>
 
         <div className="space-y-4">
           <h3 className="text-lg font-semibold">Discovered Retailers ({retailers.length})</h3>

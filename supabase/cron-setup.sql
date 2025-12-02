@@ -1,11 +1,18 @@
 -- Setup pg_cron for nightly rental discovery agent
 -- Run this SQL in your Supabase SQL editor
+--
+-- NOTE: The cron job is currently DISABLED. To disable/unschedule, run:
+-- SELECT cron.unschedule('nightly-rental-discovery');
+--
+-- To re-enable, uncomment and run the schedule command below.
 
 -- Enable extensions (if not already enabled)
 CREATE EXTENSION IF NOT EXISTS pg_cron;
 CREATE EXTENSION IF NOT EXISTS pg_net;
 
 -- Schedule nightly run at midnight Pacific Time (8 AM UTC)
+-- CURRENTLY DISABLED - uncomment to enable
+/*
 SELECT cron.schedule(
     'nightly-rental-discovery',
     '0 8 * * *',  -- 8 AM UTC = midnight PT
@@ -17,9 +24,10 @@ SELECT cron.schedule(
     ) AS request_id;
     $$
 );
+*/
 
--- Verify cron job was created
-SELECT * FROM cron.job WHERE jobname = 'nightly-rental-discovery';
+-- Verify cron job was created (run after enabling cron)
+-- SELECT * FROM cron.job WHERE jobname = 'nightly-rental-discovery';
 
 -- To manually trigger the agent (for testing):
 -- SELECT net.http_post(
