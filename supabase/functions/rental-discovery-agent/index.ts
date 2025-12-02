@@ -17,6 +17,17 @@ const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 const MAPBOX_TOKEN = Deno.env.get("MAPBOX_TOKEN");
 
+// Domains to exclude from search results (aggregators, social media, government sites)
+const BLOCKED_DOMAINS = [
+  'yelp.com', 'tripadvisor.com', 'google.com', 'facebook.com',
+  'instagram.com', 'twitter.com', 'youtube.com', 'tiktok.com',
+  'lacounty.gov', 'ca.gov', 'parks.lacounty.gov', 'ttc.lacounty.gov',
+  'expedia.com', 'kayak.com', 'groupon.com', 'amazon.com',
+  'ebay.com', 'craigslist.org', 'reddit.com', 'wikipedia.org',
+  'bing.com', 'yahoo.com', 'linkedin.com', 'pinterest.com',
+  'yellowpages.com', 'bbb.org', 'mapquest.com', 'manta.com',
+];
+
 interface DiscoveryPayload {
   region?: string;
   categories?: string[];
@@ -26,6 +37,16 @@ interface DiscoveryPayload {
 // Helper: Escape SQL strings
 function escapeSql(str: string): string {
   return str.replace(/'/g, "''");
+}
+
+// Helper: Check if domain should be blocked
+function isBlockedDomain(url: string): boolean {
+  try {
+    const domain = new URL(url).hostname.replace(/^www\./, "").toLowerCase();
+    return BLOCKED_DOMAINS.some(blocked => domain.includes(blocked));
+  } catch {
+    return true;
+  }
 }
 
 // Helper: Geocode address using Mapbox
@@ -55,13 +76,15 @@ async function searchAgent(keywords: string[], location: string, radiusMiles: nu
 
   const results: any[] = [];
   for (const kw of keywords) {
-    const query = `${kw} ${location}`;
+    // Add exclusion terms to filter out aggregator sites
+    const query = `${kw} ${location} -yelp -tripadvisor -groupon -yellowpages`;
     const url = new URL("https://www.googleapis.com/customsearch/v1");
     url.searchParams.set("key", GOOGLE_API_KEY);
     url.searchParams.set("cx", GOOGLE_CSE_ID);
     url.searchParams.set("q", query);
     url.searchParams.set("num", "10");
 
+    console.log(`  Searching: ${kw}`);
     const res = await fetch(url.toString());
     if (res.ok) {
       const data = await res.json();
@@ -72,15 +95,23 @@ async function searchAgent(keywords: string[], location: string, radiusMiles: nu
         displayLink: it.displayLink,
       }));
       results.push(...items);
+    } else {
+      console.error(`  Search failed for "${kw}":`, await res.text());
     }
     
-    if (results.length >= maxResults) break;
+    if (results.length >= maxResults * 2) break; // Get extra to account for filtering
   }
 
-  // Deduplicate by domain
+  // Deduplicate by domain and filter blocked domains
   const seen = new Set<string>();
   const deduped = results.filter((r) => {
     try {
+      // Skip blocked domains
+      if (isBlockedDomain(r.link)) {
+        console.log(`  ⛔ Skipping blocked domain: ${r.displayLink}`);
+        return false;
+      }
+      
       const domain = new URL(r.link).hostname.replace(/^www\./, "");
       if (seen.has(domain)) return false;
       seen.add(domain);
@@ -90,11 +121,11 @@ async function searchAgent(keywords: string[], location: string, radiusMiles: nu
     }
   });
 
-  console.log(`✅ AGENT 1: Found ${deduped.length} unique shops`);
+  console.log(`✅ AGENT 1: Found ${deduped.length} unique shops (filtered from ${results.length} results)`);
   return deduped.slice(0, maxResults);
 }
 
-// AGENT 2: Scraper Agent - Crawl websites
+// AGENT 2: Scraper Agent - Scrape websites (single page, with rate limiting)
 async function scraperAgent(shops: any[]) {
   console.log("🌐 AGENT 2: Scraper Agent starting...");
   
@@ -103,13 +134,20 @@ async function scraperAgent(shops: any[]) {
   }
 
   const scrapedData: any[] = [];
+  const DELAY_MS = 15000; // 15 seconds between requests to avoid rate limiting
 
   for (const shop of shops) {
-    console.log(`  Crawling: ${shop.link}`);
+    // Add delay between requests (except for the first one)
+    if (scrapedData.length > 0 || shops.indexOf(shop) > 0) {
+      console.log(`  ⏳ Waiting ${DELAY_MS / 1000}s to avoid rate limits...`);
+      await new Promise(resolve => setTimeout(resolve, DELAY_MS));
+    }
+    
+    console.log(`  Scraping: ${shop.link}`);
     
     try {
-      // Use Firecrawl to crawl the site
-      const crawlRes = await fetch("https://api.firecrawl.dev/v1/crawl", {
+      // Use simple scrape endpoint instead of crawl (faster, single page)
+      const scrapeRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${FIRECRAWL_API_KEY}`,
@@ -117,54 +155,31 @@ async function scraperAgent(shops: any[]) {
         },
         body: JSON.stringify({
           url: shop.link,
-          limit: 20,
-          scrapeOptions: {
-            formats: ["markdown", "html"],
-            onlyMainContent: true,
-          },
+          formats: ["markdown", "html"],
+          onlyMainContent: true,
+          waitFor: 2000, // Wait for dynamic content
         }),
       });
 
-      if (!crawlRes.ok) {
-        console.error(`  Crawl failed for ${shop.link}:`, await crawlRes.text());
+      if (!scrapeRes.ok) {
+        const errorText = await scrapeRes.text();
+        console.error(`  ❌ Scrape failed for ${shop.link}: ${errorText}`);
         continue;
       }
 
-      const crawlData = await crawlRes.json();
+      const scrapeData = await scrapeRes.json();
       
-      // Poll for completion if needed
-      let jobId = crawlData.id;
-      let completed = false;
-      let attempts = 0;
-      let crawlResults = null;
-
-      while (!completed && attempts < 30) {
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2s
-        
-        const statusRes = await fetch(`https://api.firecrawl.dev/v1/crawl/${jobId}`, {
-          headers: { "Authorization": `Bearer ${FIRECRAWL_API_KEY}` },
-        });
-        
-        const statusData = await statusRes.json();
-        
-        if (statusData.status === "completed") {
-          completed = true;
-          crawlResults = statusData.data || [];
-        } else if (statusData.status === "failed") {
-          console.error(`  Crawl failed for ${shop.link}`);
-          break;
-        }
-        attempts++;
-      }
-
-      if (crawlResults && crawlResults.length > 0) {
+      if (scrapeData.success && scrapeData.data) {
         scrapedData.push({
           shop,
-          pages: crawlResults,
+          pages: [scrapeData.data], // Wrap in array for compatibility with parser
         });
+        console.log(`  ✅ Scraped: ${shop.displayLink}`);
+      } else {
+        console.error(`  ❌ No data returned for ${shop.link}`);
       }
     } catch (e) {
-      console.error(`  Error crawling ${shop.link}:`, e);
+      console.error(`  ❌ Error scraping ${shop.link}:`, e);
     }
   }
 
@@ -189,11 +204,14 @@ async function parserAgent(scrapedData: any[], shopUserId: string) {
     
     // Parse each page for equipment
     for (const page of pages) {
-      if (!page.html) continue;
+      if (!page.html && !page.markdown) continue;
       
       try {
         // Call GPT-5-mini to extract equipment data
-        const prompt = `Extract ski, snowboard, surfboard, and mountain bike rental equipment from this HTML. Return a JSON array of equipment objects with these fields: name, category (skis/snowboards/surfboards/mountain-bikes), description, price_per_day, price_per_hour, price_per_week, size, material, suitable_skill_level (beginner/intermediate/advanced), subcategory, damage_deposit. Valid subcategories: skis (all-mountain, powder, carving, racing, touring), snowboards (all-mountain, freestyle, freeride, powder, splitboard), surfboards (shortboard, longboard, funboard, fish, hybrid, foam), mountain-bikes (trail, enduro, downhill, cross-country, hardtail, full-suspension). If pricing is bundled (e.g., "$100 for 2 days"), calculate daily rate. Return empty array if no rental equipment found.`;
+        const prompt = `Extract ski, snowboard, surfboard, and mountain bike rental equipment from this content. Return a JSON array of equipment objects with these fields: name, category (skis/snowboards/surfboards/mountain-bikes), description, price_per_day, price_per_hour, price_per_week, size, material, suitable_skill_level (beginner/intermediate/advanced), subcategory, damage_deposit. Valid subcategories: skis (all-mountain, powder, carving, racing, touring), snowboards (all-mountain, freestyle, freeride, powder, splitboard), surfboards (shortboard, longboard, funboard, fish, hybrid, foam), mountain-bikes (trail, enduro, downhill, cross-country, hardtail, full-suspension). If pricing is bundled (e.g., "$100 for 2 days"), calculate daily rate. Return empty array if no rental equipment found.`;
+        
+        // Use markdown if available, fallback to HTML
+        const content = page.markdown || page.html?.substring(0, 8000);
         
         const aiRes = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
@@ -204,26 +222,26 @@ async function parserAgent(scrapedData: any[], shopUserId: string) {
           body: JSON.stringify({
             model: "gpt-5-mini",
             messages: [
-              { role: "system", content: "You are a data extraction expert. Return only valid JSON." },
-              { role: "user", content: `${prompt}\n\nHTML:\n${page.html.substring(0, 8000)}` },
+              { role: "system", content: "You are a data extraction expert. Return only valid JSON array." },
+              { role: "user", content: `${prompt}\n\nContent:\n${content?.substring(0, 12000)}` },
             ],
-            max_completion_tokens: 2000,
+            max_completion_tokens: 4000,
           }),
         });
 
         if (aiRes.ok) {
           const aiData = await aiRes.json();
-          const content = aiData.choices[0].message.content;
+          const responseContent = aiData.choices[0].message.content;
           
           // Try to parse JSON
           try {
-            const extracted = JSON.parse(content);
+            const extracted = JSON.parse(responseContent);
             if (Array.isArray(extracted) && extracted.length > 0) {
               equipmentList.push(...extracted);
             }
           } catch {
             // Try to extract JSON from markdown code block
-            const jsonMatch = content.match(/```json\n?([\s\S]*?)\n?```/);
+            const jsonMatch = responseContent.match(/```json\n?([\s\S]*?)\n?```/);
             if (jsonMatch) {
               const extracted = JSON.parse(jsonMatch[1]);
               if (Array.isArray(extracted) && extracted.length > 0) {
@@ -231,9 +249,11 @@ async function parserAgent(scrapedData: any[], shopUserId: string) {
               }
             }
           }
+        } else {
+          console.error(`  ❌ AI parsing failed:`, await aiRes.text());
         }
       } catch (e) {
-        console.error(`  Error parsing page:`, e);
+        console.error(`  ❌ Error parsing page:`, e);
       }
     }
 
@@ -252,7 +272,7 @@ async function parserAgent(scrapedData: any[], shopUserId: string) {
       pages,
     });
 
-    console.log(`  Extracted ${equipmentList.length} equipment items`);
+    console.log(`  📦 Extracted ${equipmentList.length} equipment items`);
   }
 
   console.log(`✅ AGENT 3: Parsed ${parsedShops.length} shops`);
@@ -316,12 +336,15 @@ async function storageAgent(parsedShops: any[], shopUserId: string, supabaseClie
         }
       }
 
+      // Detect categories from equipment
+      const detectedCategories = [...new Set(equipment.map((e: any) => e.category).filter(Boolean))];
+
       // Store in scraped_retailers table
       const { error } = await supabaseClient.from("scraped_retailers").upsert({
         business_name: shop.title,
         business_url: shop.link,
         business_domain: domain,
-        detected_categories: equipment.length > 0 ? equipment.map((e: any) => e.category).filter(Boolean) : [],
+        detected_categories: detectedCategories.length > 0 ? detectedCategories : null,
         email,
         phone,
         address,
@@ -329,7 +352,7 @@ async function storageAgent(parsedShops: any[], shopUserId: string, supabaseClie
         location_lng: coords?.lng,
         raw_html: pages[0]?.html?.substring(0, 50000),
         raw_markdown: pages.map((p: any) => p.markdown).join("\n\n").substring(0, 50000),
-        relevant_pages: pages.map((p: any) => ({ url: p.url, title: p.metadata?.title })),
+        relevant_pages: pages.map((p: any) => ({ url: p.url || shop.link, title: p.metadata?.title })),
         parsed_equipment: equipment,
         generated_sql: fullSql,
         status: equipment.length > 0 ? "parsed" : "scraped",
@@ -339,13 +362,13 @@ async function storageAgent(parsedShops: any[], shopUserId: string, supabaseClie
       });
 
       if (error) {
-        console.error(`  Error storing ${shop.displayLink}:`, error);
+        console.error(`  ❌ Error storing ${shop.displayLink}:`, error);
       } else {
         totalEquipment += equipment.length;
-        console.log(`  ✓ Stored ${equipment.length} items for ${shop.displayLink}`);
+        console.log(`  ✅ Stored ${equipment.length} items for ${shop.displayLink}`);
       }
     } catch (e) {
-      console.error(`  Error processing shop:`, e);
+      console.error(`  ❌ Error processing shop:`, e);
     }
   }
 
@@ -365,7 +388,7 @@ serve(async (req) => {
     
     const region = payload.region || "los-angeles";
     const categories = payload.categories || ["ski", "snowboard", "surfboard", "mountain bike"];
-    const maxShops = payload.maxShops || 20;
+    const maxShops = payload.maxShops || 5; // Reduced default to process smaller batches
 
     console.log("🚀 Starting Rental Discovery Agent");
     console.log(`  Region: ${region}`);
