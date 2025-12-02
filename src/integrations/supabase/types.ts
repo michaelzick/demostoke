@@ -1026,6 +1026,78 @@ export type Database = {
         }
         Relationships: []
       }
+      scraped_retailers: {
+        Row: {
+          address: string | null
+          business_domain: string | null
+          business_name: string
+          business_url: string
+          created_at: string
+          detected_categories: string[] | null
+          email: string | null
+          equipment_inserted: boolean | null
+          error_message: string | null
+          generated_sql: string | null
+          id: string
+          last_scraped_at: string | null
+          location_lat: number | null
+          location_lng: number | null
+          parsed_equipment: Json | null
+          phone: string | null
+          raw_html: string | null
+          raw_markdown: string | null
+          relevant_pages: Json | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          business_domain?: string | null
+          business_name: string
+          business_url: string
+          created_at?: string
+          detected_categories?: string[] | null
+          email?: string | null
+          equipment_inserted?: boolean | null
+          error_message?: string | null
+          generated_sql?: string | null
+          id?: string
+          last_scraped_at?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
+          parsed_equipment?: Json | null
+          phone?: string | null
+          raw_html?: string | null
+          raw_markdown?: string | null
+          relevant_pages?: Json | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          business_domain?: string | null
+          business_name?: string
+          business_url?: string
+          created_at?: string
+          detected_categories?: string[] | null
+          email?: string | null
+          equipment_inserted?: boolean | null
+          error_message?: string | null
+          generated_sql?: string | null
+          id?: string
+          last_scraped_at?: string | null
+          location_lat?: number | null
+          location_lng?: number | null
+          parsed_equipment?: Json | null
+          phone?: string | null
+          raw_html?: string | null
+          raw_markdown?: string | null
+          relevant_pages?: Json | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       security_audit_log: {
         Row: {
           action: string
