@@ -49,7 +49,7 @@ const EquipmentHeader = ({ equipment, stackOnMobile = false }: EquipmentHeaderPr
           <Link
             to={`/user-profile/${slugify(equipment.owner.name)}`}
             className="text-lg underline underline-offset-4
-              hover:underline hover:text-white/80
+              hover:underline hover:text-primary
               transition-colors"
             data-tracking={trackingData}
             id={`${equipment.owner.name} - View Profile Link - Gear Header`}
