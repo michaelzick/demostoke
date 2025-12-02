@@ -70,12 +70,12 @@ const AdminPage = () => {
         </TabsContent>
 
         <TabsContent value="tools" className="space-y-6">
-              <RentalDiscoveryDashboard />
-              <AddMissingImagesSection />
-              <GeocodingRecoverySection />
-              <DemoEventGeocodingSection />
-              <RetailerDiscoverySection />
-              <GearUrlScraperSection />
+          <RetailerDiscoverySection />
+          <GearUrlScraperSection />
+          <RentalDiscoveryDashboard />
+          <AddMissingImagesSection />
+          <GeocodingRecoverySection />
+          <DemoEventGeocodingSection />
         </TabsContent>
       </Tabs>
     </div>
