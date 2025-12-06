@@ -92,7 +92,7 @@ export function TricksSection({ category, subcategory, equipmentName, specificat
                 </>
               ) : (
                 <>
-                  <Lightbulb className="w-4 h-4 mr-1.5" />
+                  <Lightbulb className="w-4 h-4 mr-1" />
                   Generate Tricks
                 </>
               )}
