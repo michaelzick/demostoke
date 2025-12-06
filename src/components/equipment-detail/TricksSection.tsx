@@ -7,6 +7,7 @@ import { useTricksGeneration, Trick } from "@/hooks/useTricksGeneration";
 import { YouTubeTutorialModal } from "./YouTubeTutorialModal";
 import { getCategoryActivityName } from "@/helpers";
 import { getCachedTricks, setCachedTricks, clearCachedTricks } from "@/services/tricksCacheService";
+import { trackEvent } from "@/utils/tracking";
 
 interface TricksSectionProps {
   equipmentId: string;
@@ -41,7 +42,10 @@ export function TricksSection({ equipmentId, category, subcategory, equipmentNam
     if (forceRefresh) {
       clearCachedTricks(equipmentId);
     }
-    
+
+    // Track generate tricks click
+    trackEvent(`Generate Tricks - ${equipmentName}`);
+
     setIsExpanded(true);
     const result = await generateTricks({
       category,
@@ -49,13 +53,16 @@ export function TricksSection({ equipmentId, category, subcategory, equipmentNam
       name: equipmentName,
       specifications,
     });
-    
+
     if (result && result.length > 0) {
       setCachedTricks(equipmentId, result);
     }
   };
 
   const handleTrickClick = (trick: Trick) => {
+    // Track trick click
+    trackEvent(`Trick - ${trick.name} - ${equipmentName}`);
+
     setSelectedTrick(trick);
     setShowTutorialModal(true);
   };
