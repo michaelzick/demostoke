@@ -71,7 +71,7 @@ export function TricksSection({ equipmentId, category, subcategory, equipmentNam
 
   return (
     <>
-      <Card className="p-6">
+      <Card className="p-4 sm:p-6 overflow-hidden">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Lightbulb className="w-5 h-5 text-primary" />
@@ -143,24 +143,24 @@ export function TricksSection({ equipmentId, category, subcategory, equipmentNam
         )}
 
         {tricks.length > 0 && isExpanded && (
-          <div className="grid gap-3">
+          <div className="grid gap-3 overflow-hidden">
             {tricks.map((trick, index) => (
               <button
                 key={index}
                 onClick={() => handleTrickClick(trick)}
-                className="flex items-start gap-3 p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors text-left w-full group"
+                className="flex items-start gap-3 p-3 sm:p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors text-left w-full group overflow-hidden"
               >
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                  <Play className="w-4 h-4 text-primary" />
+                <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                  <Play className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium truncate">{trick.name}</span>
-                    <Badge variant="outline" className={difficultyColors[trick.difficulty]}>
+                <div className="flex-1 min-w-0 overflow-hidden">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-1">
+                    <span className="font-medium break-words">{trick.name}</span>
+                    <Badge variant="outline" className={`${difficultyColors[trick.difficulty]} text-xs flex-shrink-0`}>
                       {trick.difficulty}
                     </Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
+                  <p className="text-sm text-muted-foreground line-clamp-2 break-words">
                     {trick.description}
                   </p>
                 </div>
