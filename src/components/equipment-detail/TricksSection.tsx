@@ -2,10 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Lightbulb, Loader2, Play, ChevronDown, ChevronUp } from "lucide-react";
+import { Lightbulb, Loader2, Play, ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
 import { useTricksGeneration, Trick } from "@/hooks/useTricksGeneration";
 import { YouTubeTutorialModal } from "./YouTubeTutorialModal";
-import { getCategoryDisplayName } from "@/helpers";
+import { getCategoryActivityName } from "@/helpers";
 
 interface TricksSectionProps {
   category: string;
@@ -41,7 +41,7 @@ export function TricksSection({ category, subcategory, equipmentName, specificat
     setShowTutorialModal(true);
   };
 
-  const categoryDisplay = getCategoryDisplayName(category);
+  const categoryActivity = getCategoryActivityName(category);
 
   return (
     <>
@@ -49,37 +49,50 @@ export function TricksSection({ category, subcategory, equipmentName, specificat
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Lightbulb className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-semibold">Learn {categoryDisplay} Tricks</h3>
+            <h3 className="text-lg font-semibold">{categoryActivity} Tutorial Videos</h3>
           </div>
-          {tricks.length > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              {isExpanded ? (
-                <ChevronUp className="w-4 h-4" />
-              ) : (
-                <ChevronDown className="w-4 h-4" />
-              )}
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {tricks.length > 0 && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleGenerateTricks}
+                  disabled={isLoading}
+                  title="Refresh tutorials"
+                >
+                  <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsExpanded(!isExpanded)}
+                >
+                  {isExpanded ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </Button>
+              </>
+            )}
+          </div>
         </div>
 
         {tricks.length === 0 && !isLoading && (
           <div className="text-center py-4">
             <p className="text-muted-foreground mb-4">
-              Discover tricks and techniques you can learn with this {categoryDisplay.toLowerCase()}.
+              Discover {categoryActivity} tricks and techniques.
             </p>
             <Button onClick={handleGenerateTricks} disabled={isLoading}>
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
                   Generating...
                 </>
               ) : (
                 <>
-                  <Lightbulb className="w-4 h-4 mr-2" />
+                  <Lightbulb className="w-4 h-4 mr-1.5" />
                   Generate Tricks
                 </>
               )}

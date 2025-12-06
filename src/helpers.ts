@@ -25,3 +25,22 @@ export const getCategoryDisplayName = (category: string) => {
       return category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   }
 };
+
+// Function to get singular activity name for category (e.g., "Snowboarding" not "Snowboards")
+export const getCategoryActivityName = (category: string) => {
+  switch (category) {
+    case "snowboards":
+      return "Snowboarding";
+    case "skis":
+      return "Skiing";
+    case "surfboards":
+      return "Surfing";
+    case "mountain-bikes":
+      return "Mountain Biking";
+    default: {
+      // Try to convert plural to activity form
+      const singular = category.endsWith('s') ? category.slice(0, -1) : category;
+      return singular.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') + 'ing';
+    }
+  }
+};
