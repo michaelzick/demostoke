@@ -1,3 +1,4 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -27,14 +28,14 @@ serve(async (req) => {
   try {
     const { category, subcategory, name, specifications } = await req.json() as TrickRequest;
     
-    const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
-    if (!GOOGLE_API_KEY) {
-      throw new Error("GOOGLE_API_KEY is not configured");
+    const openAIApiKey = Deno.env.get("OPENAI_API_KEY");
+    if (!openAIApiKey) {
+      throw new Error("OPENAI_API_KEY is not configured");
     }
 
     console.log(`Generating tricks for: ${category} - ${name}`);
 
-    const systemPrompt = `You are an expert instructor for outdoor sports equipment. Generate a list of tricks, techniques, and skills that someone can learn with the specified equipment. Focus on practical, learnable skills ranging from beginner to advanced.`;
+    const systemPrompt = `You are an expert instructor for outdoor sports equipment. Generate a list of tricks, techniques, and skills that someone can learn with the specified equipment. Focus on practical, learnable skills ranging from beginner to advanced. Always respond with valid JSON.`;
 
     const userPrompt = `Generate 6-8 tricks/techniques for this equipment:
 - Category: ${category}
@@ -50,56 +51,35 @@ For each trick, provide:
 
 Respond with a JSON object containing a "tricks" array with objects having: name, difficulty, description, youtubeSearchQuery`;
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
+        "Authorization": `Bearer ${openAIApiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }]
-          }
+        model: "gpt-5-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
         ],
-        generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: "object",
-            properties: {
-              tricks: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    name: { type: "string" },
-                    difficulty: { type: "string", enum: ["beginner", "intermediate", "advanced"] },
-                    description: { type: "string" },
-                    youtubeSearchQuery: { type: "string" }
-                  },
-                  required: ["name", "difficulty", "description", "youtubeSearchQuery"]
-                }
-              }
-            },
-            required: ["tricks"]
-          }
-        }
+        response_format: { type: "json_object" },
+        max_completion_tokens: 4000,
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Google Gemini API error:", response.status, errorText);
-      throw new Error(`Google Gemini API error: ${response.status}`);
+      console.error("OpenAI API error:", response.status, errorText);
+      throw new Error(`OpenAI API error: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log("Gemini response received");
+    console.log("OpenAI response received");
 
-    // Extract the JSON content from Gemini's response
-    const textContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const textContent = data.choices?.[0]?.message?.content;
     if (!textContent) {
-      throw new Error("Invalid Gemini response format");
+      throw new Error("Invalid OpenAI response format");
     }
 
     const tricksData = JSON.parse(textContent);
