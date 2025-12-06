@@ -26,9 +26,9 @@ serve(async (req) => {
   try {
     const { query, maxResults = 3 } = await req.json() as YouTubeSearchRequest;
     
-    const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
-    if (!GOOGLE_API_KEY) {
-      throw new Error("GOOGLE_API_KEY is not configured");
+    const YOUTUBE_API_KEY = Deno.env.get("YOUTUBE_V3_API_KEY");
+    if (!YOUTUBE_API_KEY) {
+      throw new Error("YOUTUBE_V3_API_KEY is not configured");
     }
 
     console.log(`Searching YouTube for: ${query}`);
@@ -43,7 +43,7 @@ serve(async (req) => {
       videoEmbeddable: "true",
       safeSearch: "strict",
       relevanceLanguage: "en",
-      key: GOOGLE_API_KEY,
+      key: YOUTUBE_API_KEY,
     });
 
     const youtubeUrl = `https://www.googleapis.com/youtube/v3/search?${searchParams}`;
