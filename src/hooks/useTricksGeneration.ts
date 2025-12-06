@@ -56,6 +56,7 @@ export function useTricksGeneration() {
 
   return {
     tricks,
+    setTricks,
     isLoading,
     error,
     generateTricks,
