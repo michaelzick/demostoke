@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,8 +6,10 @@ import { Lightbulb, Loader2, Play, ChevronDown, ChevronUp, RefreshCw } from "luc
 import { useTricksGeneration, Trick } from "@/hooks/useTricksGeneration";
 import { YouTubeTutorialModal } from "./YouTubeTutorialModal";
 import { getCategoryActivityName } from "@/helpers";
+import { getCachedTricks, setCachedTricks, clearCachedTricks } from "@/services/tricksCacheService";
 
 interface TricksSectionProps {
+  equipmentId: string;
   category: string;
   subcategory?: string;
   equipmentName: string;
@@ -20,20 +22,37 @@ const difficultyColors = {
   advanced: "bg-red-500/20 text-red-700 dark:text-red-400 border-red-500/30",
 };
 
-export function TricksSection({ category, subcategory, equipmentName, specifications }: TricksSectionProps) {
-  const { tricks, isLoading, error, generateTricks } = useTricksGeneration();
+export function TricksSection({ equipmentId, category, subcategory, equipmentName, specifications }: TricksSectionProps) {
+  const { tricks, setTricks, isLoading, error, generateTricks } = useTricksGeneration();
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedTrick, setSelectedTrick] = useState<Trick | null>(null);
   const [showTutorialModal, setShowTutorialModal] = useState(false);
 
-  const handleGenerateTricks = async () => {
+  // Load cached tricks on mount
+  useEffect(() => {
+    const cached = getCachedTricks(equipmentId);
+    if (cached && cached.length > 0) {
+      setTricks(cached);
+      setIsExpanded(true);
+    }
+  }, [equipmentId, setTricks]);
+
+  const handleGenerateTricks = async (forceRefresh = false) => {
+    if (forceRefresh) {
+      clearCachedTricks(equipmentId);
+    }
+    
     setIsExpanded(true);
-    await generateTricks({
+    const result = await generateTricks({
       category,
       subcategory,
       name: equipmentName,
       specifications,
     });
+    
+    if (result && result.length > 0) {
+      setCachedTricks(equipmentId, result);
+    }
   };
 
   const handleTrickClick = (trick: Trick) => {
@@ -57,7 +76,7 @@ export function TricksSection({ category, subcategory, equipmentName, specificat
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={handleGenerateTricks}
+                  onClick={() => handleGenerateTricks(true)}
                   disabled={isLoading}
                   title="Refresh tutorials"
                 >
@@ -84,7 +103,7 @@ export function TricksSection({ category, subcategory, equipmentName, specificat
             <p className="text-muted-foreground mb-4">
               Discover {categoryActivity} tricks and techniques.
             </p>
-            <Button onClick={handleGenerateTricks} disabled={isLoading}>
+            <Button onClick={() => handleGenerateTricks(false)} disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -110,7 +129,7 @@ export function TricksSection({ category, subcategory, equipmentName, specificat
         {error && (
           <div className="text-center py-4">
             <p className="text-destructive mb-2">Failed to generate tricks</p>
-            <Button variant="outline" onClick={handleGenerateTricks}>
+            <Button variant="outline" onClick={() => handleGenerateTricks(false)}>
               Try Again
             </Button>
           </div>

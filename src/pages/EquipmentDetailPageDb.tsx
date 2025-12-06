@@ -293,6 +293,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
             
             {/* Tricks & Tutorials Section */}
             <TricksSection
+              equipmentId={equipment.id}
               category={equipment.category}
               subcategory={equipment.subcategory}
               equipmentName={equipment.name}
