@@ -2,3 +2,9 @@ project_id = "qtlhqsqanbxgfbcjigrl"
 
 [functions.rental-discovery-agent]
 verify_jwt = false
+
+[functions.generate-tricks]
+verify_jwt = false
+
+[functions.youtube-tutorial-search]
+verify_jwt = false

@@ -12,6 +12,7 @@ import OwnerCard from "@/components/equipment-detail/OwnerCard";
 import SimilarEquipment from "@/components/equipment-detail/SimilarEquipment";
 import GearImageModal from "@/components/equipment-detail/GearImageModal";
 import ContactInfoModal from "@/components/equipment-detail/ContactInfoModal";
+import { TricksSection } from "@/components/equipment-detail/TricksSection";
 import { slugify } from "@/utils/slugify";
 import {
   Carousel,
@@ -289,6 +290,14 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
             </Button>
             <div className="text-lg mb-6 whitespace-pre-wrap">{equipment.description}</div>
             <EquipmentSpecs specifications={equipment.specifications} />
+            
+            {/* Tricks & Tutorials Section */}
+            <TricksSection
+              category={equipment.category}
+              subcategory={equipment.subcategory}
+              equipmentName={equipment.name}
+              specifications={equipment.specifications}
+            />
           </div>
           {/* Tabs for Additional Information */}
           <Tabs defaultValue="location">
