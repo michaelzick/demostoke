@@ -52,7 +52,6 @@ For each trick, provide:
    - "beginner surfing duckdive tutorial"
    - "intermediate surfing cutback tutorial"
    - "advanced snowboarding backside 180 tutorial"
-5. DO NOT include the gear description in the YouTube query string such as "how to Pop-up surfing tutorial shortboard", not "how to Pop-up surfing tutorial shortboard Firewire Sweet Potato"
 
 IMPORTANT: The YouTube search query must be GENERIC.
 - Do NOT include the specific equipment name (e.g., "Firewire Sweet Potato", "Burton Custom")
