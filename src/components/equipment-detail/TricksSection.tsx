@@ -87,12 +87,12 @@ export function TricksSection({ category, subcategory, equipmentName, specificat
             <Button onClick={handleGenerateTricks} disabled={isLoading}>
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   Generating...
                 </>
               ) : (
                 <>
-                  <Lightbulb className="w-4 h-4 mr-1" />
+                  <Lightbulb className="w-4 h-4" />
                   Generate Tricks
                 </>
               )}
