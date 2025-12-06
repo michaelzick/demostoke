@@ -83,7 +83,18 @@ export function YouTubeTutorialModal({ isOpen, onClose, trick }: YouTubeTutorial
                 className="w-full h-full"
               />
             </div>
-            <h4 className="font-medium line-clamp-2 mb-1">{selectedVideo.title}</h4>
+            <div className="flex items-start gap-3 mb-1">
+              <h4 className="font-medium flex-1 min-w-0">{selectedVideo.title}</h4>
+              <a
+                href={`https://www.youtube.com/watch?v=${selectedVideo.videoId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1.5 text-primary hover:underline text-sm flex-shrink-0 whitespace-nowrap"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                <span>YouTube</span>
+              </a>
+            </div>
             <p className="text-sm text-muted-foreground">{selectedVideo.channelTitle}</p>
           </div>
         )}
@@ -117,17 +128,6 @@ export function YouTubeTutorialModal({ isOpen, onClose, trick }: YouTubeTutorial
           </div>
         )}
 
-        {selectedVideo && (
-          <a
-            href={`https://www.youtube.com/watch?v=${selectedVideo.videoId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 text-primary hover:underline mt-6 text-sm"
-          >
-            <ExternalLink className="w-4 h-4" />
-            Watch on YouTube
-          </a>
-        )}
       </SheetContent>
     </Sheet>
   );
