@@ -27,7 +27,7 @@ serve(async (req) => {
 
   try {
     const { category, subcategory, name, specifications } = await req.json() as TrickRequest;
-    
+
     const openAIApiKey = Deno.env.get("OPENAI_API_KEY");
     if (!openAIApiKey) {
       throw new Error("OPENAI_API_KEY is not configured");
@@ -47,7 +47,12 @@ For each trick, provide:
 1. A clear, concise name
 2. Difficulty level (beginner, intermediate, or advanced)
 3. A brief 1-2 sentence description
-4. An optimized YouTube search query to find tutorial videos (include the sport name and "tutorial" or "how to")
+4. An optimized YouTube search query to find tutorial videos. The search query MUST include:
+   - The exact trick name
+   - The sport/activity name (e.g., "snowboarding", "skiing", "skateboarding")
+   - The word "tutorial" or "how to"
+   - Any relevant equipment context if it helps (e.g., "beginner snowboard")
+   Example: For a trick called "Ollie" in skateboarding, use "skateboard ollie tutorial" or "how to ollie skateboard"
 
 Respond with a JSON object containing a "tricks" array with objects having: name, difficulty, description, youtubeSearchQuery`;
 
