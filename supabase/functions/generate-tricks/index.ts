@@ -54,6 +54,11 @@ For each trick, provide:
    - "advanced snowboarding backside 180 tutorial"
 5. DO NOT include the gear description in the YouTube query string such as "how to Pop-up surfing tutorial shortboard", not "how to Pop-up surfing tutorial shortboard Firewire Sweet Potato"
 
+IMPORTANT: The YouTube search query must be GENERIC.
+- Do NOT include the specific equipment name (e.g., "Firewire Sweet Potato", "Burton Custom")
+- Do NOT include equipment specifications (e.g., "shortboard", "5'8\"", "156cm")
+- ONLY include: difficulty level (optional), sport name, trick name, and "tutorial"
+
 Respond with a JSON object containing a "tricks" array with objects having: name, difficulty, description, youtubeSearchQuery`;
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
