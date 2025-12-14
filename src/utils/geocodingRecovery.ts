@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { geocodeZipCode } from "./geocoding";
+import { geocodeAddress } from "./geocoding";
 
 interface EquipmentToGeocode {
   id: string;
@@ -43,7 +43,7 @@ export const geocodeEquipmentBatch = async (equipment: EquipmentToGeocode[]): Pr
     try {
       console.log(`🔍 Geocoding ${item.name} with address ${item.location_address}...`);
       
-      const coordinates = await geocodeZipCode(item.location_address);
+      const coordinates = await geocodeAddress(item.location_address);
       
       if (coordinates) {
         // Update the equipment with coordinates

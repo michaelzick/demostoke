@@ -62,8 +62,8 @@ export const geocodeAddress = async (address: string): Promise<GeocodeResult | n
     console.log('✅ Mapbox token obtained successfully');
     const mapboxToken = tokenData.token;
     
-    // Use Mapbox Geocoding API for addresses
-    const geocodingUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxToken}&country=US`;
+    // Use Mapbox Geocoding API for addresses (no country restriction for international support)
+    const geocodingUrl = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxToken}`;
     console.log('🌐 Making geocoding request to:', geocodingUrl.replace(mapboxToken, '[TOKEN]'));
     
     const response = await fetch(geocodingUrl);
