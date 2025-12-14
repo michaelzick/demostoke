@@ -88,9 +88,10 @@ serve(async (req) => {
     let originalImage;
     try {
       originalImage = await Image.decode(new Uint8Array(imageBuffer));
-    } catch (decodeError) {
+    } catch (decodeError: unknown) {
       console.error('Failed to decode image:', decodeError);
-      throw new Error(`Failed to decode image: ${decodeError.message}`);
+      const message = decodeError instanceof Error ? decodeError.message : 'Unknown decode error';
+      throw new Error(`Failed to decode image: ${message}`);
     }
     
     const originalWidth = originalImage.width;
@@ -111,21 +112,22 @@ serve(async (req) => {
       console.log('Resizing to:', newWidth, 'x', newHeight);
       try {
         processedImage = originalImage.resize(newWidth, newHeight);
-      } catch (resizeError) {
+      } catch (resizeError: unknown) {
         console.error('Failed to resize image:', resizeError);
-        throw new Error(`Failed to resize image: ${resizeError.message}`);
+        const message = resizeError instanceof Error ? resizeError.message : 'Unknown resize error';
+        throw new Error(`Failed to resize image: ${message}`);
       }
     }
 
-    // Step 5: Convert to JPEG
+    // Step 5: Encode as JPEG using encodeJPEG method
     console.log('Converting to JPEG...');
-    let jpegBuffer;
+    let jpegBuffer: Uint8Array;
     try {
-      // Use ImageScript encode method with JPEG format (2) and quality
-      jpegBuffer = await processedImage.encode(2, JPEG_QUALITY); // 2 = JPEG format
-    } catch (encodeError) {
+      jpegBuffer = await processedImage.encodeJPEG(JPEG_QUALITY);
+    } catch (encodeError: unknown) {
       console.error('Failed to encode JPEG:', encodeError);
-      throw new Error(`Failed to encode JPEG: ${encodeError.message}`);
+      const message = encodeError instanceof Error ? encodeError.message : 'Unknown encode error';
+      throw new Error(`Failed to encode JPEG: ${message}`);
     }
     
     const jpegSize = jpegBuffer.byteLength;
@@ -189,8 +191,8 @@ serve(async (req) => {
         jpegSize: jpegSize,
         compressionRatio: Math.round((1 - jpegSize / originalSize) * 100),
         dimensions: {
-          original: { width: originalWidth!, height: originalHeight! },
-          jpeg: { width: newWidth!, height: newHeight! }
+          original: { width: originalWidth, height: originalHeight },
+          jpeg: { width: newWidth, height: newHeight }
         }
       }),
       {
@@ -198,13 +200,14 @@ serve(async (req) => {
       }
     );
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error in convert-to-jpeg function:', error);
+    const message = error instanceof Error ? error.message : 'Unknown error';
     
     return new Response(
       JSON.stringify({ 
         success: false,
-        error: error.message 
+        error: message 
       }),
       {
         status: 500,

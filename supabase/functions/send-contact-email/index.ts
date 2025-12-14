@@ -134,7 +134,7 @@ const handler = async (req: Request): Promise<Response> => {
         <hr>
         <p><em>This message was sent via the DemoStoke contact form.</em></p>
       `,
-      replyTo: email,
+      reply_to: email,
     });
 
     console.log("Email sent successfully:", emailResponse);
