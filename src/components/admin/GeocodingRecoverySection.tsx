@@ -73,7 +73,7 @@ const GeocodingRecoverySection = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Check for equipment items missing coordinates and attempt to geocode them using their zip codes.
+          Check for equipment items missing coordinates and attempt to geocode them using their addresses.
         </p>
 
         <div className="flex gap-2">
@@ -116,10 +116,10 @@ const GeocodingRecoverySection = () => {
             {checkResults.items.length > 0 && (
               <div className="mt-2 max-h-32 overflow-y-auto">
                 <div className="text-xs space-y-1">
-                  {checkResults.items.map((item: { id: string; name: string; location_zip?: string }) => (
+                  {checkResults.items.map((item: { id: string; name: string; location_address?: string }) => (
                     <div key={item.id} className="flex justify-between">
                       <span>{item.name}</span>
-                      <span className="text-muted-foreground">{item.location_zip}</span>
+                      <span className="text-muted-foreground">{item.location_address}</span>
                     </div>
                   ))}
                 </div>
