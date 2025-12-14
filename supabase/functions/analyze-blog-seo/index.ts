@@ -177,12 +177,13 @@ Provide detailed SEO analysis with actionable suggestions for 2024-2025 search o
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error in analyze-blog-seo function:', error);
+    const message = error instanceof Error ? error.message : 'Failed to analyze SEO';
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message || 'Failed to analyze SEO'
+        error: message
       }),
       { 
         status: 500, 

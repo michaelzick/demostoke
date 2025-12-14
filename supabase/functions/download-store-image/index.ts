@@ -152,8 +152,9 @@ serve(async (req) => {
       }
     );
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error in download-store-image function:', error);
+    const message = error instanceof Error ? error.message : 'Unknown error';
     
     // Log the error to database if possible
     try {
@@ -177,7 +178,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: false,
-        error: error.message 
+        error: message 
       }),
       {
         status: 500,

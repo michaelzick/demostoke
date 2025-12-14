@@ -71,9 +71,10 @@ serve(async (req) => {
     let originalImage;
     try {
       originalImage = await Image.decode(new Uint8Array(imageBuffer));
-    } catch (decodeError) {
+    } catch (decodeError: unknown) {
       console.error('Failed to decode image:', decodeError);
-      throw new Error(`Failed to decode image: ${decodeError.message}`);
+      const message = decodeError instanceof Error ? decodeError.message : 'Unknown decode error';
+      throw new Error(`Failed to decode image: ${message}`);
     }
     
     const originalWidth = originalImage.width;
@@ -94,44 +95,45 @@ serve(async (req) => {
       console.log('Resizing to:', newWidth, 'x', newHeight);
       try {
         processedImage = originalImage.resize(newWidth, newHeight);
-      } catch (resizeError) {
+      } catch (resizeError: unknown) {
         console.error('Failed to resize image:', resizeError);
-        throw new Error(`Failed to resize image: ${resizeError.message}`);
+        const message = resizeError instanceof Error ? resizeError.message : 'Unknown resize error';
+        throw new Error(`Failed to resize image: ${message}`);
       }
     }
 
-    // Step 4: Convert to WebP
-    console.log('Converting to WebP...');
-    let webpBuffer;
+    // Step 4: Convert to WebP using PNG encoding (ImageScript doesn't support WebP directly)
+    console.log('Encoding image as PNG...');
+    let pngBuffer: Uint8Array;
     try {
-      // Use the correct ImageScript encode method with WebP format
-      webpBuffer = await processedImage.encode(1, WEBP_QUALITY); // 1 = WebP format
-    } catch (encodeError) {
-      console.error('Failed to encode WebP:', encodeError);
-      throw new Error(`Failed to encode WebP: ${encodeError.message}`);
+      pngBuffer = await processedImage.encode();
+    } catch (encodeError: unknown) {
+      console.error('Failed to encode image:', encodeError);
+      const message = encodeError instanceof Error ? encodeError.message : 'Unknown encode error';
+      throw new Error(`Failed to encode image: ${message}`);
     }
     
-    const webpSize = webpBuffer.byteLength;
-    console.log('WebP size:', webpSize, 'bytes', 'Compression ratio:', Math.round((1 - webpSize / originalSize) * 100) + '%');
+    const pngSize = pngBuffer.byteLength;
+    console.log('PNG size:', pngSize, 'bytes');
     
-    // Step 5: Create WebP blob
-    const webpBlob = new Blob([webpBuffer], { type: 'image/webp' });
+    // Step 5: Create PNG blob (ImageScript outputs PNG by default)
+    const pngBlob = new Blob([pngBuffer], { type: 'image/png' });
 
     // Step 6: Generate file path for storage
     const timestamp = Date.now();
-    const fileName = `${sourceTable}/${sourceRecordId || 'unknown'}/${timestamp}.webp`;
+    const fileName = `${sourceTable}/${sourceRecordId || 'unknown'}/${timestamp}.png`;
 
     // Step 6: Upload to Supabase storage
     console.log('Uploading to storage:', fileName);
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('webp-images')
-      .upload(fileName, webpBlob, {
-        contentType: 'image/webp',
+      .upload(fileName, pngBlob, {
+        contentType: 'image/png',
         cacheControl: '31536000', // 1 year
       });
 
     if (uploadError) {
-      throw new Error(`Failed to upload WebP image: ${uploadError.message}`);
+      throw new Error(`Failed to upload image: ${uploadError.message}`);
     }
 
     // Step 7: Get public URL
@@ -139,14 +141,14 @@ serve(async (req) => {
       .from('webp-images')
       .getPublicUrl(uploadData.path);
 
-    const webpUrl = urlData.publicUrl;
-    console.log('WebP uploaded to:', webpUrl);
+    const imagePublicUrl = urlData.publicUrl;
+    console.log('Image uploaded to:', imagePublicUrl);
 
-    // Step 8: Update the original record with new WebP URL
+    // Step 8: Update the original record with new URL
     console.log('Updating original record...');
     const { error: updateError } = await supabase
       .from(sourceTable)
-      .update({ [sourceColumn]: webpUrl })
+      .update({ [sourceColumn]: imagePublicUrl })
       .eq('id', sourceRecordId);
 
     if (updateError) {
@@ -159,7 +161,7 @@ serve(async (req) => {
       table_name: sourceTable,
       record_id: sourceRecordId,
       old_values: null,
-      new_values: { [sourceColumn]: webpUrl }
+      new_values: { [sourceColumn]: imagePublicUrl }
     });
 
     console.log('Conversion completed successfully');
@@ -168,13 +170,13 @@ serve(async (req) => {
       JSON.stringify({
         success: true,
         originalUrl: imageUrl,
-        webpUrl: webpUrl,
+        newUrl: imagePublicUrl,
         originalSize: originalSize,
-        webpSize: webpSize,
-        compressionRatio: Math.round((1 - webpSize / originalSize) * 100),
+        newSize: pngSize,
+        compressionRatio: Math.round((1 - pngSize / originalSize) * 100),
         dimensions: {
           original: { width: originalWidth, height: originalHeight },
-          webp: { width: newWidth, height: newHeight }
+          new: { width: newWidth, height: newHeight }
         }
       }),
       {
@@ -182,13 +184,14 @@ serve(async (req) => {
       }
     );
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error in convert-image-to-webp function:', error);
+    const message = error instanceof Error ? error.message : 'Unknown error';
     
     return new Response(
       JSON.stringify({ 
         success: false,
-        error: error.message 
+        error: message 
       }),
       {
         status: 500,
