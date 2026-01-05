@@ -134,7 +134,7 @@ serve(async (req) => {
     console.log('JPEG size:', jpegSize, 'bytes', 'Compression ratio:', Math.round((1 - jpegSize / originalSize) * 100) + '%');
     
     // Step 6: Create JPEG blob
-    const jpegBlob = new Blob([jpegBuffer], { type: 'image/jpeg' });
+    const jpegBlob = new Blob([jpegBuffer as BlobPart], { type: 'image/jpeg' });
 
     // Step 7: Generate file path for storage
     const timestamp = Date.now();

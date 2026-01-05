@@ -12,6 +12,7 @@ import RelatedGear from "@/components/equipment-detail/RelatedGear";
 import ContentRenderer from "@/components/blog/ContentRenderer";
 import { BlogPost } from "@/lib/blog/types";
 import { useIsAdmin } from "@/hooks/useUserRole";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const BlogPostPage = () => {
   const { slug, id } = useParams<{ slug?: string; id?: string }>();
@@ -20,33 +21,38 @@ const BlogPostPage = () => {
   const [allPosts, setAllPosts] = useState<BlogPost[]>([]);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [databaseId, setDatabaseId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const { isAdmin } = useIsAdmin();
-  
   const isPreviewMode = location.pathname.startsWith('/blog/preview/');
 
   useEffect(() => {
     const loadPost = async () => {
-      if (isPreviewMode && id) {
-        // Preview mode: load draft by ID
-        console.log('Loading draft preview with ID:', id);
-        const draft = await blogService.getDraftById(id);
-        console.log('Draft loaded:', draft ? { id: draft.id, title: draft.title, status: draft.status } : 'NOT FOUND');
-        setPost(draft);
-      } else if (slug) {
-        // Regular mode: load published post by slug
-        console.log('Loading published post with slug:', slug);
-        const posts = await blogService.getAllPosts();
-        console.log('All published posts loaded:', posts.length);
-        setAllPosts(posts);
-        const foundPost = posts.find(p => p.id === slug);
-        console.log('Found post:', foundPost ? { id: foundPost.id, author: foundPost.author, title: foundPost.title } : 'NOT FOUND');
-        setPost(foundPost || null);
-        
-        // Fetch database ID for admin edit functionality
-        if (foundPost && !isPreviewMode) {
-          const dbId = await blogService.getPublishedPostBySlug(slug);
-          setDatabaseId(dbId);
+      setIsLoading(true);
+      try {
+        if (isPreviewMode && id) {
+          // Preview mode: load draft by ID
+          console.log('Loading draft preview with ID:', id);
+          const draft = await blogService.getDraftById(id);
+          console.log('Draft loaded:', draft ? { id: draft.id, title: draft.title, status: draft.status } : 'NOT FOUND');
+          setPost(draft);
+        } else if (slug) {
+          // Regular mode: load published post by slug
+          console.log('Loading published post with slug:', slug);
+          const posts = await blogService.getAllPosts();
+          console.log('All published posts loaded:', posts.length);
+          setAllPosts(posts);
+          const foundPost = posts.find(p => p.id === slug);
+          console.log('Found post:', foundPost ? { id: foundPost.id, author: foundPost.author, title: foundPost.title } : 'NOT FOUND');
+          setPost(foundPost || null);
+          
+          // Fetch database ID for admin edit functionality
+          if (foundPost && !isPreviewMode) {
+            const dbId = await blogService.getPublishedPostBySlug(slug);
+            setDatabaseId(dbId);
+          }
         }
+      } finally {
+        setIsLoading(false);
       }
     };
     loadPost();
@@ -108,6 +114,10 @@ const BlogPostPage = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
 
   if (!post) {
     return (

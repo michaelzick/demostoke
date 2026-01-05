@@ -117,7 +117,7 @@ serve(async (req) => {
     console.log('PNG size:', pngSize, 'bytes');
     
     // Step 5: Create PNG blob (ImageScript outputs PNG by default)
-    const pngBlob = new Blob([pngBuffer], { type: 'image/png' });
+    const pngBlob = new Blob([pngBuffer as BlobPart], { type: 'image/png' });
 
     // Step 6: Generate file path for storage
     const timestamp = Date.now();
