@@ -1279,7 +1279,6 @@ export type Database = {
         Returns: undefined
       }
       migrate_figma_tokens_to_vault: { Args: never; Returns: undefined }
-      refresh_performance_views: { Args: never; Returns: undefined }
       store_figma_token_encrypted: {
         Args: {
           p_access_token: string
