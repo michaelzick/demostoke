@@ -1,68 +1,82 @@
 
 
-## Codebase Cleanup Plan (Revised)
+## Codebase Cleanup Execution Plan (Revised)
+
+### Overview
+This plan removes ~590 lines of dead code and 7 unused npm dependencies to reduce maintenance burden and bundle size.
+
+---
 
 ### Phase 1: Database Cleanup
 
 **1.1 Remove orphaned function**
-Drop the `refresh_performance_views()` function that references non-existent materialized views (`mv_trending_equipment`, `mv_equipment_stats`).
+Execute SQL migration to drop `refresh_performance_views()` which references non-existent materialized views.
 
-**1.2 Evaluate equipment_views table**
-The `equipment_views` table has 0 rows. View tracking now uses the denormalized `view_count` column on the `equipment` table directly. Options:
-- Remove the table if detailed view analytics are not needed
-- Keep if planning to add "who viewed what, when" analytics later
+```sql
+DROP FUNCTION IF EXISTS public.refresh_performance_views();
+```
+
+**1.2 Keep equipment_views table** (for now)
+- Table has 0 rows but RLS policies are in place
+- Keep for potential future analytics use
+- Can be removed later if detailed view tracking is not needed
 
 ---
 
 ### Phase 2: Edge Function Cleanup
 
-**Delete `supabase/functions/scrape-gear-from-url/`**
-- This function is superseded by `extract-gear-from-html` which the admin UI uses
-- The `rental-discovery-agent` also has its own inline scraping
+**Delete `supabase/functions/scrape-gear-from-url/` directory**
+- File: `supabase/functions/scrape-gear-from-url/index.ts` (~145 lines)
+- This function is superseded by `extract-gear-from-html` 
+- The `rental-discovery-agent` has its own inline scraping
 - No frontend code calls this function
 
 ---
 
 ### Phase 3: Component Cleanup
 
-**3.1 Delete duplicate CustomerWaiverForm**
-Remove `src/components/CustomerWaiverForm.tsx` (253 lines)
-- The active version is at `src/components/waiver/CustomerWaiverForm.tsx`
-- All imports use the waiver/ directory version
+**Delete unused UI components only**
 
-**3.2 Delete unused UI components**
-| Component | Lines | Status |
-|-----------|-------|--------|
-| `src/components/ui/menubar.tsx` | ~200 | No imports found in codebase |
-| `src/components/ui/context-menu.tsx` | ~200 | No imports found in codebase |
-| `src/components/ui/toggle-group.tsx` | ~60 | No imports found in codebase |
+| File | Lines |
+|------|-------|
+| `src/components/ui/menubar.tsx` | ~235 |
+| `src/components/ui/context-menu.tsx` | ~199 |
+| `src/components/ui/toggle-group.tsx` | ~60 |
+
+**KEEP**: `src/components/CustomerWaiverForm.tsx` (per user request)
 
 ---
 
 ### Phase 4: Dependency Cleanup
 
-**Remove unused npm packages from package.json:**
+**Remove from package.json:**
 
 | Package | Reason |
 |---------|--------|
 | `playwright` | No test files exist in the project |
 | `rehype-sanitize` | Project uses `dompurify` instead |
-| `@types/dompurify` | DOMPurify v3 has built-in TypeScript types |
-| `caniuse-lite` | Should be a transitive dependency, not explicit |
-| `@radix-ui/react-menubar` | UI component not used |
-| `@radix-ui/react-context-menu` | UI component not used |
-| `@radix-ui/react-toggle-group` | UI component not used |
+| `@types/dompurify` | DOMPurify v3 has built-in types |
+| `caniuse-lite` | Should be transitive, not explicit |
+| `@radix-ui/react-menubar` | UI component being deleted |
+| `@radix-ui/react-context-menu` | UI component being deleted |
+| `@radix-ui/react-toggle-group` | UI component being deleted |
 
 ---
 
-### Summary
+### Files Changed Summary
 
-| Category | Items | Estimated Lines Removed |
-|----------|-------|------------------------|
-| Database | 1 orphaned function | - |
-| Edge Functions | 1 superseded function | ~145 lines |
-| Components | 4 unused files | ~700 lines |
-| Dependencies | 7 npm packages | Smaller bundle size |
+| Action | File |
+|--------|------|
+| DELETE | `supabase/functions/scrape-gear-from-url/index.ts` |
+| DELETE | `src/components/ui/menubar.tsx` |
+| DELETE | `src/components/ui/context-menu.tsx` |
+| DELETE | `src/components/ui/toggle-group.tsx` |
+| MODIFY | `package.json` (remove 7 dependencies) |
+| SQL | Drop `refresh_performance_views()` function |
 
-**Total cleanup: ~845 lines of dead code removed, 7 unused dependencies removed**
+### Impact
+- **~590 lines of code removed**
+- **7 npm packages removed** (smaller bundle, fewer security surface)
+- **1 orphaned database function removed**
+- **Zero breaking changes** (all removed code is unused)
 
