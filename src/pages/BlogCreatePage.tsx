@@ -184,27 +184,46 @@ function BlogCreatePageInner() {
       const finalHeroImage = heroImg || finalThumbnail;
       const formattedCategory = category.replace(/-/g, " ");
       const authorSlug = slugify(author.trim());
-      const postData = {
-        title: title.trim(),
-        excerpt: excerpt.trim(),
-        content: content.trim(),
-        category: formattedCategory,
-        author: author.trim(),
-        authorId: authorSlug,
-        slug,
-        readTime,
-        tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
-        heroImage: finalHeroImage,
-        thumbnail: finalThumbnail,
-        videoEmbed: youtubeUrl || '',
-        publishedAt: publishedDate!.toISOString(),
-      };
-
-      await blogService.createPost(postData);
-
-      // If this was a draft, publish it
+      // If we have an existing draft, update and publish it
+      // Otherwise, create a new post
       if (draftId) {
-        await blogService.publishDraft(draftId, readTime);
+        // Update the existing draft with all the data
+        await blogService.saveDraft({
+          id: draftId,
+          userId: user.id,
+          title: title.trim(),
+          excerpt: excerpt.trim(),
+          content: content.trim(),
+          category: formattedCategory,
+          author: author.trim(),
+          authorId: authorSlug,
+          tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
+          heroImage: finalHeroImage,
+          thumbnail: finalThumbnail,
+          videoEmbed: youtubeUrl || '',
+        });
+
+        // Now publish the draft with slug
+        await blogService.publishDraft(draftId, readTime, title.trim());
+      } else {
+        // No draft exists, create a new post directly
+        const postData = {
+          title: title.trim(),
+          excerpt: excerpt.trim(),
+          content: content.trim(),
+          category: formattedCategory,
+          author: author.trim(),
+          authorId: authorSlug,
+          slug,
+          readTime,
+          tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
+          heroImage: finalHeroImage,
+          thumbnail: finalThumbnail,
+          videoEmbed: youtubeUrl || '',
+          publishedAt: publishedDate!.toISOString(),
+        };
+
+        await blogService.createPost(postData);
       }
 
       setCreatedSlug(slug);
