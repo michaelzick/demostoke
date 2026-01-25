@@ -2,7 +2,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -32,27 +32,28 @@ serve(async (req) => {
     console.log('Generating blog text for prompt:', prompt);
 
     // First, generate the main content
-    const contentResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+    const contentResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${lovableApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini',
+        model: 'google/gemini-3-flash-preview',
         messages: [
           {
             role: 'system',
             content: `You are an expert outdoor gear and adventure sports content writer. 
-...
-            Return ONLY the content HTML - no full page structure.`
+Write engaging, informative blog content with proper HTML formatting.
+Use headings (<h2>, <h3>), paragraphs (<p>), lists (<ul>, <ol>), and emphasis (<strong>, <em>) appropriately.
+Return ONLY the content HTML - no full page structure.`
           },
           {
             role: 'user',
             content: prompt
           }
         ],
-        max_completion_tokens: 4000,
+        max_tokens: 8000,
       }),
     });
 
@@ -81,19 +82,21 @@ serve(async (req) => {
     }
 
     // Generate title and excerpt based on the content and prompt
-    const metaResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+    const metaResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${lovableApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini',
+        model: 'google/gemini-3-flash-preview',
         messages: [
           {
             role: 'system',
             content: `You are a professional blog editor specializing in outdoor gear and sports equipment. Create compelling titles and excerpts for blog posts.
-...
+Return a JSON object with "title" and "excerpt" fields.
+- Title: 50-70 characters, catchy and SEO-friendly
+- Excerpt: 120-160 characters, engaging summary
 - Make both title and excerpt compelling for search engines and readers`
           },
           {
@@ -106,7 +109,7 @@ ${content.substring(0, 800)}...
 Please return ONLY the JSON object with title and excerpt fields.`
           }
         ],
-        max_completion_tokens: 1500,
+        max_tokens: 1500,
       }),
     });
 
