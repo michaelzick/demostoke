@@ -1,67 +1,154 @@
 
-
-## Fix: Blog Text Generation Empty Response
+## Fix: Duplicate Blog Post Creation
 
 ### Problem Analysis
-The `generate-blog-text` edge function is failing because:
-1. It uses OpenAI's `gpt-5-mini` model directly via `api.openai.com`
-2. GPT-5-mini consumes ALL completion tokens (4000) for internal "reasoning", leaving 0 tokens for actual output
-3. This results in `content: ""` with `finish_reason: "length"`
+When creating a blog post in `BlogCreatePage.tsx`, two database entries are created:
+
+1. **Auto-save** runs every 30 seconds and creates a draft via `blogService.saveDraft()` (inserts new row with `status: 'draft'`)
+2. **Publish action** (`handleCreatePost`) then:
+   - Calls `blogService.createPost()` → inserts a **second** row
+   - If `draftId` exists, also calls `blogService.publishDraft()` → updates the first draft
+
+This results in 2 posts: one new "published" post AND the original draft (which may also get published).
 
 ### Solution
-Switch to **Lovable AI Gateway** using `google/gemini-3-flash-preview` (the recommended default model), which doesn't have this reasoning token issue.
+Modify `handleCreatePost` in `BlogCreatePage.tsx` to:
+- If a draft exists (`draftId` is set): **update and publish the existing draft** instead of creating a new post
+- If no draft exists: create a new post as before
 
 ### Technical Changes
 
-**File: `supabase/functions/generate-blog-text/index.ts`**
+**File: `src/pages/BlogCreatePage.tsx`**
 
-1. Replace OpenAI API endpoint with Lovable AI Gateway:
-   - Change `https://api.openai.com/v1/chat/completions` → `https://ai.gateway.lovable.dev/v1/chat/completions`
-
-2. Replace API key:
-   - Change `OPENAI_API_KEY` → `LOVABLE_API_KEY` (auto-provisioned)
-
-3. Update model:
-   - Change `gpt-5-mini` → `google/gemini-3-flash-preview`
-
-4. Update token parameters:
-   - Replace `max_completion_tokens` with `max_tokens` for Gemini compatibility
-   - Increase to 8000 tokens for content generation (blog posts need more space)
-   - Keep 1500 tokens for meta generation
-
-### Code Changes Summary
+Modify the `handleCreatePost` function (around lines 146-234):
 
 ```typescript
-// Before
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-// ...
-const contentResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-  headers: {
-    'Authorization': `Bearer ${openAIApiKey}`,
-  },
-  body: JSON.stringify({
-    model: 'gpt-5-mini',
-    max_completion_tokens: 4000,
-  }),
-});
+const handleCreatePost = async () => {
+  if (!isFormValid()) {
+    toast.error("Please fill in all required fields.");
+    return;
+  }
 
-// After  
-const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
-// ...
-const contentResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-  headers: {
-    'Authorization': `Bearer ${lovableApiKey}`,
-  },
-  body: JSON.stringify({
-    model: 'google/gemini-3-flash-preview',
-    max_tokens: 8000,
-  }),
-});
+  if (!user?.id) {
+    toast.error("You must be logged in to publish posts.");
+    return;
+  }
+
+  setIsCreating(true);
+  try {
+    const slug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+
+    const readTime = Math.ceil(content.split(' ').length / 200);
+
+    // Prepare image URLs
+    const heroImg = imageUrl.trim();
+    const thumbImg = thumbnailUrl.trim();
+
+    let finalThumbnail = '';
+    if (useYoutubeThumbnail && youtubeUrl) {
+      const youtubeId = youtubeUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
+      if (youtubeId) {
+        finalThumbnail = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+      }
+    } else if (thumbImg) {
+      finalThumbnail = thumbImg;
+    } else if (heroImg) {
+      finalThumbnail = heroImg;
+    }
+
+    const finalHeroImage = heroImg || finalThumbnail;
+    const formattedCategory = category.replace(/-/g, " ");
+    const authorSlug = slugify(author.trim());
+
+    // If we have an existing draft, update and publish it
+    // Otherwise, create a new post
+    if (draftId) {
+      // Update the existing draft with all the data
+      await blogService.saveDraft({
+        id: draftId,
+        userId: user.id,
+        title: title.trim(),
+        excerpt: excerpt.trim(),
+        content: content.trim(),
+        category: formattedCategory,
+        author: author.trim(),
+        authorId: authorSlug,
+        tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
+        heroImage: finalHeroImage,
+        thumbnail: finalThumbnail,
+        videoEmbed: youtubeUrl || '',
+      });
+
+      // Now publish the draft with slug
+      await blogService.publishDraft(draftId, readTime, title.trim());
+    } else {
+      // No draft exists, create a new post directly
+      const postData = {
+        title: title.trim(),
+        excerpt: excerpt.trim(),
+        content: content.trim(),
+        category: formattedCategory,
+        author: author.trim(),
+        authorId: authorSlug,
+        slug,
+        readTime,
+        tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
+        heroImage: finalHeroImage,
+        thumbnail: finalThumbnail,
+        videoEmbed: youtubeUrl || '',
+        publishedAt: publishedDate!.toISOString(),
+      };
+
+      await blogService.createPost(postData);
+    }
+
+    setCreatedSlug(slug);
+    toast.success("Blog post published successfully!");
+
+    // Reset form
+    setPrompt("");
+    setCategory("");
+    setAuthor("");
+    setTags("");
+    setImageUrl("");
+    setThumbnailUrl("");
+    setYoutubeUrl("");
+    setPublishedDate(undefined);
+    setTitle("");
+    setExcerpt("");
+    setContent("");
+    setUseYoutubeThumbnail(false);
+    setUseHeroImage(false);
+    setDraftId(null);
+  } catch (error) {
+    console.error("Error creating blog post:", error);
+    toast.error("Failed to create blog post. Please try again.");
+  } finally {
+    setIsCreating(false);
+  }
+};
 ```
 
-### Impact
-- Blog text generation will work reliably
-- Uses Google Gemini which is faster and doesn't have the reasoning token issue
-- `LOVABLE_API_KEY` is auto-provisioned (no configuration needed)
-- Both content generation and meta (title/excerpt) generation calls will be updated
+### Key Changes Summary
 
+| Before | After |
+|--------|-------|
+| Always calls `createPost()` + optionally `publishDraft()` | Checks if `draftId` exists first |
+| Creates 2 rows when auto-save has run | Updates existing draft and publishes it |
+| `publishDraft()` called separately | Uses `saveDraft()` to update, then `publishDraft()` |
+
+### Files Changed
+
+| Action | File |
+|--------|------|
+| MODIFY | `src/pages/BlogCreatePage.tsx` (lines 146-234) |
+
+### Impact
+- **Fixes duplicate post creation**: Only 1 post will be created per publish action
+- **Preserves auto-save functionality**: Drafts still work correctly
+- **No breaking changes**: Existing drafts will still publish correctly
