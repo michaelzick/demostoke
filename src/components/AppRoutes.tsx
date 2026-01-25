@@ -66,10 +66,10 @@ const AppRoutes = () => {
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="bookings" element={<BookingsPage />} />
         <Route path="admin" element={<AdminPage />} />
+        <Route path="user-profile/chad-g" element={<ChadGProfilePage />} />
+        <Route path="user-profile/gemini" element={<GeminiProfilePage />} />
         <Route path="user-profile/:slug" element={<RealUserProfilePage />} />
         <Route path="profile" element={<ProfileRedirect />} />
-        <Route path="profile/chad-g" element={<ChadGProfilePage />} />
-        <Route path="user-profile/gemini" element={<GeminiProfilePage />} />
         <Route path="shop/:shopId" element={<ShopPage />} />
         <Route path="private-party/:partyId" element={<PrivatePartyPage />} />
         <Route path="search" element={<SearchResultsPage />} />

@@ -15,7 +15,7 @@ import { useIsAdmin } from "@/hooks/useUserRole";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
 const BlogPostPage = () => {
-  const { slug, id } = useParams<{ slug?: string; id?: string }>();
+  const { slug, id } = useParams<{ slug?: string; id?: string; }>();
   const location = useLocation();
   const [post, setPost] = useState<BlogPost | null>(null);
   const [allPosts, setAllPosts] = useState<BlogPost[]>([]);
@@ -44,7 +44,7 @@ const BlogPostPage = () => {
           const foundPost = posts.find(p => p.id === slug);
           console.log('Found post:', foundPost ? { id: foundPost.id, author: foundPost.author, title: foundPost.title } : 'NOT FOUND');
           setPost(foundPost || null);
-          
+
           // Fetch database ID for admin edit functionality
           if (foundPost && !isPreviewMode) {
             const dbId = await blogService.getPublishedPostBySlug(slug);
@@ -78,14 +78,14 @@ const BlogPostPage = () => {
     type: 'article',
     schema: post
       ? {
-          '@context': 'https://schema.org',
-          '@type': 'BlogPosting',
-          headline: post.title,
-          description: post.excerpt,
-          image: post.heroImage,
-          datePublished: post.publishedAt,
-          author: { '@type': 'Person', name: post.author }
-        }
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: post.title,
+        description: post.excerpt,
+        image: post.heroImage,
+        datePublished: post.publishedAt,
+        author: { '@type': 'Person', name: post.author }
+      }
       : undefined
   });
 
@@ -249,7 +249,7 @@ const BlogPostPage = () => {
                   <div className="flex items-center">
                     <User className="h-4 w-4 mr-1" />
                     <Link
-                      to={post.authorId === 'chad-g' ? '/profile/chad-g' : `/user-profile/${slugify(post.author)}`}
+                      to={post.authorId === 'chad-g' ? '/user-profile/chad-g' : `/user-profile/${slugify(post.author)}`}
                       className="hover:text-primary transition-colors"
                     >
                       {post.author}
@@ -289,7 +289,7 @@ const BlogPostPage = () => {
                     }
                   }
                 }
-              } catch {}
+              } catch { }
               return safeSrc ? (
                 <div className="mb-8">
                   <iframe
@@ -372,8 +372,8 @@ const BlogPostPage = () => {
       <Button
         onClick={scrollToTop}
         className={`fixed bottom-6 left-6 z-50 rounded-full w-12 h-12 p-0 shadow-lg hover:shadow-xl transition-all duration-300 ${showBackToTop
-            ? 'opacity-100 translate-y-0'
-            : 'opacity-0 translate-y-4 pointer-events-none'
+          ? 'opacity-100 translate-y-0'
+          : 'opacity-0 translate-y-4 pointer-events-none'
           }`}
         size="icon"
       >

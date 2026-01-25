@@ -283,8 +283,8 @@ const BlogPageInner = () => {
 
     for (let i = start; i <= end; i++) {
       if (i === 1 || i === totalPages) continue; // Skip first and last as they're always shown
-        if (i === 2 && !showEllipsisStart) continue; // Skip if we already showed page 2
-        if (i === totalPages - 1 && !showEllipsisEnd) continue; // Skip if we'll show totalPages-1 later
+      if (i === 2 && !showEllipsisStart) continue; // Skip if we already showed page 2
+      if (i === totalPages - 1 && !showEllipsisEnd) continue; // Skip if we'll show totalPages-1 later
 
       items.push(
         <PaginationItem key={i}>
@@ -431,182 +431,182 @@ const BlogPageInner = () => {
       </Sidebar>
       <SidebarInset>
         <div className="min-h-screen">
-      {/* Hero Section */}
-      <div className="py-16 text-gray-900 dark:text-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              DemoStoke Blog
-            </h1>
-            <p className="text-xl mb-4 text-gray-600 dark:text-blue-100">
-              Discover tips, techniques, and stories from the world of outdoor gear
-            </p>
+          {/* Hero Section */}
+          <div className="py-16 text-gray-900 dark:text-white">
+            <div className="container mx-auto px-4">
+              <div className="max-w-3xl mx-auto text-center">
+                <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                  DemoStoke Blog
+                </h1>
+                <p className="text-xl mb-4 text-gray-600 dark:text-blue-100">
+                  Discover tips, techniques, and stories from the world of outdoor gear
+                </p>
 
-            {/* Admin Buttons */}
-            {user && isAdmin && (
-              <div className="mb-8 flex justify-center gap-2">
-                <Button asChild className="w-auto gap-1">
-                  <Link to="/blog/create">
-                    <Plus className="h-4 w-4" />
-                    New Post
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" className="w-auto gap-1">
-                  <Link to="/blog/drafts">
-                    <FileText className="h-4 w-4" />
-                    View Drafts
-                  </Link>
-                </Button>
+                {/* Admin Buttons */}
+                {user && isAdmin && (
+                  <div className="mb-8 flex justify-center gap-2">
+                    <Button asChild className="w-auto gap-1">
+                      <Link to="/blog/create">
+                        <Plus className="h-4 w-4" />
+                        New Post
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline" className="w-auto gap-1">
+                      <Link to="/blog/drafts">
+                        <FileText className="h-4 w-4" />
+                        View Drafts
+                      </Link>
+                    </Button>
+                  </div>
+                )}
+
+                <div className="flex justify-center md:hidden">
+                  <Button size="lg" variant="outline" className="gap-2" onClick={toggleSidebar}>
+                    <Filter className="h-4 w-4" />
+                    Search & Filter
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Blog Posts */}
+          <div className="container mx-auto px-4 pb-12">
+            {(searchQuery || selectedFilter) && (
+              <div className="mb-8">
+                <h2 className="text-2xl font-semibold mb-2">
+                  {searchQuery ? `Search Results for "${searchQuery}"` : `Filtered by: ${filters.find(f => f.value === selectedFilter)?.label || selectedFilter}`}
+                </h2>
+                <p className="text-muted-foreground">
+                  Showing {startIndex + 1}-{Math.min(startIndex + POSTS_PER_PAGE, searchResults.length)} of {searchResults.length} {searchResults.length === 1 ? "post" : "posts"}
+                </p>
               </div>
             )}
 
-            <div className="flex justify-center md:hidden">
-              <Button size="lg" variant="outline" className="gap-2" onClick={toggleSidebar}>
-                <Filter className="h-4 w-4" />
-                Search & Filter
-              </Button>
-            </div>
+            {isLoading ? (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">Loading blog posts...</p>
+              </div>
+            ) : searchResults.length === 0 ? (
+              <div className="text-center py-12">
+                <h3 className="text-xl font-medium mb-2">No posts found</h3>
+                <p className="text-muted-foreground mb-4">
+                  Try adjusting your search terms or browse all posts below.
+                </p>
+                <Button onClick={clearSearch}>
+                  View All Posts
+                </Button>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {paginatedResults.map((post) => (
+                    <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                      <Link to={`/blog/${post.id}`} className="block">
+                        <div className="aspect-video overflow-hidden">
+                          <img
+                            src={post.thumbnail}
+                            alt={post.title}
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+                      </Link>
+                      <CardHeader>
+                        {isAdmin && (
+                          <div className="flex items-center gap-2 mb-3">
+                            <Checkbox
+                              id={`featured-${post.id}`}
+                              checked={featuredPosts.includes(post.id)}
+                              onCheckedChange={(checked) => handleFeatureToggle(post.id, checked as boolean)}
+                              disabled={!featuredPosts.includes(post.id) && featuredPosts.length >= MAX_FEATURED_POSTS}
+                            />
+                            <label
+                              htmlFor={`featured-${post.id}`}
+                              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            >
+                              Feature on homepage
+                            </label>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2 mb-2">
+                          <Link to={`/blog?category=${encodeURIComponent(post.category)}`}>
+                            <Badge className={`${getCategoryColor(post.category)} transition-colors cursor-pointer`}>
+                              {post.category}
+                            </Badge>
+                          </Link>
+                          <div className="flex items-center text-sm text-muted-foreground">
+                            <Calendar className="h-3 w-3 mr-1" />
+                            {formatDate(post.publishedAt)}
+                          </div>
+                        </div>
+                        <CardTitle className="line-clamp-2">
+                          <Link
+                            to={`/blog/${post.id}`}
+                            className="hover:text-primary transition-colors"
+                          >
+                            {post.title}
+                          </Link>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-muted-foreground mb-4 line-clamp-3">
+                          {post.excerpt}
+                        </p>
+                        <div className="flex items-center justify-between text-sm text-muted-foreground">
+                          <div className="flex items-center">
+                            <User className="h-3 w-3 mr-1" />
+                            <Link
+                              to={post.authorId === 'chad-g' ? '/user-profile/chad-g' : `/user-profile/${slugify(post.author)}`}
+                              className="hover:text-primary transition-colors"
+                            >
+                              {post.author}
+                            </Link>
+                          </div>
+                          <div className="flex items-center">
+                            {/* <Clock className="h-3 w-3 mr-1" /> */}
+                            {/* {post.readTime} min read */}
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-1 mt-3">
+                          {Array.from(new Set(post.tags)).map((tag) => (
+                            <Link key={tag} to={`/blog?search=${encodeURIComponent(tag)}`}>
+                              <Badge variant="outline" className="text-xs hover:text-primary hover:border-primary hover:bg-transparent transition-colors cursor-pointer">
+                                {tag}
+                              </Badge>
+                            </Link>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {totalPages > 1 && (
+                  <div className="mt-12 flex justify-center">
+                    <Pagination>
+                      <PaginationContent>
+                        {currentPage > 1 && (
+                          <PaginationPrevious
+                            onClick={() => handlePageChange(currentPage - 1)}
+                          />
+                        )}
+                        {renderPaginationItems()}
+                        {currentPage < totalPages && (
+                          <PaginationNext
+                            onClick={() => handlePageChange(currentPage + 1)}
+                          />
+                        )}
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </div>
-      </div>
-
-      {/* Blog Posts */}
-      <div className="container mx-auto px-4 pb-12">
-        {(searchQuery || selectedFilter) && (
-          <div className="mb-8">
-            <h2 className="text-2xl font-semibold mb-2">
-              {searchQuery ? `Search Results for "${searchQuery}"` : `Filtered by: ${filters.find(f => f.value === selectedFilter)?.label || selectedFilter}`}
-            </h2>
-            <p className="text-muted-foreground">
-              Showing {startIndex + 1}-{Math.min(startIndex + POSTS_PER_PAGE, searchResults.length)} of {searchResults.length} {searchResults.length === 1 ? "post" : "posts"}
-            </p>
-          </div>
-        )}
-
-        {isLoading ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Loading blog posts...</p>
-          </div>
-        ) : searchResults.length === 0 ? (
-          <div className="text-center py-12">
-            <h3 className="text-xl font-medium mb-2">No posts found</h3>
-            <p className="text-muted-foreground mb-4">
-              Try adjusting your search terms or browse all posts below.
-            </p>
-            <Button onClick={clearSearch}>
-              View All Posts
-            </Button>
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {paginatedResults.map((post) => (
-                <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                  <Link to={`/blog/${post.id}`} className="block">
-                    <div className="aspect-video overflow-hidden">
-                      <img
-                        src={post.thumbnail}
-                        alt={post.title}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                  </Link>
-                  <CardHeader>
-                    {isAdmin && (
-                      <div className="flex items-center gap-2 mb-3">
-                        <Checkbox
-                          id={`featured-${post.id}`}
-                          checked={featuredPosts.includes(post.id)}
-                          onCheckedChange={(checked) => handleFeatureToggle(post.id, checked as boolean)}
-                          disabled={!featuredPosts.includes(post.id) && featuredPosts.length >= MAX_FEATURED_POSTS}
-                        />
-                        <label
-                          htmlFor={`featured-${post.id}`}
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Feature on homepage
-                        </label>
-                      </div>
-                    )}
-                    <div className="flex items-center gap-2 mb-2">
-                      <Link to={`/blog?category=${encodeURIComponent(post.category)}`}>
-                        <Badge className={`${getCategoryColor(post.category)} transition-colors cursor-pointer`}>
-                          {post.category}
-                        </Badge>
-                      </Link>
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        {formatDate(post.publishedAt)}
-                      </div>
-                    </div>
-                    <CardTitle className="line-clamp-2">
-                      <Link
-                        to={`/blog/${post.id}`}
-                        className="hover:text-primary transition-colors"
-                      >
-                        {post.title}
-                      </Link>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4 line-clamp-3">
-                      {post.excerpt}
-                    </p>
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <div className="flex items-center">
-                        <User className="h-3 w-3 mr-1" />
-                        <Link
-                          to={post.authorId === 'chad-g' ? '/profile/chad-g' : `/user-profile/${slugify(post.author)}`}
-                          className="hover:text-primary transition-colors"
-                        >
-                          {post.author}
-                        </Link>
-                      </div>
-                      <div className="flex items-center">
-                        {/* <Clock className="h-3 w-3 mr-1" /> */}
-                        {/* {post.readTime} min read */}
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap gap-1 mt-3">
-                      {Array.from(new Set(post.tags)).map((tag) => (
-                        <Link key={tag} to={`/blog?search=${encodeURIComponent(tag)}`}>
-                          <Badge variant="outline" className="text-xs hover:text-primary hover:border-primary hover:bg-transparent transition-colors cursor-pointer">
-                            {tag}
-                          </Badge>
-                        </Link>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {totalPages > 1 && (
-              <div className="mt-12 flex justify-center">
-                <Pagination>
-                  <PaginationContent>
-                    {currentPage > 1 && (
-                      <PaginationPrevious
-                        onClick={() => handlePageChange(currentPage - 1)}
-                      />
-                    )}
-                    {renderPaginationItems()}
-                    {currentPage < totalPages && (
-                      <PaginationNext
-                        onClick={() => handlePageChange(currentPage + 1)}
-                      />
-                    )}
-                  </PaginationContent>
-                </Pagination>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
-    <BlogFooter />
-  </SidebarInset>
-  </>
+        <BlogFooter />
+      </SidebarInset>
+    </>
   );
 };
 
