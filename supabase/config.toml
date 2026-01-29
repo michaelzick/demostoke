@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.youtube-tutorial-search]
 verify_jwt = false
+
+[functions.scan-broken-images]
+verify_jwt = false
