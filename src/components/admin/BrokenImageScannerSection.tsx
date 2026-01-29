@@ -32,6 +32,7 @@ interface BrokenImage {
   imageUrl: string;
   equipmentId: string;
   gearName: string;
+  gearSlug: string;
   category: string;
   totalImages: number;
   errorReason: string;
@@ -325,7 +326,7 @@ const BrokenImageScannerSection = () => {
                         </span>
                       ) : (
                         <a
-                          href={`/gear/${img.equipmentId}`}
+                          href={`/gear/${img.gearSlug}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-1 text-primary hover:underline"

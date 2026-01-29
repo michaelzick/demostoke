@@ -15,6 +15,7 @@ interface ImageRecord {
     name: string;
     category: string;
     user_id: string;
+    slug: string;
   } | null;
 }
 
@@ -23,6 +24,7 @@ interface BrokenImage {
   imageUrl: string;
   equipmentId: string;
   gearName: string;
+  gearSlug: string;
   category: string;
   totalImages: number;
   errorReason: string;
@@ -36,7 +38,7 @@ interface ScanProgress {
 
 async function testImageUrl(
   url: string
-): Promise<{ broken: boolean; reason: string }> {
+): Promise<{ broken: boolean; reason: string; }> {
   // Skip internal/relative URLs and Supabase storage URLs (they're managed internally)
   if (url.startsWith("/")) {
     return { broken: false, reason: "" };
@@ -184,7 +186,8 @@ Deno.serve(async (req) => {
           id,
           name,
           category,
-          user_id
+          user_id,
+          slug
         )
       `
       )
@@ -237,6 +240,7 @@ Deno.serve(async (req) => {
               imageUrl: img.image_url,
               equipmentId: img.equipment_id,
               gearName: img.equipment.name,
+              gearSlug: img.equipment.slug,
               category: img.equipment.category,
               totalImages,
               errorReason: testResult.reason,
@@ -250,6 +254,7 @@ Deno.serve(async (req) => {
               imageUrl: img.image_url,
               equipmentId: img.equipment_id,
               gearName: "[Orphaned - Equipment Deleted]",
+              gearSlug: "",
               category: "Unknown",
               totalImages: 0,
               errorReason: testResult.reason,
