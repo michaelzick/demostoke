@@ -15,7 +15,6 @@ interface ImageRecord {
     name: string;
     category: string;
     user_id: string;
-    slug: string;
   } | null;
 }
 
@@ -28,6 +27,14 @@ interface BrokenImage {
   category: string;
   totalImages: number;
   errorReason: string;
+}
+
+// Helper to slugify text (matching frontend logic)
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
 }
 
 interface ScanProgress {
@@ -186,8 +193,7 @@ Deno.serve(async (req) => {
           id,
           name,
           category,
-          user_id,
-          slug
+          user_id
         )
       `
       )
@@ -240,7 +246,7 @@ Deno.serve(async (req) => {
               imageUrl: img.image_url,
               equipmentId: img.equipment_id,
               gearName: img.equipment.name,
-              gearSlug: img.equipment.slug,
+              gearSlug: slugify(img.equipment.name),
               category: img.equipment.category,
               totalImages,
               errorReason: testResult.reason,
