@@ -81,6 +81,22 @@ app.use((req, res, next) => {
   next();
 });
 
+// Redirect non-www to www subdomain
+app.use((req, res, next) => {
+  const host = req.get('host');
+
+  // Check if the host is exactly 'demostoke.com' (without www)
+  if (host === 'demostoke.com') {
+    const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
+    const redirectUrl = `${protocol}://www.demostoke.com${req.originalUrl}`;
+
+    // 301 permanent redirect to signal this is the canonical URL
+    return res.redirect(301, redirectUrl);
+  }
+
+  next();
+});
+
 app.use(compression({
   level: 6,
   threshold: 1024,
