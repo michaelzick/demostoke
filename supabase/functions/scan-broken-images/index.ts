@@ -1,3 +1,4 @@
+// @ts-ignore
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -56,58 +57,77 @@ async function testImageUrl(
     return { broken: false, reason: "" };
   }
 
+  const headers = {
+    "User-Agent":
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept":
+      "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "https://www.google.com/",
+  };
+
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // Increased timeout to 8s
 
+    // Try HEAD first
     const response = await fetch(url, {
       method: "HEAD",
       signal: controller.signal,
-      headers: {
-        "User-Agent": "DemoStoke-ImageChecker/1.0",
-      },
+      headers: headers,
       redirect: "follow",
     });
 
     clearTimeout(timeoutId);
 
-    if (!response.ok) {
-      return { broken: true, reason: `HTTP ${response.status}` };
-    }
-
-    const contentType = response.headers.get("content-type");
-    if (contentType && !contentType.startsWith("image/")) {
-      // Some servers don't return content-type for HEAD requests, do a GET with range
-      try {
-        const getController = new AbortController();
-        const getTimeoutId = setTimeout(() => getController.abort(), 5000);
-
-        const getResponse = await fetch(url, {
-          method: "GET",
-          signal: getController.signal,
-          headers: {
-            "User-Agent": "DemoStoke-ImageChecker/1.0",
-            Range: "bytes=0-0",
-          },
-        });
-
-        clearTimeout(getTimeoutId);
-
-        const getContentType = getResponse.headers.get("content-type");
-        if (getContentType && !getContentType.startsWith("image/")) {
-          return { broken: true, reason: "Not an image" };
-        }
-      } catch {
-        // If GET also fails, consider it broken
-        return { broken: true, reason: "Not an image" };
+    // If HEAD is successful and returns an image type, we're good
+    if (response.ok) {
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.startsWith("image/")) {
+        return { broken: false, reason: "" };
       }
     }
 
+    // If HEAD failed (404, 403, 405) OR content-type wasn't image, try GET
+    // Many CDNs block HEAD or strictly require GET for images
+    // Also handles the case where HEAD returns 404 but GET returns 200 (rare but happens with some dynamic image handlers)
+
+    // Only retry if it wasn't a timeout
+
+    const getController = new AbortController();
+    const getTimeoutId = setTimeout(() => getController.abort(), 10000); // 10s for GET
+
+    const getResponse = await fetch(url, {
+      method: "GET",
+      signal: getController.signal,
+      headers: {
+        ...headers,
+        // Range header can sometimes trigger different behavior, but for images strict checking removing it might be safer to mimic browser
+        // "Range": "bytes=0-0",
+      },
+    });
+
+    clearTimeout(getTimeoutId);
+
+    if (!getResponse.ok) {
+      // If 403/401, it might just be protected, but technically accessible to some.
+      // But for a public site, 403 usually means broken/forbidden.
+      // 404 is definitely broken.
+      return { broken: true, reason: `HTTP ${getResponse.status}` };
+    }
+
+    const contentType = getResponse.headers.get("content-type");
+    if (!contentType || !contentType.startsWith("image/")) {
+      // If it got 200 OK but not an image, it's likely a soft 404 or a generic error page
+      return { broken: true, reason: "Not an image" };
+    }
+
     return { broken: false, reason: "" };
+
   } catch (error: unknown) {
     if (error instanceof Error) {
       if (error.name === "AbortError") {
-        return { broken: true, reason: "Timeout (5s)" };
+        return { broken: true, reason: "Timeout" };
       }
       return { broken: true, reason: error.message || "Connection failed" };
     }
@@ -127,9 +147,11 @@ async function getImageCountForEquipment(
   return count || 0;
 }
 
+// @ts-ignore
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
+    // @ts-ignore
     return new Response(null, { headers: corsHeaders });
   }
 
@@ -137,6 +159,7 @@ Deno.serve(async (req) => {
     // Get auth header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
+      // @ts-ignore
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -144,7 +167,9 @@ Deno.serve(async (req) => {
     }
 
     // Create Supabase client
+    // @ts-ignore
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    // @ts-ignore
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
