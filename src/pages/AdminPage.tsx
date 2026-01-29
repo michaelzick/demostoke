@@ -1,4 +1,3 @@
-
 import { useAuth } from "@/helpers";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import UserManagementSection from "@/components/admin/UserManagementSection";
@@ -10,6 +9,7 @@ import GlobalSearchSettings from "@/components/admin/GlobalSearchSettings";
 import GeocodingRecoverySection from "@/components/admin/GeocodingRecoverySection";
 import DemoEventGeocodingSection from "@/components/admin/DemoEventGeocodingSection";
 import AddMissingImagesSection from "@/components/admin/AddMissingImagesSection";
+import BrokenImageScannerSection from "@/components/admin/BrokenImageScannerSection";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GearUrlScraperSection from "@/components/admin/GearUrlScraperSection";
@@ -70,6 +70,7 @@ const AdminPage = () => {
         </TabsContent>
 
         <TabsContent value="tools" className="space-y-6">
+          <BrokenImageScannerSection />
           <RetailerDiscoverySection />
           <GearUrlScraperSection />
           <RentalDiscoveryDashboard />
