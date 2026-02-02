@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { Lightbulb, Loader2, Play, ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
 import { useTricksGeneration, Trick } from "@/hooks/useTricksGeneration";
 import { YouTubeTutorialModal } from "./YouTubeTutorialModal";
 import { getCategoryActivityName } from "@/helpers";
 import { getCachedTricks, setCachedTricks, clearCachedTricks } from "@/services/tricksCacheService";
 import { trackEvent } from "@/utils/tracking";
+import { useEstimatedProgress } from "@/hooks/useEstimatedProgress";
 
 interface TricksSectionProps {
   equipmentId: string;
@@ -22,12 +24,23 @@ const difficultyColors = {
   intermediate: "bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border-yellow-500/30",
   advanced: "bg-red-500/20 text-red-700 dark:text-red-400 border-red-500/30",
 };
+const TRICKS_GENERATION_ESTIMATED_MS = 30000;
 
 export function TricksSection({ equipmentId, category, subcategory, equipmentName, specifications }: TricksSectionProps) {
   const { tricks, setTricks, isLoading, error, generateTricks } = useTricksGeneration();
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedTrick, setSelectedTrick] = useState<Trick | null>(null);
   const [showTutorialModal, setShowTutorialModal] = useState(false);
+  const {
+    progress: generationProgress,
+    secondsRemaining: generationSecondsRemaining,
+    isBeyondEstimate: isGenerationBeyondEstimate,
+  } = useEstimatedProgress({
+    isActive: isLoading,
+    estimatedDurationMs: TRICKS_GENERATION_ESTIMATED_MS,
+    startProgress: 10,
+    maxProgressBeforeComplete: 93,
+  });
 
   // Load cached tricks on mount
   useEffect(() => {
@@ -127,9 +140,22 @@ export function TricksSection({ equipmentId, category, subcategory, equipmentNam
         )}
 
         {isLoading && (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-primary mr-2" />
-            <span className="text-muted-foreground">AI is generating tricks...</span>
+          <div className="py-6 space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                <span className="text-sm text-muted-foreground">AI is generating tricks...</span>
+              </div>
+              <span className="text-sm font-medium">
+                {isGenerationBeyondEstimate ? "Almost done..." : `~${generationSecondsRemaining}s left`}
+              </span>
+            </div>
+            <Progress value={generationProgress} className="h-2" />
+            <p className="text-xs text-muted-foreground">
+              {isGenerationBeyondEstimate
+                ? "Finalizing tutorials and matching trick difficulty."
+                : "Time remaining is an estimate based on average generation speed."}
+            </p>
           </div>
         )}
 

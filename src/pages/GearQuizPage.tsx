@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import CategorySelection from "@/components/quiz/CategorySelection";
 import PhysicalStats from "@/components/quiz/PhysicalStats";
 import SkillLevelSelection from "@/components/quiz/SkillLevelSelection";
@@ -9,11 +10,12 @@ import CurrentGearInput from "@/components/quiz/CurrentGearInput";
 import AdditionalNotes from "@/components/quiz/AdditionalNotes";
 import QuizResults from "@/components/quiz/QuizResults";
 import QuizProgress from "@/components/quiz/QuizProgress";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { validateQuizData, sanitizeQuizData } from "@/utils/quizValidation";
 import useScrollToTop from "@/hooks/useScrollToTop";
+import { useEstimatedProgress } from "@/hooks/useEstimatedProgress";
 
 interface QuizData {
   category: string;
@@ -27,6 +29,8 @@ interface QuizData {
   additionalNotes: string;
 }
 
+const QUIZ_ANALYSIS_ESTIMATED_MS = 45000;
+
 const GearQuizPage = () => {
   useScrollToTop();
 
@@ -35,6 +39,16 @@ const GearQuizPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState(null);
   const totalSteps = 6;
+  const {
+    progress: analysisProgress,
+    secondsRemaining: analysisSecondsRemaining,
+    isBeyondEstimate: isAnalysisBeyondEstimate,
+  } = useEstimatedProgress({
+    isActive: isLoading,
+    estimatedDurationMs: QUIZ_ANALYSIS_ESTIMATED_MS,
+    startProgress: 12,
+    maxProgressBeforeComplete: 94,
+  });
 
   const [quizData, setQuizData] = useState<QuizData>({
     category: '',
@@ -222,7 +236,7 @@ const GearQuizPage = () => {
                 <Button
                   variant="outline"
                   onClick={prevStep}
-                  disabled={currentStep === 1}
+                  disabled={currentStep === 1 || isLoading}
                   className="flex items-center gap-2"
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -232,7 +246,7 @@ const GearQuizPage = () => {
                 {currentStep < totalSteps ? (
                   <Button
                     onClick={nextStep}
-                    disabled={!isStepValid()}
+                    disabled={!isStepValid() || isLoading}
                     className="flex items-center gap-2"
                   >
                     Next
@@ -244,9 +258,33 @@ const GearQuizPage = () => {
                     disabled={!isStepValid() || isLoading}
                     className="flex items-center gap-2"
                   >
-                    {isLoading ? "Analyzing..." : "Get My Recommendations"}
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Analyzing...
+                      </>
+                    ) : (
+                      "Get My Recommendations"
+                    )}
                   </Button>
                 )}
+              </div>
+            )}
+
+            {currentStep === totalSteps && isLoading && (
+              <div className="space-y-3 rounded-lg border bg-muted/30 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-sm text-muted-foreground">Generating your AI recommendations...</p>
+                  <span className="text-sm font-medium">
+                    {isAnalysisBeyondEstimate ? "Almost done..." : `~${analysisSecondsRemaining}s left`}
+                  </span>
+                </div>
+                <Progress value={analysisProgress} className="h-2" />
+                <p className="text-xs text-muted-foreground">
+                  {isAnalysisBeyondEstimate
+                    ? "Finalizing recommendations for your rider profile."
+                    : "Time remaining is an estimate based on average processing speed."}
+                </p>
               </div>
             )}
           </CardContent>
