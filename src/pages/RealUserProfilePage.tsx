@@ -9,7 +9,8 @@ import { useProfileQuery } from "@/hooks/useProfileQuery";
 import { useAuth } from "@/helpers";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Settings } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Search, Settings } from "lucide-react";
 import CategorySelect from "@/components/CategorySelect";
 import { UserProfileHeader } from "@/components/profile/UserProfileHeader";
 import { UserProfileSidebar } from "@/components/profile/UserProfileSidebar";
@@ -172,12 +173,35 @@ const RealUserProfilePage = () => {
   const userEquipment = dbUserEquipment;
 
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const categories = [
     ...new Set((userEquipment || []).map((item) => item.category)),
   ] as string[];
+  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
   const filteredEquipment = (userEquipment || []).filter(
-    (item) => selectedCategory === "all" || item.category === selectedCategory,
+    (item) => {
+      const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
+      const matchesSearch = normalizedSearchTerm === "" || [
+        item.name,
+        item.description,
+        item.category,
+        item.specifications?.size,
+        item.specifications?.material,
+        item.specifications?.suitable,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(normalizedSearchTerm);
+
+      return matchesCategory && matchesSearch;
+    },
   );
+  const totalEquipmentCount = userEquipment?.length || 0;
+  const hasActiveFilters = selectedCategory !== "all" || normalizedSearchTerm !== "";
+  const emptyEquipmentMessage = totalEquipmentCount === 0
+    ? "No gear currently listed."
+    : `No gear matches "${searchTerm.trim()}". Try another model or clear your search.`;
 
   const isLoading = profileLoading || statsLoading;
   const isEditLoading = (authLoading || (!profileLoaded && isAuthenticated)) && isEditMode;
@@ -297,7 +321,13 @@ const RealUserProfilePage = () => {
             <div className="flex items-center justify-between mb-6">
               <h2 ref={availableEquipmentRef} className="text-2xl font-bold">Available Equipment</h2>
               <div className="flex items-center gap-2">
-                {userEquipment && <Badge variant="outline">{userEquipment.length} items</Badge>}
+                {userEquipment && (
+                  <Badge variant="outline">
+                    {hasActiveFilters
+                      ? `${filteredEquipment.length} of ${totalEquipmentCount} items`
+                      : `${totalEquipmentCount} items`}
+                  </Badge>
+                )}
                 {isOwnProfile && (
                   <Button variant="outline" size="sm" onClick={handleToggleEditMode}>
                     <Settings className="h-4 w-4 mr-2" />
@@ -317,6 +347,15 @@ const RealUserProfilePage = () => {
             </Button>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="relative w-full sm:max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Search model name (e.g., Black Crows Camox)"
+                  className="pl-9"
+                />
+              </div>
               <div className="flex gap-4">
                 <CategorySelect
                   selected={selectedCategory}
@@ -332,6 +371,7 @@ const RealUserProfilePage = () => {
               stats={stats}
               isLoading={equipmentLoading}
               isMockUser={false}
+              emptyMessage={emptyEquipmentMessage}
             />
           </div>
         </div>

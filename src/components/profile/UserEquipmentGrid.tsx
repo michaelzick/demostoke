@@ -18,6 +18,7 @@ interface UserEquipmentGridProps {
   } | null;
   isLoading?: boolean;
   isMockUser?: boolean;
+  emptyMessage?: string;
 }
 
 export const UserEquipmentGrid = ({
@@ -26,6 +27,7 @@ export const UserEquipmentGrid = ({
   stats,
   isLoading,
   isMockUser,
+  emptyMessage,
 }: UserEquipmentGridProps) => {
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
@@ -91,7 +93,7 @@ export const UserEquipmentGrid = ({
   if (!userEquipment || userEquipment.length === 0) {
     return (
       <p className="text-muted-foreground dark:text-white">
-        No gear currently listed.
+        {emptyMessage || "No gear currently listed."}
       </p>
     );
   }
