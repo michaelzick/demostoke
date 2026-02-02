@@ -24,7 +24,6 @@ interface UserEquipmentGridProps {
 export const UserEquipmentGrid = ({
   userEquipment,
   owner,
-  stats,
   isLoading,
   isMockUser,
   emptyMessage,
@@ -103,8 +102,8 @@ export const UserEquipmentGrid = ({
       {userEquipment.map((item: UserEquipment) => {
         const equipment = { ...(item as any), owner } as Equipment;
         return (
-          <CompactEquipmentCard 
-            key={item.id} 
+          <CompactEquipmentCard
+            key={item.id}
             equipment={equipment}
             showActions={canEdit}
             isAdmin={isAdmin}

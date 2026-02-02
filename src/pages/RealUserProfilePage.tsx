@@ -10,7 +10,7 @@ import { useAuth } from "@/helpers";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Settings } from "lucide-react";
+import { Search, Settings, X } from "lucide-react";
 import CategorySelect from "@/components/CategorySelect";
 import { UserProfileHeader } from "@/components/profile/UserProfileHeader";
 import { UserProfileSidebar } from "@/components/profile/UserProfileSidebar";
@@ -174,6 +174,7 @@ const RealUserProfilePage = () => {
 
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const hasSearchText = searchTerm.length > 0;
   const categories = [
     ...new Set((userEquipment || []).map((item) => item.category)),
   ] as string[];
@@ -347,14 +348,27 @@ const RealUserProfilePage = () => {
             </Button>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
-              <div className="relative w-full sm:max-w-sm">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search model name (e.g., Black Crows Camox)"
-                  className="pl-9"
-                />
+              <div className="flex w-full sm:max-w-md gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search model name (e.g., Black Crows Camox)"
+                    className="pl-9"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  disabled={!hasSearchText}
+                  onClick={() => setSearchTerm("")}
+                  className="h-10 px-3 shrink-0"
+                >
+                  <X className="h-3.5 w-3.5 mr-1" />
+                  Clear
+                </Button>
               </div>
               <div className="flex gap-4">
                 <CategorySelect
