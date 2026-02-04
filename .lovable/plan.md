@@ -1,183 +1,192 @@
 
 
-## Broken Image URL Scanner - Admin Utility
+## Auto-Image Agent for New Gear
 
 ### Overview
-Create an edge function and admin component to find and remove broken gear image URLs from the database. The utility will scan all `equipment_images` records, test each URL for accessibility, and allow admins to delete broken URLs individually or in batch.
+Build an automated AI agent that detects when new gear is added to the `equipment` table and automatically assigns 3 high-quality images from Google Image Search. The agent will replicate the manual admin workflow of editing gear, searching for images, and saving them.
 
 ---
 
-### Phase 1: Edge Function
+### Build Errors Fix (Required First)
 
-**File: `supabase/functions/scan-broken-images/index.ts`**
+Before implementing the new feature, I need to fix the TypeScript errors in `scan-broken-images/index.ts`:
 
-Create an edge function that:
-1. Requires admin authentication (using the existing `is_admin()` RPC pattern from `convert-image-to-webp`)
-2. Fetches all records from `equipment_images` joined with `equipment` and `profiles`
-3. Tests each image URL for multiple failure conditions:
-   - HTTP 404/403/500 errors
-   - Connection timeouts (5 second limit)
-   - SSL/TLS errors
-   - CORS/redirect failures
-   - Invalid content-type (not an image)
-   - Empty responses
-4. Returns a list of broken URLs with gear details
+**Error 1**: Type casting issue at line 257 - The Supabase join returns `equipment` as an array, but the interface expects an object.
 
-**Edge Cases Handled:**
-- Rate limiting from external servers (retry with backoff)
-- URLs with special characters (proper encoding)
-- Relative URLs (skip as they're internal)
-- Already-deleted equipment (orphaned images)
+**Error 2**: `getImageCountForEquipment` function parameter typing issue.
 
-**Configuration in `supabase/config.toml`:**
-```toml
-[functions.scan-broken-images]
-verify_jwt = false
-```
+**Fix**: Remove the explicit type cast and handle the array structure from the Supabase join properly. The equipment field from a foreign key join is returned as an array (even for single relations), so we need to access `equipment[0]` instead of `equipment`.
 
 ---
 
-### Phase 2: Admin Component
+### Phase 1: Database Trigger Detection
 
-**File: `src/components/admin/BrokenImageScannerSection.tsx`**
+**Approach**: Use a PostgreSQL database trigger combined with `pg_net` to call an edge function whenever a new equipment record is inserted.
 
-UI Component featuring:
-
-1. **Scan Button** with progress indicator
-   - Shows "Scanning X of Y images..." during scan
-   - Progress bar showing percentage complete
-
-2. **Results Table** with columns:
-   | Column | Description |
-   |--------|-------------|
-   | Gear Name | Clickable link opening detail page in new tab |
-   | Category | Badge showing gear category |
-   | Broken URL | Clickable link opening URL in new tab |
-   | Total Images | Count of all images for this gear item |
-   | Error Reason | Why the URL is broken |
-   | Actions | Trash icon to delete individual URL |
-
-3. **Batch Actions**
-   - "Delete All Broken URLs" button with confirmation dialog
-   - Shows progress during batch deletion
-
-4. **Admin-Only Access**
-   - Uses `useIsAdmin()` hook to verify admin status
-   - Shows "Access Denied" if not admin
-
----
-
-### Phase 3: Integration
-
-**File: `src/pages/AdminPage.tsx`**
-
-Add the new component to the Tools tab:
-```typescript
-import BrokenImageScannerSection from "@/components/admin/BrokenImageScannerSection";
-
-// In TabsContent value="tools"
-<BrokenImageScannerSection />
-```
-
----
-
-### Technical Implementation Details
-
-**Edge Function Structure:**
-```typescript
-// scan-broken-images/index.ts
-serve(async (req) => {
-  // 1. CORS preflight handling
-  // 2. Admin authentication check via is_admin() RPC
-  // 3. Fetch all equipment_images with joined data
-  // 4. Test each URL in parallel batches (10 at a time to avoid overload)
-  // 5. Return broken URLs with details
-});
-```
-
-**URL Testing Logic:**
-```typescript
-async function testImageUrl(url: string): Promise<{ broken: boolean; reason: string }> {
-  // Skip internal/relative URLs
-  if (url.startsWith('/') || url.includes('supabase.co/storage')) {
-    return { broken: false, reason: '' };
-  }
+**SQL Migration**:
+```sql
+-- Create function to call edge function on new equipment
+CREATE OR REPLACE FUNCTION public.notify_new_equipment()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = 'public'
+AS $$
+BEGIN
+  -- Only trigger if no images are associated yet
+  -- Call edge function via pg_net
+  PERFORM net.http_post(
+    url := 'https://qtlhqsqanbxgfbcjigrl.supabase.co/functions/v1/auto-assign-gear-images',
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'Authorization', 'Bearer ' || current_setting('app.settings.service_role_key', true)
+    ),
+    body := jsonb_build_object(
+      'equipment_id', NEW.id,
+      'equipment_name', NEW.name,
+      'category', NEW.category
+    )
+  );
   
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-    
-    const response = await fetch(url, {
-      method: 'HEAD', // Only fetch headers, not full image
-      signal: controller.signal,
-      headers: { 'User-Agent': 'DemoStoke-ImageChecker/1.0' }
-    });
-    
-    clearTimeout(timeout);
-    
-    if (!response.ok) {
-      return { broken: true, reason: `HTTP ${response.status}` };
-    }
-    
-    const contentType = response.headers.get('content-type');
-    if (contentType && !contentType.startsWith('image/')) {
-      return { broken: true, reason: 'Not an image' };
-    }
-    
-    return { broken: false, reason: '' };
-  } catch (error) {
-    return { broken: true, reason: error.message || 'Connection failed' };
-  }
-}
-```
+  RETURN NEW;
+END;
+$$;
 
-**Component State Management:**
-```typescript
-interface BrokenImage {
-  imageId: string;
-  imageUrl: string;
-  equipmentId: string;
-  gearName: string;
-  category: string;
-  ownerName: string;
-  totalImages: number;
-  errorReason: string;
-}
-
-const [isScanning, setIsScanning] = useState(false);
-const [scanProgress, setScanProgress] = useState({ current: 0, total: 0 });
-const [brokenImages, setBrokenImages] = useState<BrokenImage[]>([]);
-const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
-const [isDeletingAll, setIsDeletingAll] = useState(false);
+-- Create trigger for new equipment
+CREATE TRIGGER on_equipment_created
+  AFTER INSERT ON public.equipment
+  FOR EACH ROW
+  EXECUTE FUNCTION public.notify_new_equipment();
 ```
 
 ---
 
-### Files Created/Modified
+### Phase 2: Edge Function - auto-assign-gear-images
+
+**File**: `supabase/functions/auto-assign-gear-images/index.ts`
+
+**Workflow**:
+
+1. **Receive Trigger Payload**
+   - Equipment ID, name, and category from the database trigger
+
+2. **Check Existing Images**
+   - Query `equipment_images` table to verify no images exist yet
+   - Skip if images already assigned (prevents duplicates on manual edits)
+
+3. **Search Google Images**
+   - Call existing `google-image-search` edge function internally
+   - Search query: `"{equipment_name} {category} product"`
+   - Request 30 results to have enough candidates
+
+4. **Filter & Validate Images**
+   - Filter for HTTPS URLs only (reject http://)
+   - Filter for dimensions >= 1000x1000 (use reported width/height from API)
+   - Validate URLs are accessible (HEAD request check)
+   - Stop after finding 3 valid images
+
+5. **Assign Images to Equipment**
+   - Insert into `equipment_images` table with:
+     - `equipment_id`: The new gear ID
+     - `image_url`: The validated HTTPS URL
+     - `display_order`: 0, 1, 2
+     - `is_primary`: true for first image only
+
+6. **Logging**
+   - Log success/failure to console for debugging
+   - Use `log_security_event` RPC for audit trail
+
+**Key Technical Considerations**:
+
+```typescript
+// Image filtering logic
+const validImages = searchResults.filter(img => {
+  // Must be HTTPS
+  if (!img.url.startsWith('https://')) return false;
+  
+  // Must be 1000x1000 or larger
+  if (!img.width || !img.height) return false;
+  if (img.width < 1000 || img.height < 1000) return false;
+  
+  return true;
+});
+
+// Take only first 3 valid images
+const imagesToAssign = validImages.slice(0, 3);
+```
+
+---
+
+### Phase 3: Configuration
+
+**File**: `supabase/config.toml`
+```toml
+[functions.auto-assign-gear-images]
+verify_jwt = false  # Called by database trigger, not user
+```
+
+---
+
+### Files to Create/Modify
 
 | Action | File |
 |--------|------|
-| CREATE | `supabase/functions/scan-broken-images/index.ts` |
-| CREATE | `src/components/admin/BrokenImageScannerSection.tsx` |
+| FIX | `supabase/functions/scan-broken-images/index.ts` (type errors) |
+| CREATE | `supabase/functions/auto-assign-gear-images/index.ts` |
 | MODIFY | `supabase/config.toml` (add function config) |
-| MODIFY | `src/pages/AdminPage.tsx` (add component import + usage) |
+| MIGRATION | Database trigger for equipment inserts |
 
 ---
 
-### Error Handling
+### Edge Cases Handled
 
-1. **Network Errors**: Caught and displayed with specific error messages
-2. **Auth Errors**: 401/403 responses handled gracefully with toast notification
-3. **Partial Failures**: If some URLs fail to delete, show which ones succeeded/failed
-4. **Edge Function Timeout**: Batch processing with chunked responses if needed
+1. **Equipment created with images already** - Check `equipment_images` count before proceeding
+2. **No valid images found** - Log warning, equipment remains without images
+3. **Google API rate limits** - Already handled by existing function with pagination
+4. **Broken image URLs** - Validate with HEAD request before saving
+5. **Duplicate runs** - Idempotent check prevents double-assignment
+6. **Network timeouts** - Abort controller with 5s timeout on validation
 
 ---
 
 ### Security Considerations
 
-1. Admin-only access enforced at both:
-   - Edge function level (via `is_admin()` RPC)
-   - Frontend level (via `useIsAdmin()` hook)
-2. Only deletes from `equipment_images` table (no storage deletion needed for external URLs)
-3. Audit logging for all deletions via existing `log_security_event` function
+1. Edge function uses service role key (no user auth needed - triggered by DB)
+2. Only processes new inserts, not updates
+3. Validates all URLs before database insertion
+4. Uses HTTPS-only URLs (HTTP rejected)
+
+---
+
+### Flow Diagram
+
+```text
+User/Admin adds gear
+        |
+        v
+Equipment INSERT
+        |
+        v
+DB Trigger fires --> pg_net.http_post()
+                            |
+                            v
+             auto-assign-gear-images function
+                            |
+                            v
+            Check if images already exist
+                   |
+           [No images] --> Call google-image-search
+                                   |
+                                   v
+                    Filter: HTTPS + 1000x1000+
+                                   |
+                                   v
+                    Validate URLs (HEAD request)
+                                   |
+                                   v
+                    Insert 3 images to equipment_images
+                                   |
+                                   v
+                           Complete
+```
 
