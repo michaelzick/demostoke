@@ -1,154 +1,96 @@
 
-## Fix: Duplicate Blog Post Creation
 
-### Problem Analysis
-When creating a blog post in `BlogCreatePage.tsx`, two database entries are created:
+## Filter HTTPS-Only Images from Google Image Search
 
-1. **Auto-save** runs every 30 seconds and creates a draft via `blogService.saveDraft()` (inserts new row with `status: 'draft'`)
-2. **Publish action** (`handleCreatePost`) then:
-   - Calls `blogService.createPost()` → inserts a **second** row
-   - If `draftId` exists, also calls `blogService.publishDraft()` → updates the first draft
-
-This results in 2 posts: one new "published" post AND the original draft (which may also get published).
+### Problem
+The Google Custom Search API doesn't have a native parameter to restrict results to HTTPS-only URLs. Currently, HTTP images can appear in search results, which poses security concerns and may cause mixed content warnings.
 
 ### Solution
-Modify `handleCreatePost` in `BlogCreatePage.tsx` to:
-- If a draft exists (`draftId` is set): **update and publish the existing draft** instead of creating a new post
-- If no draft exists: create a new post as before
+Filter out HTTP URLs at the edge function level before returning results to the frontend. This ensures HTTP images never appear in the admin image selection modal.
+
+---
 
 ### Technical Changes
 
-**File: `src/pages/BlogCreatePage.tsx`**
+**File: `supabase/functions/google-image-search/index.ts`**
 
-Modify the `handleCreatePost` function (around lines 146-234):
+Add HTTPS filtering after fetching results from Google API:
 
 ```typescript
-const handleCreatePost = async () => {
-  if (!isFormValid()) {
-    toast.error("Please fill in all required fields.");
-    return;
-  }
-
-  if (!user?.id) {
-    toast.error("You must be logged in to publish posts.");
-    return;
-  }
-
-  setIsCreating(true);
-  try {
-    const slug = title
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim();
-
-    const readTime = Math.ceil(content.split(' ').length / 200);
-
-    // Prepare image URLs
-    const heroImg = imageUrl.trim();
-    const thumbImg = thumbnailUrl.trim();
-
-    let finalThumbnail = '';
-    if (useYoutubeThumbnail && youtubeUrl) {
-      const youtubeId = youtubeUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
-      if (youtubeId) {
-        finalThumbnail = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
-      }
-    } else if (thumbImg) {
-      finalThumbnail = thumbImg;
-    } else if (heroImg) {
-      finalThumbnail = heroImg;
-    }
-
-    const finalHeroImage = heroImg || finalThumbnail;
-    const formattedCategory = category.replace(/-/g, " ");
-    const authorSlug = slugify(author.trim());
-
-    // If we have an existing draft, update and publish it
-    // Otherwise, create a new post
-    if (draftId) {
-      // Update the existing draft with all the data
-      await blogService.saveDraft({
-        id: draftId,
-        userId: user.id,
-        title: title.trim(),
-        excerpt: excerpt.trim(),
-        content: content.trim(),
-        category: formattedCategory,
-        author: author.trim(),
-        authorId: authorSlug,
-        tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
-        heroImage: finalHeroImage,
-        thumbnail: finalThumbnail,
-        videoEmbed: youtubeUrl || '',
-      });
-
-      // Now publish the draft with slug
-      await blogService.publishDraft(draftId, readTime, title.trim());
-    } else {
-      // No draft exists, create a new post directly
-      const postData = {
-        title: title.trim(),
-        excerpt: excerpt.trim(),
-        content: content.trim(),
-        category: formattedCategory,
-        author: author.trim(),
-        authorId: authorSlug,
-        slug,
-        readTime,
-        tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
-        heroImage: finalHeroImage,
-        thumbnail: finalThumbnail,
-        videoEmbed: youtubeUrl || '',
-        publishedAt: publishedDate!.toISOString(),
-      };
-
-      await blogService.createPost(postData);
-    }
-
-    setCreatedSlug(slug);
-    toast.success("Blog post published successfully!");
-
-    // Reset form
-    setPrompt("");
-    setCategory("");
-    setAuthor("");
-    setTags("");
-    setImageUrl("");
-    setThumbnailUrl("");
-    setYoutubeUrl("");
-    setPublishedDate(undefined);
-    setTitle("");
-    setExcerpt("");
-    setContent("");
-    setUseYoutubeThumbnail(false);
-    setUseHeroImage(false);
-    setDraftId(null);
-  } catch (error) {
-    console.error("Error creating blog post:", error);
-    toast.error("Failed to create blog post. Please try again.");
-  } finally {
-    setIsCreating(false);
-  }
-};
+// After mapping the results from Google API, filter for HTTPS only
+const httpsResults = results.filter(result => 
+  result.url.startsWith('https://') && 
+  result.thumbnail.startsWith('https://')
+);
 ```
 
-### Key Changes Summary
+The filter will be applied before returning results, ensuring:
+- Main image URL must be HTTPS
+- Thumbnail URL must also be HTTPS
+- Both conditions must be met for an image to be included
 
-| Before | After |
-|--------|-------|
-| Always calls `createPost()` + optionally `publishDraft()` | Checks if `draftId` exists first |
-| Creates 2 rows when auto-save has run | Updates existing draft and publishes it |
-| `publishDraft()` called separately | Uses `saveDraft()` to update, then `publishDraft()` |
+---
 
-### Files Changed
+### Implementation Details
+
+**Location**: Lines 75-84 in `google-image-search/index.ts`
+
+**Current code**:
+```typescript
+results.push(
+  ...(data.items || []).map((item: any) => ({
+    url: item.link,
+    thumbnail: item.image?.thumbnailLink || item.link,
+    title: item.title,
+    source: item.displayLink || 'Unknown',
+    width: item.image?.width,
+    height: item.image?.height,
+  }))
+);
+```
+
+**Updated code**:
+```typescript
+const pageResults = (data.items || []).map((item: any) => ({
+  url: item.link,
+  thumbnail: item.image?.thumbnailLink || item.link,
+  title: item.title,
+  source: item.displayLink || 'Unknown',
+  width: item.image?.width,
+  height: item.image?.height,
+}));
+
+// Filter for HTTPS-only URLs (both main image and thumbnail)
+const httpsResults = pageResults.filter((result: SearchResult) => 
+  result.url.startsWith('https://') && 
+  result.thumbnail.startsWith('https://')
+);
+
+results.push(...httpsResults);
+```
+
+---
+
+### Files Modified
 
 | Action | File |
 |--------|------|
-| MODIFY | `src/pages/BlogCreatePage.tsx` (lines 146-234) |
+| MODIFY | `supabase/functions/google-image-search/index.ts` |
 
-### Impact
-- **Fixes duplicate post creation**: Only 1 post will be created per publish action
-- **Preserves auto-save functionality**: Drafts still work correctly
-- **No breaking changes**: Existing drafts will still publish correctly
+---
+
+### Benefits
+
+1. **Security**: Only secure HTTPS images are returned
+2. **No mixed content warnings**: Prevents browser security warnings
+3. **Consistent with auto-assign agent**: Matches the same HTTPS-only criteria used by the auto-image agent
+4. **Single source of truth**: Filtering at API level means all consumers get HTTPS-only results
+
+---
+
+### Edge Cases Handled
+
+- If an image URL is HTTPS but thumbnail is HTTP, the image is excluded
+- If all results are HTTP, an empty array is returned (existing "No Images Found" toast will display)
+- The filter is applied per-page during pagination to maintain accurate counts
+
