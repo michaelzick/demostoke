@@ -72,16 +72,22 @@ const handler = async (req: Request): Promise<Response> => {
 
       const data = await response.json();
 
-      results.push(
-        ...(data.items || []).map((item: any) => ({
-          url: item.link,
-          thumbnail: item.image?.thumbnailLink || item.link,
-          title: item.title,
-          source: item.displayLink || 'Unknown',
-          width: item.image?.width,
-          height: item.image?.height,
-        }))
+      const pageResults = (data.items || []).map((item: any) => ({
+        url: item.link,
+        thumbnail: item.image?.thumbnailLink || item.link,
+        title: item.title,
+        source: item.displayLink || 'Unknown',
+        width: item.image?.width,
+        height: item.image?.height,
+      }));
+
+      // Filter for HTTPS-only URLs (both main image and thumbnail)
+      const httpsResults = pageResults.filter((result: SearchResult) => 
+        result.url.startsWith('https://') && 
+        result.thumbnail.startsWith('https://')
       );
+
+      results.push(...httpsResults);
 
       if (results.length >= count) {
         break;
