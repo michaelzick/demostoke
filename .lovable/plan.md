@@ -1,73 +1,71 @@
 
 
-## Filter HTTPS-Only Images from Google Image Search
+## Updated Plan: About Field + Required Category for Retail Stores
 
-### Problem
-The Google Custom Search API doesn't have a native parameter to restrict results to HTTPS-only URLs. Currently, HTTP images can appear in search results, which poses security concerns and may cause mixed content warnings.
-
-### Solution
-Filter out HTTP URLs at the edge function level before returning results to the frontend. This ensures HTTP images never appear in the admin image selection modal.
+### Overview
+Add an optional "About" field to the manual user creation form. When the role is "retail-store", show a required gear category dropdown. The form cannot be submitted until a category is selected for retail store users. Also fix the existing build errors.
 
 ---
 
-### Technical Changes
+### Changes
 
-**File: `supabase/functions/google-image-search/index.ts`**
+#### 1. Fix Build Errors (`supabase/functions/scan-broken-images/index.ts`)
 
-Add HTTPS filtering after fetching results from Google API:
+- **Line 257**: Remove `as ImageRecord[]` cast. Update the `ImageRecord` interface so `equipment` is `{ id: string; name: string; category: string; user_id: string; }[] | null` (array, matching the Supabase join return type). Access `equipment[0]` when reading joined data.
+- **Line 139**: Change `supabase` parameter type to `any` in `getImageCountForEquipment`.
+
+#### 2. Add `about` and `gearCategory` to UserFormData (`src/hooks/user-creation/types.ts`)
 
 ```typescript
-// After mapping the results from Google API, filter for HTTPS only
-const httpsResults = results.filter(result => 
-  result.url.startsWith('https://') && 
-  result.thumbnail.startsWith('https://')
-);
+export interface UserFormData {
+  // ...existing fields
+  about: string;
+  gearCategory: string; // '' | 'surfboards' | 'snowboards' | 'skis' | 'mountain-bikes'
+}
 ```
 
-The filter will be applied before returning results, ensuring:
-- Main image URL must be HTTPS
-- Thumbnail URL must also be HTTPS
-- Both conditions must be met for an image to be included
+#### 3. Update Form State (`src/hooks/user-creation/useUserCreationForm.ts`)
 
----
+Add `about: ''` and `gearCategory: ''` to initial state and reset.
 
-### Implementation Details
+#### 4. Update Validation (`src/hooks/user-creation/useUserCreationValidation.ts`)
 
-**Location**: Lines 75-84 in `google-image-search/index.ts`
+Add conditional validation: if `formData.role === 'retail-store'`, require `formData.gearCategory` to be non-empty.
 
-**Current code**:
 ```typescript
-results.push(
-  ...(data.items || []).map((item: any) => ({
-    url: item.link,
-    thumbnail: item.image?.thumbnailLink || item.link,
-    title: item.title,
-    source: item.displayLink || 'Unknown',
-    width: item.image?.width,
-    height: item.image?.height,
-  }))
-);
+const isFormValid = useMemo((): boolean => {
+  const baseValid = !!(formData.name && formData.email && 
+    formData.password && formData.password.length >= 6 && 
+    formData.role && captchaToken);
+  
+  if (formData.role === 'retail-store') {
+    return baseValid && !!formData.gearCategory;
+  }
+  return baseValid;
+}, [formData.name, formData.email, formData.password, formData.role, formData.gearCategory, captchaToken]);
 ```
 
-**Updated code**:
-```typescript
-const pageResults = (data.items || []).map((item: any) => ({
-  url: item.link,
-  thumbnail: item.image?.thumbnailLink || item.link,
-  title: item.title,
-  source: item.displayLink || 'Unknown',
-  width: item.image?.width,
-  height: item.image?.height,
-}));
+#### 5. Update Submission (`src/hooks/user-creation/useUserCreationSubmission.ts`)
 
-// Filter for HTTPS-only URLs (both main image and thumbnail)
-const httpsResults = pageResults.filter((result: SearchResult) => 
-  result.url.startsWith('https://') && 
-  result.thumbnail.startsWith('https://')
-);
+- Include `about` in the profile data.
+- When `formData.role === 'retail-store'` and `gearCategory` is set, include `avatar_url` and `hero_image_url` from this static mapping:
 
-results.push(...httpsResults);
-```
+| Category | Avatar URL | Hero Image URL |
+|----------|-----------|---------------|
+| Surfboards | `.../73de4049-.../profile-1752863282257.png` | `unsplash/photo-1502680390469-...` |
+| Snowboards | `.../c5b450a8-.../profile-1752636842828.png` | `unsplash/photo-1590461283969-...` |
+| Skis | `.../7ef925ac-.../profile-1769637319540.png` | `unsplash/photo-1509791413599-...` |
+| Mountain Bikes | `.../ad2ad153-.../profile-1752637760487.png` | `unsplash/photo-1506316940527-...` |
+
+#### 6. Update Contact Fields Component (`src/components/admin/UserContactFields.tsx`)
+
+- Add `about`, `gearCategory`, and `role` to props.
+- Add a Textarea for the optional "About" field.
+- Conditionally render a gear category Select dropdown (with a required indicator) when role is `retail-store`. Options: Surfboards, Snowboards, Skis, Mountain Bikes.
+
+#### 7. Update ManualUserCreationSection (`src/components/admin/ManualUserCreationSection.tsx`)
+
+Pass `formData.role` to `UserContactFields` so it can conditionally show the category dropdown.
 
 ---
 
@@ -75,22 +73,21 @@ results.push(...httpsResults);
 
 | Action | File |
 |--------|------|
-| MODIFY | `supabase/functions/google-image-search/index.ts` |
+| FIX | `supabase/functions/scan-broken-images/index.ts` |
+| MODIFY | `src/hooks/user-creation/types.ts` |
+| MODIFY | `src/hooks/user-creation/useUserCreationForm.ts` |
+| MODIFY | `src/hooks/user-creation/useUserCreationValidation.ts` |
+| MODIFY | `src/hooks/user-creation/useUserCreationSubmission.ts` |
+| MODIFY | `src/components/admin/UserContactFields.tsx` |
+| MODIFY | `src/components/admin/ManualUserCreationSection.tsx` |
 
 ---
 
-### Benefits
+### Edge Cases
 
-1. **Security**: Only secure HTTPS images are returned
-2. **No mixed content warnings**: Prevents browser security warnings
-3. **Consistent with auto-assign agent**: Matches the same HTTPS-only criteria used by the auto-image agent
-4. **Single source of truth**: Filtering at API level means all consumers get HTTPS-only results
-
----
-
-### Edge Cases Handled
-
-- If an image URL is HTTPS but thumbnail is HTTP, the image is excluded
-- If all results are HTTP, an empty array is returned (existing "No Images Found" toast will display)
-- The filter is applied per-page during pagination to maintain accurate counts
+1. **Role changes after category selection**: If admin selects a category then switches role away from "retail-store", the `gearCategory` value persists in state but is ignored during submission and validation (only enforced when role is retail-store).
+2. **Role changes to retail-store**: Form becomes invalid until a category is selected, preventing premature submission.
+3. **No category selected for retail-store**: Submit button stays disabled and a validation toast fires if somehow triggered.
+4. **About field**: Always optional, works for all roles.
+5. **Category cleared on reset**: Both `about` and `gearCategory` reset to empty string when form resets after successful creation.
 
