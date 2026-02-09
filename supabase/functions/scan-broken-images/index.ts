@@ -254,13 +254,15 @@ Deno.serve(async (req) => {
 
     // Process images in batches
     for (let i = 0; i < images.length; i += batchSize) {
-      const batch = images.slice(i, i + batchSize) as ImageRecord[];
+      const batch = images.slice(i, i + batchSize) as unknown as ImageRecord[];
 
       const results = await Promise.all(
         batch.map(async (img) => {
           const testResult = await testImageUrl(img.image_url);
 
-          if (testResult.broken && img.equipment) {
+          const equip = Array.isArray(img.equipment) ? img.equipment[0] : img.equipment;
+
+          if (testResult.broken && equip) {
             const totalImages = await getImageCountForEquipment(
               supabase,
               img.equipment_id
@@ -270,9 +272,9 @@ Deno.serve(async (req) => {
               imageId: img.id,
               imageUrl: img.image_url,
               equipmentId: img.equipment_id,
-              gearName: img.equipment.name,
-              gearSlug: slugify(img.equipment.name),
-              category: img.equipment.category,
+              gearName: equip.name,
+              gearSlug: slugify(equip.name),
+              category: equip.category,
               totalImages,
               errorReason: testResult.reason,
             } as BrokenImage;
