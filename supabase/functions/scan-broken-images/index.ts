@@ -136,7 +136,7 @@ async function testImageUrl(
 }
 
 async function getImageCountForEquipment(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   equipmentId: string
 ): Promise<number> {
   const { count } = await supabase
