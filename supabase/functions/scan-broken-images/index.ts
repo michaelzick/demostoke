@@ -16,7 +16,7 @@ interface ImageRecord {
     name: string;
     category: string;
     user_id: string;
-  } | null;
+  }[] | null;
 }
 
 interface BrokenImage {
