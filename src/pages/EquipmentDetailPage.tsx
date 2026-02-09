@@ -120,7 +120,7 @@ const EquipmentDetailPage = () => {
 
   usePageMetadata({
     title: equipmentName
-      ? `Rent ${equipmentName} – ${categoryDisplay} Demo | DemoStoke`
+      ? `Gear Details | ${equipmentName}`
       : 'Gear Details | DemoStoke',
     description: equipmentName
       ? `Demo and rent a ${equipmentName} ${categoryDisplay ? `(${categoryDisplay})` : ''} on DemoStoke – try before you buy!`
