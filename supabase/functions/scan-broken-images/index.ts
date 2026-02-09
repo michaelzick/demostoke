@@ -16,7 +16,7 @@ interface ImageRecord {
     name: string;
     category: string;
     user_id: string;
-  } | null;
+  }[] | null;
 }
 
 interface BrokenImage {
@@ -136,7 +136,7 @@ async function testImageUrl(
 }
 
 async function getImageCountForEquipment(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   equipmentId: string
 ): Promise<number> {
   const { count } = await supabase
@@ -254,13 +254,15 @@ Deno.serve(async (req) => {
 
     // Process images in batches
     for (let i = 0; i < images.length; i += batchSize) {
-      const batch = images.slice(i, i + batchSize) as ImageRecord[];
+      const batch = images.slice(i, i + batchSize) as unknown as ImageRecord[];
 
       const results = await Promise.all(
         batch.map(async (img) => {
           const testResult = await testImageUrl(img.image_url);
 
-          if (testResult.broken && img.equipment) {
+          const equip = Array.isArray(img.equipment) ? img.equipment[0] : img.equipment;
+
+          if (testResult.broken && equip) {
             const totalImages = await getImageCountForEquipment(
               supabase,
               img.equipment_id
@@ -270,16 +272,16 @@ Deno.serve(async (req) => {
               imageId: img.id,
               imageUrl: img.image_url,
               equipmentId: img.equipment_id,
-              gearName: img.equipment.name,
-              gearSlug: slugify(img.equipment.name),
-              category: img.equipment.category,
+              gearName: equip.name,
+              gearSlug: slugify(equip.name),
+              category: equip.category,
               totalImages,
               errorReason: testResult.reason,
             } as BrokenImage;
           }
 
           // Handle orphaned images (equipment deleted but image remains)
-          if (testResult.broken && !img.equipment) {
+          if (testResult.broken && !equip) {
             return {
               imageId: img.id,
               imageUrl: img.image_url,

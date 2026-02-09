@@ -11,6 +11,8 @@ export const useUserCreationForm = () => {
     website: '',
     phone: '',
     address: '',
+    about: '',
+    gearCategory: '',
   });
 
   const [captchaToken, setCaptchaToken] = useState("");
@@ -34,6 +36,8 @@ export const useUserCreationForm = () => {
       website: '',
       phone: '',
       address: '',
+      about: '',
+      gearCategory: '',
     });
     setCaptchaToken("");
     setShouldResetCaptcha(true);
