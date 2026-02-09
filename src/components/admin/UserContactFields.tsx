@@ -28,14 +28,14 @@ const UserContactFields = ({ formData, role, isCreating, onInputChange }: UserCo
   return (
     <>
       <div className="space-y-2">
-        <Label htmlFor="about">About <span className="text-muted-foreground text-xs">(optional)</span></Label>
+        <Label htmlFor="about">About</Label>
         <Textarea
           id="about"
           value={formData.about}
           onChange={(e) => onInputChange('about', e.target.value)}
-          placeholder="Brief description about this user or business"
+          placeholder="About this user or business"
           disabled={isCreating}
-          className="min-h-[80px]"
+          className="min-h-[160px]"
         />
       </div>
 
