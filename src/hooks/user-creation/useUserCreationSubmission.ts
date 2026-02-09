@@ -98,13 +98,38 @@ export const useUserCreationSubmission = () => {
       console.log('Profile check result:', existingProfile);
 
       // Step 5: Create or update the profile with form data (including geocoded coordinates)
-      const profileData = {
+      const categoryAssets: Record<string, { avatar_url: string; hero_image_url: string }> = {
+        'surfboards': {
+          avatar_url: 'https://qtlhqsqanbxgfbcjigrl.supabase.co/storage/v1/object/public/profile-images/73de4049-7ffd-45cd-868b-c2d0076107b3/profile-1752863282257.png',
+          hero_image_url: 'https://images.unsplash.com/photo-1502680390469-be75c86b636f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        },
+        'snowboards': {
+          avatar_url: 'https://qtlhqsqanbxgfbcjigrl.supabase.co/storage/v1/object/public/profile-images/c5b450a8-7414-463b-b863-d78698fd0f95/profile-1752636842828.png',
+          hero_image_url: 'https://images.unsplash.com/photo-1590461283969-47fedf408cfd?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        },
+        'skis': {
+          avatar_url: 'https://qtlhqsqanbxgfbcjigrl.supabase.co/storage/v1/object/public/profile-images/7ef925ac-4b8f-496c-b4d9-10895164f03c/profile-1769637319540.png',
+          hero_image_url: 'https://images.unsplash.com/photo-1509791413599-93ba127a66b7?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        },
+        'mountain-bikes': {
+          avatar_url: 'https://qtlhqsqanbxgfbcjigrl.supabase.co/storage/v1/object/public/profile-images/ad2ad153-bb35-4e88-bfb0-d0d4f85ba62f/profile-1752637760487.png',
+          hero_image_url: 'https://images.unsplash.com/photo-1506316940527-4d1c138978a0?q=80&w=3512&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        },
+      };
+
+      const categoryImages = formData.role === 'retail-store' && formData.gearCategory
+        ? categoryAssets[formData.gearCategory] || {}
+        : {};
+
+      const profileData: Record<string, unknown> = {
         name: formData.name,
         website: formData.website || null,
         phone: formData.phone || null,
         address: formData.address || null,
+        about: formData.about || null,
         location_lat: locationLat,
         location_lng: locationLng,
+        ...categoryImages,
       };
 
       if (existingProfile) {

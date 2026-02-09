@@ -281,7 +281,7 @@ Deno.serve(async (req) => {
           }
 
           // Handle orphaned images (equipment deleted but image remains)
-          if (testResult.broken && !img.equipment) {
+          if (testResult.broken && !equip) {
             return {
               imageId: img.id,
               imageUrl: img.image_url,

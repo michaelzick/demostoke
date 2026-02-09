@@ -7,6 +7,8 @@ export interface UserFormData {
   website: string;
   phone: string;
   address: string;
+  about: string;
+  gearCategory: string;
 }
 
 export interface UserCreationState {

@@ -36,6 +36,8 @@ export const useUserCreationForm = () => {
       website: '',
       phone: '',
       address: '',
+      about: '',
+      gearCategory: '',
     });
     setCaptchaToken("");
     setShouldResetCaptcha(true);

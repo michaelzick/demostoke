@@ -47,6 +47,7 @@ const ManualUserCreationSection = () => {
 
           <UserContactFields
             formData={formData}
+            role={formData.role}
             isCreating={isCreating}
             onInputChange={handleInputChange}
           />
