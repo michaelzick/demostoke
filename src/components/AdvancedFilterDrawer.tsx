@@ -79,7 +79,7 @@ export function AdvancedFilterDrawer({
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
-        <div className="mx-auto w-full max-w-sm">
+        <div className="mx-auto flex h-full w-full max-w-sm flex-col">
           <DrawerHeader>
             <DrawerTitle>Advanced Filters</DrawerTitle>
             <DrawerDescription>
@@ -87,7 +87,10 @@ export function AdvancedFilterDrawer({
             </DrawerDescription>
           </DrawerHeader>
 
-          <div className="p-4 pb-0 pt-0 space-y-5">
+          <div
+            className="flex-1 space-y-5 overflow-y-auto overscroll-contain p-4 pt-0"
+            data-vaul-no-drag
+          >
             {/* My Favorites Section */}
             <div>
               <h3 className="font-medium mb-3">My Favorites</h3>
@@ -179,8 +182,8 @@ export function AdvancedFilterDrawer({
             </div>
           </div>
 
-          <DrawerFooter>
-            <div className="flex gap-2 mt-2">
+          <DrawerFooter className="border-t bg-background justify-center px-4 pt-3 pb-[1.6em]">
+            <div className="flex items-center gap-2">
               <Button variant="outline" onClick={handleCancel} className="flex-1">
                 Cancel
               </Button>
