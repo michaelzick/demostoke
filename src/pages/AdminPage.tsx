@@ -10,32 +10,25 @@ import GeocodingRecoverySection from "@/components/admin/GeocodingRecoverySectio
 import DemoEventGeocodingSection from "@/components/admin/DemoEventGeocodingSection";
 import AddMissingImagesSection from "@/components/admin/AddMissingImagesSection";
 import BrokenImageScannerSection from "@/components/admin/BrokenImageScannerSection";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GearUrlScraperSection from "@/components/admin/GearUrlScraperSection";
 import RetailerDiscoverySection from "@/components/admin/RetailerDiscoverySection";
 import { RentalDiscoveryDashboard } from "@/components/admin/RentalDiscoveryDashboard";
+import NotFound from "./NotFound";
 
 const AdminPage = () => {
   usePageMetadata({
     title: 'Admin Dashboard | DemoStoke',
     description: 'Administrative tools for managing DemoStoke.'
   });
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return null;
+  }
 
   if (!user) {
-    return (
-      <div className="container mx-auto p-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Access Denied</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>Please sign in to access the admin panel.</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <NotFound />;
   }
 
   return (

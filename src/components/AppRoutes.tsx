@@ -35,8 +35,11 @@ import PrivatePartyPage from "../pages/PrivatePartyPage";
 import SearchResultsPage from "../pages/SearchResultsPage";
 import DemoCalendarPage from "../pages/DemoCalendarPage";
 import GearQuizPage from "../pages/GearQuizPage";
+import { useAuth } from "@/contexts/auth";
 
 const AppRoutes = () => {
+  const { isAuthenticated, isLoading } = useAuth();
+
   return (
     <Routes>
       <Route path="/auth" element={<AuthLayout />}>
@@ -65,7 +68,14 @@ const AppRoutes = () => {
         <Route path="my-gear" element={<MyEquipmentPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="bookings" element={<BookingsPage />} />
-        <Route path="admin" element={<AdminPage />} />
+        <Route
+          path="admin"
+          element={
+            isLoading
+              ? <div className="min-h-screen" />
+              : (isAuthenticated ? <AdminPage /> : <NotFoundPage />)
+          }
+        />
         <Route path="user-profile/chad-g" element={<ChadGProfilePage />} />
         <Route path="user-profile/gemini" element={<GeminiProfilePage />} />
         <Route path="user-profile/:slug" element={<RealUserProfilePage />} />
