@@ -79,7 +79,7 @@ const EquipmentDetailPage = () => {
     console.log('🎯 Equipment detail view effect triggered:', { 
       hasEquipment: !!equipment, 
       equipmentId: equipment?.id, 
-      hasUser: !!user, 
+      hasUser: !!user?.id, 
       userId: user?.id 
     });
     

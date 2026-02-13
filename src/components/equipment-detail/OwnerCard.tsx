@@ -30,7 +30,6 @@ const OwnerCard = ({ owner, trackingData }: OwnerCardProps) => {
   const displayName = profile?.name || owner.name;
   const displayImage = profile?.avatar_url || owner.imageUrl;
   const displayRating = stats && stats.totalReviews > 0 ? stats.averageRating : owner.rating;
-  const displayResponseRate = stats?.responseRate || owner.responseRate;
   const memberSince = profile?.member_since ? new Date(profile.member_since).getFullYear() : owner.memberSince;
 
   return (
