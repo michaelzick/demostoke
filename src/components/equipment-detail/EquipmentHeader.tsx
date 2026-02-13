@@ -7,17 +7,28 @@ import DistanceDisplay from "@/components/DistanceDisplay";
 import { Link } from "react-router-dom";
 import { slugify } from "@/utils/slugify";
 import { cn } from "@/lib/utils";
-import { buildEquipmentTrackingFrom } from "@/utils/tracking";
+import { buildEquipmentTrackingFrom, trackEvent } from "@/utils/tracking";
+import { buildGearDisplayName } from "@/utils/gearUrl";
 
 interface EquipmentHeaderProps {
   equipment: Equipment;
   stackOnMobile?: boolean;
+  gearDisplayName?: string;
+  lastVerifiedDate?: string;
 }
 
-const EquipmentHeader = ({ equipment, stackOnMobile = false }: EquipmentHeaderProps) => {
+const EquipmentHeader = ({
+  equipment,
+  stackOnMobile = false,
+  gearDisplayName,
+  lastVerifiedDate,
+}: EquipmentHeaderProps) => {
 
   // Create tracking data for analytics
   const trackingData = buildEquipmentTrackingFrom(equipment);
+  const resolvedGearName =
+    gearDisplayName ||
+    buildGearDisplayName(equipment.name, equipment.specifications?.size);
 
   return (
     <div
@@ -30,8 +41,13 @@ const EquipmentHeader = ({ equipment, stackOnMobile = false }: EquipmentHeaderPr
     >
       <div className="flex-1">
         <div className="flex items-center gap-4 mb-2">
-          <h1 className="text-3xl font-bold">{equipment.name}</h1>
+          <h1 className="text-3xl font-bold">{resolvedGearName}</h1>
         </div>
+        {lastVerifiedDate && (
+          <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
+            Last verified: {lastVerifiedDate}
+          </p>
+        )}
         <div className="flex flex-col items-start mb-2 gap-y-1 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2">
           <Badge className="w-fit">{equipment.category}</Badge>
           {equipment.subcategory && (
@@ -67,6 +83,16 @@ const EquipmentHeader = ({ equipment, stackOnMobile = false }: EquipmentHeaderPr
               target="_blank"
               rel="noopener noreferrer"
               className="underline profile-address hover:text-primary"
+              onClick={() =>
+                trackEvent("click_directions", {
+                  gear_id: equipment.id,
+                  gear_name: resolvedGearName,
+                  gear_category: equipment.category,
+                  owner_id: equipment.owner.id,
+                  owner_name: equipment.owner.name,
+                  destination: equipment.location.address,
+                })
+              }
             >
               {equipment.location.address}
             </a>

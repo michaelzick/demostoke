@@ -31,7 +31,8 @@ import { Edit, Eye, EyeOff, Trash2 } from "lucide-react";
 import { useDeleteEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { buildEquipmentTrackingFrom } from "@/utils/tracking";
+import { buildEquipmentTrackingFrom, trackEvent } from "@/utils/tracking";
+import { buildGearPath } from "@/utils/gearUrl";
 
 interface EquipmentDetailPageDbProps {
   equipment: Equipment;
@@ -42,6 +43,9 @@ interface EquipmentDetailPageDbProps {
   handleWaiverComplete: () => void;
   handleBookNowClick: () => void;
   bookingCardRef: React.RefObject<HTMLDivElement>;
+  canonicalPath?: string;
+  lastVerifiedDate: string;
+  gearDisplayName?: string;
 }
 
 const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
@@ -53,6 +57,9 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
   handleWaiverComplete,
   handleBookNowClick,
   bookingCardRef,
+  canonicalPath,
+  lastVerifiedDate,
+  gearDisplayName,
 }) => {
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -78,6 +85,16 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
 
   // Create tracking data for analytics
   const trackingData = buildEquipmentTrackingFrom(equipment);
+  const resolvedGearName = gearDisplayName || equipment.name;
+  const leadContext = {
+    gear_id: equipment.id,
+    gear_name: resolvedGearName,
+    gear_category: equipment.category,
+    owner_id: equipment.owner.id,
+    owner_name: equipment.owner.name,
+    location: equipment.location.address,
+    last_verified: lastVerifiedDate,
+  };
 
   // Check if current user can edit this equipment
   const canEdit = user && (equipment.owner.id === user.id || isAdmin);
@@ -136,8 +153,14 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
             path: `/user-profile/${slugify(equipment.owner.name)}`,
           },
           {
-            label: equipment.name,
-            path: `/${equipment.category}/${slugify(equipment.owner.name)}/${slugify(equipment.name)}`,
+            label: resolvedGearName,
+            path:
+              canonicalPath ||
+              buildGearPath({
+                id: equipment.id,
+                name: equipment.name,
+                size: equipment.specifications?.size,
+              }),
           },
         ]}
       />
@@ -157,6 +180,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
         onClose={() => setShowContactModal(false)}
         owner={equipment.owner}
         trackingData={trackingData}
+        leadContext={leadContext}
       />
 
       {/* Waiver Form Modal */}
@@ -239,7 +263,12 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
               }`}
             >
               <div className="flex-1">
-                <EquipmentHeader equipment={equipment} stackOnMobile={canEdit} />
+                <EquipmentHeader
+                  equipment={equipment}
+                  stackOnMobile={canEdit}
+                  gearDisplayName={resolvedGearName}
+                  lastVerifiedDate={lastVerifiedDate}
+                />
               </div>
               {canEdit && (
                 <div className="flex gap-2 flex-col mt-4 md:mt-0 md:ml-4 w-full md:w-40">
@@ -288,6 +317,9 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
             >
               Book Now
             </Button>
+            <p className="text-sm text-muted-foreground mb-3">
+              {resolvedGearName} is available in {equipment.location.address}. Last verified: {lastVerifiedDate}.
+            </p>
             <div className="text-lg mb-6 whitespace-pre-wrap">{equipment.description}</div>
             <EquipmentSpecs specifications={equipment.specifications} />
             
@@ -335,7 +367,10 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
               {equipment.owner.name}.
             </h3>
             <button
-              onClick={() => setShowContactModal(true)}
+              onClick={() => {
+                trackEvent("click_reserve", leadContext);
+                setShowContactModal(true);
+              }}
               className="text-primary
               underline underline-offset-4
               hover:underline hover:text-primary/80

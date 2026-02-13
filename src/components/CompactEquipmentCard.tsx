@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/carousel";
 import { Equipment } from "@/types";
 import { slugify } from "@/utils/slugify";
+import { buildGearPath } from "@/utils/gearUrl";
 import DistanceDisplay from "@/components/DistanceDisplay";
 import { buildEquipmentTrackingFrom } from "@/utils/tracking";
 import {
@@ -180,7 +181,11 @@ const CompactEquipmentCard = ({
             </div>
             <Button size="sm" asChild className="text-xs h-8">
               <Link
-                to={`/${equipment.category}/${slugify(equipment.owner.name)}/${slugify(equipment.name)}`}
+                to={buildGearPath({
+                  id: equipment.id,
+                  name: equipment.name,
+                  size: equipment.specifications?.size,
+                })}
                 data-tracking={trackingData}
                 id={`${equipment.name} - View Details Button - ${location.pathname}`}
                 className="view-gear-details-button"

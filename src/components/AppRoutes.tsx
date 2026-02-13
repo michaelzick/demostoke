@@ -35,6 +35,9 @@ import PrivatePartyPage from "../pages/PrivatePartyPage";
 import SearchResultsPage from "../pages/SearchResultsPage";
 import DemoCalendarPage from "../pages/DemoCalendarPage";
 import GearQuizPage from "../pages/GearQuizPage";
+import GearIndexPage from "../pages/GearIndexPage";
+import GearCategoryPage from "../pages/GearCategoryPage";
+import ApiGearSearchPage from "../pages/ApiGearSearchPage";
 import { useAuth } from "@/contexts/auth";
 
 const AppRoutes = () => {
@@ -60,6 +63,12 @@ const AppRoutes = () => {
         <Route path="blog/:slug" element={<BlogPostPage />} />
         <Route path="contact-us" element={<ContactPage />} />
         <Route path="explore" element={<ExplorePage />} />
+        <Route path="gear" element={<GearIndexPage />} />
+        <Route path="gear/surfboards" element={<GearCategoryPage categoryKey="surfboards" />} />
+        <Route path="gear/used-skis" element={<GearCategoryPage categoryKey="used-skis" />} />
+        <Route path="gear/:gearSlug" element={<EquipmentDetailPage />} />
+        <Route path="api/gear/search" element={<ApiGearSearchPage />} />
+        {/* Legacy detail route kept for backward compatibility */}
         <Route path=":category/:ownerSlug/:slug" element={<EquipmentDetailPage />} />
         <Route path="list-your-gear" element={<ListGearPage />} />
         <Route path="list-your-gear/add-gear-form" element={<AddGearForm />} />

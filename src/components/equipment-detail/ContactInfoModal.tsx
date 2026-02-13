@@ -4,15 +4,23 @@ import { Link } from "react-router-dom";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { slugify } from "@/utils/slugify";
 import { GearOwner } from "@/types";
+import { trackEvent } from "@/utils/tracking";
 
 interface ContactInfoModalProps {
   isOpen: boolean;
   onClose: () => void;
   owner: GearOwner;
   trackingData?: string;
+  leadContext?: Record<string, unknown>;
 }
 
-const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoModalProps) => {
+const ContactInfoModal = ({
+  isOpen,
+  onClose,
+  owner,
+  trackingData,
+  leadContext,
+}: ContactInfoModalProps) => {
   const { data: profile } = useUserProfile(owner.id);
 
   const displayName = profile?.name || owner.name;
@@ -20,6 +28,11 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
   const profileLinkPath = owner.shopId
     ? `/shop/${owner.shopId}`
     : `/user-profile/${slugify(owner.name)}`;
+  const baseLeadEvent = {
+    owner_id: owner.id,
+    owner_name: displayName,
+    ...leadContext,
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -51,6 +64,12 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
                       className="text-sm text-muted-foreground hover:text-primary underline profile-address"
                       data-tracking={trackingData}
                       id={`${owner.name} - ${profile?.address} - Contact Info Modal`}
+                      onClick={() =>
+                        trackEvent("click_directions", {
+                          ...baseLeadEvent,
+                          destination: profile.address,
+                        })
+                      }
                     >
                       {profile.address}
                     </a>
@@ -67,6 +86,12 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
                       className="text-sm text-muted-foreground hover:text-primary underline profile-phone"
                       data-tracking={trackingData}
                       id={`${owner.name} - ${profile?.phone} - Contact Info Modal`}
+                      onClick={() =>
+                        trackEvent("click_call", {
+                          ...baseLeadEvent,
+                          phone: profile.phone,
+                        })
+                      }
                     >
                       {profile.phone}
                     </a>
@@ -85,6 +110,12 @@ const ContactInfoModal = ({ isOpen, onClose, owner, trackingData }: ContactInfoM
                       className="text-sm text-muted-foreground hover:text-primary underline profile-website"
                       data-tracking={trackingData}
                       id={`${owner.name} - ${profile?.website} - Contact Info Modal`}
+                      onClick={() =>
+                        trackEvent("click_shop_site", {
+                          ...baseLeadEvent,
+                          website: profile.website,
+                        })
+                      }
                     >
                       {profile.website}
                     </a>

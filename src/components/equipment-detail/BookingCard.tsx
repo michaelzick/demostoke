@@ -8,6 +8,7 @@ import DateSelection from "./DateSelection";
 import AddOnSelection from "./AddOnSelection";
 import PriceSummary from "./PriceSummary";
 import BookingActions from "./BookingActions";
+import { buildGearDisplayName } from "@/utils/gearUrl";
 
 interface BookingCardProps {
   equipment: Equipment;
@@ -112,6 +113,16 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
         formIsValid={formIsValid}
         onWaiverClick={onWaiverClick}
         onBooking={handleBooking}
+        trackingProperties={{
+          gear_id: equipment.id,
+          gear_name: buildGearDisplayName(
+            equipment.name,
+            equipment.specifications?.size,
+          ),
+          gear_category: equipment.category,
+          owner_id: equipment.owner.id,
+          owner_name: equipment.owner.name,
+        }}
       />
     </div>
   );

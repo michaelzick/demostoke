@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import CategorySelect from "@/components/CategorySelect";
-import { slugify } from "@/utils/slugify";
+import { buildGearPath } from "@/utils/gearUrl";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -363,7 +363,11 @@ const MyEquipmentPage = () => {
 
                       <div className="space-y-1">
                         <Link
-                          to={`/${item.category}/${slugify(user.name)}/${slugify(item.name)}`}
+                          to={buildGearPath({
+                            id: item.id,
+                            name: item.name,
+                            size: item.size,
+                          })}
                           className="inline-block"
                         >
                           <CardTitle className="text-lg line-clamp-1 hover:text-primary transition-colors">
@@ -460,7 +464,11 @@ const MyEquipmentPage = () => {
 
                           <Button size="sm" asChild>
                             <Link
-                              to={`/${item.category}/${slugify(user.name)}/${slugify(item.name)}`}
+                              to={buildGearPath({
+                                id: item.id,
+                                name: item.name,
+                                size: item.size,
+                              })}
                               data-tracking={trackingData}
                               id={`${item.name} - View Details Button - ${location.pathname}`}
                               className="view-gear-details-button"

@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Equipment } from "@/types";
 import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 import { deduplicateImageUrls } from "@/utils/imageDeduplication";
+import { getEquipmentData } from "@/services/equipment/equipmentDataService";
 
 export const useEquipmentById = (id: string) => {
   return useQuery({
@@ -10,6 +11,12 @@ export const useEquipmentById = (id: string) => {
     queryFn: async (): Promise<Equipment | null> => {
       if (!id) {
         throw new Error("Equipment ID is required");
+      }
+
+      const publicEquipment = await getEquipmentData();
+      const publicMatch = publicEquipment.find((item) => item.id === id);
+      if (publicMatch) {
+        return publicMatch;
       }
 
       console.log("=== FETCHING EQUIPMENT BY ID ===");
