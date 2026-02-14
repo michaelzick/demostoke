@@ -20,7 +20,7 @@ export function RecentlyViewedCompact() {
       <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
         Recently Viewed
       </h3>
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 snap-x">
+      <div className="flex gap-3 overflow-x-auto pb-0 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0 snap-x">
         {items.map((item) => {
           const detailUrl = buildGearPath({
             id: item.id,
