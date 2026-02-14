@@ -11,6 +11,7 @@ import { RefreshCw, Filter } from "lucide-react";
 import { AdvancedFilterDrawer } from "@/components/AdvancedFilterDrawer";
 import { AdvancedFilterPills } from "@/components/AdvancedFilterPills";
 import { AdvancedFilters } from "@/types/advancedFilters";
+import { RecentlyViewedCompact } from "./RecentlyViewedCompact";
 
 interface FilterBarProps {
   activeCategory: string | null;
@@ -37,7 +38,7 @@ const FilterBar = ({
   onRemoveRatingRange,
   onRemoveFeatured,
 }: FilterBarProps) => {
-  
+
   const handleRemoveMyFavorites = () => {
     if (onAdvancedFiltersChange) {
       onAdvancedFiltersChange({ ...advancedFilters, myFavorites: false });
@@ -130,6 +131,11 @@ const FilterBar = ({
             </Button>
           </div>
 
+          {/* Recently Viewed - Mobile */}
+          {(viewMode === 'hybrid' || viewMode === 'list') && (
+            <RecentlyViewedCompact />
+          )}
+
           {/* Mobile Advanced Filter Section - Only show for hybrid and list views */}
           {(viewMode === 'hybrid' || viewMode === 'list') && onAdvancedFiltersChange && (
             <div className="flex items-center gap-2 mt-2">
@@ -206,13 +212,13 @@ const FilterBar = ({
               >
                 List View
               </Button>
-            <Button
-              variant={viewMode === 'hybrid' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setViewMode('hybrid')}
-            >
-              Hybrid View
-            </Button>
+              <Button
+                variant={viewMode === 'hybrid' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setViewMode('hybrid')}
+              >
+                Hybrid View
+              </Button>
             </div>
           </div>
 
@@ -236,6 +242,11 @@ const FilterBar = ({
                 Reset
               </Button>
             </div>
+          )}
+
+          {/* Recently Viewed - Desktop */}
+          {(viewMode === 'hybrid' || viewMode === 'list') && (
+            <RecentlyViewedCompact />
           )}
 
           {/* Advanced Filter Link and Pills - Only show for hybrid and list views */}
