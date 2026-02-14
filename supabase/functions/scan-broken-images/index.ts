@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error Deno remote module import in edge function runtime
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -36,12 +36,6 @@ function slugify(text: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
-}
-
-interface ScanProgress {
-  current: number;
-  total: number;
-  brokenImages: BrokenImage[];
 }
 
 async function testImageUrl(
@@ -147,11 +141,10 @@ async function getImageCountForEquipment(
   return count || 0;
 }
 
-// @ts-ignore
+// @ts-expect-error Deno global is available in edge runtime
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
-    // @ts-ignore
     return new Response(null, { headers: corsHeaders });
   }
 
@@ -159,7 +152,6 @@ Deno.serve(async (req) => {
     // Get auth header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
-      // @ts-ignore
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -167,9 +159,9 @@ Deno.serve(async (req) => {
     }
 
     // Create Supabase client
-    // @ts-ignore
+    // @ts-expect-error Deno env is available in edge runtime
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    // @ts-ignore
+    // @ts-expect-error Deno env is available in edge runtime
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {

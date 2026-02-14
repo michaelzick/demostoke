@@ -1,6 +1,7 @@
 
 import mapboxgl from 'mapbox-gl';
 import { slugify } from '@/utils/slugify';
+import { buildGearPath } from '@/utils/gearUrl';
 
 export const getCategoryColor = (category: string): string => {
   switch (category.toLowerCase()) {
@@ -95,6 +96,11 @@ export const createPopupContent = (item: {
   ownerId: string;
   ownerName: string;
 }): string => {
+  const detailPath = buildGearPath({
+    id: item.id,
+    name: item.name,
+  });
+
   return `
     <div>
       <h3 class="text-base font-medium">${item.name}</h3>
@@ -105,7 +111,7 @@ export const createPopupContent = (item: {
       <p class="text-sm mt-1">$${item.price_per_day}/day</p>
       <button
         class="mt-2 px-2 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
-        onclick="window.location.href='/${item.category}/${slugify(item.ownerName)}/${slugify(item.name)}'"
+        onclick="window.location.href='${detailPath}'"
       >
         View Details
       </button>

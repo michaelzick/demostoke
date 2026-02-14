@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Search, ImagePlus, AlertCircle, ExternalLink, X, Globe } from "lucide-react";
-import { slugify } from "@/utils/slugify";
+import { buildGearPath } from "@/utils/gearUrl";
 import ImageSearchDialog from "@/components/gear-form/ImageSearchDialog";
 import ImageUrlManager from "@/components/gear-form/ImageUrlManager";
 import { deleteEquipmentImage, addEquipmentImages } from "@/utils/multipleImageHandling";
@@ -13,6 +13,7 @@ import { deleteEquipmentImage, addEquipmentImages } from "@/utils/multipleImageH
 interface GearWithoutImages {
   id: string;
   name: string;
+  size?: string;
   category: string;
   owner_name: string;
   image_count: number;
@@ -44,6 +45,7 @@ const AddMissingImagesSection = () => {
         .select(`
           id,
           name,
+          size,
           category,
           user_id,
           profiles!equipment_user_id_fkey(name)
@@ -70,6 +72,7 @@ const AddMissingImagesSection = () => {
           return {
             id: gear.id,
             name: gear.name,
+            size: gear.size || undefined,
             category: gear.category,
             owner_name: (gear as any).profiles?.name || 'Unknown',
             image_count: 0,
@@ -191,67 +194,6 @@ const AddMissingImagesSection = () => {
     }
   };
 
-  const handleUrlImagesChange = async (gearId: string, urls: string[]) => {
-    const validUrls = urls.filter(url => url.trim() !== '');
-    const currentUrls = gearImageUrls[gearId] || [];
-    const currentValidUrls = currentUrls.filter(url => url.trim() !== '');
-
-    // Only update if there are actual changes
-    if (JSON.stringify(validUrls) === JSON.stringify(currentValidUrls)) {
-      return;
-    }
-
-    // Update local state immediately
-    setGearImageUrls(prev => ({
-      ...prev,
-      [gearId]: urls
-    }));
-
-    // If there are valid URLs, save them to the database
-    if (validUrls.length > 0) {
-      setUpdatingImages(prev => new Set([...prev, gearId]));
-
-      try {
-        await addEquipmentImages(gearId, validUrls);
-
-        // Update the gear item in our state
-        setGearItems(prev => prev.map(item =>
-          item.id === gearId
-            ? {
-              ...item,
-              current_images: [...item.current_images, ...validUrls],
-              image_count: item.current_images.length + validUrls.length
-            }
-            : item
-        ));
-
-        // Clear the URL fields after successful save
-        setGearImageUrls(prev => ({
-          ...prev,
-          [gearId]: []
-        }));
-
-        toast({
-          title: "Images Added",
-          description: `Added ${validUrls.length} image${validUrls.length > 1 ? 's' : ''} from URLs`,
-        });
-      } catch (error) {
-        console.error('Error adding images from URLs:', error);
-        toast({
-          title: "Error",
-          description: "Failed to add images from URLs",
-          variant: "destructive",
-        });
-      } finally {
-        setUpdatingImages(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(gearId);
-          return newSet;
-        });
-      }
-    }
-  };
-
   const setGearUrls = (gearId: string, urls: string[]) => {
     setGearImageUrls(prev => ({
       ...prev,
@@ -315,7 +257,11 @@ const AddMissingImagesSection = () => {
   };
 
   const getGearDetailLink = (gear: GearWithoutImages): string => {
-    return `/${gear.category}/${slugify(gear.owner_name)}/${slugify(gear.name)}`;
+    return buildGearPath({
+      id: gear.id,
+      name: gear.name,
+      size: gear.size,
+    });
   };
 
   return (

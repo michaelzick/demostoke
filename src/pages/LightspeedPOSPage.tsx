@@ -16,8 +16,8 @@ import { useAuth } from "@/helpers";
 import { useUserEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { slugify } from "@/utils/slugify";
 import { fetchMockLightspeedInventory, ingestLightspeedInventory } from "@/services/lightspeed/lightspeedService";
+import { buildGearPath } from "@/utils/gearUrl";
 
 const LightspeedPOSPage = () => {
   usePageMetadata({
@@ -67,12 +67,14 @@ const LightspeedPOSPage = () => {
     });
   };
 
-  const handleViewDetails = (id: string, name: string, category: string) => {
-    if (user?.name) {
-      navigate(`/${category}/${slugify(user.name)}/${slugify(name)}`);
-    } else {
-      navigate(`/${category}/${slugify(name)}`);
-    }
+  const handleViewDetails = (id: string, name: string, size?: string) => {
+    navigate(
+      buildGearPath({
+        id,
+        name,
+        size,
+      }),
+    );
   };
 
   const totalPages = Math.ceil(inventory.length / itemsPerPage) || 1;
@@ -105,7 +107,7 @@ const LightspeedPOSPage = () => {
         title: "Successfully Connected!",
         description: "Your Lightspeed POS is now connected to DemoStoke.",
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "Connection Failed",
         description: "Please check your credentials and try again.",
@@ -127,7 +129,7 @@ const LightspeedPOSPage = () => {
         title: 'Sync Complete!',
         description: 'Your inventory has been successfully synced with DemoStoke.',
       });
-    } catch (error) {
+    } catch {
       toast({
         title: 'Sync Failed',
         description: 'There was an error syncing your inventory.',
@@ -358,7 +360,10 @@ const LightspeedPOSPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {paginatedItems.map(item => (
                         <Card key={item.id} className="overflow-hidden">
-                          <div className="relative h-32 cursor-pointer" onClick={() => handleViewDetails(item.id, item.name, item.category)}>
+                          <div
+                            className="relative h-32 cursor-pointer"
+                            onClick={() => handleViewDetails(item.id, item.name, item.specifications?.size)}
+                          >
                             <img src={item.images?.[0] || '/placeholder.svg'} alt={item.name} className="w-full h-full object-cover" />
                             <div className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm p-1.5 rounded-md">
                               {item.visible_on_map ? (
@@ -368,7 +373,10 @@ const LightspeedPOSPage = () => {
                               )}
                             </div>
                           </div>
-                          <CardHeader className="p-4 cursor-pointer" onClick={() => handleViewDetails(item.id, item.name, item.category)}>
+                          <CardHeader
+                            className="p-4 cursor-pointer"
+                            onClick={() => handleViewDetails(item.id, item.name, item.specifications?.size)}
+                          >
                             <CardTitle className="text-base line-clamp-1">{item.name}</CardTitle>
                             <CardDescription>${item.price_per_day}/day</CardDescription>
                           </CardHeader>

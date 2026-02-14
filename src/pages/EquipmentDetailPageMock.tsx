@@ -22,6 +22,7 @@ import {
 import { getCategoryDisplayName } from "@/helpers";
 import { Equipment } from "@/types";
 import { slugify } from "@/utils/slugify";
+import { buildGearPath, buildGearDisplayName, toISODate } from "@/utils/gearUrl";
 import React, { useState } from "react";
 
 interface EquipmentDetailPageMockProps {
@@ -59,6 +60,11 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
     setSelectedImageIndex(index);
     setShowImageModal(true);
   };
+  const resolvedGearName = buildGearDisplayName(
+    equipment.name,
+    equipment.specifications?.size,
+  );
+  const lastVerifiedDate = toISODate(equipment.updated_at || equipment.created_at);
 
   return (
     <div className="container px-4 md:px-6 py-8">
@@ -74,8 +80,12 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
             path: `/user-profile/${slugify(equipment.owner.name)}`,
           },
           {
-            label: equipment.name,
-            path: `/${equipment.category}/${slugify(equipment.owner.name)}/${slugify(equipment.name)}`,
+            label: resolvedGearName,
+            path: buildGearPath({
+              id: equipment.id,
+              name: equipment.name,
+              size: equipment.specifications?.size,
+            }),
           },
         ]}
       />
@@ -159,7 +169,11 @@ const EquipmentDetailPageMock: React.FC<EquipmentDetailPageMockProps> = ({
           </div>
           {/* Equipment Info */}
           <div>
-            <EquipmentHeader equipment={equipment} />
+            <EquipmentHeader
+              equipment={equipment}
+              gearDisplayName={resolvedGearName}
+              lastVerifiedDate={lastVerifiedDate}
+            />
             {/* Book Now button: only visible on mobile (columns stacked) */}
             <Button
               className="block lg:hidden fixed left-0 bottom-0 w-full z-40 rounded-none bg-primary text-primary-foreground font-semibold focus:outline-none h-12"

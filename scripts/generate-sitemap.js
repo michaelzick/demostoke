@@ -6,10 +6,14 @@ import { format } from 'date-fns';
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 
-// just a comment
-
 let supabase;
 async function initSupabase() {
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    console.warn('Supabase env vars are missing; dynamic sitemap routes will be skipped.');
+    supabase = null;
+    return;
+  }
+
   try {
     const { createClient } = await import('@supabase/supabase-js');
     supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -38,19 +42,45 @@ async function fetchEquipment() {
   if (!supabase) return [];
   const { data, error } = await supabase
     .from('equipment')
-    .select('slug, category, updated_at, profiles!equipment_user_id_fkey(username)');
+    .select('id, name, size, updated_at');
   if (error) {
     console.error('Error fetching equipment:', error);
     return [];
   }
   return (data || []).map(item => ({
-    loc: `${baseUrl}/${item.category}/${item.profiles?.username || 'owner'}/${item.slug}`,
+    loc: `${baseUrl}/gear/${buildGearSlug(item)}`,
     lastmod: item.updated_at ? new Date(item.updated_at).toISOString() : undefined,
   }));
 }
 
 function slugify(text) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+function normalizeToken(value) {
+  return (value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function hasSizeInName(name, size) {
+  const normalizedName = normalizeToken(name);
+  const normalizedSize = normalizeToken(size);
+  return normalizedSize.length > 0 && normalizedName.includes(normalizedSize);
+}
+
+function buildGearDisplayName(name, size) {
+  const trimmedName = (name || '').trim();
+  const trimmedSize = (size || '').trim();
+
+  if (!trimmedSize || hasSizeInName(trimmedName, trimmedSize)) {
+    return trimmedName;
+  }
+
+  return `${trimmedName} ${trimmedSize}`;
+}
+
+function buildGearSlug(item) {
+  const displayName = buildGearDisplayName(item.name, item.size);
+  return `${slugify(displayName)}--${item.id}`;
 }
 
 function generateEventSlug(event) {
@@ -95,6 +125,10 @@ async function generate() {
     '/bookings',
     '/admin',
     '/search',
+    '/gear',
+    '/gear/surfboards',
+    '/gear/used-skis',
+    '/api/gear/search',
     '/demo-calendar',
   ].map(p => ({ loc: `${baseUrl}${p}` }));
 

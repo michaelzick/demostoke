@@ -1,15 +1,23 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/utils/tracking";
 
 interface BookingActionsProps {
   waiverCompleted: boolean;
   formIsValid: boolean;
   onWaiverClick: () => void;
   onBooking: () => void;
+  trackingProperties?: Record<string, unknown>;
 }
 
-const BookingActions = ({ waiverCompleted, formIsValid, onWaiverClick, onBooking }: BookingActionsProps) => {
+const BookingActions = ({
+  waiverCompleted,
+  formIsValid,
+  onWaiverClick,
+  onBooking,
+  trackingProperties,
+}: BookingActionsProps) => {
   return (
     <div className="space-y-4">
       {/* Waiver button */}
@@ -23,7 +31,10 @@ const BookingActions = ({ waiverCompleted, formIsValid, onWaiverClick, onBooking
 
       {/* Book button - disabled until waiver is completed */}
       <Button 
-        onClick={onBooking} 
+        onClick={() => {
+          trackEvent("click_reserve", trackingProperties);
+          onBooking();
+        }} 
         className="w-full"
         disabled={!waiverCompleted || !formIsValid}
       >

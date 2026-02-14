@@ -10,7 +10,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Equipment } from "@/types";
-import { slugify } from "@/utils/slugify";
+import { buildGearPath } from "@/utils/gearUrl";
 import { buildEquipmentTrackingFrom } from "@/utils/tracking";
 
 interface SimilarEquipmentProps {
@@ -79,7 +79,11 @@ const SimilarEquipment = ({ similarEquipment }: SimilarEquipmentProps) => {
                     </span>
                     <Button size="sm" asChild className="text-xs h-6">
                       <Link
-                        to={`/${item.category}/${slugify(item.owner.name)}/${slugify(item.name)}`}
+                        to={buildGearPath({
+                          id: item.id,
+                          name: item.name,
+                          size: item.specifications?.size,
+                        })}
                         data-tracking={trackingData}
                         id={`${item.name} - View Button - ${location.pathname}`}
                         className="view-gear-button"

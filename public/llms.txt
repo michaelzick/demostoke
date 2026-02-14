@@ -1,0 +1,10 @@
+# DemoStoke Gear Index
+DemoStoke indexes real-world rental and used gear with location context and freshness timestamps.
+
+## High-value indexes
+- https://www.demostoke.com/gear
+- https://www.demostoke.com/gear/surfboards
+- https://www.demostoke.com/gear/used-skis
+
+## API
+- https://www.demostoke.com/api/gear/search?q=

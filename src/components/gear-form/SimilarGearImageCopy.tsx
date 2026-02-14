@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { Link } from "react-router-dom";
 import { slugify } from "@/utils/slugify";
+import { buildGearPath } from "@/utils/gearUrl";
 import { Copy, Images, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface SimilarGearItem {
   id: string;
   name: string;
+  size?: string;
   category: string;
   status: string;
   owner_name?: string;
@@ -54,6 +56,7 @@ const SimilarGearImageCopy = ({ gearName, currentGearId, currentImages }: Simila
         .select(`
           id,
           name,
+          size,
           category,
           status,
           profiles!equipment_user_id_fkey(name)
@@ -76,6 +79,7 @@ const SimilarGearImageCopy = ({ gearName, currentGearId, currentImages }: Simila
         gearWithImages.push({
           id: gear.id,
           name: gear.name,
+          size: gear.size || undefined,
           category: gear.category,
           status: gear.status || 'available',
           owner_name: (gear.profiles as any)?.name || 'Unknown',
@@ -289,7 +293,11 @@ const SimilarGearImageCopy = ({ gearName, currentGearId, currentImages }: Simila
                     </TableCell>
                     <TableCell className="font-medium">
                       <Link
-                        to={`/${gear.category}/${slugify(gear.owner_name || '')}/${slugify(gear.name)}`}
+                        to={buildGearPath({
+                          id: gear.id,
+                          name: gear.name,
+                          size: gear.size,
+                        })}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-primary hover:underline"

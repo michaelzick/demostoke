@@ -15,6 +15,7 @@ import { Equipment } from "@/types";
 import { useAuth } from "@/contexts/auth";
 import { useIsAdmin } from "@/hooks/useUserRole";
 import { slugify } from "@/utils/slugify";
+import { buildGearPath } from "@/utils/gearUrl";
 import DistanceDisplay from "./DistanceDisplay";
 import { buildEquipmentTrackingFrom } from "@/utils/tracking";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -240,7 +241,11 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
       <CardFooter className="p-4 pt-0 flex justify-between items-center">
         <Button asChild size="sm">
           <Link
-            to={`/${equipment.category}/${slugify(equipment.owner.name)}/${slugify(equipment.name)}`}
+            to={buildGearPath({
+              id: equipment.id,
+              name: equipment.name,
+              size: equipment.specifications?.size,
+            })}
             data-tracking={trackingData}
             id={`${equipment.name} - View Details Button - ${location.pathname}`}
             className="view-gear-details-button"

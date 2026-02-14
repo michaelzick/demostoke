@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Link } from "react-router-dom";
 import { slugify } from "@/utils/slugify";
+import { buildGearPath } from "@/utils/gearUrl";
 import { Copy, FileText, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface SimilarGearItem {
   id: string;
   name: string;
+  size?: string;
   category: string;
   status: string;
   owner_name?: string;
@@ -61,6 +63,7 @@ const SimilarGearDescriptionCopy = ({
         .select(`
           id,
           name,
+          size,
           category,
           status,
           description,
@@ -74,6 +77,7 @@ const SimilarGearDescriptionCopy = ({
       const gearItems: SimilarGearItem[] = (gearData || []).map(gear => ({
         id: gear.id,
         name: gear.name,
+        size: gear.size || undefined,
         category: gear.category,
         status: gear.status || 'available',
         owner_name: (gear.profiles as any)?.name || 'Unknown',
@@ -263,7 +267,11 @@ const SimilarGearDescriptionCopy = ({
                     </TableCell>
                     <TableCell className="font-medium">
                       <Link
-                        to={`/${gear.category}/${slugify(gear.owner_name || '')}/${slugify(gear.name)}`}
+                        to={buildGearPath({
+                          id: gear.id,
+                          name: gear.name,
+                          size: gear.size,
+                        })}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-primary hover:underline"

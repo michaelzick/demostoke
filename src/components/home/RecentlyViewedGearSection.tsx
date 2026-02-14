@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useRecentlyViewedEquipment } from "@/hooks/useRecentlyViewedEquipment";
-import { slugify } from "@/utils/slugify";
+import { buildGearPath } from "@/utils/gearUrl";
 import { HorizontalScrollSection } from "./HorizontalScrollSection";
 
 interface RecentlyViewedGearSectionProps {
@@ -18,9 +18,11 @@ export default function RecentlyViewedGearSection({ userId }: RecentlyViewedGear
       sectionClassName="py-12 bg-muted/50"
       desktopCols={{ md: 3, lg: 5 }}
       renderItem={(item) => {
-        const ownerSlug = slugify(item.owner.name);
-        const equipmentSlug = slugify(item.name);
-        const detailUrl = `/${item.category}/${ownerSlug}/${equipmentSlug}`;
+        const detailUrl = buildGearPath({
+          id: item.id,
+          name: item.name,
+          size: item.specifications?.size,
+        });
 
         return (
           <Link

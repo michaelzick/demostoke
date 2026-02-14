@@ -12,17 +12,15 @@ export const useEquipmentBySlug = (
   category: string,
   slug: string,
   ownerSlug?: string,
+  enabled = true,
 ) => {
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
 
   return useQuery({
     queryKey: ["equipment", category, slug, ownerSlug, user?.id, isAdmin],
+    enabled: enabled && !!category && !!slug,
     queryFn: async (): Promise<Equipment | null> => {
-      if (!category || !slug) {
-        throw new Error("Category and slug are required");
-      }
-
       // First check the public equipment data
       const data = await getEquipmentData();
       const publicItem = data.find(

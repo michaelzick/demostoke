@@ -10,7 +10,6 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -57,7 +56,7 @@ const CustomerWaiverForm = ({ equipment, onComplete }: CustomerWaiverFormProps) 
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = () => {
     if (!signature) {
       toast({
         title: "Signature Required",
