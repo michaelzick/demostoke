@@ -194,67 +194,6 @@ const AddMissingImagesSection = () => {
     }
   };
 
-  const handleUrlImagesChange = async (gearId: string, urls: string[]) => {
-    const validUrls = urls.filter(url => url.trim() !== '');
-    const currentUrls = gearImageUrls[gearId] || [];
-    const currentValidUrls = currentUrls.filter(url => url.trim() !== '');
-
-    // Only update if there are actual changes
-    if (JSON.stringify(validUrls) === JSON.stringify(currentValidUrls)) {
-      return;
-    }
-
-    // Update local state immediately
-    setGearImageUrls(prev => ({
-      ...prev,
-      [gearId]: urls
-    }));
-
-    // If there are valid URLs, save them to the database
-    if (validUrls.length > 0) {
-      setUpdatingImages(prev => new Set([...prev, gearId]));
-
-      try {
-        await addEquipmentImages(gearId, validUrls);
-
-        // Update the gear item in our state
-        setGearItems(prev => prev.map(item =>
-          item.id === gearId
-            ? {
-              ...item,
-              current_images: [...item.current_images, ...validUrls],
-              image_count: item.current_images.length + validUrls.length
-            }
-            : item
-        ));
-
-        // Clear the URL fields after successful save
-        setGearImageUrls(prev => ({
-          ...prev,
-          [gearId]: []
-        }));
-
-        toast({
-          title: "Images Added",
-          description: `Added ${validUrls.length} image${validUrls.length > 1 ? 's' : ''} from URLs`,
-        });
-      } catch (error) {
-        console.error('Error adding images from URLs:', error);
-        toast({
-          title: "Error",
-          description: "Failed to add images from URLs",
-          variant: "destructive",
-        });
-      } finally {
-        setUpdatingImages(prev => {
-          const newSet = new Set(prev);
-          newSet.delete(gearId);
-          return newSet;
-        });
-      }
-    }
-  };
-
   const setGearUrls = (gearId: string, urls: string[]) => {
     setGearImageUrls(prev => ({
       ...prev,

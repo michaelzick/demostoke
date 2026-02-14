@@ -107,7 +107,7 @@ const LightspeedPOSPage = () => {
         title: "Successfully Connected!",
         description: "Your Lightspeed POS is now connected to DemoStoke.",
       });
-    } catch (error) {
+    } catch {
       toast({
         title: "Connection Failed",
         description: "Please check your credentials and try again.",
@@ -129,7 +129,7 @@ const LightspeedPOSPage = () => {
         title: 'Sync Complete!',
         description: 'Your inventory has been successfully synced with DemoStoke.',
       });
-    } catch (error) {
+    } catch {
       toast({
         title: 'Sync Failed',
         description: 'There was an error syncing your inventory.',
