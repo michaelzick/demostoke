@@ -10,7 +10,7 @@ import { useEditGearFormValidation } from "./useEditGearFormValidation";
 import { useEditGearImageHandling } from "./useEditGearImageHandling";
 import { useEditGearLocationHandling } from "./useEditGearLocationHandling";
 import { useEditGearDatabaseUpdate } from "./useEditGearDatabaseUpdate";
-import { slugify } from "@/utils/slugify";
+import { buildGearPath } from "@/utils/gearUrl";
 
 interface UseEditGearFormSubmissionProps {
   equipment: UserEquipment | null | undefined;
@@ -138,7 +138,11 @@ export const useEditGearFormSubmission = ({
       });
 
       navigate(
-        `/${equipment!.category}/${slugify(equipment!.owner.name)}/${slugify(equipment!.name)}`,
+        buildGearPath({
+          id: equipment!.id,
+          name: gearName,
+          size,
+        }),
       );
 
     } catch (error) {
@@ -165,7 +169,11 @@ export const useEditGearFormSubmission = ({
 
   const handleCancel = () => {
     navigate(
-      `/${equipment!.category}/${slugify(equipment!.owner.name)}/${slugify(equipment!.name)}`,
+      buildGearPath({
+        id: equipment!.id,
+        name: equipment!.name,
+        size: equipment?.specifications?.size,
+      }),
     );
   };
 

@@ -14,7 +14,16 @@ const serverDist = path.join(__dirname, '../dist/server');
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let supabase = null;
+if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+  try {
+    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } catch (error) {
+    console.warn('Supabase client init failed. Server metadata enrichment is disabled.', error);
+  }
+} else {
+  console.warn('Supabase env vars are missing. Server metadata enrichment is disabled.');
+}
 
 const escapeContent = (str) =>
   str
@@ -83,6 +92,10 @@ const extractGearIdFromSlug = (gearSlug) => {
 };
 
 async function getBlogPostMeta(slug) {
+  if (!supabase) {
+    return null;
+  }
+
   try {
     const { data, error } = await supabase
       .from('blog_posts')
@@ -122,6 +135,10 @@ async function getBlogPostMeta(slug) {
 }
 
 async function getGearPageMeta(gearSlug, protocol, host) {
+  if (!supabase) {
+    return null;
+  }
+
   const gearId = extractGearIdFromSlug(gearSlug);
   if (!gearId) {
     return null;

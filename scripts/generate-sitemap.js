@@ -6,8 +6,6 @@ import { format } from 'date-fns';
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 
-// just a comment
-
 let supabase;
 async function initSupabase() {
   if (!SUPABASE_URL || !SUPABASE_KEY) {

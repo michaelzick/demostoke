@@ -8,7 +8,7 @@ import { useEditGearFormValidation } from "./useEditGearFormValidation";
 import { useEditGearLocationHandling } from "./useEditGearLocationHandling";
 import { useEditGearDatabaseUpdate } from "./useEditGearDatabaseUpdate";
 import { uploadMultipleGearImages, updateEquipmentImages } from "@/utils/multipleImageHandling";
-import { slugify } from "@/utils/slugify";
+import { buildGearPath } from "@/utils/gearUrl";
 import type { FormData } from "./types";
 
 interface UseMultipleEditGearFormSubmissionProps {
@@ -182,8 +182,13 @@ export const useMultipleEditGearFormSubmission = ({
         description: `${gearName} has been successfully updated.`,
       });
 
+      const submittedSize = isBikeType ? selectedSizes.join(", ") : size;
       navigate(
-        `/${equipment!.category}/${slugify(equipment!.owner.name)}/${slugify(equipment!.name)}`,
+        buildGearPath({
+          id: equipment!.id,
+          name: gearName,
+          size: submittedSize,
+        }),
       );
 
     } catch (error) {
@@ -210,7 +215,11 @@ export const useMultipleEditGearFormSubmission = ({
 
   const handleCancel = () => {
     navigate(
-      `/${equipment!.category}/${slugify(equipment!.owner.name)}/${slugify(equipment!.name)}`,
+      buildGearPath({
+        id: equipment!.id,
+        name: equipment!.name,
+        size: equipment?.specifications?.size,
+      }),
     );
   };
 
