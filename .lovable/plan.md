@@ -1,32 +1,21 @@
 
 
-## Delete User: Cal Coast Adventures (d61dcdcf-f034-4008-83e5-222735e6b2ef)
+## Update Gear Category Visibility and Validation
 
-### Problem
-Foreign key constraints prevent deleting this user because child records exist in other tables.
+### Changes
 
-### Records Found
+**1. Show Gear Category for Builder and Retail Store only (`src/components/admin/UserContactFields.tsx`)**
+- Change the conditional from `role === 'retail-store'` to `role === 'retail-store' || role === 'builder'`
+- Keep it positioned above the About field (per previous plan)
 
-| Table | Records |
-|-------|---------|
-| user_roles | 1 |
-| design_system_profiles | 1 |
-| All other tables | 0 |
+**2. Update validation (`src/hooks/user-creation/useUserCreationValidation.ts`)**
+- Require `gearCategory` when role is `'retail-store'` or `'builder'`, but not for `'private-party'`
 
-### Fix
+### Technical Details
 
-Run a SQL migration to delete the dependent records, then delete the user from `auth.users`:
-
-```sql
--- Step 1: Delete child records
-DELETE FROM user_roles WHERE user_id = 'd61dcdcf-f034-4008-83e5-222735e6b2ef';
-DELETE FROM design_system_profiles WHERE user_id = 'd61dcdcf-f034-4008-83e5-222735e6b2ef';
-
--- Step 2: Delete the auth user (this also removes any profile via trigger/cascade)
-DELETE FROM auth.users WHERE id = 'd61dcdcf-f034-4008-83e5-222735e6b2ef';
-```
-
-### Files Modified
-
-No code changes -- data deletion only (SQL migration).
+| File | Change |
+|------|--------|
+| `src/components/admin/UserContactFields.tsx` | Render Gear Category when `role === 'retail-store' \|\| role === 'builder'`; move block above About |
+| `src/hooks/user-creation/useUserCreationValidation.ts` | Require `gearCategory` for both `retail-store` and `builder` roles |
+| `src/hooks/user-creation/useUserCreationForm.ts` | Default `role` to `'retail-store'` |
 
