@@ -29,9 +29,7 @@ const UserContactFields = ({ formData, role, isCreating, onInputChange }: UserCo
     <>
       {(role === 'retail-store' || role === 'builder') && (
         <div className="space-y-2">
-          <Label htmlFor="gearCategory">
-            Gear Category <span className="text-destructive">*</span>
-          </Label>
+          <Label htmlFor="gearCategory">Gear Category *</Label>
           <Select
             value={formData.gearCategory}
             onValueChange={(value) => onInputChange('gearCategory', value)}
