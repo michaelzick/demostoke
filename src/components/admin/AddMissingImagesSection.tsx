@@ -84,7 +84,7 @@ const AddMissingImagesSection = () => {
       });
 
       const results = await Promise.all(gearPromises);
-      const filteredResults = results.filter((item): item is GearWithoutImages => item !== null);
+      const filteredResults = results.filter((item): item is NonNullable<typeof item> => item !== null) as GearWithoutImages[];
 
       setGearItems(filteredResults);
       setScanComplete(true);
