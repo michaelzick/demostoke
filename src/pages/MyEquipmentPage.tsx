@@ -366,7 +366,7 @@ const MyEquipmentPage = () => {
                           to={buildGearPath({
                             id: item.id,
                             name: item.name,
-                            size: item.size,
+                            size: item.specifications?.size,
                           })}
                           className="inline-block"
                         >
@@ -467,7 +467,7 @@ const MyEquipmentPage = () => {
                               to={buildGearPath({
                                 id: item.id,
                                 name: item.name,
-                                size: item.size,
+                                size: item.specifications?.size,
                               })}
                               data-tracking={trackingData}
                               id={`${item.name} - View Details Button - ${location.pathname}`}
