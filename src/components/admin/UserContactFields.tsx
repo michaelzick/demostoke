@@ -27,19 +27,7 @@ const GEAR_CATEGORIES = [
 const UserContactFields = ({ formData, role, isCreating, onInputChange }: UserContactFieldsProps) => {
   return (
     <>
-      <div className="space-y-2">
-        <Label htmlFor="about">About</Label>
-        <Textarea
-          id="about"
-          value={formData.about}
-          onChange={(e) => onInputChange('about', e.target.value)}
-          placeholder="About this user or business"
-          disabled={isCreating}
-          className="min-h-[160px]"
-        />
-      </div>
-
-      {role === 'retail-store' && (
+      {(role === 'retail-store' || role === 'builder') && (
         <div className="space-y-2">
           <Label htmlFor="gearCategory">
             Gear Category <span className="text-destructive">*</span>
@@ -62,6 +50,18 @@ const UserContactFields = ({ formData, role, isCreating, onInputChange }: UserCo
           </Select>
         </div>
       )}
+
+      <div className="space-y-2">
+        <Label htmlFor="about">About</Label>
+        <Textarea
+          id="about"
+          value={formData.about}
+          onChange={(e) => onInputChange('about', e.target.value)}
+          placeholder="About this user or business"
+          disabled={isCreating}
+          className="min-h-[160px]"
+        />
+      </div>
 
       <div className="space-y-2">
         <Label htmlFor="website">Website</Label>

@@ -11,7 +11,7 @@ export const useUserCreationValidation = (formData: UserFormData, captchaToken: 
            formData.role &&
            captchaToken);
     
-    if (formData.role === 'retail-store') {
+    if (formData.role === 'retail-store' || formData.role === 'builder') {
       return baseValid && !!formData.gearCategory;
     }
     return baseValid;
