@@ -2,6 +2,7 @@ import { useAuth } from "@/helpers";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import UserManagementSection from "@/components/admin/UserManagementSection";
 import ManualUserCreationSection from "@/components/admin/ManualUserCreationSection";
+import UserDirectorySection from "@/components/admin/UserDirectorySection";
 import ImageUploadSection from "@/components/admin/ImageUploadSection";
 import VideoUploadSection from "@/components/admin/VideoUploadSection";
 
@@ -50,6 +51,7 @@ const AdminPage = () => {
 
         <TabsContent value="users" className="space-y-6">
           <ManualUserCreationSection />
+          <UserDirectorySection />
           <UserManagementSection />
         </TabsContent>
 

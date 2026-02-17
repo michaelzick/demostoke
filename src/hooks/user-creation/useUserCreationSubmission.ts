@@ -15,7 +15,7 @@ export const useUserCreationSubmission = () => {
     isFormValid: boolean,
     resetForm: () => void,
     resetCaptcha: () => void
-  ) => {
+  ): Promise<string | null> => {
     if (formData.password.length < 6) {
       toast({
         title: "Password Too Short",
@@ -229,6 +229,7 @@ export const useUserCreationSubmission = () => {
       });
 
       resetForm();
+      return authData.user.id;
 
     } catch (error: unknown) {
       console.error('Error in user creation process:', error);
@@ -262,6 +263,7 @@ export const useUserCreationSubmission = () => {
           variant: "destructive"
         });
       }
+      return null;
     } finally {
       setIsCreating(false);
     }
