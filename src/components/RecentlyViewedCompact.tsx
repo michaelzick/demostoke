@@ -4,7 +4,11 @@ import { buildGearPath } from "@/utils/gearUrl";
 import { useAuth } from "@/contexts/auth";
 import { cn } from "@/lib/utils";
 
-export function RecentlyViewedCompact() {
+interface RecentlyViewedCompactProps {
+  className?: string;
+}
+
+export function RecentlyViewedCompact({ className }: RecentlyViewedCompactProps) {
   const { user } = useAuth();
   const { data: equipment, isLoading } = useRecentlyViewedEquipment(user?.id);
 
@@ -16,7 +20,7 @@ export function RecentlyViewedCompact() {
   const items = equipment.slice(0, 5);
 
   return (
-    <div className="mt-4">
+    <div className={cn(className)}>
       <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
         Recently Viewed
       </h3>

@@ -274,23 +274,23 @@ const ExplorePage = () => {
         onRemovePriceRange={(id) => handleRemoveFilter('priceRange', id)}
         onRemoveRatingRange={(id) => handleRemoveFilter('ratingRange', id)}
         onRemoveFeatured={() => handleRemoveFilter('featured')}
+        recentlyViewedRightContent={
+          <div className="flex w-full flex-col gap-1">
+            <GearQuickFilterInput
+              value={quickFilter}
+              onChange={setQuickFilter}
+              onClear={() => setQuickFilter("")}
+              placeholder="Filter shown gear..."
+              className="sm:max-w-none"
+            />
+            {!isEquipmentLoading && isQuickFilterActive && (
+              <p className="text-sm text-muted-foreground">
+                Showing {filteredEquipment.length} of {baseFilteredEquipment.length} items
+              </p>
+            )}
+          </div>
+        }
       />
-
-      <div className="container px-4 md:px-6 pt-4 pb-2">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <GearQuickFilterInput
-            value={quickFilter}
-            onChange={setQuickFilter}
-            onClear={() => setQuickFilter("")}
-            placeholder="Filter shown gear..."
-          />
-          {!isEquipmentLoading && isQuickFilterActive && (
-            <p className="text-sm text-muted-foreground">
-              Showing {filteredEquipment.length} of {baseFilteredEquipment.length} items
-            </p>
-          )}
-        </div>
-      </div>
 
       {isEquipmentLoading ? (
         <div className="flex justify-center items-center py-20">

@@ -305,15 +305,6 @@ const SearchResultsPage = () => {
             </Button>
           </form>
 
-          <div className="mb-4">
-            <GearQuickFilterInput
-              value={quickFilter}
-              onChange={setQuickFilter}
-              onClear={() => setQuickFilter("")}
-              placeholder="Filter shown gear..."
-            />
-          </div>
-
           {query && (
             <div className="mb-2">
               <p className="text-sm text-muted-foreground">
@@ -356,6 +347,15 @@ const SearchResultsPage = () => {
         onRemovePriceRange={handleRemovePriceRange}
         onRemoveRatingRange={handleRemoveRatingRange}
         onRemoveFeatured={handleRemoveFeatured}
+        recentlyViewedRightContent={
+          <GearQuickFilterInput
+            value={quickFilter}
+            onChange={setQuickFilter}
+            onClear={() => setQuickFilter("")}
+            placeholder="Filter shown gear..."
+            className="sm:max-w-none"
+          />
+        }
       />
 
       {isLoading ? (

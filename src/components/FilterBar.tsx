@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -24,6 +24,7 @@ interface FilterBarProps {
   onRemovePriceRange?: (rangeId: string) => void;
   onRemoveRatingRange?: (rangeId: string) => void;
   onRemoveFeatured?: () => void;
+  recentlyViewedRightContent?: ReactNode;
 }
 
 const FilterBar = ({
@@ -37,6 +38,7 @@ const FilterBar = ({
   onRemovePriceRange,
   onRemoveRatingRange,
   onRemoveFeatured,
+  recentlyViewedRightContent,
 }: FilterBarProps) => {
 
   const handleRemoveMyFavorites = () => {
@@ -133,7 +135,14 @@ const FilterBar = ({
 
           {/* Recently Viewed - Mobile */}
           {(viewMode === 'hybrid' || viewMode === 'list') && (
-            <RecentlyViewedCompact />
+            <>
+              <RecentlyViewedCompact className="mt-4" />
+              {recentlyViewedRightContent && (
+                <div className="mt-2">
+                  {recentlyViewedRightContent}
+                </div>
+              )}
+            </>
           )}
 
           {/* Mobile Advanced Filter Section - Only show for hybrid and list views */}
@@ -246,7 +255,16 @@ const FilterBar = ({
 
           {/* Recently Viewed - Desktop */}
           {(viewMode === 'hybrid' || viewMode === 'list') && (
-            <RecentlyViewedCompact />
+            <div className="mt-4 flex items-end gap-4">
+              <div className="min-w-0 flex-1">
+                <RecentlyViewedCompact />
+              </div>
+              {recentlyViewedRightContent && (
+                <div className="ml-auto w-full max-w-md shrink-0">
+                  {recentlyViewedRightContent}
+                </div>
+              )}
+            </div>
           )}
 
           {/* Advanced Filter Link and Pills - Only show for hybrid and list views */}
