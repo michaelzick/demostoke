@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { geocodeAddress } from "@/utils/geocoding";
@@ -8,6 +8,7 @@ import { UserFormData } from "./types";
 export const useUserCreationSubmission = () => {
   const { toast } = useToast();
   const [isCreating, setIsCreating] = useState(false);
+  const isCreatingRef = useRef(false);
 
   const createUser = async (
     formData: UserFormData,
@@ -23,7 +24,7 @@ export const useUserCreationSubmission = () => {
         variant: "destructive"
       });
       resetCaptcha();
-      return;
+      return null;
     }
 
     if (!isFormValid) {
@@ -33,9 +34,15 @@ export const useUserCreationSubmission = () => {
         variant: "destructive"
       });
       resetCaptcha();
-      return;
+      return null;
     }
 
+    if (isCreatingRef.current) {
+      console.warn("User creation is already in progress");
+      return null;
+    }
+
+    isCreatingRef.current = true;
     setIsCreating(true);
 
     try {
@@ -182,8 +189,9 @@ export const useUserCreationSubmission = () => {
           display_role: formData.role
         });
 
-      if (roleError || !authData.session) {
+      if (roleError) {
         console.error('Role assignment error:', roleError);
+        let fallbackFailed = false;
         try {
           const res = await fetch(
             'https://qtlhqsqanbxgfbcjigrl.supabase.co/functions/v1/set-user-display-role',
@@ -194,16 +202,22 @@ export const useUserCreationSubmission = () => {
             });
           if (!res.ok) {
             console.error('Edge function role update failed', await res.text());
+            fallbackFailed = true;
           }
         } catch (e) {
           console.error('Edge function role update exception', e);
+          fallbackFailed = true;
         }
 
-        toast({
-          title: "User Created with Warning",
-          description: `User account created but role assignment failed. User: ${formData.name} (${formData.email})`,
-          variant: "destructive"
-        });
+        if (fallbackFailed) {
+          toast({
+            title: "User Created with Warning",
+            description: `User account created but role assignment failed. User: ${formData.name} (${formData.email})`,
+            variant: "destructive"
+          });
+        } else {
+          console.log('Display role updated via edge function fallback');
+        }
       } else {
         console.log('Role assigned successfully:', dbRole);
       }
@@ -265,6 +279,7 @@ export const useUserCreationSubmission = () => {
       }
       return null;
     } finally {
+      isCreatingRef.current = false;
       setIsCreating(false);
     }
   };

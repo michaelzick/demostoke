@@ -7,18 +7,14 @@ import { useRef } from "react";
 interface UserCreationFormActionsProps {
   isCreating: boolean;
   isFormValid: boolean;
-  onSubmit: () => void;
   onCaptchaVerify: (token: string) => void;
-  captchaToken: string;
   shouldResetCaptcha?: boolean;
 }
 
 const UserCreationFormActions = ({ 
   isCreating, 
   isFormValid, 
-  onSubmit, 
   onCaptchaVerify,
-  captchaToken,
   shouldResetCaptcha
 }: UserCreationFormActionsProps) => {
   const hcaptchaRef = useRef<{ reset: () => void }>(null);
@@ -37,7 +33,6 @@ const UserCreationFormActions = ({
           type="submit" 
           disabled={!isFormValid || isCreating}
           className="flex items-center gap-2"
-          onClick={onSubmit}
         >
           {isCreating ? (
             <Loader2 className="h-4 w-4 animate-spin" />
