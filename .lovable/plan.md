@@ -1,35 +1,37 @@
 
 
-## Two Features: Post-Creation UUID Modal + User Directory Table
+## Enhance User Directory: Collapsible, Paginated, and Improved Search
 
-### Feature 1: Show UUID Modal After User Creation
+### Changes to `src/components/admin/UserDirectorySection.tsx`
 
-After a new user is successfully created, a dialog will appear displaying the new user's UUID with a copy-to-clipboard button. The UUID comes from `authData.user.id` returned by Supabase during signup.
+**1. Collapsible toggle (contracted by default)**
+- Wrap the card content in a `Collapsible` (from `@radix-ui/react-collapsible`, already installed)
+- Add a chevron toggle button in the `CardHeader` next to the title
+- Default state: `open = false` (collapsed)
 
-**Changes:**
-- **`src/hooks/user-creation/useUserCreationSubmission.ts`** -- Change `createUser` to return the new user's UUID string (or `null` on failure) instead of `void`.
-- **`src/hooks/user-creation/index.ts`** -- Update `createUser` wrapper to capture and return the UUID from submission.
-- **`src/components/admin/ManualUserCreationSection.tsx`** -- Add state for `createdUserId`. After `createUser()` resolves, set it. Render a Dialog that shows the UUID in a read-only input with a "Copy" button. Dialog dismissal clears the state.
+**2. Pagination (25 rows per page)**
+- Add `currentPage` state (starts at 1)
+- Slice the filtered results to show only rows `(page-1)*25` through `page*25`
+- Show page controls (Previous / Next buttons + "Page X of Y" label) below the table
+- Reset to page 1 whenever the search query changes
 
-### Feature 2: Searchable User Directory Table
+**3. Search across all pages**
+- Already works this way -- filtering happens before pagination, so a name on "page 3" will appear when searched
 
-A new card in the User Management tab showing all profiles in a sortable, searchable table with Name and UUID columns.
-
-**Changes:**
-- **New file: `src/components/admin/UserDirectorySection.tsx`** -- A Card component that:
-  - Fetches all rows from `profiles` table (id, name)
-  - Provides a search input filtering by name
-  - Displays a table with two columns: **Name** (sortable A-Z / Z-A) and **UUID** (with a copy-to-clipboard icon button)
-  - Uses existing UI components (Card, Input, Table, Button)
-- **`src/pages/AdminPage.tsx`** -- Import and render `UserDirectorySection` in the "users" tab content, below `UserManagementSection`.
+**4. Clear Search button**
+- Add a "Clear" button to the right of the search input
+- Only visible when the search field is non-empty
+- Clears the search text and resets to page 1
 
 ### Technical Details
 
-| File | Change |
-|------|--------|
-| `src/hooks/user-creation/useUserCreationSubmission.ts` | Return `string \| null` (user UUID) from `createUser` |
-| `src/hooks/user-creation/index.ts` | Propagate returned UUID |
-| `src/components/admin/ManualUserCreationSection.tsx` | Add UUID modal dialog with copy button |
-| `src/components/admin/UserDirectorySection.tsx` | New component: searchable, sortable profiles table with copy UUID |
-| `src/pages/AdminPage.tsx` | Add `UserDirectorySection` to users tab |
+| Element | Implementation |
+|---------|---------------|
+| Collapsible | `Collapsible` + `CollapsibleTrigger` + `CollapsibleContent` from existing `@/components/ui/collapsible` |
+| Toggle icon | `ChevronDown` / `ChevronUp` from lucide-react |
+| Pagination state | `const [currentPage, setCurrentPage] = useState(1)` reset on search change via `useEffect` |
+| Page slice | `filtered.slice((currentPage - 1) * 25, currentPage * 25)` |
+| Clear button | `X` icon button, calls `setSearch("")` and `setCurrentPage(1)` |
+
+Only one file is modified: `src/components/admin/UserDirectorySection.tsx`
 
