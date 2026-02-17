@@ -23,6 +23,12 @@ const GearQuickFilterInput = ({
       <Input
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape" && value) {
+            e.preventDefault();
+            onClear();
+          }
+        }}
         placeholder={placeholder}
       />
       {value.trim() && (
