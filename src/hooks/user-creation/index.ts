@@ -17,8 +17,8 @@ export const useManualUserCreation = () => {
   const { isFormValid } = useUserCreationValidation(formData, captchaToken);
   const { isCreating, createUser: createUserSubmission } = useUserCreationSubmission();
 
-  const createUser = async () => {
-    await createUserSubmission(formData, captchaToken, isFormValid, resetForm, resetCaptcha);
+  const createUser = async (): Promise<string | null> => {
+    return await createUserSubmission(formData, captchaToken, isFormValid, resetForm, resetCaptcha);
   };
 
   return {
