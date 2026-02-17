@@ -172,15 +172,15 @@ const MapComponent = ({
       }
     } else if (isExploreRoute) {
       // Explore route: Show user location markers
-      
-      // Filter user locations by category if specified
-      const filteredUserLocations = activeCategory
-        ? userLocations.filter(user =>
-            user.equipment_categories.includes(activeCategory)
-          )
-        : userLocations;
 
-      filteredUserLocations.forEach((user) => {
+      // Prefer pre-filtered user locations when provided so map markers match list/hybrid results.
+      const locationsToShow = filteredUserLocations ?? (
+        activeCategory
+          ? userLocations.filter(user => user.equipment_categories.includes(activeCategory))
+          : userLocations
+      );
+
+      locationsToShow.forEach((user) => {
         if (!user.location?.lat || !user.location?.lng) return;
 
         const categoryForMarker =
@@ -197,8 +197,8 @@ const MapComponent = ({
           .addTo(map.current!);
       });
 
-      if (filteredUserLocations.length > 0) {
-        fitMapBounds(map.current, filteredUserLocations);
+      if (locationsToShow.length > 0) {
+        fitMapBounds(map.current, locationsToShow);
       }
     }
   }, [isSearchRoute, isExploreRoute, isEquipmentDetailMode, initialEquipment, userLocations, activeCategory, isLoading, ownerIds, viewMode, filteredUserLocations]);

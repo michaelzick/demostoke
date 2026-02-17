@@ -23,6 +23,7 @@ interface HybridViewProps {
   sortBy: string;
   onSortChange: (value: string) => void;
   showRelevanceOption?: boolean;
+  emptyMessage?: string;
 }
 
 interface MapEquipment {
@@ -48,6 +49,7 @@ const HybridView = ({
   sortBy,
   onSortChange,
   showRelevanceOption = false,
+  emptyMessage,
 }: HybridViewProps) => {
   const isMobile = useIsMobile();
   const [selectedEquipmentId, setSelectedEquipmentId] = useState<string | null>(null);
@@ -135,6 +137,8 @@ const HybridView = ({
   const selectedEquipment = selectedEquipmentId
     ? mapEquipment.find(item => item.id === selectedEquipmentId)
     : undefined;
+  const resolvedEmptyMessage =
+    emptyMessage || "Try changing your filters or explore a different category.";
 
   // Add markers with click handlers
   const markers = useMapMarkers({
@@ -251,6 +255,14 @@ const HybridView = ({
               </div>
             ))}
           </div>
+          {filteredEquipment.length === 0 && (
+            <div className="text-center py-12">
+              <h3 className="text-xl font-medium mb-2">No equipment found</h3>
+              <p className="text-muted-foreground">
+                {resolvedEmptyMessage}
+              </p>
+            </div>
+          )}
           
           {/* Scroll to top button for mobile */}
           <ScrollToTopButton show={showMobileScrollButton} onClick={scrollMobileToTop} />
@@ -297,7 +309,7 @@ const HybridView = ({
             <div className="text-center py-12">
               <h3 className="text-xl font-medium mb-2">No equipment found</h3>
               <p className="text-muted-foreground">
-                Try changing your filters or explore a different category.
+                {resolvedEmptyMessage}
               </p>
             </div>
           )}

@@ -1,8 +1,8 @@
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import usePageMetadata from "@/hooks/usePageMetadata";
-import { useLocation, useSearchParams, useMatch } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { getEquipmentData } from "@/services/searchService";
 import MapComponent from "@/components/MapComponent";
 import MapLegend from "@/components/map/MapLegend";
@@ -10,6 +10,7 @@ import EquipmentCard from "@/components/EquipmentCard";
 import FilterBar from "@/components/FilterBar";
 import HybridView from "@/components/HybridView";
 import SortDropdown from "@/components/SortDropdown";
+import GearQuickFilterInput from "@/components/GearQuickFilterInput";
 import { Equipment } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
@@ -21,6 +22,7 @@ import { getFilteredUserLocations } from "@/utils/equipmentLocationMapping";
 import { useIsAdmin } from "@/hooks/useUserRole";
 import { AdvancedFilters } from "@/types/advancedFilters";
 import { applyAdvancedFilters } from "@/utils/advancedFiltering";
+import { filterGearByQuickQuery } from "@/utils/gearQuickFilter";
 import { useFavorites } from "@/contexts/FavoritesContext";
 
 const ExplorePage = () => {
@@ -30,12 +32,14 @@ const ExplorePage = () => {
   });
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const initialQuickFilterFromUrl = searchParams.get("q") ?? "";
   const { toast } = useToast();
-  const isSearchRoute = !!useMatch("/search");
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<string>("distance");
   const [viewMode, setViewMode] = useState<"map" | "list" | "hybrid">("hybrid");
+  const [quickFilter, setQuickFilter] = useState(initialQuickFilterFromUrl);
+  const lastSyncedUrlQRef = useRef(initialQuickFilterFromUrl);
   const [allEquipment, setAllEquipment] = useState<Equipment[]>([]);
   const [isEquipmentLoading, setIsEquipmentLoading] = useState(true);
   const [hasShownNoEquipmentToast, setHasShownNoEquipmentToast] = useState(false);
@@ -48,7 +52,7 @@ const ExplorePage = () => {
     featured: false,
     myFavorites: false
   });
-  const { favorites: favoriteIds, hasFavorites } = useFavorites();
+  const { favorites: favoriteIds } = useFavorites();
 
   // Scroll to top on mount
   useScrollToTop();
@@ -96,6 +100,16 @@ const ExplorePage = () => {
     setHasShownNoEquipmentToast(false);
   }, [location.search]);
 
+  // Sync quick filter from URL `q` only when URL query actually changes externally.
+  useEffect(() => {
+    const urlQ = searchParams.get("q") ?? "";
+
+    if (urlQ !== lastSyncedUrlQRef.current) {
+      setQuickFilter(urlQ);
+      lastSyncedUrlQRef.current = urlQ;
+    }
+  }, [searchParams]);
+
   // Get equipment with dynamic distances
   const { equipment: equipmentWithDynamicDistances, isLocationBased } = useEquipmentWithDynamicDistance(allEquipment);
 
@@ -108,27 +122,23 @@ const ExplorePage = () => {
     }
   };
 
-  // Apply filters, sorting, and search synchronously to avoid stale data when
-  // switching categories
-  const filteredEquipment = useMemo(() => {
+  const baseFilteredEquipment = useMemo(() => {
     let results = [...equipmentWithDynamicDistances];
-    const searchQuery = searchParams.get("q")?.toLowerCase();
-
-    if (searchQuery) {
-      results = results.filter(item =>
-        item.name.toLowerCase().includes(searchQuery) ||
-        item.description?.toLowerCase().includes(searchQuery) ||
-        item.category.toLowerCase().includes(searchQuery)
-      );
-    }
 
     if (activeCategory) {
       results = results.filter(item => item.category === activeCategory);
     }
 
-
     // Apply advanced filters
     results = applyAdvancedFilters(results, advancedFilters, favoriteIds);
+
+    return results;
+  }, [activeCategory, equipmentWithDynamicDistances, advancedFilters, favoriteIds]);
+
+  // Apply quick filter and sorting to avoid stale data when switching categories.
+  const filteredEquipment = useMemo(() => {
+    const quickFiltered = filterGearByQuickQuery(baseFilteredEquipment, quickFilter);
+    const results = [...quickFiltered];
 
     switch (sortBy) {
       case "distance":
@@ -155,7 +165,9 @@ const ExplorePage = () => {
     );
 
     return results;
-  }, [activeCategory, sortBy, searchParams, viewMode, equipmentWithDynamicDistances, advancedFilters]);
+  }, [baseFilteredEquipment, quickFilter, sortBy]);
+
+  const isQuickFilterActive = quickFilter.trim().length > 0;
 
   // Filter user locations to only show those that have equipment in the filtered results
   const filteredUserLocations = getFilteredUserLocations(filteredEquipment, userLocations);
@@ -175,11 +187,14 @@ const ExplorePage = () => {
   const handleReset = () => {
     setActiveCategory(null);
     setSortBy("distance");
+    setQuickFilter("");
+    lastSyncedUrlQRef.current = "";
     setAdvancedFilters({ priceRanges: [], ratingRanges: [], featured: false, myFavorites: false });
     setHasShownNoEquipmentToast(false);
     setResetCounter((c) => c + 1);
     const newParams = new URLSearchParams(location.search);
     newParams.delete('category');
+    newParams.delete('q');
     setSearchParams(newParams);
     toast({
       title: "Filters Reset",
@@ -261,6 +276,22 @@ const ExplorePage = () => {
         onRemoveFeatured={() => handleRemoveFilter('featured')}
       />
 
+      <div className="container px-4 md:px-6 pt-4 pb-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <GearQuickFilterInput
+            value={quickFilter}
+            onChange={setQuickFilter}
+            onClear={() => setQuickFilter("")}
+            placeholder="Filter shown gear..."
+          />
+          {!isEquipmentLoading && isQuickFilterActive && (
+            <p className="text-sm text-muted-foreground">
+              Showing {filteredEquipment.length} of {baseFilteredEquipment.length} items
+            </p>
+          )}
+        </div>
+      </div>
+
       {isEquipmentLoading ? (
         <div className="flex justify-center items-center py-20">
           <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -286,6 +317,11 @@ const ExplorePage = () => {
           resetSignal={resetCounter}
           sortBy={sortBy}
           onSortChange={setSortBy}
+          emptyMessage={
+            isQuickFilterActive
+              ? "No gear matches your quick filter. Clear the filter or try different terms."
+              : undefined
+          }
         />
       ) : (
         <div className="container px-4 md:px-6 pt-4 pb-8">
@@ -312,7 +348,9 @@ const ExplorePage = () => {
             <div className="text-center py-12">
               <h3 className="text-xl font-medium mb-2">No equipment found</h3>
               <p className="text-muted-foreground">
-                Try changing your filters or explore a different category.
+                {isQuickFilterActive
+                  ? "No gear matches your quick filter. Clear the filter or try different terms."
+                  : "Try changing your filters or explore a different category."}
               </p>
             </div>
           )}

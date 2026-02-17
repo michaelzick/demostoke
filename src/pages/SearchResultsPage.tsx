@@ -9,6 +9,7 @@ import MapLegend from "@/components/map/MapLegend";
 import FilterBar from "@/components/FilterBar";
 import HybridView from "@/components/HybridView";
 import SortDropdown from "@/components/SortDropdown";
+import GearQuickFilterInput from "@/components/GearQuickFilterInput";
 import { Button } from "@/components/ui/button";
 import { Loader2, Search, Sparkles } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 // Note: AdvancedFilterDrawer and AdvancedFilterPills are handled in FilterBar component
 import { AdvancedFilters } from "@/types/advancedFilters";
 import { applyAdvancedFilters } from "@/utils/advancedFiltering";
+import { filterGearByQuickQuery } from "@/utils/gearQuickFilter";
 
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
 import { useUserLocations } from "@/hooks/useUserLocations";
@@ -38,6 +40,7 @@ const SearchResultsPage = () => {
   // Track whether the user explicitly changed the sort order so we don't overwrite it
   const [userSelectedSort, setUserSelectedSort] = useState(false);
   const [searchInput, setSearchInput] = useState(query);
+  const [quickFilter, setQuickFilter] = useState("");
   const [isAISearch, setIsAISearch] = useState(false);
   const { toast } = useToast();
 
@@ -124,6 +127,11 @@ const SearchResultsPage = () => {
     setSortBy("relevance");
   }, [query, userSelectedSort]);
 
+  // Quick filter is local-only and resets for each new main search query.
+  useEffect(() => {
+    setQuickFilter("");
+  }, [query]);
+
   // Handler that records when a user explicitly changes the sort
   const handleSortChange = (value: string) => {
     setSortBy(value);
@@ -136,10 +144,13 @@ const SearchResultsPage = () => {
     : equipmentWithDynamicDistances;
 
   // Apply advanced filters
-  const filteredResults = applyAdvancedFilters(categoryFilteredResults, advancedFilters);
+  const baseFilteredResults = applyAdvancedFilters(categoryFilteredResults, advancedFilters);
+
+  // Apply client-side quick filter
+  const quickFilteredResults = filterGearByQuickQuery(baseFilteredResults, quickFilter);
 
   // Sort results based on selected option
-  const sortedResults = [...filteredResults].sort((a, b) => {
+  const sortedResults = [...quickFilteredResults].sort((a, b) => {
     switch (sortBy) {
       case "price_asc":
         return a.price_per_day - b.price_per_day;
@@ -189,6 +200,7 @@ const SearchResultsPage = () => {
 
   const handleReset = () => {
     setSearchInput("");
+    setQuickFilter("");
     setSearchParams({});
     setActiveCategory(null);
     setSortBy("relevance");
@@ -228,6 +240,7 @@ const SearchResultsPage = () => {
   const handleSuggestionClick = (searchQuery: string) => {
     // Clear existing filters and search, then perform new search
     setSearchInput(searchQuery);
+    setQuickFilter("");
     setActiveCategory(null);
     setAdvancedFilters({ priceRanges: [], ratingRanges: [], featured: false, myFavorites: false });
     setSearchParams({ q: searchQuery });
@@ -260,6 +273,7 @@ const SearchResultsPage = () => {
   // Get user locations that have equipment matching the current filters
   const ownerIds = Array.from(new Set(mapEquipment.map(item => item.ownerId)));
   const filteredUserLocations = userLocations.filter(user => ownerIds.includes(user.id));
+  const isQuickFilterActive = quickFilter.trim().length > 0;
 
   return (
     <div className="min-h-screen">
@@ -291,6 +305,15 @@ const SearchResultsPage = () => {
             </Button>
           </form>
 
+          <div className="mb-4">
+            <GearQuickFilterInput
+              value={quickFilter}
+              onChange={setQuickFilter}
+              onClear={() => setQuickFilter("")}
+              placeholder="Filter shown gear..."
+            />
+          </div>
+
           {query && (
             <div className="mb-2">
               <p className="text-sm text-muted-foreground">
@@ -299,7 +322,9 @@ const SearchResultsPage = () => {
               </p>
               {!isLoading && (
                 <p className="text-sm">
-                  Found {filteredResults.length} {filteredResults.length === 1 ? "item" : "items"}
+                  {isQuickFilterActive
+                    ? `Found ${sortedResults.length} of ${baseFilteredResults.length} items (quick filter)`
+                    : `Found ${baseFilteredResults.length} ${baseFilteredResults.length === 1 ? "item" : "items"}`}
                 </p>
               )}
             </div>
@@ -311,7 +336,9 @@ const SearchResultsPage = () => {
                 Showing all equipment
               </p>
               <p className="text-sm">
-                Found {filteredResults.length} {filteredResults.length === 1 ? "item" : "items"}
+                {isQuickFilterActive
+                  ? `Found ${sortedResults.length} of ${baseFilteredResults.length} items (quick filter)`
+                  : `Found ${baseFilteredResults.length} ${baseFilteredResults.length === 1 ? "item" : "items"}`}
               </p>
             </div>
           )}
@@ -359,6 +386,11 @@ const SearchResultsPage = () => {
           sortBy={sortBy}
           onSortChange={handleSortChange}
           showRelevanceOption
+          emptyMessage={
+            isQuickFilterActive
+              ? "No gear matches your quick filter. Clear the filter or try different terms."
+              : undefined
+          }
         />
       ) : (
         <div className="container px-4 md:px-6 pt-4 pb-8">
@@ -396,7 +428,9 @@ const SearchResultsPage = () => {
             <div className="text-center py-12">
               <h3 className="text-xl font-medium mb-2">No equipment found</h3>
               <p className="text-muted-foreground mb-6">
-                Try adjusting your search terms or browse our categories below.
+                {isQuickFilterActive
+                  ? "No gear matches your quick filter. Clear the filter or try different terms."
+                  : "Try adjusting your search terms or browse our categories below."}
               </p>
               <div className="flex flex-wrap gap-2 justify-center">
                 <Button variant="outline" onClick={() => handleSuggestionClick("DHD surfboard")}>
