@@ -12,10 +12,8 @@ export const useUserCreationSubmission = () => {
 
   const createUser = async (
     formData: UserFormData,
-    captchaToken: string,
     isFormValid: boolean,
     resetForm: () => void,
-    resetCaptcha: () => void
   ): Promise<string | null> => {
     if (formData.password.length < 6) {
       toast({
@@ -23,17 +21,15 @@ export const useUserCreationSubmission = () => {
         description: "Password must be at least 6 characters long.",
         variant: "destructive"
       });
-      resetCaptcha();
       return null;
     }
 
     if (!isFormValid) {
       toast({
         title: "Validation Error",
-        description: "Please fill in all required fields and complete the captcha verification.",
+        description: "Please fill in all required fields.",
         variant: "destructive"
       });
-      resetCaptcha();
       return null;
     }
 
@@ -73,7 +69,6 @@ export const useUserCreationSubmission = () => {
             name: formData.name,
           },
           emailRedirectTo: window.location.origin,
-          captchaToken: captchaToken
         }
       });
 
@@ -167,20 +162,14 @@ export const useUserCreationSubmission = () => {
         console.log('Profile created successfully');
       }
 
-      // Step 6: Create user role entry with proper role mapping BEFORE user creation
-      // This prevents the trigger from creating a default role
+      // Step 6: Create user role entry
       console.log('Assigning role:', formData.role);
       
-      // Map frontend role values to database enum values
-      let dbRole: 'admin' | 'user' = 'user'; // Default to 'user' since enum only has 'admin' and 'user'
-      
-      // Only admins should get admin role - for now, all manually created users get 'user' role
-      // You can modify this logic based on your requirements
+      let dbRole: 'admin' | 'user' = 'user';
       if (formData.role === 'admin') {
         dbRole = 'admin';
       }
       
-      // Insert the role IMMEDIATELY after user creation to prevent trigger override
       const { error: roleError } = await supabase
         .from('user_roles')
         .insert({
@@ -248,8 +237,6 @@ export const useUserCreationSubmission = () => {
     } catch (error: unknown) {
       console.error('Error in user creation process:', error);
 
-      resetCaptcha();
-
       const message = error instanceof Error ? error.message : '';
 
       if (message.includes('User already registered')) {
@@ -262,12 +249,6 @@ export const useUserCreationSubmission = () => {
         toast({
           title: "Password Too Short",
           description: "Password must be at least 6 characters long.",
-          variant: "destructive"
-        });
-      } else if (message.includes('captcha')) {
-        toast({
-          title: "Captcha Verification Failed",
-          description: "Please complete the captcha verification and try again.",
           variant: "destructive"
         });
       } else {

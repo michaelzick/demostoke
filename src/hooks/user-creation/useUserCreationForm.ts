@@ -15,16 +15,8 @@ export const useUserCreationForm = () => {
     gearCategory: '',
   });
 
-  const [captchaToken, setCaptchaToken] = useState("");
-  const [shouldResetCaptcha, setShouldResetCaptcha] = useState(false);
-
   const handleInputChange = (field: keyof UserFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleCaptchaVerify = (token: string) => {
-    setCaptchaToken(token);
-    setShouldResetCaptcha(false);
   };
 
   const resetForm = () => {
@@ -39,22 +31,11 @@ export const useUserCreationForm = () => {
       about: '',
       gearCategory: '',
     });
-    setCaptchaToken("");
-    setShouldResetCaptcha(true);
-  };
-
-  const resetCaptcha = () => {
-    setCaptchaToken("");
-    setShouldResetCaptcha(true);
   };
 
   return {
     formData,
-    captchaToken,
-    shouldResetCaptcha,
     handleInputChange,
-    handleCaptchaVerify,
     resetForm,
-    resetCaptcha,
   };
 };

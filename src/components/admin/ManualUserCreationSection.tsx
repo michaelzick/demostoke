@@ -17,9 +17,7 @@ const ManualUserCreationSection = () => {
     formData,
     isCreating,
     isFormValid,
-    shouldResetCaptcha,
     handleInputChange,
-    handleCaptchaVerify,
     createUser,
   } = useManualUserCreation();
 
@@ -53,7 +51,7 @@ const ManualUserCreationSection = () => {
         <CardHeader>
           <CardTitle>Create User Manually</CardTitle>
           <CardDescription>
-            Add a new user account with profile information. Complete the captcha verification and the user will receive an email confirmation.
+            Add a new user account with profile information. The user will receive an email confirmation.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -74,8 +72,6 @@ const ManualUserCreationSection = () => {
             <UserCreationFormActions
               isCreating={isCreating}
               isFormValid={isFormValid}
-              onCaptchaVerify={handleCaptchaVerify}
-              shouldResetCaptcha={shouldResetCaptcha}
             />
           </form>
         </CardContent>
