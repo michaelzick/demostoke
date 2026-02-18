@@ -6,30 +6,22 @@ import { useUserCreationSubmission } from "./useUserCreationSubmission";
 export const useManualUserCreation = () => {
   const {
     formData,
-    captchaToken,
-    shouldResetCaptcha,
     handleInputChange,
-    handleCaptchaVerify,
     resetForm,
-    resetCaptcha,
   } = useUserCreationForm();
 
-  const { isFormValid } = useUserCreationValidation(formData, captchaToken);
+  const { isFormValid } = useUserCreationValidation(formData);
   const { isCreating, createUser: createUserSubmission } = useUserCreationSubmission();
 
   const createUser = async (): Promise<string | null> => {
-    return await createUserSubmission(formData, captchaToken, isFormValid, resetForm, resetCaptcha);
+    return await createUserSubmission(formData, isFormValid, resetForm);
   };
 
   return {
     formData,
     isCreating,
-    captchaToken,
-    shouldResetCaptcha,
     isFormValid,
     handleInputChange,
-    handleCaptchaVerify,
     createUser,
-    resetCaptcha
   };
 };
