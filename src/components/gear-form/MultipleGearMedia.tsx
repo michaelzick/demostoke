@@ -41,7 +41,7 @@ const MultipleGearMedia = ({
   currentGearId
 }: MultipleGearMediaProps) => {
   const [showImageSearch, setShowImageSearch] = useState(false);
-  const [imageDimensions, setImageDimensions] = useState<Record<number, { width: number; height: number }>>({});
+  const [imageDimensions, setImageDimensions] = useState<Record<number, { width: number; height: number; }>>({});
   const [hasInitializedUrls, setHasInitializedUrls] = useState(false);
   const displayImages = useImageUrls ? imageUrls : currentImages || duplicatedImageUrls || [];
 
@@ -187,7 +187,7 @@ const MultipleGearMedia = ({
                 size="sm"
                 onClick={() => {
                   const searchQuery = encodeURIComponent(gearName || '');
-                  const newWindow = window.open(`https://www.google.com/search?q=${searchQuery}`, '_blank', 'noopener,noreferrer');
+                  const newWindow = window.open(`https://www.google.com/search?q=${searchQuery}&tbm=isch&tbs=isz:l`, '_blank', 'noopener,noreferrer');
                   if (newWindow) newWindow.opener = null;
                 }}
                 className="flex items-center gap-2"

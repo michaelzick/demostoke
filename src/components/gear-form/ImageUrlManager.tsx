@@ -30,7 +30,7 @@ const ImageUrlManager = ({
   isSaving = false
 }: ImageUrlManagerProps) => {
   const [showImageSearch, setShowImageSearch] = useState(false);
-  const [imageDimensions, setImageDimensions] = useState<Record<number, { width: number; height: number }>>({});
+  const [imageDimensions, setImageDimensions] = useState<Record<number, { width: number; height: number; }>>({});
 
   useEffect(() => {
     setImageDimensions({});
@@ -129,7 +129,7 @@ const ImageUrlManager = ({
             size="sm"
             onClick={() => {
               const searchQuery = encodeURIComponent(gearName || '');
-              const newWindow = window.open(`https://www.google.com/search?q=${searchQuery}`, '_blank', 'noopener,noreferrer');
+              const newWindow = window.open(`https://www.google.com/search?q=${searchQuery}&tbm=isch&tbs=isz:l`, '_blank', 'noopener,noreferrer');
               if (newWindow) newWindow.opener = null;
             }}
             className="flex items-center gap-1"

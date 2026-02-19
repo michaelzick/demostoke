@@ -336,7 +336,7 @@ const AddMissingImagesSection = () => {
                         size="sm"
                         onClick={() => {
                           const searchQuery = encodeURIComponent(gear.name);
-                          window.open(`https://www.google.com/search?q=${searchQuery}`, '_blank');
+                          window.open(`https://www.google.com/search?q=${searchQuery}&tbm=isch&tbs=isz:l`, '_blank');
                         }}
                         className="flex items-center gap-1"
                       >
