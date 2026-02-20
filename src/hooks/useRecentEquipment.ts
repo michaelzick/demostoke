@@ -4,6 +4,7 @@ import { Equipment } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
 
 import { deduplicateImageUrls } from "@/utils/imageDeduplication";
+import { getHiddenUserIds, filterHiddenUsers } from "@/services/equipment/hiddenUserFilter";
 
 export const useRecentEquipment = () => {
   return useQuery({
@@ -37,13 +38,18 @@ export const useRecentEquipment = () => {
           return [];
         }
 
-        console.log(`📅 Found ${equipmentData.length} recent equipment items:`, equipmentData);
+        // Filter out hidden users
+        const hiddenUserIds = await getHiddenUserIds();
+        const visibleEquipment = filterHiddenUsers(equipmentData, hiddenUserIds);
+
+        console.log(`📅 Found ${visibleEquipment.length} recent equipment items`);
+
 
         // Convert equipment details
         const { convertSupabaseToEquipment } = await import('@/services/equipment/equipmentConverter');
         const { fetchEquipmentImages } = await import('@/utils/multipleImageHandling');
 
-        const equipmentPromises = equipmentData.map(async (item) => {
+        const equipmentPromises = visibleEquipment.map(async (item) => {
           const galleryImages = await fetchEquipmentImages(item.id);
           const allImages = deduplicateImageUrls(galleryImages);
 

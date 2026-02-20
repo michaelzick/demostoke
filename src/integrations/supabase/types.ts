@@ -969,6 +969,7 @@ export type Database = {
           favorite_equipment: Json | null
           hero_image_url: string | null
           id: string
+          is_hidden: boolean
           location_lat: number | null
           location_lng: number | null
           member_since: string | null
@@ -990,6 +991,7 @@ export type Database = {
           favorite_equipment?: Json | null
           hero_image_url?: string | null
           id: string
+          is_hidden?: boolean
           location_lat?: number | null
           location_lng?: number | null
           member_since?: string | null
@@ -1011,6 +1013,7 @@ export type Database = {
           favorite_equipment?: Json | null
           hero_image_url?: string | null
           id?: string
+          is_hidden?: boolean
           location_lat?: number | null
           location_lng?: number | null
           member_since?: string | null

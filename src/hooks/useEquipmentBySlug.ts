@@ -68,8 +68,18 @@ export const useEquipmentBySlug = (
         return null;
       }
 
-      // If the equipment is not publicly visible, ensure the user owns it or is an admin
-      if (row.user_id !== user?.id && !isAdmin) {
+      // Check if the owner is hidden — only admin/owner can view
+      const ownerIsHidden = await (async () => {
+        const { data: profile } = await (supabase as any)
+          .from('profiles')
+          .select('is_hidden')
+          .eq('id', row.user_id)
+          .single();
+        return profile?.is_hidden === true;
+      })();
+
+      // If the equipment is not publicly visible or owner is hidden, ensure the user owns it or is an admin
+      if ((ownerIsHidden || (row.status !== 'available' || !row.visible_on_map)) && row.user_id !== user?.id && !isAdmin) {
         return null;
       }
 
