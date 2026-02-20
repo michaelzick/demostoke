@@ -4,16 +4,25 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
 const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
 const GOOGLE_CSE_ID = Deno.env.get("GOOGLE_CSE_ID");
 const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 const MAPBOX_TOKEN = Deno.env.get("MAPBOX_TOKEN");
+
+const MIN_SEARCH_URLS = 20;
+const MAX_SEARCH_URLS_HARD_CAP = 80;
+const MAX_QUERY_ATTEMPTS = 20;
+const MAX_PARSE_PAGES = 40;
+const SCRAPE_CONCURRENCY = 5;
+const PARSE_CONCURRENCY = 4;
+const SOFT_RUNTIME_LIMIT_MS = 50_000;
 
 const ALLOWED_GEAR_CATEGORIES = [
   "snowboards",
@@ -184,6 +193,13 @@ const buildQueries = (searchScope: string): string[] => {
   return queries;
 };
 
+const getRequiredEnv = (name: string, value: string | undefined): string => {
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+  return value;
+};
+
 const jsonArrayFromText = (input: string): unknown[] => {
   const trimmed = input.trim();
   if (!trimmed) return [];
@@ -257,13 +273,17 @@ async function fetchDiscoveryConfig(serviceClient: any): Promise<DemoEventDiscov
   return data as DemoEventDiscoveryConfigRow;
 }
 
-async function verifyManualAdmin(req: Request): Promise<string> {
+async function verifyManualAdmin(
+  req: Request,
+  supabaseUrl: string,
+  supabaseAnonKey: string,
+): Promise<string> {
   const authorization = req.headers.get("Authorization");
   if (!authorization?.startsWith("Bearer ")) {
     throw new Error("Manual runs require Authorization bearer token");
   }
 
-  const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  const authClient = createClient(supabaseUrl, supabaseAnonKey, {
     global: { headers: { Authorization: authorization } },
   });
 
@@ -628,9 +648,15 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const serviceClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
   try {
+    const startedAt = Date.now();
+    const runtimeExceeded = () => Date.now() - startedAt > SOFT_RUNTIME_LIMIT_MS;
+
+    const supabaseUrl = getRequiredEnv("SUPABASE_URL", SUPABASE_URL);
+    const supabaseServiceRoleKey = getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY", SUPABASE_SERVICE_ROLE_KEY);
+    const supabaseAnonKey = getRequiredEnv("SUPABASE_ANON_KEY", SUPABASE_ANON_KEY);
+
+    const serviceClient = createClient(supabaseUrl, supabaseServiceRoleKey);
     const payload = (await req.json().catch(() => ({}))) as DiscoverPayload;
     const source: DiscoverySource = payload.source === "cron" ? "cron" : "manual";
 
@@ -639,7 +665,7 @@ serve(async (req) => {
     if (source === "cron") {
       await verifyCronSecret(req, config);
     } else {
-      await verifyManualAdmin(req);
+      await verifyManualAdmin(req, supabaseUrl, supabaseAnonKey);
     }
 
     const stats: DiscoveryStats = {
@@ -657,10 +683,18 @@ serve(async (req) => {
 
     const searchResults: SearchResult[] = [];
     const seenUrls = new Set<string>();
-    const maxSearchUrls = maxCandidates * 4;
+    const maxSearchUrls = Math.min(
+      Math.max(maxCandidates * 2, MIN_SEARCH_URLS),
+      MAX_SEARCH_URLS_HARD_CAP,
+    );
+    let queryAttempts = 0;
 
     for (const query of queries) {
       if (searchResults.length >= maxSearchUrls) break;
+      if (queryAttempts >= MAX_QUERY_ATTEMPTS) break;
+      if (runtimeExceeded()) break;
+
+      queryAttempts += 1;
       const results = await googleSearch(query);
 
       for (const result of results) {
@@ -675,15 +709,36 @@ serve(async (req) => {
     }
 
     const scrapedPages = (
-      await runWithConcurrency(searchResults, 5, scrapePage)
+      await runWithConcurrency(searchResults, SCRAPE_CONCURRENCY, scrapePage)
     ).filter((page): page is ScrapedPage => Boolean(page));
+
+    const maxPagesToParse = Math.min(
+      Math.max(maxCandidates, MIN_SEARCH_URLS),
+      MAX_PARSE_PAGES,
+      scrapedPages.length,
+    );
+    const pagesToParse = scrapedPages.slice(0, maxPagesToParse);
+    const parsedByPage = await runWithConcurrency(
+      pagesToParse,
+      PARSE_CONCURRENCY,
+      async (page) => {
+        try {
+          const parsedEvents = await parseEventsFromPage(page);
+          return { page, parsedEvents };
+        } catch (error) {
+          console.error("Failed to parse scraped page", { url: page.url, error });
+          return { page, parsedEvents: [] as ParsedEvent[] };
+        }
+      },
+    );
 
     const geocodeCache = new Map<string, { lat: number; lng: number } | null>();
     const eventsByExternalId = new Map<string, NormalizedEvent>();
 
-    for (const page of scrapedPages) {
-      const parsedEvents = await parseEventsFromPage(page);
-
+    for (const parsedPage of parsedByPage) {
+      if (runtimeExceeded()) break;
+      const page = parsedPage.page;
+      const parsedEvents = parsedPage.parsedEvents;
       for (const parsedEvent of parsedEvents) {
         const normalized = await normalizeParsedEvent(
           parsedEvent,
@@ -726,19 +781,25 @@ serve(async (req) => {
       .slice(0, maxCandidates);
 
     for (const event of normalizedEvents) {
+      if (runtimeExceeded()) break;
       await upsertCandidate(serviceClient, event, stats);
       stats.total_processed += 1;
     }
+
+    const runtime_limited = runtimeExceeded();
 
     return new Response(
       JSON.stringify({
         success: true,
         source,
         stats,
+        runtime_limited,
+        queries_executed: queryAttempts,
         scanned_urls: searchResults.length,
         scraped_pages: scrapedPages.length,
+        parsed_pages: pagesToParse.length,
         unique_events_considered: eventsByExternalId.size,
-        processed_events: normalizedEvents.length,
+        processed_events: stats.total_processed,
       }),
       {
         headers: {

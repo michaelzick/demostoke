@@ -52,6 +52,9 @@ export interface DemoEventDiscoveryRunResult {
   stats: DemoEventDiscoveryRunStats;
   scanned_urls: number;
   scraped_pages: number;
+  parsed_pages?: number;
+  queries_executed?: number;
+  runtime_limited?: boolean;
   unique_events_considered: number;
   processed_events: number;
   error?: string;

@@ -8,6 +8,9 @@ import type {
   DemoEventDiscoveryRunResult,
 } from "@/types/demo-event-candidate";
 
+const DISCOVER_DEMO_EVENTS_FUNCTION_URL =
+  "https://qtlhqsqanbxgfbcjigrl.supabase.co/functions/v1/discover-demo-events";
+
 export const useDemoEventCandidates = (statusFilter: DemoEventCandidateFilter = "all") => {
   const { toast } = useToast();
   const { user } = useAuth();
@@ -44,15 +47,34 @@ export const useDemoEventCandidates = (statusFilter: DemoEventCandidateFilter = 
 
   const runDiscoveryMutation = useMutation({
     mutationFn: async (): Promise<DemoEventDiscoveryRunResult> => {
-      const { data, error } = await supabase.functions.invoke("discover-demo-events", {
-        body: { source: "manual" },
-      });
-
-      if (error) {
-        throw new Error(error.message || "Failed to run demo event discovery");
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !sessionData.session?.access_token) {
+        throw new Error("You must be signed in as an admin to run discovery.");
       }
 
-      const result = data as DemoEventDiscoveryRunResult;
+      const response = await fetch(DISCOVER_DEMO_EVENTS_FUNCTION_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionData.session.access_token}`,
+        },
+        body: JSON.stringify({ source: "manual" }),
+      });
+
+      const payload = await response.json().catch(() => null) as
+        | DemoEventDiscoveryRunResult
+        | { error?: string }
+        | null;
+
+      if (!response.ok) {
+        const errorMessage =
+          (payload && typeof payload === "object" && "error" in payload && typeof payload.error === "string"
+            ? payload.error
+            : null) || `Discovery failed with status ${response.status}`;
+        throw new Error(errorMessage);
+      }
+
+      const result = payload as DemoEventDiscoveryRunResult | null;
       if (!result?.success) {
         throw new Error(result?.error || "Discovery run did not complete successfully");
       }
@@ -63,7 +85,7 @@ export const useDemoEventCandidates = (statusFilter: DemoEventCandidateFilter = 
       await queryClient.invalidateQueries({ queryKey: ["demo-event-candidates"] });
       toast({
         title: "Discovery complete",
-        description: `Processed ${result.stats.total_processed} events. New: ${result.stats.new_candidates}, Updated: ${result.stats.updated_pending}.`,
+        description: `Processed ${result.stats.total_processed} events. New: ${result.stats.new_candidates}, Updated: ${result.stats.updated_pending}.${result.runtime_limited ? " Runtime limit reached; run again to continue discovery." : ""}`,
       });
     },
     onError: (error) => {
