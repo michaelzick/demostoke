@@ -157,6 +157,7 @@ export type Database = {
           created_at: string
           created_by: string
           equipment_available: string | null
+          external_event_id: string | null
           event_date: string | null
           event_time: string | null
           gear_category: string
@@ -165,6 +166,7 @@ export type Database = {
           location: string | null
           location_lat: number | null
           location_lng: number | null
+          source_primary_url: string | null
           thumbnail_url: string | null
           title: string
           updated_at: string
@@ -174,6 +176,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           equipment_available?: string | null
+          external_event_id?: string | null
           event_date?: string | null
           event_time?: string | null
           gear_category: string
@@ -182,6 +185,7 @@ export type Database = {
           location?: string | null
           location_lat?: number | null
           location_lng?: number | null
+          source_primary_url?: string | null
           thumbnail_url?: string | null
           title: string
           updated_at?: string
@@ -191,6 +195,7 @@ export type Database = {
           created_at?: string
           created_by?: string
           equipment_available?: string | null
+          external_event_id?: string | null
           event_date?: string | null
           event_time?: string | null
           gear_category?: string
@@ -199,9 +204,159 @@ export type Database = {
           location?: string | null
           location_lat?: number | null
           location_lng?: number | null
+          source_primary_url?: string | null
           thumbnail_url?: string | null
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      demo_event_candidates: {
+        Row: {
+          admin_edited: boolean
+          admin_edited_at: string | null
+          admin_edited_by: string | null
+          approved_at: string | null
+          approved_by: string | null
+          approved_demo_event_id: string | null
+          company: string
+          created_at: string
+          equipment_available: string | null
+          event_date: string
+          event_time: string | null
+          external_event_id: string
+          first_seen_at: string
+          gear_category: string
+          id: string
+          last_seen_at: string
+          location: string
+          location_lat: number | null
+          location_lng: number | null
+          raw_payload: Json
+          rejected_at: string | null
+          rejected_by: string | null
+          rejection_reason: string | null
+          seen_count: number
+          source_domain: string | null
+          source_primary_url: string
+          source_snippet: string | null
+          source_urls: Json
+          status: string
+          thumbnail_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          admin_edited?: boolean
+          admin_edited_at?: string | null
+          admin_edited_by?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          approved_demo_event_id?: string | null
+          company: string
+          created_at?: string
+          equipment_available?: string | null
+          event_date: string
+          event_time?: string | null
+          external_event_id: string
+          first_seen_at?: string
+          gear_category: string
+          id?: string
+          last_seen_at?: string
+          location: string
+          location_lat?: number | null
+          location_lng?: number | null
+          raw_payload?: Json
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejection_reason?: string | null
+          seen_count?: number
+          source_domain?: string | null
+          source_primary_url: string
+          source_snippet?: string | null
+          source_urls?: Json
+          status?: string
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          admin_edited?: boolean
+          admin_edited_at?: string | null
+          admin_edited_by?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          approved_demo_event_id?: string | null
+          company?: string
+          created_at?: string
+          equipment_available?: string | null
+          event_date?: string
+          event_time?: string | null
+          external_event_id?: string
+          first_seen_at?: string
+          gear_category?: string
+          id?: string
+          last_seen_at?: string
+          location?: string
+          location_lat?: number | null
+          location_lng?: number | null
+          raw_payload?: Json
+          rejected_at?: string | null
+          rejected_by?: string | null
+          rejection_reason?: string | null
+          seen_count?: number
+          source_domain?: string | null
+          source_primary_url?: string
+          source_snippet?: string | null
+          source_urls?: Json
+          status?: string
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demo_event_candidates_approved_demo_event_id_fkey"
+            columns: ["approved_demo_event_id"]
+            isOneToOne: false
+            referencedRelation: "demo_calendar"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      demo_event_discovery_config: {
+        Row: {
+          created_at: string
+          cron_secret: string
+          enabled: boolean
+          id: boolean
+          last_cron_attempt_at: string | null
+          max_candidates_per_run: number
+          search_scope: string
+          updated_at: string
+          window_months: number
+        }
+        Insert: {
+          created_at?: string
+          cron_secret?: string
+          enabled?: boolean
+          id?: boolean
+          last_cron_attempt_at?: string | null
+          max_candidates_per_run?: number
+          search_scope?: string
+          updated_at?: string
+          window_months?: number
+        }
+        Update: {
+          created_at?: string
+          cron_secret?: string
+          enabled?: boolean
+          id?: boolean
+          last_cron_attempt_at?: string | null
+          max_candidates_per_run?: number
+          search_scope?: string
+          updated_at?: string
+          window_months?: number
         }
         Relationships: []
       }
@@ -1231,6 +1386,10 @@ export type Database = {
       }
     }
     Functions: {
+      approve_demo_event_candidate: {
+        Args: { p_candidate_id: string }
+        Returns: string
+      }
       cleanup_unused_downloaded_images: {
         Args: never
         Returns: {
@@ -1282,6 +1441,10 @@ export type Database = {
         Returns: undefined
       }
       migrate_figma_tokens_to_vault: { Args: never; Returns: undefined }
+      reject_demo_event_candidate: {
+        Args: { p_candidate_id: string; p_reason?: string }
+        Returns: undefined
+      }
       store_figma_token_encrypted: {
         Args: {
           p_access_token: string
@@ -1291,6 +1454,7 @@ export type Database = {
         }
         Returns: string
       }
+      trigger_demo_event_discovery_cron: { Args: never; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "user"

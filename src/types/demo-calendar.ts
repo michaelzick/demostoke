@@ -12,6 +12,8 @@ export interface DemoEvent {
   thumbnail_url: string | null;
   is_featured: boolean;
   company: string;
+  external_event_id: string | null;
+  source_primary_url: string | null;
   created_at: string;
   updated_at: string;
   created_by: string;
@@ -29,6 +31,8 @@ export interface DemoEventInput {
   thumbnail_url?: string | null;
   is_featured?: boolean;
   company: string;
+  external_event_id?: string | null;
+  source_primary_url?: string | null;
 }
 
 export interface CategoryFilter {

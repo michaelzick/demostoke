@@ -5,6 +5,7 @@ import ManualUserCreationSection from "@/components/admin/ManualUserCreationSect
 import UserDirectorySection from "@/components/admin/UserDirectorySection";
 import ImageUploadSection from "@/components/admin/ImageUploadSection";
 import VideoUploadSection from "@/components/admin/VideoUploadSection";
+import DemoEventsSection from "@/components/admin/DemoEventsSection";
 
 import GlobalSearchSettings from "@/components/admin/GlobalSearchSettings";
 import GeocodingRecoverySection from "@/components/admin/GeocodingRecoverySection";
@@ -58,6 +59,7 @@ const AdminPage = () => {
         <TabsContent value="content" className="space-y-6">
           <ImageUploadSection />
           <VideoUploadSection />
+          <DemoEventsSection />
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-6">
