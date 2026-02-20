@@ -5,12 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Copy, Check, ArrowUpDown, ChevronDown, ChevronUp, X } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Copy, Check, ArrowUpDown, ChevronDown, ChevronUp, Eye, EyeOff, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useUserVisibilityToggle } from "@/hooks/useUserVisibilityToggle";
 
 interface ProfileRow {
   id: string;
   name: string | null;
+  is_hidden: boolean;
 }
 
 const PAGE_SIZE = 25;
@@ -23,12 +26,14 @@ const UserDirectorySection = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pendingVisibilityIds, setPendingVisibilityIds] = useState<Set<string>>(new Set());
+  const { toggleUserVisibility } = useUserVisibilityToggle();
 
   useEffect(() => {
     const fetchProfiles = async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, name")
+        .select("id, name, is_hidden")
         .order("name", { ascending: true });
       if (!error && data) {
         setProfiles(data);
@@ -62,6 +67,35 @@ const UserDirectorySection = () => {
     await navigator.clipboard.writeText(id);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const updatePendingVisibilityState = (profileId: string, pending: boolean) => {
+    setPendingVisibilityIds((prev) => {
+      const next = new Set(prev);
+      if (pending) {
+        next.add(profileId);
+      } else {
+        next.delete(profileId);
+      }
+      return next;
+    });
+  };
+
+  const handleToggleVisibility = async (profile: ProfileRow) => {
+    updatePendingVisibilityState(profile.id, true);
+
+    try {
+      const newHiddenValue = await toggleUserVisibility(profile.id, profile.is_hidden);
+      setProfiles((prev) =>
+        prev.map((entry) =>
+          entry.id === profile.id ? { ...entry, is_hidden: newHiddenValue } : entry,
+        ),
+      );
+    } catch (error) {
+      console.error("Error updating user directory visibility:", error);
+    } finally {
+      updatePendingVisibilityState(profile.id, false);
+    }
   };
 
   return (
@@ -113,13 +147,14 @@ const UserDirectorySection = () => {
                           <ArrowUpDown className="h-3 w-3" />
                         </Button>
                       </TableHead>
+                      <TableHead>Visibility</TableHead>
                       <TableHead>UUID</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {paged.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={2} className="text-center text-muted-foreground">
+                        <TableCell colSpan={3} className="text-center text-muted-foreground">
                           No users found
                         </TableCell>
                       </TableRow>
@@ -127,6 +162,24 @@ const UserDirectorySection = () => {
                       paged.map((p) => (
                         <TableRow key={p.id}>
                           <TableCell className="font-medium">{p.name ?? "—"}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <div className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                                {p.is_hidden ? (
+                                  <EyeOff className="h-3.5 w-3.5 text-destructive" />
+                                ) : (
+                                  <Eye className="h-3.5 w-3.5" />
+                                )}
+                                <span>{p.is_hidden ? "Hidden" : "Visible"}</span>
+                              </div>
+                              <Switch
+                                checked={!p.is_hidden}
+                                onCheckedChange={() => handleToggleVisibility(p)}
+                                disabled={pendingVisibilityIds.has(p.id)}
+                                aria-label={`Toggle visibility for ${p.name ?? p.id}`}
+                              />
+                            </div>
+                          </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
                               <code className="text-xs font-mono">{p.id}</code>

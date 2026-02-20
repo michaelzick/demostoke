@@ -6,6 +6,7 @@ import { useUserProfileBySlug } from "@/hooks/useUserProfileBySlug";
 import { useUserStats } from "@/hooks/useUserStats";
 import { useUserEquipment } from "@/hooks/useUserEquipment";
 import { useProfileQuery } from "@/hooks/useProfileQuery";
+import { useUserVisibilityToggle } from "@/hooks/useUserVisibilityToggle";
 import { useAuth } from "@/helpers";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,9 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Search, Settings, X, EyeOff, Eye } from "lucide-react";
 import { useIsAdmin } from "@/hooks/useUserRole";
-import { supabase } from "@/integrations/supabase/client";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import CategorySelect from "@/components/CategorySelect";
 import { UserProfileHeader } from "@/components/profile/UserProfileHeader";
 import { UserProfileSidebar } from "@/components/profile/UserProfileSidebar";
@@ -45,7 +43,7 @@ const RealUserProfilePage = () => {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { isAdmin } = useIsAdmin();
-  const queryClient = useQueryClient();
+  const { toggleUserVisibility } = useUserVisibilityToggle();
   const availableEquipmentRef = useRef<HTMLHeadingElement | null>(null);
 
   const handleAvailableClick = () => {
@@ -147,28 +145,14 @@ const RealUserProfilePage = () => {
 
   const handleToggleVisibility = async () => {
     if (!profileId) return;
+
     const currentlyHidden = (dbProfile as any)?.is_hidden === true;
-    const newValue = !currentlyHidden;
-    
-    const { error } = await (supabase as any)
-      .from('profiles')
-      .update({ is_hidden: newValue })
-      .eq('id', profileId);
 
-    if (error) {
-      console.error('Error updating visibility:', error);
-      toast.error('Failed to update user visibility');
-      return;
+    try {
+      await toggleUserVisibility(profileId, currentlyHidden);
+    } catch {
+      // Error toast is handled in the shared hook.
     }
-
-    toast.success(newValue ? 'User hidden from site' : 'User is now visible on site');
-    // Invalidate all relevant caches
-    queryClient.invalidateQueries({ queryKey: ['userProfile'] });
-    queryClient.invalidateQueries({ queryKey: ['userLocations'] });
-    queryClient.invalidateQueries({ queryKey: ['featuredEquipment'] });
-    queryClient.invalidateQueries({ queryKey: ['recentEquipment'] });
-    queryClient.invalidateQueries({ queryKey: ['trendingEquipment'] });
-    queryClient.invalidateQueries({ queryKey: ['equipment'] });
   };
 
 
