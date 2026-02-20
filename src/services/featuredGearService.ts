@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { getHiddenUserIds } from "./equipment/hiddenUserFilter";
 
 export const featuredGearService = {
   // Get count of currently featured equipment
@@ -81,8 +82,11 @@ export const featuredGearService = {
         return [];
       }
 
+      // Filter out hidden users
+      const hiddenUserIds = await getHiddenUserIds();
+
       // Transform the data to match the Equipment interface
-      return data?.map(equipment => {
+      return data?.filter(equipment => !hiddenUserIds.has(equipment.user_id)).map(equipment => {
         const images = equipment.equipment_images
           ?.sort((a, b) => {
             if (a.is_primary && !b.is_primary) return -1;

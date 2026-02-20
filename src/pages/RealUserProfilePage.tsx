@@ -10,7 +10,12 @@ import { useAuth } from "@/helpers";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Settings, X } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Search, Settings, X, EyeOff, Eye } from "lucide-react";
+import { useIsAdmin } from "@/hooks/useUserRole";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import CategorySelect from "@/components/CategorySelect";
 import { UserProfileHeader } from "@/components/profile/UserProfileHeader";
 import { UserProfileSidebar } from "@/components/profile/UserProfileSidebar";
@@ -39,6 +44,8 @@ const RealUserProfilePage = () => {
   const { slug } = useParams();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const { isAdmin } = useIsAdmin();
+  const queryClient = useQueryClient();
   const availableEquipmentRef = useRef<HTMLHeadingElement | null>(null);
 
   const handleAvailableClick = () => {
@@ -138,8 +145,33 @@ const RealUserProfilePage = () => {
     setIsEditMode(!isEditMode);
   };
 
+  const handleToggleVisibility = async () => {
+    if (!profileId) return;
+    const currentlyHidden = (dbProfile as any)?.is_hidden === true;
+    const newValue = !currentlyHidden;
+    
+    const { error } = await (supabase as any)
+      .from('profiles')
+      .update({ is_hidden: newValue })
+      .eq('id', profileId);
 
-  // Use the correct profile data - prioritize own profile data for current user
+    if (error) {
+      console.error('Error updating visibility:', error);
+      toast.error('Failed to update user visibility');
+      return;
+    }
+
+    toast.success(newValue ? 'User hidden from site' : 'User is now visible on site');
+    // Invalidate all relevant caches
+    queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+    queryClient.invalidateQueries({ queryKey: ['userLocations'] });
+    queryClient.invalidateQueries({ queryKey: ['featuredEquipment'] });
+    queryClient.invalidateQueries({ queryKey: ['recentEquipment'] });
+    queryClient.invalidateQueries({ queryKey: ['trendingEquipment'] });
+    queryClient.invalidateQueries({ queryKey: ['equipment'] });
+  };
+
+
   let profile: UserProfile | undefined;
   if (isOwnProfile && ownProfileData) {
     console.log('Using own profile data, displayRole:', ownProfileData.displayRole);
@@ -299,8 +331,39 @@ const RealUserProfilePage = () => {
     website: profile.website || undefined,
   };
 
+  const isUserHidden = (dbProfile as any)?.is_hidden === true;
+
   return (
     <div className="min-h-screen">
+      {/* Admin visibility toggle banner */}
+      {isAdmin && !isOwnProfile && profileId && (
+        <div className={`border-b px-4 py-3 flex items-center justify-between ${isUserHidden ? 'bg-destructive/10 border-destructive/20' : 'bg-muted border-border'}`}>
+          <div className="container mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {isUserHidden ? (
+                <EyeOff className="h-4 w-4 text-destructive" />
+              ) : (
+                <Eye className="h-4 w-4 text-muted-foreground" />
+              )}
+              <span className="text-sm font-medium">
+                {isUserHidden
+                  ? 'This user and their gear are hidden from the site'
+                  : 'This user and their gear are visible on the site'}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">
+                {isUserHidden ? 'Hidden' : 'Visible'}
+              </span>
+              <Switch
+                checked={!isUserHidden}
+                onCheckedChange={handleToggleVisibility}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <UserProfileHeader
         profile={profile}
         stats={stats}

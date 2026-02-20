@@ -3,6 +3,7 @@ import { Equipment } from "@/types";
 import { convertSupabaseToEquipment } from "./equipmentConverter";
 import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 import { deduplicateImageUrls } from "@/utils/imageDeduplication";
+import { getHiddenUserIds, filterHiddenUsers } from "./hiddenUserFilter";
 
 export const fetchEquipmentFromSupabase = async (): Promise<Equipment[]> => {
 
@@ -29,10 +30,13 @@ export const fetchEquipmentFromSupabase = async (): Promise<Equipment[]> => {
     return [];
   }
 
+  // Filter out equipment from hidden users
+  const hiddenUserIds = await getHiddenUserIds();
+  const visibleData = filterHiddenUsers(data, hiddenUserIds);
 
   // Convert each item and fetch additional images
   const convertedEquipment = await Promise.all(
-    data.map(async (item) => {
+    visibleData.map(async (item) => {
       // Fetch images from equipment_images table
       const additionalImages = await fetchEquipmentImages(item.id);
 

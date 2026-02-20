@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { unslugify } from "@/utils/slugify";
+import { useIsAdmin } from "@/hooks/useUserRole";
 
 interface UserProfile {
   id: string;
@@ -15,11 +16,19 @@ interface UserProfile {
   created_at: string;
   website: string | null;
   displayRole: string | null;
+  hero_image_url?: string | null;
+  show_phone?: boolean | null;
+  show_address?: boolean | null;
+  show_website?: boolean | null;
+  show_location?: boolean | null;
+  privacy_acknowledgment?: boolean | null;
+  is_hidden?: boolean;
 }
 
 export const useUserProfileBySlug = (slug: string) => {
+  const { isAdmin } = useIsAdmin();
   return useQuery({
-    queryKey: ['userProfile', slug],
+    queryKey: ['userProfile', slug, isAdmin],
     queryFn: async (): Promise<UserProfile | null> => {
       if (!slug) {
         throw new Error('Slug is required');
@@ -28,7 +37,8 @@ export const useUserProfileBySlug = (slug: string) => {
       const name = unslugify(slug);
       const pattern = `%${name.split(/\s+/).join('%')}%`;
 
-      const { data, error } = await supabase
+      // Try public_profiles first
+      let { data, error } = await supabase
         .from('public_profiles')
         .select('*')
         .ilike('name', pattern)
@@ -38,6 +48,24 @@ export const useUserProfileBySlug = (slug: string) => {
       if (error) {
         console.error('Error fetching user profile by slug:', error);
         throw error;
+      }
+
+      // If not found and viewer is admin, try the full profiles table (user may be hidden)
+      let isHidden = false;
+      if (!data && isAdmin) {
+        const { data: fullProfile, error: fullError } = await (supabase as any)
+          .from('profiles')
+          .select('*')
+          .ilike('name', pattern)
+          .limit(1)
+          .maybeSingle();
+
+        if (fullError) {
+          console.error('Error fetching hidden profile:', fullError);
+        } else if (fullProfile) {
+          data = fullProfile;
+          isHidden = fullProfile.is_hidden === true;
+        }
       }
 
       if (!data) {
@@ -71,8 +99,9 @@ export const useUserProfileBySlug = (slug: string) => {
       return {
         ...data,
         display_role: undefined,
-        displayRole: displayRole || 'retail-store'
-      } as UserProfile & { displayRole: string };
+        displayRole: displayRole || 'retail-store',
+        is_hidden: isHidden,
+      } as UserProfile & { displayRole: string; is_hidden: boolean };
     },
     enabled: !!slug,
   });
