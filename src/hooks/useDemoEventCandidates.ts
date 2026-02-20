@@ -85,7 +85,7 @@ export const useDemoEventCandidates = (statusFilter: DemoEventCandidateFilter = 
       await queryClient.invalidateQueries({ queryKey: ["demo-event-candidates"] });
       toast({
         title: "Discovery complete",
-        description: `Processed ${result.stats.total_processed} events. New: ${result.stats.new_candidates}, Updated: ${result.stats.updated_pending}.${result.runtime_limited ? " Runtime limit reached; run again to continue discovery." : ""}`,
+        description: `Processed ${result.stats.total_processed}. New ${result.stats.new_candidates}, updated ${result.stats.updated_pending}, missing required ${result.stats.skipped_missing_required}, out of window ${result.stats.skipped_out_of_window}.${result.runtime_limited ? " Runtime limit reached; run again to continue discovery." : ""}`,
       });
     },
     onError: (error) => {

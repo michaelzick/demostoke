@@ -16,13 +16,17 @@ const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 const MAPBOX_TOKEN = Deno.env.get("MAPBOX_TOKEN");
 
-const MIN_SEARCH_URLS = 20;
-const MAX_SEARCH_URLS_HARD_CAP = 80;
-const MAX_QUERY_ATTEMPTS = 20;
-const MAX_PARSE_PAGES = 40;
-const SCRAPE_CONCURRENCY = 5;
-const PARSE_CONCURRENCY = 4;
-const SOFT_RUNTIME_LIMIT_MS = 50_000;
+const MIN_SEARCH_URLS = 8;
+const MAX_SEARCH_URLS_HARD_CAP = 24;
+const MAX_QUERY_ATTEMPTS = 6;
+const MAX_PARSE_PAGES = 10;
+const SCRAPE_CONCURRENCY = 4;
+const PARSE_CONCURRENCY = 2;
+const SOFT_RUNTIME_LIMIT_MS = 100_000;
+const GOOGLE_REQUEST_TIMEOUT_MS = 8_000;
+const SCRAPE_REQUEST_TIMEOUT_MS = 12_000;
+const OPENAI_REQUEST_TIMEOUT_MS = 12_000;
+const MAPBOX_REQUEST_TIMEOUT_MS = 7_000;
 
 const ALLOWED_GEAR_CATEGORIES = [
   "snowboards",
@@ -115,9 +119,6 @@ const BLOCKED_DOMAINS = [
   "google.com",
   "bing.com",
   "yahoo.com",
-  "eventbrite.com",
-  "meetup.com",
-  "ticketmaster.com",
 ];
 
 const CATEGORY_SEARCH_TERMS: Record<GearCategory, string[]> = {
@@ -125,6 +126,13 @@ const CATEGORY_SEARCH_TERMS: Record<GearCategory, string[]> = {
   snowboards: ["snowboard demo day", "snowboard test ride", "snowboard demo event"],
   surfboards: ["surfboard demo day", "surfboard test ride", "surf demo event"],
   "mountain-bikes": ["mountain bike demo day", "mtb demo ride", "bike park demo event"],
+};
+
+const GEAR_CATEGORY_KEYWORDS: Record<GearCategory, string[]> = {
+  skis: ["ski", "skis", "skiing", "alpine", "nordic", "powder"],
+  snowboards: ["snowboard", "snowboards", "snowboarding"],
+  surfboards: ["surf", "surfboard", "surfboards", "wave", "longboard", "shortboard"],
+  "mountain-bikes": ["mountain bike", "mountain bikes", "mtb", "bike park", "trail bike", "enduro", "downhill"],
 };
 
 const isValidGearCategory = (value: string): value is GearCategory =>
@@ -186,11 +194,56 @@ const buildQueries = (searchScope: string): string[] => {
     for (const term of terms) {
       queries.push(`${term} ${scopeSuffix} ${currentYear}`);
       queries.push(`${term} ${scopeSuffix} ${nextYear}`);
+      queries.push(`${term} ${scopeSuffix} upcoming`);
+      queries.push(`${term} ${scopeSuffix} calendar`);
       queries.push(`${term} hosted by brand shop ${gearCategory} ${scopeSuffix}`);
+      queries.push(`${term} inurl:events ${scopeSuffix}`);
     }
   }
 
   return queries;
+};
+
+const inferGearCategoryFromText = (value: string): GearCategory | null => {
+  const text = normalizeToken(value);
+  if (!text) return null;
+
+  for (const [category, keywords] of Object.entries(GEAR_CATEGORY_KEYWORDS) as [GearCategory, string[]][]) {
+    if (keywords.some((keyword) => text.includes(normalizeToken(keyword)))) {
+      return category;
+    }
+  }
+
+  return null;
+};
+
+const inferCompanyFromSource = (title: string, sourceDomain: string | null): string | null => {
+  const normalizedTitle = normalizeWhitespace(title);
+  if (normalizedTitle) {
+    const titleParts = normalizedTitle
+      .split(/\s[\-|–|—|:|•]\s| by /i)
+      .map((part) => normalizeWhitespace(part))
+      .filter(Boolean);
+
+    const candidatePart = titleParts.find((part) => {
+      const normalized = normalizeToken(part);
+      return !["demo", "event", "calendar", "upcoming"].every((term) => normalized.includes(term));
+    });
+
+    if (candidatePart && candidatePart.length >= 2) {
+      return candidatePart.slice(0, 80);
+    }
+  }
+
+  if (!sourceDomain) return null;
+  const domainToken = sourceDomain.split(".")[0]?.replace(/[-_]+/g, " ").trim();
+  if (!domainToken) return null;
+
+  return domainToken
+    .split(" ")
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 };
 
 const getRequiredEnv = (name: string, value: string | undefined): string => {
@@ -198,6 +251,24 @@ const getRequiredEnv = (name: string, value: string | undefined): string => {
     throw new Error(`Missing required environment variable: ${name}`);
   }
   return value;
+};
+
+const fetchWithTimeout = async (
+  input: string | URL | Request,
+  init: RequestInit = {},
+  timeoutMs: number,
+): Promise<Response> => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(input, {
+      ...init,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
 };
 
 const jsonArrayFromText = (input: string): unknown[] => {
@@ -315,26 +386,31 @@ async function googleSearch(query: string): Promise<SearchResult[]> {
     throw new Error("Missing GOOGLE_API_KEY or GOOGLE_CSE_ID");
   }
 
-  const url = new URL("https://www.googleapis.com/customsearch/v1");
-  url.searchParams.set("key", GOOGLE_API_KEY);
-  url.searchParams.set("cx", GOOGLE_CSE_ID);
-  url.searchParams.set("q", query);
-  url.searchParams.set("num", "10");
+  try {
+    const url = new URL("https://www.googleapis.com/customsearch/v1");
+    url.searchParams.set("key", GOOGLE_API_KEY);
+    url.searchParams.set("cx", GOOGLE_CSE_ID);
+    url.searchParams.set("q", query);
+    url.searchParams.set("num", "10");
 
-  const response = await fetch(url.toString());
-  if (!response.ok) {
-    const text = await response.text();
-    console.error("Google search failed", { query, text });
+    const response = await fetchWithTimeout(url.toString(), {}, GOOGLE_REQUEST_TIMEOUT_MS);
+    if (!response.ok) {
+      const text = await response.text();
+      console.error("Google search failed", { query, text });
+      return [];
+    }
+
+    const data = await response.json();
+    return (data.items || []).map((item: any) => ({
+      title: item.title,
+      link: item.link,
+      snippet: item.snippet,
+      displayLink: item.displayLink,
+    }));
+  } catch (error) {
+    console.error("Google search exception", { query, error });
     return [];
   }
-
-  const data = await response.json();
-  return (data.items || []).map((item: any) => ({
-    title: item.title,
-    link: item.link,
-    snippet: item.snippet,
-    displayLink: item.displayLink,
-  }));
 }
 
 async function scrapePage(result: SearchResult): Promise<ScrapedPage | null> {
@@ -343,7 +419,7 @@ async function scrapePage(result: SearchResult): Promise<ScrapedPage | null> {
   }
 
   try {
-    const response = await fetch("https://api.firecrawl.dev/v1/scrape", {
+    const response = await fetchWithTimeout("https://api.firecrawl.dev/v1/scrape", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${FIRECRAWL_API_KEY}`,
@@ -353,9 +429,9 @@ async function scrapePage(result: SearchResult): Promise<ScrapedPage | null> {
         url: result.link,
         formats: ["markdown", "html"],
         onlyMainContent: true,
-        waitFor: 2000,
+        waitFor: 1000,
       }),
-    });
+    }, SCRAPE_REQUEST_TIMEOUT_MS);
 
     if (!response.ok) {
       const text = await response.text();
@@ -388,14 +464,14 @@ async function parseEventsFromPage(page: ScrapedPage): Promise<ParsedEvent[]> {
     throw new Error("Missing OPENAI_API_KEY");
   }
 
-  const content = (page.markdown || page.html || "").slice(0, 18000);
+  const content = (page.markdown || page.html || "").slice(0, 9000);
   if (!content) return [];
 
   const today = new Date().toISOString().slice(0, 10);
 
   const prompt = `Extract upcoming US demo events for skis, snowboards, surfboards, and mountain bikes from this page.\nReturn ONLY a JSON array.\nEach item must include:\n- title (string)\n- company (string)\n- gear_category (one of: snowboards, skis, surfboards, mountain-bikes)\n- event_date (YYYY-MM-DD)\n- event_time (HH:MM 24h or null)\n- location (string)\n- equipment_available (string or null)\nRules:\n- Include only real upcoming events with explicit dates.\n- Skip generic rentals with no event date.\n- Normalize gear_category exactly to allowed values.\n- If no qualifying events exist, return []\nCurrent date: ${today}.`;
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  const response = await fetchWithTimeout("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${OPENAI_API_KEY}`,
@@ -414,9 +490,9 @@ async function parseEventsFromPage(page: ScrapedPage): Promise<ParsedEvent[]> {
           content: `${prompt}\n\nSource URL: ${page.url}\n\nPage Content:\n${content}`,
         },
       ],
-      max_completion_tokens: 4000,
+      max_completion_tokens: 1200,
     }),
-  });
+  }, OPENAI_REQUEST_TIMEOUT_MS);
 
   if (!response.ok) {
     const text = await response.text();
@@ -441,7 +517,7 @@ async function geocodeLocation(
 
   try {
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(location)}.json?access_token=${MAPBOX_TOKEN}&limit=1&country=us`;
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url, {}, MAPBOX_REQUEST_TIMEOUT_MS);
     if (!response.ok) {
       cache.set(key, null);
       return null;
@@ -472,8 +548,14 @@ async function normalizeParsedEvent(
   geocodeCache: Map<string, { lat: number; lng: number } | null>,
 ): Promise<{ event: NormalizedEvent | null; missingRequired: boolean; outOfWindow: boolean }> {
   const title = normalizeWhitespace(parsedEvent.title || "");
-  const company = normalizeWhitespace(parsedEvent.company || "");
-  const gearCategory = normalizeWhitespace(parsedEvent.gear_category || "").toLowerCase();
+  const sourceDomain = extractDomain(page.url);
+  const company = normalizeWhitespace(parsedEvent.company || "") || inferCompanyFromSource(title, sourceDomain) || "";
+  const parsedGearCategory = normalizeWhitespace(parsedEvent.gear_category || "").toLowerCase();
+  const inferredGearCategory = inferGearCategoryFromText(
+    `${title} ${company} ${parsedEvent.equipment_available || ""} ${page.title || ""} ${page.snippet || ""} ${page.url}`,
+  );
+  const gearCategory =
+    (isValidGearCategory(parsedGearCategory) ? parsedGearCategory : inferredGearCategory) || "";
   const location = normalizeWhitespace(parsedEvent.location || "");
   const eventDateIso = toIsoDate(parsedEvent.event_date || null);
 
@@ -488,7 +570,6 @@ async function normalizeParsedEvent(
 
   const eventTime = toIsoTime(parsedEvent.event_time || null);
   const equipmentAvailable = normalizeWhitespace(parsedEvent.equipment_available || "") || null;
-  const sourceDomain = extractDomain(page.url);
   const normalizedKey = [
     gearCategory,
     normalizeToken(company),
@@ -683,9 +764,9 @@ serve(async (req) => {
 
     const searchResults: SearchResult[] = [];
     const seenUrls = new Set<string>();
-    const maxSearchUrls = Math.min(
-      Math.max(maxCandidates * 2, MIN_SEARCH_URLS),
-      MAX_SEARCH_URLS_HARD_CAP,
+    const maxSearchUrls = Math.max(
+      MIN_SEARCH_URLS,
+      Math.min(maxCandidates, MAX_SEARCH_URLS_HARD_CAP),
     );
     let queryAttempts = 0;
 
@@ -708,13 +789,20 @@ serve(async (req) => {
       }
     }
 
+    const desiredPagesToParse = Math.max(4, Math.min(Math.ceil(maxCandidates / 4), MAX_PARSE_PAGES));
+    const maxUrlsToScrape = Math.min(
+      searchResults.length,
+      Math.max(desiredPagesToParse * 2, MIN_SEARCH_URLS),
+      16,
+    );
+    const searchResultsToScrape = searchResults.slice(0, maxUrlsToScrape);
+
     const scrapedPages = (
-      await runWithConcurrency(searchResults, SCRAPE_CONCURRENCY, scrapePage)
+      await runWithConcurrency(searchResultsToScrape, SCRAPE_CONCURRENCY, scrapePage)
     ).filter((page): page is ScrapedPage => Boolean(page));
 
     const maxPagesToParse = Math.min(
-      Math.max(maxCandidates, MIN_SEARCH_URLS),
-      MAX_PARSE_PAGES,
+      desiredPagesToParse,
       scrapedPages.length,
     );
     const pagesToParse = scrapedPages.slice(0, maxPagesToParse);
