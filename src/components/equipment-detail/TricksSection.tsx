@@ -72,6 +72,44 @@ export function TricksSection({ equipmentId, category, subcategory, equipmentNam
     }
   };
 
+  const categoryActivity = getCategoryActivityName(category);
+
+  // Add HowTo schema for SEO/AI discovery
+  useEffect(() => {
+    if (tricks.length === 0) return;
+
+    const scriptId = `tricks-schema-${equipmentId}`;
+    let script = document.getElementById(scriptId) as HTMLScriptElement | null;
+
+    if (!script) {
+      script = document.createElement('script');
+      script.id = scriptId;
+      script.type = 'application/ld+json';
+      document.head.appendChild(script);
+    }
+
+    const howToSchema = {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": `How to perform ${categoryActivity} tricks on ${equipmentName}`,
+      "description": `Step-by-step guides for ${categoryActivity} tricks using ${equipmentName}.`,
+      "step": tricks.map((trick, index) => ({
+        "@type": "HowToStep",
+        "position": index + 1,
+        "name": trick.name,
+        "text": trick.description,
+        "url": window.location.href
+      }))
+    };
+
+    script.textContent = JSON.stringify(howToSchema);
+
+    return () => {
+      const existingScript = document.getElementById(scriptId);
+      if (existingScript) existingScript.remove();
+    };
+  }, [tricks, equipmentId, equipmentName, categoryActivity]);
+
   const handleTrickClick = (trick: Trick) => {
     // Track trick click
     trackEvent(`Trick - ${trick.name} - ${equipmentName}`);
@@ -79,8 +117,6 @@ export function TricksSection({ equipmentId, category, subcategory, equipmentNam
     setSelectedTrick(trick);
     setShowTutorialModal(true);
   };
-
-  const categoryActivity = getCategoryActivityName(category);
 
   return (
     <>

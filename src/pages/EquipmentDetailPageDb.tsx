@@ -21,7 +21,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { getCategoryDisplayName } from "@/helpers";
+import { getCategoryDisplayName, getCategoryActivityName } from "@/helpers";
 import { Equipment } from "@/types";
 import React, { useState } from "react";
 import { useAuth } from "@/contexts/auth";
@@ -208,7 +208,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
       )}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Main Content */}
-        <div className="lg:col-span-2 space-y-8">
+        <article className="lg:col-span-2 space-y-8">
           {/* Image Gallery */}
           <div className="overflow-hidden rounded-lg">
             {hasImages ? (
@@ -223,7 +223,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
                         >
                           <img
                             src={imageUrl}
-                            alt={`${equipment.name} - Image ${index + 1}`}
+                            alt={`${resolvedGearName} - ${getCategoryActivityName(equipment.category)} Gear Image ${index + 1}`}
                             loading="lazy"
                             className="w-full h-96 object-cover"
                           />
@@ -241,7 +241,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
                 >
                   <img
                     src={images[0]}
-                    alt={equipment.name}
+                    alt={`${resolvedGearName} - ${getCategoryActivityName(equipment.category)} Gear`}
                     loading="lazy"
                     className="w-full h-96 object-cover"
                   />
@@ -254,13 +254,12 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
             )}
           </div>
           {/* Equipment Info */}
-          <div>
+          <section aria-labelledby="gear-title">
             <div
-              className={`mb-4 ${
-                canEdit
-                  ? "flex flex-col md:flex-row md:justify-between md:items-start"
-                  : "flex justify-between items-start"
-              }`}
+              className={`mb-4 ${canEdit
+                ? "flex flex-col md:flex-row md:justify-between md:items-start"
+                : "flex justify-between items-start"
+                }`}
             >
               <div className="flex-1">
                 <EquipmentHeader
@@ -322,42 +321,48 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
             </p>
             <div className="text-lg mb-6 whitespace-pre-wrap">{equipment.description}</div>
             <EquipmentSpecs specifications={equipment.specifications} />
-            
+
             {/* Tricks & Tutorials Section */}
-            <TricksSection
-              equipmentId={equipment.id}
-              category={equipment.category}
-              subcategory={equipment.subcategory}
-              equipmentName={equipment.name}
-              specifications={equipment.specifications}
-            />
-          </div>
-          {/* Tabs for Additional Information */}
-          <Tabs defaultValue="location">
-            <TabsList className="w-full grid grid-cols-3">
-              <TabsTrigger value="location">Location</TabsTrigger>
-              <TabsTrigger value="reviews">Reviews</TabsTrigger>
-              <TabsTrigger value="policy">Policies</TabsTrigger>
-            </TabsList>
-            <TabsContent value="location">
-              <LocationTab equipment={equipment} />
-            </TabsContent>
-            <TabsContent value="reviews">
-              <ReviewsTab
+            <section aria-label="Tricks and Tutorials">
+              <TricksSection
                 equipmentId={equipment.id}
-                rating={equipment.rating}
-                reviewCount={equipment.review_count}
+                category={equipment.category}
+                subcategory={equipment.subcategory}
+                equipmentName={equipment.name}
+                specifications={equipment.specifications}
               />
-            </TabsContent>
-            <TabsContent value="policy">
-              <PolicyTab />
-            </TabsContent>
-          </Tabs>
+            </section>
+          </section>
+          {/* Tabs for Additional Information */}
+          <section aria-label="Detailed Information">
+            <Tabs defaultValue="location">
+              <TabsList className="w-full grid grid-cols-3">
+                <TabsTrigger value="location">Location</TabsTrigger>
+                <TabsTrigger value="reviews">Reviews</TabsTrigger>
+                <TabsTrigger value="policy">Policies</TabsTrigger>
+              </TabsList>
+              <TabsContent value="location">
+                <LocationTab equipment={equipment} />
+              </TabsContent>
+              <TabsContent value="reviews">
+                <ReviewsTab
+                  equipmentId={equipment.id}
+                  rating={equipment.rating}
+                  reviewCount={equipment.review_count}
+                />
+              </TabsContent>
+              <TabsContent value="policy">
+                <PolicyTab />
+              </TabsContent>
+            </Tabs>
+          </section>
           {/* Owner Info */}
-          <Card>
-            <OwnerCard owner={equipment.owner} trackingData={trackingData} />
-          </Card>
-        </div>
+          <section aria-label="Owner Information">
+            <Card>
+              <OwnerCard owner={equipment.owner} trackingData={trackingData} />
+            </Card>
+          </section>
+        </article>
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Booking Card */}

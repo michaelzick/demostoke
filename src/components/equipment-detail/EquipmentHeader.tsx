@@ -41,7 +41,7 @@ const EquipmentHeader = ({
     >
       <div className="flex-1">
         <div className="flex items-center gap-4 mb-2">
-          <h1 className="text-3xl font-bold">{resolvedGearName}</h1>
+          <h1 id="gear-title" className="text-3xl font-bold">{resolvedGearName}</h1>
         </div>
         {lastVerifiedDate && (
           <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">

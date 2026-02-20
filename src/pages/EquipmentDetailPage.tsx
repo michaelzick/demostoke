@@ -76,13 +76,13 @@ const EquipmentDetailPage = () => {
 
   // Track view when equipment is loaded
   useEffect(() => {
-    console.log('🎯 Equipment detail view effect triggered:', { 
-      hasEquipment: !!equipment, 
-      equipmentId: equipment?.id, 
-      hasUser: !!user?.id, 
-      userId: user?.id 
+    console.log('🎯 Equipment detail view effect triggered:', {
+      hasEquipment: !!equipment,
+      equipmentId: equipment?.id,
+      hasUser: !!user?.id,
+      userId: user?.id
     });
-    
+
     if (equipment) {
       trackEquipmentView(equipment.id, user?.id, queryClient);
     }
@@ -158,9 +158,9 @@ const EquipmentDetailPage = () => {
   const equipmentName = currentEquipment?.name;
   const gearDisplayName = currentEquipment
     ? buildGearDisplayName(
-        currentEquipment.name,
-        currentEquipment.specifications?.size,
-      )
+      currentEquipment.name,
+      currentEquipment.specifications?.size,
+    )
     : "";
   const categoryDisplay = currentEquipment ? getCategoryDisplayName(currentEquipment.category) : '';
   const lastVerifiedDate = currentEquipment
@@ -168,17 +168,17 @@ const EquipmentDetailPage = () => {
     : toISODate();
   const canonicalPath = currentEquipment
     ? buildGearPath({
-        id: currentEquipment.id,
-        name: currentEquipment.name,
-        size: currentEquipment.specifications?.size,
-      })
+      id: currentEquipment.id,
+      name: currentEquipment.name,
+      size: currentEquipment.specifications?.size,
+    })
     : undefined;
   const canonicalUrl = currentEquipment
     ? buildGearCanonicalUrl({
-        id: currentEquipment.id,
-        name: currentEquipment.name,
-        size: currentEquipment.specifications?.size,
-      })
+      id: currentEquipment.id,
+      name: currentEquipment.name,
+      size: currentEquipment.specifications?.size,
+    })
     : undefined;
 
   useEffect(() => {
@@ -192,6 +192,7 @@ const EquipmentDetailPage = () => {
       navigate(nextPath, { replace: true });
     }
   }, [canonicalPath, isCanonicalGearRoute, location.pathname, location.search, navigate]);
+
   const offers = useMemo(() => {
     if (!currentEquipment || !canonicalUrl) {
       return [];
@@ -254,35 +255,68 @@ const EquipmentDetailPage = () => {
     const offerSchema =
       offers.length > 1
         ? {
-            "@type": "AggregateOffer",
-            priceCurrency: "USD",
-            lowPrice: String(Math.min(...offerPrices)),
-            highPrice: String(Math.max(...offerPrices)),
-            offerCount: String(offers.length),
-            offers,
-          }
+          "@type": "AggregateOffer",
+          priceCurrency: "USD",
+          lowPrice: String(Math.min(...offerPrices)),
+          highPrice: String(Math.max(...offerPrices)),
+          offerCount: String(offers.length),
+          offers,
+        }
         : offers[0];
 
-    return {
+    const breadcrumbSchema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": window.location.origin
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": categoryDisplay || currentEquipment.category,
+          "item": `${window.location.origin}/explore?category=${currentEquipment.category}`
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": gearDisplayName || currentEquipment.name,
+          "item": canonicalUrl
+        }
+      ]
+    };
+
+    const gearProductSchema = {
       "@context": "https://schema.org",
       "@type": "Product",
       name: gearDisplayName || currentEquipment.name,
-      description: `${gearDisplayName || currentEquipment.name}. Last verified ${lastVerifiedDate}. Located in ${currentEquipment.location.address}.`,
+      description: currentEquipment.description || `${gearDisplayName || currentEquipment.name}. Last verified ${lastVerifiedDate}. Located in ${currentEquipment.location.address}.`,
       image: validImageList,
       url: canonicalUrl,
       category: categoryDisplay || currentEquipment.category,
+      brand: {
+        "@type": "Brand",
+        "name": (currentEquipment.name.split(' ')[0]) // Rough brand extraction
+      },
+      sku: currentEquipment.id,
+      itemCondition: "https://schema.org/UsedCondition",
       offers: offerSchema,
       aggregateRating:
         currentEquipment.review_count > 0 &&
-        currentEquipment.rating > 0 &&
-        currentEquipment.rating <= 5
+          currentEquipment.rating > 0 &&
+          currentEquipment.rating <= 5
           ? {
-              "@type": "AggregateRating",
-              ratingValue: currentEquipment.rating,
-              reviewCount: currentEquipment.review_count,
-            }
+            "@type": "AggregateRating",
+            ratingValue: currentEquipment.rating,
+            reviewCount: currentEquipment.review_count,
+          }
           : undefined,
     };
+
+    return [breadcrumbSchema, gearProductSchema];
   }, [
     canonicalUrl,
     categoryDisplay,

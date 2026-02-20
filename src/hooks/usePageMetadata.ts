@@ -6,7 +6,7 @@ export interface PageMetadata {
   description?: string;
   image?: string;
   type?: string;
-  schema?: Record<string, any>;
+  schema?: Record<string, any> | Record<string, any>[];
   canonicalUrl?: string;
 }
 
@@ -61,8 +61,11 @@ const usePageMetadata = ({ title, description, image, type = 'website', schema, 
     }
 
     // Handle author from schema
-    if (schema && schema.author && schema.author.name) {
-      setMeta('name', 'author', schema.author.name);
+    if (schema) {
+      const mainSchema = (Array.isArray(schema) ? schema[0] : schema) as any;
+      if (mainSchema && mainSchema.author && mainSchema.author.name) {
+        setMeta('name', 'author', mainSchema.author.name);
+      }
     }
 
     const scriptId = 'structured-data';
@@ -74,6 +77,7 @@ const usePageMetadata = ({ title, description, image, type = 'website', schema, 
         script.type = 'application/ld+json';
         document.head.appendChild(script);
       }
+      // Wrap single schema in array or just stringify the array
       script.textContent = JSON.stringify(schema);
     } else if (script) {
       script.remove();
