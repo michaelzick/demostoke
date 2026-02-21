@@ -59,3 +59,25 @@ export interface DemoEventDiscoveryRunResult {
   processed_events: number;
   error?: string;
 }
+
+export interface DemoEventJsonIngestErrorRow {
+  row_index: number;
+  external_event_id?: string;
+  message: string;
+}
+
+export interface DemoEventJsonIngestStats {
+  submitted: number;
+  inserted: number;
+  updated_pending: number;
+  skipped_approved: number;
+  skipped_rejected: number;
+  skipped_published: number;
+  invalid_rows: number;
+}
+
+export interface DemoEventJsonIngestResult {
+  success: boolean;
+  stats: DemoEventJsonIngestStats;
+  errors: DemoEventJsonIngestErrorRow[];
+}

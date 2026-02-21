@@ -138,6 +138,9 @@ const DemoEventsSection = () => {
 
   const [rejectTarget, setRejectTarget] = useState<DemoEventCandidate | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [jsonIngestInput, setJsonIngestInput] = useState("");
+  const [jsonIngestParseError, setJsonIngestParseError] = useState<string | null>(null);
+  const [jsonIngestSubmitError, setJsonIngestSubmitError] = useState<string | null>(null);
 
   const {
     candidates,
@@ -148,6 +151,9 @@ const DemoEventsSection = () => {
     isRunningDiscovery,
     lastRunResult,
     updateCandidate,
+    ingestCandidatesFromJson,
+    isIngestingCandidates,
+    lastIngestResult,
     approveCandidate,
     rejectCandidate,
   } = useDemoEventCandidates(statusFilter);
@@ -367,6 +373,39 @@ const DemoEventsSection = () => {
     }
   };
 
+  const handleSubmitJsonIngest = async () => {
+    setJsonIngestParseError(null);
+    setJsonIngestSubmitError(null);
+
+    let parsedPayload: unknown;
+    try {
+      parsedPayload = JSON.parse(jsonIngestInput);
+    } catch {
+      setJsonIngestParseError("Invalid JSON. Please paste valid JSON and try again.");
+      return;
+    }
+
+    try {
+      const result = await ingestCandidatesFromJson(parsedPayload);
+      if (result.stats.invalid_rows === 0) {
+        setJsonIngestInput("");
+      }
+    } catch (error) {
+      console.error("Failed to ingest demo event JSON payload:", error);
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to ingest JSON payload. Check required fields and try again.";
+      setJsonIngestSubmitError(message);
+    }
+  };
+
+  const handleClearJsonIngest = () => {
+    setJsonIngestInput("");
+    setJsonIngestParseError(null);
+    setJsonIngestSubmitError(null);
+  };
+
   if (isAdminLoading) {
     return (
       <Card>
@@ -428,6 +467,103 @@ const DemoEventsSection = () => {
         </CardHeader>
 
         <CardContent className="space-y-4">
+          <div className="space-y-3 rounded-lg border p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="demo-events-json-ingest" className="text-sm font-medium">
+                  Manual JSON Ingest
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Paste event JSON to add candidates as pending for review and approval.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleClearJsonIngest}
+                  disabled={isIngestingCandidates || jsonIngestInput.length === 0}
+                >
+                  Clear
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => void handleSubmitJsonIngest()}
+                  disabled={isIngestingCandidates || jsonIngestInput.trim().length === 0}
+                >
+                  {isIngestingCandidates ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    "Submit JSON"
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <Textarea
+              id="demo-events-json-ingest"
+              value={jsonIngestInput}
+              onChange={(event) => {
+                setJsonIngestInput(event.target.value);
+                if (jsonIngestParseError) {
+                  setJsonIngestParseError(null);
+                }
+                if (jsonIngestSubmitError) {
+                  setJsonIngestSubmitError(null);
+                }
+              }}
+              className="min-h-[240px] font-mono text-xs"
+              placeholder={`[\n  {\n    "title": "Winter Demo Day",\n    "company": "Village Ski Loft",\n    "gear_category": "snowboards",\n    "event_date": "2026-03-01",\n    "location": "Diamond Peak, NV",\n    "source_primary_url": "https://example.com/events/winter-demo-day"\n  }\n]`}
+            />
+
+            <p className="text-xs text-muted-foreground">
+              Accepted top-level formats: <code>[]</code> or <code>{`{ "events": [] }`}</code>. Required per row:
+              <code> title</code>, <code>company</code>, <code>gear_category</code>, <code>event_date</code>,{" "}
+              <code>location</code>, <code>source_primary_url</code>. Aliases like <code>event_name</code>,{" "}
+              <code>event_host</code>, nested <code>location.address</code>, and <code>dates_times[0].start_local</code>{" "}
+              are supported. Max rows: 200.
+            </p>
+
+            {jsonIngestParseError && (
+              <p className="text-sm text-destructive">{jsonIngestParseError}</p>
+            )}
+
+            {jsonIngestSubmitError && (
+              <p className="text-sm text-destructive">{jsonIngestSubmitError}</p>
+            )}
+
+            {lastIngestResult && (
+              <div className="space-y-2 rounded-md border bg-muted/40 p-3 text-xs">
+                <p>
+                  Last ingest: submitted {lastIngestResult.stats.submitted}, inserted {lastIngestResult.stats.inserted},
+                  updated pending {lastIngestResult.stats.updated_pending}, skipped approved{" "}
+                  {lastIngestResult.stats.skipped_approved}, skipped rejected {lastIngestResult.stats.skipped_rejected},
+                  skipped published {lastIngestResult.stats.skipped_published}, invalid{" "}
+                  {lastIngestResult.stats.invalid_rows}.
+                </p>
+                {lastIngestResult.errors.length > 0 && (
+                  <div className="space-y-1">
+                    <p className="font-medium">
+                      Row errors (first {Math.min(10, lastIngestResult.errors.length)} shown):
+                    </p>
+                    <ul className="list-disc space-y-1 pl-5">
+                      {lastIngestResult.errors.slice(0, 10).map((errorRow, index) => (
+                        <li key={`${errorRow.row_index}-${errorRow.external_event_id || "no-id"}-${index}`}>
+                          Row {errorRow.row_index}
+                          {errorRow.external_event_id ? ` (${errorRow.external_event_id})` : ""}: {errorRow.message}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
           <div className="flex flex-wrap items-end gap-4">
             <div className="w-[180px]">
               <Label htmlFor="demo-events-status-filter" className="text-xs text-muted-foreground">

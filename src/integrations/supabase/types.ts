@@ -1429,6 +1429,10 @@ export type Database = {
         Args: { equipment_id: string }
         Returns: undefined
       }
+      ingest_demo_event_candidates_json: {
+        Args: { p_payload: Json }
+        Returns: Json
+      }
       is_admin: { Args: { user_id?: string }; Returns: boolean }
       log_security_event: {
         Args: {

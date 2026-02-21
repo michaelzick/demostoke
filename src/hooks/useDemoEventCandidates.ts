@@ -1,15 +1,44 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
 import type {
   DemoEventCandidate,
   DemoEventCandidateFilter,
   DemoEventDiscoveryRunResult,
+  DemoEventJsonIngestResult,
 } from "@/types/demo-event-candidate";
 
 const DISCOVER_DEMO_EVENTS_FUNCTION_URL =
   "https://qtlhqsqanbxgfbcjigrl.supabase.co/functions/v1/discover-demo-events";
+
+const getErrorMessage = (error: unknown, fallback: string) => {
+  if (error instanceof Error) {
+    return error.message || fallback;
+  }
+
+  if (error && typeof error === "object") {
+    const maybeError = error as {
+      message?: unknown;
+      details?: unknown;
+      hint?: unknown;
+    };
+    const parts = [maybeError.message, maybeError.details, maybeError.hint]
+      .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
+      .map((value) => value.trim());
+
+    if (parts.length > 0) {
+      return parts.join(" ");
+    }
+  }
+
+  if (typeof error === "string" && error.trim().length > 0) {
+    return error.trim();
+  }
+
+  return fallback;
+};
 
 export const useDemoEventCandidates = (statusFilter: DemoEventCandidateFilter = "all") => {
   const { toast } = useToast();
@@ -145,6 +174,43 @@ export const useDemoEventCandidates = (statusFilter: DemoEventCandidateFilter = 
     },
   });
 
+  const ingestCandidatesFromJsonMutation = useMutation({
+    mutationFn: async (payload: unknown): Promise<DemoEventJsonIngestResult> => {
+      const { data, error } = await supabase.rpc("ingest_demo_event_candidates_json", {
+        p_payload: payload as Json,
+      });
+
+      if (error) {
+        throw new Error(getErrorMessage(error, "Unable to ingest JSON payload."));
+      }
+
+      const result = data as DemoEventJsonIngestResult | null;
+      if (!result?.success) {
+        throw new Error("JSON ingest did not complete successfully.");
+      }
+
+      return {
+        ...result,
+        errors: Array.isArray(result.errors) ? result.errors : [],
+      };
+    },
+    onSuccess: async (result) => {
+      await queryClient.invalidateQueries({ queryKey: ["demo-event-candidates"] });
+      toast({
+        title: "JSON ingest complete",
+        description: `Submitted ${result.stats.submitted}. Inserted ${result.stats.inserted}, updated pending ${result.stats.updated_pending}, skipped approved ${result.stats.skipped_approved}, skipped rejected ${result.stats.skipped_rejected}, skipped published ${result.stats.skipped_published}, invalid ${result.stats.invalid_rows}.`,
+      });
+    },
+    onError: (error) => {
+      console.error("Error ingesting demo event candidates from JSON:", error);
+      toast({
+        title: "JSON ingest failed",
+        description: getErrorMessage(error, "Unable to ingest JSON payload."),
+        variant: "destructive",
+      });
+    },
+  });
+
   const approveCandidateMutation = useMutation({
     mutationFn: async (candidateId: string) => {
       const { data, error } = await supabase.rpc("approve_demo_event_candidate", {
@@ -212,6 +278,9 @@ export const useDemoEventCandidates = (statusFilter: DemoEventCandidateFilter = 
     lastRunResult: runDiscoveryMutation.data,
     updateCandidate: updateCandidateMutation.mutateAsync,
     isUpdatingCandidate: updateCandidateMutation.isPending,
+    ingestCandidatesFromJson: ingestCandidatesFromJsonMutation.mutateAsync,
+    isIngestingCandidates: ingestCandidatesFromJsonMutation.isPending,
+    lastIngestResult: ingestCandidatesFromJsonMutation.data,
     approveCandidate: approveCandidateMutation.mutateAsync,
     isApprovingCandidate: approveCandidateMutation.isPending,
     rejectCandidate: rejectCandidateMutation.mutateAsync,
