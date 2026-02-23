@@ -12,8 +12,8 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode; }) {
   const [user, setUser] = useState<User | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [session, setSession] = useState<Session | null>(null);
   const [mounted, setMounted] = useState(false);
   const { toast } = useToast();
 
@@ -21,76 +21,119 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
     setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (!mounted || typeof window === "undefined") return;
+  const handleSessionChange = async (
+    session: Session,
+    options: { showLoading?: boolean; syncLocalData?: boolean } = {}
+  ) => {
+    const { showLoading = true, syncLocalData = true } = options;
 
-    const initAuth = async () => {
+    if (showLoading) {
       setIsLoading(true);
+    }
 
-      try {
-        // Set up listener for auth state changes first
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-          async (_event, currentSession) => {
-            setSession(currentSession);
-
-            if (currentSession) {
-              // Use setTimeout to avoid potential deadlocks with Supabase auth
-              setTimeout(() => {
-                handleSessionChange(currentSession);
-              }, 0);
-            } else {
-              setUser(null);
-              setIsLoading(false);
-            }
-          }
-        );
-
-        // Then check active session
-        const { data, error } = await AuthService.getSession();
-
-        if (error) {
-          console.error("Error fetching session:", error);
-          setIsLoading(false);
-          return;
-        }
-
-        setSession(data.session);
-
-        if (data.session) {
-          await handleSessionChange(data.session);
-        } else {
-          setIsLoading(false);
-        }
-
-        return () => {
-          subscription.unsubscribe();
-        };
-      } catch (error) {
-        console.error("Auth initialization error:", error);
-        setIsLoading(false);
-      }
-    };
-
-    initAuth();
-  }, [mounted]);
-
-  const handleSessionChange = async (session: Session) => {
-    setIsLoading(true);
     try {
       const userData = await AuthService.fetchUserProfile(session);
       setUser(userData);
-      
-      // Sync localStorage RVI to database on login
-      setTimeout(() => {
-        syncLocalRVIToDatabase(session.user.id);
-        syncLocalFavoritesToDatabase(session.user.id);
-      }, 0);
+      setIsAuthenticated(true);
+
+      // Sync localStorage data to database only on true sign-in or initial load.
+      if (syncLocalData) {
+        setTimeout(() => {
+          syncLocalRVIToDatabase(session.user.id);
+          syncLocalFavoritesToDatabase(session.user.id);
+        }, 0);
+      }
     } catch (error) {
       console.error("Error handling session change:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!mounted || typeof window === "undefined") return;
+
+    let isActive = true;
+
+    // Set up listener for auth state changes first.
+    // Important: TOKEN_REFRESHED fires on tab refocus; avoid toggling global loading for that.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, currentSession) => {
+        if (!isActive) return;
+
+        setIsAuthenticated(!!currentSession);
+
+        if (!currentSession) {
+          setUser(null);
+          setIsLoading(false);
+          return;
+        }
+
+        if (event === "SIGNED_IN") {
+          setTimeout(() => {
+            if (!isActive) return;
+            handleSessionChange(currentSession, {
+              showLoading: false,
+              syncLocalData: true,
+            });
+          }, 0);
+          return;
+        }
+
+        if (event === "USER_UPDATED") {
+          setTimeout(() => {
+            if (!isActive) return;
+            handleSessionChange(currentSession, {
+              showLoading: false,
+              syncLocalData: false,
+            });
+          }, 0);
+        }
+      }
+    );
+
+    const initAuth = async () => {
+      setIsLoading(true);
+
+      try {
+        // Then check active session.
+        const { data, error } = await AuthService.getSession();
+
+        if (!isActive) return;
+
+        if (error) {
+          console.error("Error fetching session:", error);
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          return;
+        }
+
+        const currentSession = data.session;
+        setIsAuthenticated(!!currentSession);
+
+        if (currentSession) {
+          await handleSessionChange(currentSession, {
+            showLoading: false,
+            syncLocalData: true,
+          });
+        } else {
+          setUser(null);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("Auth initialization error:", error);
+        setIsAuthenticated(false);
+        setIsLoading(false);
+      }
+    };
+
+    initAuth();
+
+    return () => {
+      isActive = false;
+      subscription.unsubscribe();
+    };
+  }, [mounted]);
 
   const syncLocalRVIToDatabase = async (userId: string) => {
     try {
@@ -211,7 +254,7 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
 
       // Clear user state immediately
       setUser(null);
-      setSession(null);
+      setIsAuthenticated(false);
 
       toast({
         title: "Logged out",
@@ -234,7 +277,7 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: !!session,
+        isAuthenticated,
         isLoading,
         login,
         signup,

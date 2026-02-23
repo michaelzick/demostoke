@@ -1,4 +1,5 @@
 
+import { memo } from "react";
 import { Routes, Route } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
@@ -40,8 +41,17 @@ import GearCategoryPage from "../pages/GearCategoryPage";
 import ApiGearSearchPage from "../pages/ApiGearSearchPage";
 import { useAuth } from "@/contexts/auth";
 
-const AppRoutes = () => {
+const AdminRouteGate = () => {
   const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div className="min-h-screen" />;
+  }
+
+  return isAuthenticated ? <AdminPage /> : <NotFoundPage />;
+};
+
+const AppRoutes = memo(() => {
 
   return (
     <Routes>
@@ -77,14 +87,7 @@ const AppRoutes = () => {
         <Route path="my-gear" element={<MyEquipmentPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="bookings" element={<BookingsPage />} />
-        <Route
-          path="admin"
-          element={
-            isLoading
-              ? <div className="min-h-screen" />
-              : (isAuthenticated ? <AdminPage /> : <NotFoundPage />)
-          }
-        />
+        <Route path="admin" element={<AdminRouteGate />} />
         <Route path="user-profile/chad-g" element={<ChadGProfilePage />} />
         <Route path="user-profile/gemini" element={<GeminiProfilePage />} />
         <Route path="user-profile/:slug" element={<RealUserProfilePage />} />
@@ -100,6 +103,8 @@ const AppRoutes = () => {
       </Route>
     </Routes>
   );
-};
+});
+
+AppRoutes.displayName = "AppRoutes";
 
 export default AppRoutes;
