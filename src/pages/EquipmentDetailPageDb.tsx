@@ -41,7 +41,6 @@ interface EquipmentDetailPageDbProps {
   showWaiver: boolean;
   setShowWaiver: (show: boolean) => void;
   handleWaiverComplete: () => void;
-  handleBookNowClick: () => void;
   bookingCardRef: React.RefObject<HTMLDivElement>;
   canonicalPath?: string;
   lastVerifiedDate: string;
@@ -55,7 +54,6 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
   showWaiver,
   setShowWaiver,
   handleWaiverComplete,
-  handleBookNowClick,
   bookingCardRef,
   canonicalPath,
   lastVerifiedDate,
@@ -94,6 +92,19 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
     owner_name: equipment.owner.name,
     location: equipment.location.address,
     last_verified: lastVerifiedDate,
+  };
+  const handleBookNowClick = (
+    ctaPlacement: "booking_card_desktop" | "sticky_footer_mobile",
+  ) => {
+    trackEvent("click_book_now", {
+      ...leadContext,
+      shop_name: equipment.owner.name,
+      gear_title: resolvedGearName,
+      cta_id: "gear_detail_page_book_now_cta",
+      cta_placement: ctaPlacement,
+      page_name: "gear_detail_page",
+    });
+    setShowContactModal(true);
   };
 
   // Check if current user can edit this equipment
@@ -181,6 +192,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
         owner={equipment.owner}
         trackingData={trackingData}
         leadContext={leadContext}
+        showBookingComingSoonMessage
       />
 
       {/* Waiver Form Modal */}
@@ -310,7 +322,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
             {/* Book Now button: only visible on mobile (columns stacked) */}
             <Button
               className="block lg:hidden fixed left-0 bottom-0 w-full z-40 rounded-none bg-primary text-primary-foreground font-semibold focus:outline-none h-12"
-              onClick={handleBookNowClick}
+              onClick={() => handleBookNowClick("sticky_footer_mobile")}
               type="button"
               id="book-now-mobile-button"
             >
@@ -367,26 +379,14 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
         <div className="space-y-6">
           {/* Booking Card */}
           <Card className="p-6" ref={bookingCardRef}>
-            <h3 className="text-lg font-semibold mb-4">
-              The ability to book here is coming soon. Please contact{" "}
-              {equipment.owner.name}.
-            </h3>
-            <button
-              onClick={() => {
-                trackEvent("click_reserve", leadContext);
-                setShowContactModal(true);
-              }}
-              className="text-primary
-              underline underline-offset-4
-              hover:underline hover:text-primary/80
-              transition-colors bg-transparent
-              border-none p-0 font-inherit
-              cursor-pointer owner-name-button"
-              data-tracking={trackingData}
-              id={`${equipment.owner.name} - Trigger Modal Button - Booking Card`}
+            <Button
+              className="w-full font-semibold"
+              onClick={() => handleBookNowClick("booking_card_desktop")}
+              type="button"
+              id="book-now-desktop-button"
             >
-              {equipment.owner.name}
-            </button>
+              Book Now
+            </Button>
           </Card>
           {/* Similar Equipment */}
           <SimilarEquipment similarEquipment={similarEquipment} />

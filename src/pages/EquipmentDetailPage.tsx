@@ -18,7 +18,6 @@ import {
   extractGearIdFromSlug,
   toISODate,
 } from "@/utils/gearUrl";
-import { trackEvent } from "@/utils/tracking";
 
 // Import component modules
 import EquipmentDetailPageDb from "./EquipmentDetailPageDb";
@@ -339,25 +338,6 @@ const EquipmentDetailPage = () => {
     canonicalUrl,
   });
 
-  // Shared handlers
-  const handleBookNowClick = () => {
-    if (currentEquipment) {
-      trackEvent("click_reserve", {
-        gear_id: currentEquipment.id,
-        gear_name: gearDisplayName || currentEquipment.name,
-        gear_category: currentEquipment.category,
-        owner_id: currentEquipment.owner.id,
-        owner_name: currentEquipment.owner.name,
-      });
-    }
-
-    if (bookingCardRef.current) {
-      const header = document.querySelector('header.sticky') as HTMLElement | null;
-      const headerHeight = header ? header.offsetHeight : 0;
-      const top = bookingCardRef.current.getBoundingClientRect().top + window.pageYOffset - headerHeight;
-      window.scrollTo({ top, behavior: "smooth" });
-    }
-  };
   const handleWaiverComplete = () => {
     setWaiverCompleted(true);
     setShowWaiver(false);
@@ -414,7 +394,6 @@ const EquipmentDetailPage = () => {
         showWaiver={showWaiver}
         setShowWaiver={setShowWaiver}
         handleWaiverComplete={handleWaiverComplete}
-        handleBookNowClick={handleBookNowClick}
         bookingCardRef={bookingCardRef}
         canonicalPath={canonicalPath}
         lastVerifiedDate={lastVerifiedDate}

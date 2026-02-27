@@ -12,6 +12,7 @@ interface ContactInfoModalProps {
   owner: GearOwner;
   trackingData?: string;
   leadContext?: Record<string, unknown>;
+  showBookingComingSoonMessage?: boolean;
 }
 
 const ContactInfoModal = ({
@@ -20,6 +21,7 @@ const ContactInfoModal = ({
   owner,
   trackingData,
   leadContext,
+  showBookingComingSoonMessage = false,
 }: ContactInfoModalProps) => {
   const { data: profile } = useUserProfile(owner.id);
 
@@ -37,7 +39,12 @@ const ContactInfoModal = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader>
+        <DialogHeader className="space-y-3">
+          {showBookingComingSoonMessage && (
+            <p className="text-sm text-muted-foreground">
+              The ability to book here is coming soon. Please contact {displayName}.
+            </p>
+          )}
           <DialogTitle>
             <Link
               to={profileLinkPath}
