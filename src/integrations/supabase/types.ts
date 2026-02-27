@@ -157,9 +157,9 @@ export type Database = {
           created_at: string
           created_by: string
           equipment_available: string | null
-          external_event_id: string | null
           event_date: string | null
           event_time: string | null
+          external_event_id: string | null
           gear_category: string
           id: string
           is_featured: boolean
@@ -176,9 +176,9 @@ export type Database = {
           created_at?: string
           created_by?: string
           equipment_available?: string | null
-          external_event_id?: string | null
           event_date?: string | null
           event_time?: string | null
+          external_event_id?: string | null
           gear_category: string
           id?: string
           is_featured?: boolean
@@ -195,9 +195,9 @@ export type Database = {
           created_at?: string
           created_by?: string
           equipment_available?: string | null
-          external_event_id?: string | null
           event_date?: string | null
           event_time?: string | null
+          external_event_id?: string | null
           gear_category?: string
           id?: string
           is_featured?: boolean
