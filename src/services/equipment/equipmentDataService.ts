@@ -6,30 +6,43 @@ import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 import { getHiddenUserIds, filterHiddenUsers } from "./hiddenUserFilter";
 
 export const fetchEquipmentFromSupabase = async (): Promise<Equipment[]> => {
+  // Paginate to bypass PostgREST max_rows (default 1000)
+  const PAGE_SIZE = 1000;
+  const allData: any[] = [];
+  let from = 0;
+  let hasMore = true;
 
-  const { data, error } = await supabase
-    .from("equipment")
-    .select(
-      `
-      *,
-      profiles!equipment_user_id_fkey (
-        name,
-        avatar_url
+  while (hasMore) {
+    const { data, error } = await supabase
+      .from("equipment")
+      .select(
+        `
+        *,
+        profiles!equipment_user_id_fkey (
+          name,
+          avatar_url
+        )
+      `,
       )
-    `,
-    )
-    .eq("status", "available")
-    .eq("visible_on_map", true)
-    .limit(5000);
+      .eq("status", "available")
+      .eq("visible_on_map", true)
+      .range(from, from + PAGE_SIZE - 1);
 
-  if (error) {
-    console.error("❌ Supabase query error:", error);
-    throw error;
+    if (error) {
+      console.error("❌ Supabase query error:", error);
+      throw error;
+    }
+
+    allData.push(...(data || []));
+    hasMore = (data?.length || 0) === PAGE_SIZE;
+    from += PAGE_SIZE;
   }
 
-  if (!data || data.length === 0) {
+  if (allData.length === 0) {
     return [];
   }
+
+  const data = allData;
 
   // Filter out equipment from hidden users
   const hiddenUserIds = await getHiddenUserIds();
