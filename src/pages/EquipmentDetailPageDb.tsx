@@ -378,7 +378,7 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
         {/* Sidebar */}
         <div className="space-y-6 lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-1">
           {/* Booking Card */}
-          <Card className="p-6" ref={bookingCardRef}>
+          <Card className="hidden lg:block p-6" ref={bookingCardRef}>
             <Button
               className="w-full font-semibold"
               onClick={() => handleBookNowClick("booking_card_desktop")}

@@ -342,7 +342,7 @@ const EquipmentDetailPage = () => {
     setWaiverCompleted(true);
     setShowWaiver(false);
     setTimeout(() => {
-      if (bookingCardRef.current) {
+      if (bookingCardRef.current && bookingCardRef.current.offsetParent !== null) {
         const header = document.querySelector('header.sticky') as HTMLElement | null;
         const headerHeight = header ? header.offsetHeight : 0;
         const top = bookingCardRef.current.getBoundingClientRect().top + window.pageYOffset - headerHeight;
