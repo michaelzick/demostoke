@@ -19,7 +19,8 @@ export const fetchEquipmentFromSupabase = async (): Promise<Equipment[]> => {
     `,
     )
     .eq("status", "available")
-    .eq("visible_on_map", true);
+    .eq("visible_on_map", true)
+    .limit(5000);
 
   if (error) {
     console.error("❌ Supabase query error:", error);
