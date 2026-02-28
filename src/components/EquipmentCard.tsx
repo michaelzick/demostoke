@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { StarIcon, UsersIcon, EditIcon, Ruler, Heart } from "lucide-react";
+import { StarIcon, UsersIcon, EditIcon, Ruler, Heart, Eye, EyeOff, Trash2 } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
