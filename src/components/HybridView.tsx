@@ -12,6 +12,11 @@ import { getFilteredUserLocations } from "@/utils/equipmentLocationMapping";
 import SortDropdown from "./SortDropdown";
 import { useScrollToTopButton } from "@/hooks/useScrollToTopButton";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
+import { useAuth } from "@/contexts/auth";
+import { useIsAdmin } from "@/hooks/useUserRole";
+import { useDeleteEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
+import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface HybridViewProps {
   filteredEquipment: Equipment[];
@@ -52,6 +57,12 @@ const HybridView = ({
   emptyMessage,
 }: HybridViewProps) => {
   const isMobile = useIsMobile();
+  const { user } = useAuth();
+  const { isAdmin } = useIsAdmin();
+  const { toast } = useToast();
+  const deleteEquipmentMutation = useDeleteEquipment();
+  const updateVisibilityMutation = useUpdateEquipmentVisibility();
+  const queryClient = useQueryClient();
   const [selectedEquipmentId, setSelectedEquipmentId] = useState<string | null>(null);
   const [mapboxToken, setMapboxToken] = useState<string | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -204,6 +215,26 @@ const HybridView = ({
     }
   };
 
+  const handleDelete = async (equipmentId: string) => {
+    try {
+      await deleteEquipmentMutation.mutateAsync(equipmentId);
+      queryClient.invalidateQueries({ queryKey: ["equipment"] });
+      toast({ title: "Equipment Deleted", description: "Equipment has been successfully deleted." });
+    } catch {
+      toast({ title: "Error", description: "Failed to delete equipment.", variant: "destructive" });
+    }
+  };
+
+  const handleVisibilityToggle = async (equipmentId: string, currentVisibility: boolean) => {
+    try {
+      await updateVisibilityMutation.mutateAsync({ equipmentId, visible: !currentVisibility });
+      queryClient.invalidateQueries({ queryKey: ["equipment"] });
+      toast({ title: "Visibility Updated", description: `Equipment is now ${!currentVisibility ? "visible" : "hidden"} on the map.` });
+    } catch {
+      toast({ title: "Error", description: "Failed to update visibility.", variant: "destructive" });
+    }
+  };
+
   const handleCardWrapperClick = (e: React.MouseEvent, equipmentId: string) => {
     // Don't trigger if clicking on links or buttons
     const target = e.target as HTMLElement;
@@ -251,7 +282,14 @@ const HybridView = ({
                 }`}
                 onClick={(e) => handleCardWrapperClick(e, equipment.id)}
               >
-                <CompactEquipmentCard equipment={equipment} />
+                <CompactEquipmentCard
+                  equipment={equipment}
+                  showActions={!!(user && (equipment.owner.id === user.id || isAdmin))}
+                  isAdmin={isAdmin}
+                  currentUserId={user?.id}
+                  onDelete={handleDelete}
+                  onVisibilityToggle={handleVisibilityToggle}
+                />
               </div>
             ))}
           </div>
@@ -302,7 +340,14 @@ const HybridView = ({
               }`}
               onClick={(e) => handleCardWrapperClick(e, equipment.id)}
             >
-              <CompactEquipmentCard equipment={equipment} />
+              <CompactEquipmentCard
+                equipment={equipment}
+                showActions={!!(user && (equipment.owner.id === user.id || isAdmin))}
+                isAdmin={isAdmin}
+                currentUserId={user?.id}
+                onDelete={handleDelete}
+                onVisibilityToggle={handleVisibilityToggle}
+              />
             </div>
           ))}
           {filteredEquipment.length === 0 && (

@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { StarIcon, UsersIcon, EditIcon, Ruler, Heart } from "lucide-react";
+import { StarIcon, UsersIcon, EditIcon, Ruler, Heart, Eye, EyeOff, Trash2 } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
@@ -23,6 +23,9 @@ import { featuredGearService } from "@/services/featuredGearService";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { useDeleteEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
+import { Separator } from "@/components/ui/separator";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Tooltip,
   TooltipTrigger,
@@ -59,8 +62,13 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
   const isShop = equipment.owner.shopId;
   const isPrivateParty = equipment.owner.partyId;
 
+  const deleteEquipmentMutation = useDeleteEquipment();
+  const updateVisibilityMutation = useUpdateEquipmentVisibility();
+  const queryClient = useQueryClient();
+
   // Check if the current user owns this equipment
   const isOwner = user && equipment.owner.id === user.id;
+  const canEditDelete = isOwner || isAdmin;
 
   const ownerLinkPath = isShop
     ? `/shop/${equipment.owner.shopId}`
@@ -100,6 +108,27 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
       });
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm(`Are you sure you want to delete "${equipment.name}"? This action cannot be undone.`)) return;
+    try {
+      await deleteEquipmentMutation.mutateAsync(equipment.id);
+      queryClient.invalidateQueries({ queryKey: ["equipment"] });
+      toast({ title: "Equipment Deleted", description: "Equipment has been successfully deleted." });
+    } catch {
+      toast({ title: "Error", description: "Failed to delete equipment.", variant: "destructive" });
+    }
+  };
+
+  const handleVisibilityToggle = async () => {
+    try {
+      await updateVisibilityMutation.mutateAsync({ equipmentId: equipment.id, visible: !equipment.visible_on_map });
+      queryClient.invalidateQueries({ queryKey: ["equipment"] });
+      toast({ title: "Visibility Updated", description: `Equipment is now ${!equipment.visible_on_map ? "visible" : "hidden"} on the map.` });
+    } catch {
+      toast({ title: "Error", description: "Failed to update visibility.", variant: "destructive" });
     }
   };
 
@@ -254,14 +283,6 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
           </Link>
         </Button>
         <div className="flex items-center gap-2">
-          {isOwner && (
-            <Button asChild size="sm" variant="outline">
-              <Link to={`/edit-gear/${equipment.id}`}>
-                <EditIcon className="h-4 w-4 mr-1" />
-                Update
-              </Link>
-            </Button>
-          )}
           {showAdminControls && isAdmin && (
             <div className="flex items-center gap-2">
               <Checkbox
@@ -280,6 +301,38 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
           )}
         </div>
       </CardFooter>
+      {canEditDelete && (
+        <>
+          <Separator className="mx-4" />
+          <div className="flex items-center gap-1 px-4 py-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleVisibilityToggle}
+              className="h-8 w-8 p-0"
+            >
+              {equipment.visible_on_map ? (
+                <Eye className="h-4 w-4" />
+              ) : (
+                <EyeOff className="h-4 w-4" />
+              )}
+            </Button>
+            <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0">
+              <Link to={`/edit-gear/${equipment.id}`}>
+                <EditIcon className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleDelete}
+              className="h-8 w-8 p-0"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </>
+      )}
     </Card>
   );
 };
