@@ -62,8 +62,13 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
   const isShop = equipment.owner.shopId;
   const isPrivateParty = equipment.owner.partyId;
 
+  const deleteEquipmentMutation = useDeleteEquipment();
+  const updateVisibilityMutation = useUpdateEquipmentVisibility();
+  const queryClient = useQueryClient();
+
   // Check if the current user owns this equipment
   const isOwner = user && equipment.owner.id === user.id;
+  const canEditDelete = isOwner || isAdmin;
 
   const ownerLinkPath = isShop
     ? `/shop/${equipment.owner.shopId}`
