@@ -23,6 +23,9 @@ import { featuredGearService } from "@/services/featuredGearService";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { useDeleteEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
+import { Separator } from "@/components/ui/separator";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Tooltip,
   TooltipTrigger,
