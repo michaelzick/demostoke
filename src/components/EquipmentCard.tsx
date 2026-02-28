@@ -111,6 +111,27 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
     }
   };
 
+  const handleDelete = async () => {
+    if (!window.confirm(`Are you sure you want to delete "${equipment.name}"? This action cannot be undone.`)) return;
+    try {
+      await deleteEquipmentMutation.mutateAsync(equipment.id);
+      queryClient.invalidateQueries({ queryKey: ["equipment"] });
+      toast({ title: "Equipment Deleted", description: "Equipment has been successfully deleted." });
+    } catch {
+      toast({ title: "Error", description: "Failed to delete equipment.", variant: "destructive" });
+    }
+  };
+
+  const handleVisibilityToggle = async () => {
+    try {
+      await updateVisibilityMutation.mutateAsync({ equipmentId: equipment.id, visible: !equipment.visible_on_map });
+      queryClient.invalidateQueries({ queryKey: ["equipment"] });
+      toast({ title: "Visibility Updated", description: `Equipment is now ${!equipment.visible_on_map ? "visible" : "hidden"} on the map.` });
+    } catch {
+      toast({ title: "Error", description: "Failed to update visibility.", variant: "destructive" });
+    }
+  };
+
   return (
     <Card className="overflow-hidden flex flex-col h-full">
       <div className="relative w-full overflow-hidden h-[290px]">
