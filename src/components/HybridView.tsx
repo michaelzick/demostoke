@@ -12,6 +12,11 @@ import { getFilteredUserLocations } from "@/utils/equipmentLocationMapping";
 import SortDropdown from "./SortDropdown";
 import { useScrollToTopButton } from "@/hooks/useScrollToTopButton";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
+import { useAuth } from "@/contexts/auth";
+import { useIsAdmin } from "@/hooks/useUserRole";
+import { useDeleteEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
+import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface HybridViewProps {
   filteredEquipment: Equipment[];
