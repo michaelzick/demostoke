@@ -215,6 +215,26 @@ const HybridView = ({
     }
   };
 
+  const handleDelete = async (equipmentId: string) => {
+    try {
+      await deleteEquipmentMutation.mutateAsync(equipmentId);
+      queryClient.invalidateQueries({ queryKey: ["equipment"] });
+      toast({ title: "Equipment Deleted", description: "Equipment has been successfully deleted." });
+    } catch {
+      toast({ title: "Error", description: "Failed to delete equipment.", variant: "destructive" });
+    }
+  };
+
+  const handleVisibilityToggle = async (equipmentId: string, currentVisibility: boolean) => {
+    try {
+      await updateVisibilityMutation.mutateAsync({ equipmentId, visible: !currentVisibility });
+      queryClient.invalidateQueries({ queryKey: ["equipment"] });
+      toast({ title: "Visibility Updated", description: `Equipment is now ${!currentVisibility ? "visible" : "hidden"} on the map.` });
+    } catch {
+      toast({ title: "Error", description: "Failed to update visibility.", variant: "destructive" });
+    }
+  };
+
   const handleCardWrapperClick = (e: React.MouseEvent, equipmentId: string) => {
     // Don't trigger if clicking on links or buttons
     const target = e.target as HTMLElement;
