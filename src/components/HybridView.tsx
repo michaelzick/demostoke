@@ -57,6 +57,12 @@ const HybridView = ({
   emptyMessage,
 }: HybridViewProps) => {
   const isMobile = useIsMobile();
+  const { user } = useAuth();
+  const { isAdmin } = useIsAdmin();
+  const { toast } = useToast();
+  const deleteEquipmentMutation = useDeleteEquipment();
+  const updateVisibilityMutation = useUpdateEquipmentVisibility();
+  const queryClient = useQueryClient();
   const [selectedEquipmentId, setSelectedEquipmentId] = useState<string | null>(null);
   const [mapboxToken, setMapboxToken] = useState<string | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
