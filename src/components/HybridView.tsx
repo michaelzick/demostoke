@@ -340,7 +340,14 @@ const HybridView = ({
               }`}
               onClick={(e) => handleCardWrapperClick(e, equipment.id)}
             >
-              <CompactEquipmentCard equipment={equipment} />
+              <CompactEquipmentCard
+                equipment={equipment}
+                showActions={!!(user && (equipment.owner.id === user.id || isAdmin))}
+                isAdmin={isAdmin}
+                currentUserId={user?.id}
+                onDelete={handleDelete}
+                onVisibilityToggle={handleVisibilityToggle}
+              />
             </div>
           ))}
           {filteredEquipment.length === 0 && (

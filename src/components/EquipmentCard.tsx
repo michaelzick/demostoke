@@ -283,14 +283,6 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
           </Link>
         </Button>
         <div className="flex items-center gap-2">
-          {isOwner && (
-            <Button asChild size="sm" variant="outline">
-              <Link to={`/edit-gear/${equipment.id}`}>
-                <EditIcon className="h-4 w-4 mr-1" />
-                Update
-              </Link>
-            </Button>
-          )}
           {showAdminControls && isAdmin && (
             <div className="flex items-center gap-2">
               <Checkbox
@@ -309,6 +301,38 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
           )}
         </div>
       </CardFooter>
+      {canEditDelete && (
+        <>
+          <Separator className="mx-4" />
+          <div className="flex items-center gap-1 px-4 py-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleVisibilityToggle}
+              className="h-8 w-8 p-0"
+            >
+              {equipment.visible_on_map ? (
+                <Eye className="h-4 w-4" />
+              ) : (
+                <EyeOff className="h-4 w-4" />
+              )}
+            </Button>
+            <Button variant="ghost" size="sm" asChild className="h-8 w-8 p-0">
+              <Link to={`/edit-gear/${equipment.id}`}>
+                <EditIcon className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleDelete}
+              className="h-8 w-8 p-0"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </>
+      )}
     </Card>
   );
 };
