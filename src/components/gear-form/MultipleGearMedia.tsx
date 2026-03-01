@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { X, Search, Globe } from "lucide-react";
-import { useState, useEffect } from "react";
-import { deleteEquipmentImage } from "@/utils/multipleImageHandling";
+import { useState, useEffect, useMemo } from "react";
 import ImageSearchDialog from "./ImageSearchDialog";
 import SimilarGearImageCopy from "./SimilarGearImageCopy";
 
@@ -42,8 +41,10 @@ const MultipleGearMedia = ({
 }: MultipleGearMediaProps) => {
   const [showImageSearch, setShowImageSearch] = useState(false);
   const [imageDimensions, setImageDimensions] = useState<Record<number, { width: number; height: number; }>>({});
-  const [hasInitializedUrls, setHasInitializedUrls] = useState(false);
-  const displayImages = useImageUrls ? imageUrls : currentImages || duplicatedImageUrls || [];
+  const displayImages = useMemo(
+    () => (useImageUrls ? imageUrls : currentImages || duplicatedImageUrls || []),
+    [useImageUrls, imageUrls, currentImages, duplicatedImageUrls]
+  );
 
   useEffect(() => {
     setImageDimensions({});
@@ -81,8 +82,6 @@ const MultipleGearMedia = ({
   };
 
   const handleRemoveImage = (index: number) => {
-    const imageUrl = displayImages[index];
-
     if (!useImageUrls && currentImages) {
       // For existing database images, just remove from local state
       // Don't delete from database until form submission
@@ -229,8 +228,6 @@ const MultipleGearMedia = ({
           </p>
           <div className="grid grid-cols-3 gap-2">
             {displayImages.map((imageUrl, index) => {
-              // Determine if this is an existing image or new one
-              const isExistingImage = currentImages && currentImages.includes(imageUrl);
               const isNewImage = useImageUrls && currentImages && !currentImages.includes(imageUrl);
 
               return (
