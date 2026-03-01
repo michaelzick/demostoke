@@ -36,16 +36,19 @@ export function RecentlyViewedCompact({ className }: RecentlyViewedCompactProps)
             <Link
               key={item.id}
               to={detailUrl}
-              className="group flex-shrink-0 snap-start"
+              className="group flex-shrink-0 snap-start w-20"
               title={item.name}
             >
-              <div className="w-14 h-14 rounded-md overflow-hidden bg-muted border border-border group-hover:border-primary transition-colors">
+              <div className="w-full h-14 rounded-md overflow-hidden bg-muted border border-border group-hover:border-primary transition-colors">
                 <img
                   src={item.images?.[0] || item.image_url || "/placeholder.svg"}
                   alt={item.name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
               </div>
+              <p className="mt-1 text-[11px] leading-4 text-muted-foreground line-clamp-2 group-hover:text-foreground transition-colors">
+                {item.name}
+              </p>
             </Link>
           );
         })}
