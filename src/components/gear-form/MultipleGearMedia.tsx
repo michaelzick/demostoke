@@ -55,12 +55,21 @@ const MultipleGearMedia = ({
       // When toggling to URL mode, only set to currentImages (database images)
       // Don't merge with previous imageUrls to avoid duplication
       const newUrls = imageUrls.filter(url => url.trim() !== '' && !currentImages.includes(url));
-      setImageUrls([...currentImages, ...newUrls]);
+      const mergedUrls = [...currentImages, ...newUrls];
+      const isUnchanged =
+        mergedUrls.length === imageUrls.length &&
+        mergedUrls.every((url, index) => url === imageUrls[index]);
+
+      if (!isUnchanged) {
+        setImageUrls(mergedUrls);
+      }
     } else if (!useImageUrls) {
       // When toggling off URL mode, clear imageUrls to avoid state pollution
-      setImageUrls([]);
+      if (imageUrls.length > 0) {
+        setImageUrls([]);
+      }
     }
-  }, [useImageUrls]);
+  }, [useImageUrls, currentImages, imageUrls, setImageUrls]);
 
   const addImageUrl = () => {
     setImageUrls([...imageUrls, ""]);

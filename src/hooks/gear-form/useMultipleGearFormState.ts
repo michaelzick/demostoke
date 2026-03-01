@@ -11,7 +11,7 @@ export const useMultipleGearFormState = () => {
   const [skillLevel, setSkillLevel] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [imageUrls, setImageUrls] = useState<string[]>([""]);
-  const [useImageUrls, setUseImageUrls] = useState(false);
+  const [useImageUrls, setUseImageUrls] = useState(true);
   const [pricePerDay, setPricePerDay] = useState("");
   const [pricePerHour, setPricePerHour] = useState("");
   const [pricePerWeek, setPricePerWeek] = useState("");
