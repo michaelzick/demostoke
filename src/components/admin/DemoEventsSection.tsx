@@ -611,12 +611,9 @@ const DemoEventsSection = () => {
                     <TableHead>Status</TableHead>
                     <TableHead>Category</TableHead>
                     <TableHead>Title</TableHead>
-                    <TableHead>Company</TableHead>
                     <TableHead>Date / Time</TableHead>
-                    <TableHead>Location</TableHead>
                     <TableHead>Source</TableHead>
                     <TableHead>Thumbnail URL</TableHead>
-                    <TableHead>Seen</TableHead>
                     <TableHead>Last Seen</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
@@ -624,7 +621,7 @@ const DemoEventsSection = () => {
                 <TableBody>
                   {candidates.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={11} className="py-10 text-center text-sm text-muted-foreground">
+                      <TableCell colSpan={8} className="py-10 text-center text-sm text-muted-foreground">
                         No candidates found for this status filter.
                       </TableCell>
                     </TableRow>
@@ -649,13 +646,9 @@ const DemoEventsSection = () => {
                             <div className="font-medium">{candidate.title}</div>
                             <p className="mt-1 text-xs text-muted-foreground">{candidate.id}</p>
                           </TableCell>
-                          <TableCell className="align-top">{candidate.company}</TableCell>
                           <TableCell className="align-top">
                             <div>{formatEventDate(candidate.event_date)}</div>
                             <div className="text-xs text-muted-foreground">{formatEventTime(candidate.event_time)}</div>
-                          </TableCell>
-                          <TableCell className="max-w-[220px] align-top">
-                            <span className="line-clamp-2">{candidate.location}</span>
                           </TableCell>
                           <TableCell className="max-w-[220px] align-top">
                             <a
@@ -690,7 +683,6 @@ const DemoEventsSection = () => {
                               </Button>
                             </div>
                           </TableCell>
-                          <TableCell>{candidate.seen_count}</TableCell>
                           <TableCell>{formatLastSeen(candidate.last_seen_at)}</TableCell>
                           <TableCell>
                             <div className="flex flex-wrap items-center gap-2">
