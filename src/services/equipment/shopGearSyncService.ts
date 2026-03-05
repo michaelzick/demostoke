@@ -3,6 +3,8 @@ import type { Database } from "@/integrations/supabase/types";
 import { fetchEquipmentFromShopGearFeed } from "./shopGearFeedService";
 
 const SOURCE_PROVIDER = "demostoke_widget";
+const IMAGE_BUCKET = "gear-images";
+const LOCALHOST_HOSTNAMES = new Set(["127.0.0.1", "localhost", "0.0.0.0"]);
 
 type EquipmentInsert = Database["public"]["Tables"]["equipment"]["Insert"];
 type EquipmentImageInsert =
@@ -62,6 +64,129 @@ const buildCanonicalFeedUrl = (
   `${endpointUrl}?shop=${encodeURIComponent(shopSlug)}${
     includeHidden ? "&include_hidden=true" : ""
   }`;
+
+const guessImageExtension = (
+  sourceUrl: string,
+  contentType?: string | null,
+): string => {
+  try {
+    const pathname = new URL(sourceUrl).pathname;
+    const extension = pathname.split(".").pop()?.trim().toLowerCase();
+    if (extension && extension.length <= 5) return extension;
+  } catch {
+    // Fall through to content type mapping.
+  }
+
+  const normalizedType = contentType?.split(";")[0]?.trim().toLowerCase();
+  switch (normalizedType) {
+    case "image/jpeg":
+      return "jpg";
+    case "image/png":
+      return "png";
+    case "image/webp":
+      return "webp";
+    case "image/gif":
+      return "gif";
+    case "image/avif":
+      return "avif";
+    case "image/svg+xml":
+      return "svg";
+    default:
+      return "jpg";
+  }
+};
+
+const resolveSourceImageUrl = (value: string, endpointUrl: string): string => {
+  try {
+    return new URL(value).toString();
+  } catch {
+    const endpointOrigin = new URL(endpointUrl).origin;
+    const normalizedPath = value.startsWith("/")
+      ? value
+      : `/${value.replace(/^\.?\/*/, "")}`;
+    return new URL(normalizedPath, endpointOrigin).toString();
+  }
+};
+
+const buildImageProxyUrl = (sourceUrl: string, endpointUrl: string): string => {
+  const proxyUrl = new URL(endpointUrl);
+  proxyUrl.searchParams.set("proxy_image_url", sourceUrl);
+  return proxyUrl.toString();
+};
+
+const shouldProxyImageUrl = (value: string): boolean => {
+  try {
+    const parsed = new URL(value);
+    return parsed.pathname.includes("/storage/v1/object/public/");
+  } catch {
+    return false;
+  }
+};
+
+const shouldMirrorImageUrl = (value: string): boolean => {
+  try {
+    const parsed = new URL(value);
+    return (
+      parsed.protocol !== "https:" ||
+      LOCALHOST_HOSTNAMES.has(parsed.hostname)
+    );
+  } catch {
+    return true;
+  }
+};
+
+const mirrorImageToDemostokeStorage = async ({
+  sourceUrl,
+  endpointUrl,
+  userId,
+  itemId,
+  imageIndex,
+  headers,
+}: {
+  sourceUrl: string;
+  endpointUrl: string;
+  userId: string;
+  itemId: string;
+  imageIndex: number;
+  headers?: HeadersInit;
+}): Promise<string> => {
+  const downloadUrl = shouldProxyImageUrl(sourceUrl)
+    ? buildImageProxyUrl(sourceUrl, endpointUrl)
+    : sourceUrl;
+  const response = await fetch(
+    downloadUrl,
+    headers ? { headers } : undefined,
+  );
+  if (!response.ok) {
+    throw new Error(
+      `Failed to download source image (${response.status}) from ${downloadUrl}`,
+    );
+  }
+
+  const blob = await response.blob();
+  const extension = guessImageExtension(
+    sourceUrl,
+    response.headers.get("content-type"),
+  );
+  const filePath = `synced-shop-feed/${userId}/${itemId}-${imageIndex}-${crypto.randomUUID()}.${extension}`;
+
+  const { data: uploadData, error: uploadError } = await supabase.storage
+    .from(IMAGE_BUCKET)
+    .upload(filePath, blob, {
+      contentType: blob.type || response.headers.get("content-type") || undefined,
+      upsert: false,
+    });
+
+  if (uploadError) {
+    throw new Error(`Failed to upload mirrored image: ${uploadError.message}`);
+  }
+
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from(IMAGE_BUCKET).getPublicUrl(uploadData.path);
+
+  return publicUrl;
+};
 
 export const syncShopGearFromEndpoint = async ({
   userId,
@@ -163,6 +288,55 @@ export const syncShopGearFromEndpoint = async ({
     };
   }
 
+  const mirroredImageUrlCache = new Map<string, string>();
+  const normalizedImagesByItemId = new Map<string, string[]>();
+
+  for (const item of externalGear) {
+    const rawImageUrls =
+      item.images && item.images.length > 0
+        ? item.images
+        : item.image_url
+          ? [item.image_url]
+          : [];
+
+    const normalizedImageUrls: string[] = [];
+
+    for (let index = 0; index < rawImageUrls.length; index += 1) {
+      const rawUrl = rawImageUrls[index];
+      if (!rawUrl) continue;
+
+      try {
+        const resolvedSourceUrl = resolveSourceImageUrl(rawUrl, endpointUrl);
+        const finalUrl = shouldMirrorImageUrl(resolvedSourceUrl)
+          ? mirroredImageUrlCache.get(resolvedSourceUrl) ||
+            await mirrorImageToDemostokeStorage({
+              sourceUrl: resolvedSourceUrl,
+              endpointUrl,
+              userId,
+              itemId: item.id,
+              imageIndex: index,
+              headers,
+            })
+          : resolvedSourceUrl;
+
+        if (!mirroredImageUrlCache.has(resolvedSourceUrl) && finalUrl !== resolvedSourceUrl) {
+          mirroredImageUrlCache.set(resolvedSourceUrl, finalUrl);
+        }
+
+        if (!normalizedImageUrls.includes(finalUrl)) {
+          normalizedImageUrls.push(finalUrl);
+        }
+      } catch (error) {
+        console.warn(
+          `Skipping image ${index + 1} for synced gear "${item.name || item.id}":`,
+          error instanceof Error ? error.message : error,
+        );
+      }
+    }
+
+    normalizedImagesByItemId.set(item.id, normalizedImageUrls);
+  }
+
   const syncedAt = new Date().toISOString();
   const equipmentPayload: EquipmentInsert[] = externalGear.map((item) => ({
     user_id: userId,
@@ -178,7 +352,8 @@ export const syncShopGearFromEndpoint = async ({
     review_count: item.review_count ?? 0,
     status: item.status || "available",
     visible_on_map: item.visible_on_map ?? true,
-    has_multiple_images: (item.images?.length ?? 0) > 1,
+    has_multiple_images:
+      (normalizedImagesByItemId.get(item.id)?.length ?? 0) > 1,
     location_address: item.location?.address || null,
     location_lat: toNullableNumber(item.location?.lat),
     location_lng: toNullableNumber(item.location?.lng),
@@ -228,12 +403,7 @@ export const syncShopGearFromEndpoint = async ({
       const equipmentId = equipmentIdByExternalId.get(item.id);
       if (!equipmentId) return;
 
-      const imageUrls =
-        item.images && item.images.length > 0
-          ? item.images
-          : item.image_url
-            ? [item.image_url]
-            : [];
+      const imageUrls = normalizedImagesByItemId.get(item.id) || [];
 
       imageUrls.forEach((url, index) => {
         imageRows.push({
