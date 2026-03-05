@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Equipment } from "@/types";
 import { toast } from "@/hooks/use-toast";
 import { AddOn, calculateTotalPrice, getAddOnsForCategory } from "@/lib/addOns";
@@ -9,6 +8,7 @@ import AddOnSelection from "./AddOnSelection";
 import PriceSummary from "./PriceSummary";
 import BookingActions from "./BookingActions";
 import { buildGearDisplayName } from "@/utils/gearUrl";
+import { useSearchParams } from "react-router-dom";
 
 interface BookingCardProps {
   equipment: Equipment;
@@ -16,9 +16,32 @@ interface BookingCardProps {
   onWaiverClick?: () => void;
 }
 
+const parseQueryDate = (value: string | null): Date | undefined => {
+  if (!value) return undefined;
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+};
+
+const toDateParam = (value?: Date): string | null => {
+  if (!value) return null;
+  return value.toISOString().slice(0, 10);
+};
+
 const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: BookingCardProps) => {
-  const [startDate, setStartDate] = useState<Date>();
-  const [endDate, setEndDate] = useState<Date>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialStartDate =
+    parseQueryDate(searchParams.get("start")) ||
+    parseQueryDate(searchParams.get("startDate")) ||
+    parseQueryDate(searchParams.get("from")) ||
+    parseQueryDate(searchParams.get("checkin"));
+  const initialEndDate =
+    parseQueryDate(searchParams.get("end")) ||
+    parseQueryDate(searchParams.get("endDate")) ||
+    parseQueryDate(searchParams.get("to")) ||
+    parseQueryDate(searchParams.get("checkout"));
+
+  const [startDate, setStartDate] = useState<Date | undefined>(initialStartDate);
+  const [endDate, setEndDate] = useState<Date | undefined>(initialEndDate);
   const [numDays, setNumDays] = useState(1);
   const [startDateOpen, setStartDateOpen] = useState(false);
   const [endDateOpen, setEndDateOpen] = useState(false);
@@ -27,6 +50,36 @@ const BookingCard = ({ equipment, waiverCompleted = false, onWaiverClick }: Book
   const addOns = getAddOnsForCategory(equipment.category);
   const [selectedAddOns, setSelectedAddOns] = useState<AddOn[]>([...addOns]);
   const totalPrice = calculateTotalPrice(equipment.price_per_day, selectedAddOns);
+
+  useEffect(() => {
+    const nextParams = new URLSearchParams(searchParams);
+    const startValue = toDateParam(startDate);
+    const endValue = toDateParam(endDate);
+
+    if (startValue) {
+      nextParams.set("start", startValue);
+    } else {
+      nextParams.delete("start");
+    }
+
+    if (endValue) {
+      nextParams.set("end", endValue);
+    } else {
+      nextParams.delete("end");
+    }
+
+    // Normalize onto start/end for a single source of truth.
+    nextParams.delete("startDate");
+    nextParams.delete("endDate");
+    nextParams.delete("from");
+    nextParams.delete("to");
+    nextParams.delete("checkin");
+    nextParams.delete("checkout");
+
+    if (nextParams.toString() !== searchParams.toString()) {
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [startDate, endDate, searchParams, setSearchParams]);
 
   const handleStartDateChange = (date: Date | undefined) => {
     setStartDate(date);

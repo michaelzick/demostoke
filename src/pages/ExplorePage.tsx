@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import usePageMetadata from "@/hooks/usePageMetadata";
@@ -33,6 +32,18 @@ const ExplorePage = () => {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQuickFilterFromUrl = searchParams.get("q") ?? "";
+  const feedStart =
+    searchParams.get("start") ??
+    searchParams.get("startDate") ??
+    searchParams.get("from") ??
+    searchParams.get("checkin") ??
+    undefined;
+  const feedEnd =
+    searchParams.get("end") ??
+    searchParams.get("endDate") ??
+    searchParams.get("to") ??
+    searchParams.get("checkout") ??
+    undefined;
   const { toast } = useToast();
 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -67,7 +78,10 @@ const ExplorePage = () => {
     const loadEquipment = async () => {
       setIsEquipmentLoading(true);
       try {
-        const equipment = await getEquipmentData();
+        const equipment = await getEquipmentData({
+          start: feedStart,
+          end: feedEnd,
+        });
         setAllEquipment(equipment);
       } catch (error) {
         console.error("Failed to load equipment:", error);
@@ -78,7 +92,7 @@ const ExplorePage = () => {
     };
 
     loadEquipment();
-  }, []);
+  }, [feedStart, feedEnd]);
 
   // Update active category when URL changes
   useEffect(() => {

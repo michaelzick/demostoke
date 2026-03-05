@@ -1,9 +1,9 @@
-
 import { getEquipmentData } from "./equipment/equipmentDataService";
 import { searchWithAI, fallbackSearch, AISearchResult } from "./equipment/aiSearchService";
 import { getUseAISearchSetting } from "./equipment/appSettingsService";
 import { parseQueryForLocation } from "@/utils/queryParsing";
 import { isValidCoordinate, calculateDistance } from "@/utils/distanceCalculation";
+import type { EquipmentDataOptions } from "./equipment/equipmentDataService";
 
 // Helper function to determine primary gear category from query
 const determinePrimaryCategory = (query: string): string[] => {
@@ -45,7 +45,8 @@ const determinePrimaryCategory = (query: string): string[] => {
 // AI-enhanced search function with location support
 export const searchEquipmentWithNLP = async (
   query: string,
-  userLocation?: { lat: number; lng: number }
+  userLocation?: { lat: number; lng: number },
+  options?: EquipmentDataOptions,
 ): Promise<AISearchResult[]> => {
 
   const { baseQuery, location, nearMe } = parseQueryForLocation(query);
@@ -53,7 +54,7 @@ export const searchEquipmentWithNLP = async (
   const useAISearch = await getUseAISearchSetting();
   
   // Get the appropriate dataset based on global setting
-  const equipmentData = await getEquipmentData();
+  const equipmentData = await getEquipmentData(options);
   
   if (equipmentData.length === 0) {
     return [];
