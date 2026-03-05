@@ -1,7 +1,13 @@
 
 import { useRef, useEffect } from 'react';
 import mapboxgl from 'mapbox-gl';
-import { createMarkerElement, createPopupContent, createUserLocationMarkerElement, createUserLocationPopupContent } from '@/utils/mapUtils';
+import {
+  createMarkerElement,
+  createPopupContent,
+  createUserLocationMarkerElement,
+  createUserLocationPopupContent,
+  resolveMarkerCategory,
+} from '@/utils/mapUtils';
 
 interface MapEquipment {
   id: string;
@@ -83,7 +89,7 @@ export const useMapMarkers = ({ map, mapLoaded, equipment = [], userLocations = 
       }
 
       try {
-        const categoryForMarker = activeCategory || user.equipment_categories?.[0];
+        const categoryForMarker = resolveMarkerCategory(activeCategory, user.equipment_categories);
         const el = createUserLocationMarkerElement(user.role, categoryForMarker);
 
         const marker = new mapboxgl.Marker(el)

@@ -10,9 +10,9 @@ import {
   initializeMap,
   fitMapBounds,
   createMarkerElement,
-  createPopupContent,
   createUserLocationMarkerElement,
   createUserLocationPopupContent,
+  resolveMarkerCategory,
 } from "@/utils/mapUtils";
 
 interface MapProps {
@@ -58,18 +58,18 @@ const MapComponent = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mapboxToken, setMapboxToken] = useState<string | null>(null);
-  
+
   // Determine which route we're on
   const isSearchRoute = !!useMatch("/search");
   const isExploreRoute = !!useMatch("/explore");
-  
+
   // Determine display mode
   const isEquipmentDetailMode = !isSearchRoute && !isExploreRoute && initialEquipment && initialEquipment.length > 0;
-  
+
   // Only fetch user locations when on explore route
-  const { 
-    data: userLocations = [], 
-    isLoading: isUserLocationsLoading 
+  const {
+    data: userLocations = [],
+    isLoading: isUserLocationsLoading
   } = useUserLocations();
 
   // Fetch Mapbox token
@@ -123,10 +123,10 @@ const MapComponent = ({
 
     if (isEquipmentDetailMode) {
       // Equipment detail mode: Show single gear item without popup
-      
-      const validEquipment = initialEquipment.filter(item => 
-        item.location && 
-        typeof item.location.lat === 'number' && 
+
+      const validEquipment = initialEquipment.filter(item =>
+        item.location &&
+        typeof item.location.lat === 'number' &&
         typeof item.location.lng === 'number'
       );
 
@@ -153,8 +153,9 @@ const MapComponent = ({
       locationsToShow.forEach((user) => {
         if (!user.location?.lat || !user.location?.lng) return;
 
-        const categoryForMarker =
-          activeCategory || (showCategoryColors ? user.equipment_categories[0] : undefined);
+        const categoryForMarker = showCategoryColors
+          ? resolveMarkerCategory(activeCategory, user.equipment_categories)
+          : undefined;
         const el = createUserLocationMarkerElement(user.role, categoryForMarker);
 
         const marker = new mapboxgl.Marker(el)
@@ -183,10 +184,11 @@ const MapComponent = ({
       locationsToShow.forEach((user) => {
         if (!user.location?.lat || !user.location?.lng) return;
 
-        const categoryForMarker =
-          activeCategory || (showCategoryColors ? user.equipment_categories[0] : undefined);
+        const categoryForMarker = showCategoryColors
+          ? resolveMarkerCategory(activeCategory, user.equipment_categories)
+          : undefined;
         const el = createUserLocationMarkerElement(user.role, categoryForMarker);
-        
+
         const marker = new mapboxgl.Marker(el)
           .setLngLat([user.location.lng, user.location.lat])
           .setPopup(
@@ -203,7 +205,7 @@ const MapComponent = ({
     }
   }, [isSearchRoute, isExploreRoute, isEquipmentDetailMode, initialEquipment, userLocations, activeCategory, isLoading, ownerIds, viewMode, filteredUserLocations]);
 
-  const showLoading = isLoading || 
+  const showLoading = isLoading ||
     (isSearchRoute ? isEquipmentLoading : (isExploreRoute ? isUserLocationsLoading : false));
 
   if (error) {
