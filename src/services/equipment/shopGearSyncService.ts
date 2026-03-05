@@ -17,6 +17,7 @@ export type SyncShopGearParams = {
 
 export type SyncShopGearResult = {
   syncedCount: number;
+  removedCount: number;
   endpointUrl: string;
   shopSlug: string;
 };
@@ -117,9 +118,46 @@ export const syncShopGearFromEndpoint = async ({
     );
   }
 
+  const sourceItemIds = new Set(externalGear.map((item) => item.id));
+  const { data: existingSyncedRows, error: existingSyncedRowsError } =
+    await supabase
+      .from("equipment")
+      .select("id, external_source_item_id")
+      .eq("user_id", userId)
+      .eq("external_source_provider", SOURCE_PROVIDER)
+      .eq("external_source_endpoint_url", endpointUrl)
+      .eq("external_source_shop_slug", shopSlug);
+
+  if (existingSyncedRowsError) {
+    throw new Error(
+      `Unable to load previously synced equipment: ${existingSyncedRowsError.message}`,
+    );
+  }
+
+  const staleEquipmentIds = (existingSyncedRows ?? [])
+    .filter((row) => {
+      const externalId = row.external_source_item_id;
+      return !externalId || !sourceItemIds.has(externalId);
+    })
+    .map((row) => row.id);
+
+  if (staleEquipmentIds.length > 0) {
+    const { error: deleteStaleError } = await supabase
+      .from("equipment")
+      .delete()
+      .in("id", staleEquipmentIds);
+
+    if (deleteStaleError) {
+      throw new Error(
+        `Unable to remove stale synced gear: ${deleteStaleError.message}`,
+      );
+    }
+  }
+
   if (externalGear.length === 0) {
     return {
       syncedCount: 0,
+      removedCount: staleEquipmentIds.length,
       endpointUrl: buildCanonicalFeedUrl(endpointUrl, shopSlug, includeHidden),
       shopSlug,
     };
@@ -256,6 +294,7 @@ export const syncShopGearFromEndpoint = async ({
 
   return {
     syncedCount: syncedEquipmentIds.length,
+    removedCount: staleEquipmentIds.length,
     endpointUrl: buildCanonicalFeedUrl(endpointUrl, shopSlug, includeHidden),
     shopSlug,
   };

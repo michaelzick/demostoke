@@ -164,6 +164,8 @@ const MyEquipmentPage = () => {
         title: "Sync complete",
         description: `Synced ${result.syncedCount} gear item${
           result.syncedCount === 1 ? "" : "s"
+        } and removed ${result.removedCount} stale item${
+          result.removedCount === 1 ? "" : "s"
         } from ${result.shopSlug}.`,
       });
     } catch (error) {
