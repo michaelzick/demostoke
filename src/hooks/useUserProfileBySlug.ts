@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { unslugify } from "@/utils/slugify";
+import { slugify, unslugify } from "@/utils/slugify";
 import { useIsAdmin } from "@/hooks/useUserRole";
 
 interface UserProfile {
@@ -37,34 +37,73 @@ export const useUserProfileBySlug = (slug: string) => {
       const name = unslugify(slug);
       const pattern = `%${name.split(/\s+/).join('%')}%`;
 
-      // Try public_profiles first
-      let { data, error } = await supabase
+      const fetchPublicProfileById = async (profileId: string) => {
+        const { data: profileById, error: profileByIdError } = await supabase
+          .from('public_profiles')
+          .select('*')
+          .eq('id', profileId)
+          .maybeSingle();
+
+        if (profileByIdError) {
+          console.error('Error fetching user profile by id:', profileByIdError);
+          return null;
+        }
+
+        return profileById;
+      };
+
+      // Try public_profiles name lookup first.
+      const { data: profileMatches, error } = await supabase
         .from('public_profiles')
         .select('*')
         .ilike('name', pattern)
-        .limit(1)
-        .maybeSingle();
+        .limit(10);
 
       if (error) {
         console.error('Error fetching user profile by slug:', error);
         throw error;
       }
 
-      // If not found and viewer is admin, try the full profiles table (user may be hidden)
-      let isHidden = false;
-      if (!data && isAdmin) {
-        const { data: fullProfile, error: fullError } = await (supabase as any)
-          .from('profiles')
-          .select('*')
-          .ilike('name', pattern)
+      let data =
+        profileMatches?.find((profile) => slugify(profile.name || '') === slug) ||
+        profileMatches?.[0] ||
+        null;
+
+      // Fallback: resolve slug from synced widget shop slug.
+      if (!data) {
+        const { data: syncedEquipment } = await supabase
+          .from('equipment')
+          .select('user_id')
+          .eq('external_source_provider', 'demostoke_widget')
+          .eq('external_source_shop_slug', slug)
           .limit(1)
           .maybeSingle();
 
+        if (syncedEquipment?.user_id) {
+          data = await fetchPublicProfileById(syncedEquipment.user_id);
+        }
+      }
+
+      // If not found and viewer is admin, try the full profiles table (user may be hidden).
+      let isHidden = false;
+      if (!data && isAdmin) {
+        const { data: fullProfileMatches, error: fullError } = await (supabase as any)
+          .from('profiles')
+          .select('*')
+          .ilike('name', pattern)
+          .limit(10);
+
         if (fullError) {
           console.error('Error fetching hidden profile:', fullError);
-        } else if (fullProfile) {
-          data = fullProfile;
-          isHidden = fullProfile.is_hidden === true;
+        } else {
+          const fullProfile =
+            fullProfileMatches?.find((profile: { name?: string | null }) => slugify(profile.name || '') === slug) ||
+            fullProfileMatches?.[0];
+
+          if (fullProfile) {
+            data = fullProfile;
+            isHidden = fullProfile.is_hidden === true;
+          }
         }
       }
 
