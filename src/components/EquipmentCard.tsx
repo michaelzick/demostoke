@@ -57,9 +57,7 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
     return `Sizes: ${sizes.join(', ')}`;
   };
 
-
-  // Determine if this is from a shop or private party based on owner
-  const isShop = equipment.owner.shopId;
+  // Determine if this is from a private party based on owner
   const isPrivateParty = equipment.owner.partyId;
 
   const deleteEquipmentMutation = useDeleteEquipment();
@@ -70,9 +68,7 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
   const isOwner = user && equipment.owner.id === user.id;
   const canEditDelete = isOwner || isAdmin;
 
-  const ownerLinkPath = isShop
-    ? `/shop/${equipment.owner.shopId}`
-    : `/user-profile/${slugify(equipment.owner.name)}`;
+  const ownerLinkPath = `/user-profile/${slugify(equipment.owner.name)}`;
 
   // Use images array from equipment_images table
   const images =

@@ -27,9 +27,7 @@ const ContactInfoModal = ({
 
   const displayName = profile?.name || owner.name;
   const hasContactInfo = profile?.address || profile?.phone || profile?.website;
-  const profileLinkPath = owner.shopId
-    ? `/shop/${owner.shopId}`
-    : `/user-profile/${slugify(owner.name)}`;
+  const profileLinkPath = `/user-profile/${slugify(owner.name)}`;
   const baseLeadEvent = {
     owner_id: owner.id,
     owner_name: displayName,

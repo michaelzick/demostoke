@@ -111,8 +111,9 @@ export const syncShopGearFromEndpoint = async ({
     );
 
   if (mappingError) {
-    throw new Error(
-      `Unable to save sync endpoint mapping: ${mappingError.message}`,
+    console.warn(
+      "Skipping endpoint mapping save:",
+      mappingError.message,
     );
   }
 
