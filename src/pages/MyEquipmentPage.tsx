@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -27,6 +27,8 @@ import {
   Star,
   DollarSign,
   BarChart3,
+  Loader2,
+  RefreshCw,
 } from "lucide-react";
 import {
   Carousel,
@@ -41,6 +43,7 @@ import {
   useUserEquipment,
   useDeleteEquipment,
   useUpdateEquipmentVisibility,
+  useSyncShopGearEndpoint,
 } from "@/hooks/useUserEquipment";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useAuth } from "@/helpers";
@@ -48,6 +51,7 @@ import type { UserEquipment } from "@/types/equipment";
 import { buildEquipmentTrackingFrom } from "@/utils/tracking";
 import { useScrollToTopButton } from "@/hooks/useScrollToTopButton";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
+import { supabase } from "@/integrations/supabase/client";
 
 const MyEquipmentPage = () => {
   usePageMetadata({
@@ -62,6 +66,7 @@ const MyEquipmentPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [visibilityFilter, setVisibilityFilter] = useState("all");
+  const [widgetEndpointUrl, setWidgetEndpointUrl] = useState("");
 
   // Scroll to top button - must be called before any conditional returns
   const { showButton: showScrollButton, scrollToTop } = useScrollToTopButton({
@@ -71,6 +76,7 @@ const MyEquipmentPage = () => {
   const { data: equipment, isLoading, error } = useUserEquipment(user?.id);
   const deleteEquipmentMutation = useDeleteEquipment();
   const updateVisibilityMutation = useUpdateEquipmentVisibility();
+  const syncShopGearMutation = useSyncShopGearEndpoint();
 
   const handleDelete = async (equipmentId: string, equipmentName: string) => {
     if (
@@ -138,6 +144,69 @@ const MyEquipmentPage = () => {
     sessionStorage.setItem("duplicateGearData", JSON.stringify(duplicateData));
     navigate("/list-your-gear/add-gear-form");
   };
+
+  const handleSyncShopGear = async () => {
+    const endpointInput = widgetEndpointUrl.trim();
+    if (!endpointInput) {
+      toast({
+        title: "Endpoint URL required",
+        description:
+          "Paste your demostoke-widget shop-gear-feed URL before syncing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const result = await syncShopGearMutation.mutateAsync(endpointInput);
+      setWidgetEndpointUrl(result.endpointUrl);
+      toast({
+        title: "Sync complete",
+        description: `Synced ${result.syncedCount} gear item${
+          result.syncedCount === 1 ? "" : "s"
+        } and removed ${result.removedCount} stale item${
+          result.removedCount === 1 ? "" : "s"
+        } from ${result.shopSlug}.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Sync failed",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Unable to sync shop gear right now.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    let cancelled = false;
+
+    const loadSavedMapping = async () => {
+      const { data, error } = await supabase
+        .from("shop_gear_feed_mappings")
+        .select("endpoint_url, shop_slug, include_hidden")
+        .eq("profile_id", user.id)
+        .eq("provider", "demostoke_widget")
+        .maybeSingle();
+
+      if (error || !data || cancelled) return;
+
+      const savedUrl = `${data.endpoint_url}?shop=${encodeURIComponent(
+        data.shop_slug,
+      )}${data.include_hidden ? "&include_hidden=true" : ""}`;
+      setWidgetEndpointUrl(savedUrl);
+    };
+
+    loadSavedMapping();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
 
   if (!user) {
     return (
@@ -233,6 +302,39 @@ const MyEquipmentPage = () => {
           </Link>
         </Button>
       </div>
+
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Sync Gear from DemoStoke Widget</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Paste your widget feed URL (must include <code>?shop=...</code>)
+            and sync to populate this shop&apos;s My Gear cards.
+          </p>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input
+              value={widgetEndpointUrl}
+              onChange={(e) => setWidgetEndpointUrl(e.target.value)}
+              placeholder="https://<project>.supabase.co/functions/v1/shop-gear-feed?shop=your-shop-slug"
+            />
+            <Button
+              type="button"
+              onClick={handleSyncShopGear}
+              disabled={
+                syncShopGearMutation.isPending || !widgetEndpointUrl.trim()
+              }
+            >
+              {syncShopGearMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <RefreshCw className="h-4 w-4 mr-2" />
+              )}
+              Sync
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       <Tabs defaultValue="equipment" className="space-y-6">
         <TabsList className="grid w-full grid-cols-2">

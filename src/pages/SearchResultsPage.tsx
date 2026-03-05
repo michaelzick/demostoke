@@ -25,6 +25,15 @@ import useScrollToTop from "@/hooks/useScrollToTop";
 import { useScrollToTopButton } from "@/hooks/useScrollToTopButton";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 
+const toDateInputValue = (value?: string): string => {
+  if (!value) return "";
+  const parsed = new Date(value);
+  if (!Number.isNaN(parsed.getTime())) {
+    return parsed.toISOString().slice(0, 10);
+  }
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "";
+};
+
 const SearchResultsPage = () => {
   usePageMetadata({
     title: 'Search Results | DemoStoke',
@@ -32,6 +41,18 @@ const SearchResultsPage = () => {
   });
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
+  const feedStart =
+    searchParams.get("start") ??
+    searchParams.get("startDate") ??
+    searchParams.get("from") ??
+    searchParams.get("checkin") ??
+    undefined;
+  const feedEnd =
+    searchParams.get("end") ??
+    searchParams.get("endDate") ??
+    searchParams.get("to") ??
+    searchParams.get("checkout") ??
+    undefined;
   const [results, setResults] = useState<AISearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [viewMode, setViewMode] = useState<"map" | "list" | "hybrid">("hybrid");
@@ -40,6 +61,8 @@ const SearchResultsPage = () => {
   // Track whether the user explicitly changed the sort order so we don't overwrite it
   const [userSelectedSort, setUserSelectedSort] = useState(false);
   const [searchInput, setSearchInput] = useState(query);
+  const [startDateInput, setStartDateInput] = useState(toDateInputValue(feedStart));
+  const [endDateInput, setEndDateInput] = useState(toDateInputValue(feedEnd));
   const [quickFilter, setQuickFilter] = useState("");
   const [isAISearch, setIsAISearch] = useState(false);
   const { toast } = useToast();
@@ -61,7 +84,10 @@ const SearchResultsPage = () => {
       if (!query) {
         // If no query, get all equipment based on global app setting
         try {
-          const equipmentResults = await getEquipmentData();
+          const equipmentResults = await getEquipmentData({
+            start: feedStart,
+            end: feedEnd,
+          });
           // Convert Equipment[] to AISearchResult[] for consistency
           const aiSearchResults: AISearchResult[] = equipmentResults.map(item => ({
             ...item,
@@ -99,7 +125,11 @@ const SearchResultsPage = () => {
           }
         }
 
-        const equipmentResults = await searchEquipmentWithNLP(query, userLocation);
+        const equipmentResults = await searchEquipmentWithNLP(
+          query,
+          userLocation,
+          { start: feedStart, end: feedEnd },
+        );
         setResults(equipmentResults);
       } catch (error) {
         console.error("Search failed:", error);
@@ -115,7 +145,7 @@ const SearchResultsPage = () => {
     };
 
     fetchResults();
-  }, [query, toast]);
+  }, [query, toast, feedStart, feedEnd]);
 
   // Get equipment with dynamic distances
   const { equipment: equipmentWithDynamicDistances, isLocationBased } = useEquipmentWithDynamicDistance(results);
@@ -131,6 +161,12 @@ const SearchResultsPage = () => {
   useEffect(() => {
     setQuickFilter("");
   }, [query]);
+
+  // Keep date inputs synced with URL params (including back/forward navigation).
+  useEffect(() => {
+    setStartDateInput(toDateInputValue(feedStart));
+    setEndDateInput(toDateInputValue(feedEnd));
+  }, [feedStart, feedEnd]);
 
   // Handler that records when a user explicitly changes the sort
   const handleSortChange = (value: string) => {
@@ -193,13 +229,47 @@ const SearchResultsPage = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (searchInput.trim()) {
-      setSearchParams({ q: searchInput.trim() });
+    const hasStart = Boolean(startDateInput);
+    const hasEnd = Boolean(endDateInput);
+
+    if ((hasStart && !hasEnd) || (!hasStart && hasEnd)) {
+      toast({
+        title: "Date range incomplete",
+        description: "Select both start and end dates to filter by availability.",
+        variant: "destructive",
+      });
+      return;
     }
+
+    const nextParams = new URLSearchParams(searchParams);
+    if (searchInput.trim()) {
+      nextParams.set("q", searchInput.trim());
+    } else {
+      nextParams.delete("q");
+    }
+
+    if (hasStart && hasEnd) {
+      nextParams.set("start", startDateInput);
+      nextParams.set("end", endDateInput);
+    } else {
+      nextParams.delete("start");
+      nextParams.delete("end");
+    }
+
+    nextParams.delete("startDate");
+    nextParams.delete("endDate");
+    nextParams.delete("from");
+    nextParams.delete("to");
+    nextParams.delete("checkin");
+    nextParams.delete("checkout");
+
+    setSearchParams(nextParams);
   };
 
   const handleReset = () => {
     setSearchInput("");
+    setStartDateInput("");
+    setEndDateInput("");
     setQuickFilter("");
     setSearchParams({});
     setActiveCategory(null);
@@ -243,7 +313,13 @@ const SearchResultsPage = () => {
     setQuickFilter("");
     setActiveCategory(null);
     setAdvancedFilters({ priceRanges: [], ratingRanges: [], featured: false, myFavorites: false });
-    setSearchParams({ q: searchQuery });
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set("q", searchQuery);
+    if (startDateInput && endDateInput) {
+      nextParams.set("start", startDateInput);
+      nextParams.set("end", endDateInput);
+    }
+    setSearchParams(nextParams);
   };
 
   // Scroll to top on mount
@@ -290,7 +366,7 @@ const SearchResultsPage = () => {
           </div>
 
           {/* Search form */}
-          <form onSubmit={handleSearch} className="flex gap-2 mb-6">
+          <form onSubmit={handleSearch} className="flex flex-col gap-3 mb-6">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
@@ -300,9 +376,38 @@ const SearchResultsPage = () => {
                 placeholder="What can I help you find?"
               />
             </div>
-            <Button type="submit" disabled={isLoading || !searchInput.trim()}>
-              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Search"}
-            </Button>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+              <div className="w-full sm:w-44">
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                  Start date
+                </label>
+                <Input
+                  type="date"
+                  value={startDateInput}
+                  onChange={(e) => setStartDateInput(e.target.value)}
+                />
+              </div>
+              <div className="w-full sm:w-44">
+                <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                  End date
+                </label>
+                <Input
+                  type="date"
+                  value={endDateInput}
+                  onChange={(e) => setEndDateInput(e.target.value)}
+                  min={startDateInput || undefined}
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={
+                  isLoading ||
+                  (!searchInput.trim() && !(startDateInput && endDateInput))
+                }
+              >
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Search"}
+              </Button>
+            </div>
           </form>
 
           {query && (

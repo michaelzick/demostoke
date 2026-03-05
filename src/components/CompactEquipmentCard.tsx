@@ -49,10 +49,7 @@ const CompactEquipmentCard = ({
   const hasMultipleImages = images.length > 1;
   const hasImages = images.length > 0;
 
-  const isShop = equipment.owner.shopId;
-  const ownerLinkPath = isShop
-    ? `/shop/${equipment.owner.shopId}`
-    : `/user-profile/${slugify(equipment.owner.name)}`;
+  const ownerLinkPath = `/user-profile/${slugify(equipment.owner.name)}`;
 
   const canEditDelete = showActions && (equipment.owner.id === currentUserId || isAdmin);
 

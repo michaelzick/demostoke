@@ -3,20 +3,69 @@ import mapboxgl from 'mapbox-gl';
 import { slugify } from '@/utils/slugify';
 import { buildGearPath } from '@/utils/gearUrl';
 
-export const getCategoryColor = (category: string): string => {
-  switch (category.toLowerCase()) {
-    case 'snowboards':
-      return 'bg-rose-500';
-    case 'skis':
-      return 'bg-fuchsia-500';
-    case 'surfboards':
-      return 'bg-sky-500';
-    case 'mountain-bikes':
-    case 'mountain-bike':  // Handle both variations
-      return 'bg-orange-400';
-    default:
-      return 'bg-black';
+const CATEGORY_COLORS: Record<string, string> = {
+  snowboards: 'bg-rose-500',
+  skis: 'bg-fuchsia-500',
+  surfboards: 'bg-sky-500',
+  'mountain-bikes': 'bg-orange-400',
+};
+
+export const normalizeMapCategory = (category?: string | null): string | undefined => {
+  const normalized = (category || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[_\s]+/g, '-');
+
+  if (!normalized) return undefined;
+
+  if (normalized === 'snowboard' || normalized === 'snowboards') {
+    return 'snowboards';
   }
+  if (normalized === 'ski' || normalized === 'skis') {
+    return 'skis';
+  }
+  if (normalized === 'surfboard' || normalized === 'surfboards') {
+    return 'surfboards';
+  }
+  if (
+    normalized === 'mountain-bike' ||
+    normalized === 'mountain-bikes' ||
+    normalized === 'mountainbike' ||
+    normalized === 'mountainbikes' ||
+    normalized === 'mtb' ||
+    normalized === 'mtbs' ||
+    normalized === 'bike' ||
+    normalized === 'bikes'
+  ) {
+    return 'mountain-bikes';
+  }
+
+  return normalized;
+};
+
+export const resolveMarkerCategory = (
+  activeCategory?: string | null,
+  equipmentCategories: string[] = [],
+): string | undefined => {
+  const normalizedActiveCategory = normalizeMapCategory(activeCategory);
+  if (normalizedActiveCategory && CATEGORY_COLORS[normalizedActiveCategory]) {
+    return normalizedActiveCategory;
+  }
+
+  for (const category of equipmentCategories) {
+    const normalizedCategory = normalizeMapCategory(category);
+    if (normalizedCategory && CATEGORY_COLORS[normalizedCategory]) {
+      return normalizedCategory;
+    }
+  }
+
+  return undefined;
+};
+
+export const getCategoryColor = (category?: string | null): string => {
+  const normalizedCategory = normalizeMapCategory(category);
+  if (!normalizedCategory) return 'bg-black';
+  return CATEGORY_COLORS[normalizedCategory] || 'bg-black';
 };
 
 export const getUserRoleColor = (role: string): string => {

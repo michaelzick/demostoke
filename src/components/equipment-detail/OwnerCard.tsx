@@ -21,10 +21,7 @@ const OwnerCard = ({ owner, trackingData }: OwnerCardProps) => {
   const { data: profile } = useUserProfile(owner.id);
   const { data: stats } = useUserStats(owner.id);
 
-  // Determine the correct profile link - use real user profile for DB users
-  const profileLinkPath = owner.shopId
-    ? `/shop/${owner.shopId}`
-    : `/user-profile/${slugify(owner.name)}`;
+  const profileLinkPath = `/user-profile/${slugify(owner.name)}`;
 
   // Use real data if available, fallback to mock data
   const displayName = profile?.name || owner.name;

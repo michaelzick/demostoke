@@ -31,7 +31,6 @@ import RealUserProfilePage from "../pages/RealUserProfilePage";
 import ProfileRedirect from "../pages/ProfileRedirect";
 import ChadGProfilePage from "../pages/ChadGProfilePage";
 import GeminiProfilePage from "../pages/GeminiProfilePage";
-import ShopPage from "../pages/ShopPage";
 import PrivatePartyPage from "../pages/PrivatePartyPage";
 import SearchResultsPage from "../pages/SearchResultsPage";
 import DemoCalendarPage from "../pages/DemoCalendarPage";
@@ -92,7 +91,6 @@ const AppRoutes = memo(() => {
         <Route path="user-profile/gemini" element={<GeminiProfilePage />} />
         <Route path="user-profile/:slug" element={<RealUserProfilePage />} />
         <Route path="profile" element={<ProfileRedirect />} />
-        <Route path="shop/:shopId" element={<ShopPage />} />
         <Route path="private-party/:partyId" element={<PrivatePartyPage />} />
         <Route path="search" element={<SearchResultsPage />} />
         <Route path="gear-quiz" element={<GearQuizPage />} />

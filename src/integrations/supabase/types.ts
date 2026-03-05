@@ -753,6 +753,11 @@ export type Database = {
           created_at: string
           damage_deposit: number | null
           description: string | null
+          external_source_endpoint_url: string | null
+          external_source_item_id: string | null
+          external_source_provider: string | null
+          external_source_shop_slug: string | null
+          external_source_synced_at: string | null
           has_multiple_images: boolean | null
           id: string
           is_featured: boolean
@@ -781,6 +786,11 @@ export type Database = {
           created_at?: string
           damage_deposit?: number | null
           description?: string | null
+          external_source_endpoint_url?: string | null
+          external_source_item_id?: string | null
+          external_source_provider?: string | null
+          external_source_shop_slug?: string | null
+          external_source_synced_at?: string | null
           has_multiple_images?: boolean | null
           id?: string
           is_featured?: boolean
@@ -809,6 +819,11 @@ export type Database = {
           created_at?: string
           damage_deposit?: number | null
           description?: string | null
+          external_source_endpoint_url?: string | null
+          external_source_item_id?: string | null
+          external_source_provider?: string | null
+          external_source_shop_slug?: string | null
+          external_source_synced_at?: string | null
           has_multiple_images?: boolean | null
           id?: string
           is_featured?: boolean
@@ -1183,6 +1198,57 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      shop_gear_feed_mappings: {
+        Row: {
+          created_at: string
+          endpoint_url: string
+          id: string
+          include_hidden: boolean
+          is_active: boolean
+          profile_id: string
+          provider: string
+          shop_slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          endpoint_url: string
+          id?: string
+          include_hidden?: boolean
+          is_active?: boolean
+          profile_id: string
+          provider?: string
+          shop_slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          endpoint_url?: string
+          id?: string
+          include_hidden?: boolean
+          is_active?: boolean
+          profile_id?: string
+          provider?: string
+          shop_slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_gear_feed_mappings_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shop_gear_feed_mappings_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       scraped_retailers: {
         Row: {
