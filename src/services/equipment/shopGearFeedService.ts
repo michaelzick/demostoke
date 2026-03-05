@@ -29,6 +29,13 @@ type FeedSpecifications = {
   suitable?: string;
 };
 
+type FeedShop = {
+  id?: string;
+  slug?: string;
+  name?: string;
+  logo_url?: string | null;
+};
+
 export type ShopGearFeedItem = {
   id: string;
   user_id?: string;
@@ -56,6 +63,7 @@ export type ShopGearFeedItem = {
 };
 
 type ShopGearFeedResponse = {
+  shop?: FeedShop;
   gear?: ShopGearFeedItem[];
 };
 
@@ -69,12 +77,32 @@ const hasGearItems = (
       Array.isArray(payload.gear),
   );
 
+const hasFeedShop = (
+  payload: ShopGearFeedResponse | { error?: string } | null,
+): payload is { shop: FeedShop } =>
+  Boolean(
+    payload &&
+      typeof payload === 'object' &&
+      'shop' in payload &&
+      payload.shop &&
+      typeof payload.shop === 'object',
+  );
+
+type OwnerOverride = {
+  id?: string;
+  name?: string;
+  imageUrl?: string;
+  shopId?: string | null;
+  partyId?: string | null;
+};
+
 export type FetchShopGearFeedParams = {
   endpointUrl: string;
   shopSlug: string;
   start?: string | Date;
   end?: string | Date;
   includeHidden?: boolean;
+  ownerOverride?: OwnerOverride;
   headers?: HeadersInit;
   signal?: AbortSignal;
 };
@@ -145,6 +173,7 @@ const buildFeedUrl = (params: FetchShopGearFeedParams): string => {
 
 export const mapShopGearFeedItemToEquipment = (
   item: ShopGearFeedItem,
+  ownerOverride?: OwnerOverride,
 ): Equipment => {
   const images =
     Array.isArray(item.images) && item.images.length > 0
@@ -153,12 +182,15 @@ export const mapShopGearFeedItemToEquipment = (
         ? [item.image_url]
         : [];
 
-  const ownerId = item.owner?.id || item.user_id || 'shop-owner';
-  const ownerName = item.owner?.name || 'Shop';
+  const ownerId = ownerOverride?.id || item.owner?.id || item.user_id || 'shop-owner';
+  const ownerName = ownerOverride?.name || item.owner?.name || 'Shop';
   const ownerImage =
+    ownerOverride?.imageUrl ||
     item.owner?.imageUrl ||
     item.owner?.logo_url ||
     `https://api.dicebear.com/6.x/avataaars/svg?seed=${ownerId}`;
+  const ownerShopId = ownerOverride?.shopId === null ? undefined : (ownerOverride?.shopId || ownerId);
+  const ownerPartyId = ownerOverride?.partyId ?? null;
 
   const nextAvailableDate =
     item.availability?.nextAvailableDate ||
@@ -167,7 +199,7 @@ export const mapShopGearFeedItemToEquipment = (
 
   return {
     id: item.id,
-    user_id: item.user_id || ownerId,
+    user_id: ownerOverride?.id || item.user_id || ownerId,
     name: item.name || 'Unnamed gear',
     category: normalizeCategory(item.category),
     subcategory: item.subcategory || undefined,
@@ -196,8 +228,8 @@ export const mapShopGearFeedItemToEquipment = (
       rating: toNumber(item.owner?.rating, 0),
       reviewCount: toNumber(item.owner?.reviewCount, 0),
       responseRate: toNumber(item.owner?.responseRate, 0),
-      shopId: ownerId,
-      partyId: null,
+      shopId: ownerShopId,
+      partyId: ownerPartyId,
     },
     location: {
       lat: toNumber(item.location?.lat, 0),
@@ -257,6 +289,15 @@ export const fetchEquipmentFromShopGearFeed = async (
     );
   }
 
+  const feedShop = hasFeedShop(payload) ? payload.shop : undefined;
+  const ownerOverride: OwnerOverride = {
+    ...params.ownerOverride,
+    name: params.ownerOverride?.name || feedShop?.name || undefined,
+    imageUrl: params.ownerOverride?.imageUrl || feedShop?.logo_url || undefined,
+  };
+
   const items = hasGearItems(payload) ? payload.gear : [];
-  return items.map(mapShopGearFeedItemToEquipment);
+  return items.map((item) =>
+    mapShopGearFeedItemToEquipment(item, ownerOverride),
+  );
 };

@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/helpers";
 import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 import { deduplicateImageUrls } from "@/utils/imageDeduplication";
+import { syncShopGearFromEndpoint } from "@/services/equipment/shopGearSyncService";
 
 interface UserEquipment {
   id: string;
@@ -205,6 +206,28 @@ export const useUpdateEquipmentVisibility = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userEquipment"] });
+    },
+  });
+};
+
+export const useSyncShopGearEndpoint = () => {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async (endpointInput: string) => {
+      if (!user?.id) {
+        throw new Error("You must be signed in to sync shop gear.");
+      }
+
+      return await syncShopGearFromEndpoint({
+        userId: user.id,
+        endpointInput,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userEquipment"] });
+      queryClient.invalidateQueries({ queryKey: ["equipment"] });
     },
   });
 };
