@@ -38,6 +38,7 @@ import GearQuizPage from "../pages/GearQuizPage";
 import GearIndexPage from "../pages/GearIndexPage";
 import GearCategoryPage from "../pages/GearCategoryPage";
 import ApiGearSearchPage from "../pages/ApiGearSearchPage";
+import WidgetPage from "../pages/WidgetPage";
 import { useAuth } from "@/contexts/auth";
 
 const AdminRouteGate = () => {
@@ -97,6 +98,7 @@ const AppRoutes = memo(() => {
         <Route path="demo-calendar" element={<DemoCalendarPage />} />
         <Route path="demo-calendar/event/:eventSlug" element={<DemoCalendarPage />} />
         <Route path="event/:eventSlug" element={<DemoCalendarPage />} />
+        <Route path="widget" element={<WidgetPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
