@@ -316,11 +316,19 @@ const RealUserProfilePage = () => {
   };
 
   const isUserHidden = (dbProfile as any)?.is_hidden === true;
+  const canAdminToggleVisibility = isAdmin && !!profileId;
+  const visibilityBannerMessage = isOwnProfile
+    ? isUserHidden
+      ? "Your profile and gear are hidden from the site"
+      : "Your profile and gear are visible on the site"
+    : isUserHidden
+      ? "This user and their gear are hidden from the site"
+      : "This user and their gear are visible on the site";
 
   return (
     <div className="min-h-screen">
       {/* Admin visibility toggle banner */}
-      {isAdmin && !isOwnProfile && profileId && (
+      {canAdminToggleVisibility && (
         <div className={`border-b px-4 py-3 flex items-center justify-between ${isUserHidden ? 'bg-destructive/10 border-destructive/20' : 'bg-muted border-border'}`}>
           <div className="container mx-auto flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -330,9 +338,7 @@ const RealUserProfilePage = () => {
                 <Eye className="h-4 w-4 text-muted-foreground" />
               )}
               <span className="text-sm font-medium">
-                {isUserHidden
-                  ? 'This user and their gear are hidden from the site'
-                  : 'This user and their gear are visible on the site'}
+                {visibilityBannerMessage}
               </span>
             </div>
             <div className="flex items-center gap-2">
