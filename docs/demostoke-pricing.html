@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DemoStoke — Partner Pricing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tahoma&display=swap" rel="stylesheet">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --cyan: #00dcf4;
+      --cyan-dim: #00b8cc;
+      --bg: #020817;
+      --bg-card: #111827;
+      --bg-mid: #1f2937;
+      --border: #374151;
+      --muted: #6b7280;
+      --text: #f9fafb;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --sky: #0ea5e9;
+      --red: #ef4444;
+    }
+
+    body {
+      font-family: Tahoma, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 1100px;
+    }
+
+    /* HEADER */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .ds-logo {
+      font-size: 3.2rem;
+      font-weight: 900;
+      color: var(--cyan);
+      letter-spacing: -1px;
+      font-style: italic;
+      line-height: 1;
+    }
+
+    .ds-logo-img {
+      height: 3rem;
+      width: auto;
+      display: block;
+    }
+
+    .brand-name {
+      font-size: 1.9rem;
+      font-weight: 700;
+      color: var(--cyan);
+    }
+
+    .tagline {
+      font-size: 1rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    .divider {
+      height: 3px;
+      background: linear-gradient(90deg, var(--cyan), transparent);
+      margin: 1rem 0 1.8rem;
+    }
+
+    /* GRID */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .card.featured {
+      border-color: var(--cyan);
+      box-shadow: 0 0 28px rgba(0, 220, 244, 0.12);
+    }
+
+    .card-accent {
+      height: 4px;
+      width: 100%;
+    }
+
+    .card-inner {
+      padding: 1.4rem 1.4rem 1.6rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tier-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .tier-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.2rem;
+    }
+
+    .tier-sub {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 1.1rem;
+    }
+
+    .price-block {
+      background: var(--bg-mid);
+      border-radius: 6px;
+      padding: 0.8rem 1rem;
+      margin-bottom: 1.2rem;
+      text-align: center;
+    }
+
+    .price-main {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+
+    .price-sub {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.1rem;
+    }
+
+    /* FEATURES */
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      margin-bottom: 1rem;
+      flex: 1;
+    }
+
+    .features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+      color: #d1d5db;
+      line-height: 1.4;
+    }
+
+    .features li .check {
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-size: 0.9rem;
+    }
+
+    .features li.dim {
+      color: var(--muted);
+    }
+
+    .features li.dim .check {
+      opacity: 0.35;
+    }
+
+    /* BEST FOR */
+    .best-for {
+      background: var(--bg);
+      border-radius: 5px;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      margin-top: auto;
+    }
+
+    .best-for strong {
+      color: var(--text);
+      display: block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.2rem;
+    }
+
+    /* FEATURED BADGE */
+    .badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--cyan);
+      color: var(--bg);
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+
+    /* BOTTOM COMPARISON ROW */
+    .compare {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 1.2rem;
+    }
+
+    .compare-header {
+      display: grid;
+      grid-template-columns: 2fr repeat(3, 1fr);
+      background: var(--bg-mid);
+      padding: 0.6rem 1rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      gap: 0.5rem;
+    }
+
+    .compare-header .col-name {
+      color: var(--text);
+    }
+
+    .compare-row {
+      display: grid;
+      grid-template-columns: 2fr repeat(3, 1fr);
+      padding: 0.55rem 1rem;
+      font-size: 0.9rem;
+      gap: 0.5rem;
+      border-top: 1px solid var(--border);
+      align-items: center;
+    }
+
+    .compare-row:nth-child(even) {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    .compare-row .feat {
+      color: #9ca3af;
+    }
+
+    .compare-row .val {
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    .yes {
+      color: var(--green);
+    }
+
+    .no {
+      color: var(--border);
+    }
+
+    .part {
+      color: var(--amber);
+      font-size: 0.85rem;
+    }
+
+    /* FOOTER NOTE */
+    .footnote {
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-align: center;
+      font-style: italic;
+    }
+
+    .footnote span {
+      color: var(--cyan);
+      font-style: normal;
+      font-weight: 700;
+    }
+
+    .footnote a:hover {
+      text-decoration: underline !important;
+    }
+
+    /* CUSTOM QUOTE */
+    .custom-quote {
+      margin: 2.5rem 0 1.25rem;
+      background: linear-gradient(135deg, rgba(17, 24, 39, 0.8), rgba(2, 8, 23, 0.8));
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 2.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .custom-quote::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    .quote-content h3 {
+      font-size: 1.6rem;
+      color: var(--text);
+      margin-bottom: 0.8rem;
+    }
+
+    .quote-content p {
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto 1.8rem;
+      line-height: 1.6;
+    }
+
+    .quote-btn {
+      display: inline-block;
+      padding: 0.8rem 2rem;
+      background: var(--bg-mid);
+      color: var(--text);
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: 1px solid var(--border);
+      transition: all 0.2s ease;
+    }
+
+    .quote-btn:hover {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <!-- HEADER -->
+    <div class="header">
+      <div class="ds-logo"><img class="ds-logo-img"
+          src="file:///Users/michaelzick/Engineering/DemoStoke/Logos/demostoke-logo-ds-transparent-cropped.webp"
+          alt="DemoStoke DS logo"></div>
+      <div>
+        <div class="brand-name">DemoStoke</div>
+        <div class="tagline">Partner Pricing — Surf Shop Edition</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+
+    <!-- TIER CARDS -->
+    <div class="grid">
+
+      <!-- STOREFRONT -->
+      <div class="card">
+        <div class="card-accent" style="background:#0ea5e9"></div>
+        <div class="card-inner">
+          <div class="tier-label">Tier 1</div>
+          <div class="tier-name">Storefront</div>
+          <div class="tier-sub">Get discovered online, zero commitment</div>
+          <div class="price-block">
+            <div class="price-main" style="color:#0ea5e9">Free</div>
+            <div class="price-sub">Always. No credit card.</div>
+          </div>
+          <div class="section-label">What you get</div>
+          <ul class="features">
+            <li><span class="check" style="color:#0ea5e9">✓</span> DemoStoke marketplace listing</li>
+            <li><span class="check" style="color:#0ea5e9">✓</span> Inventory dashboard — add brands, models, dimensions
+            </li>
+            <li><span class="check" style="color:#0ea5e9">✓</span> Skill-level tagging (Beginner → Expert)</li>
+            <li><span class="check" style="color:#0ea5e9">✓</span> Pricing & availability display</li>
+            <li><span class="check" style="color:#0ea5e9">✓</span> Structured data for AI search pickup</li>
+            <li><span class="check" style="color:#0ea5e9">✓</span> Shop profile page on DemoStoke</li>
+            <li class="dim"><span class="check">—</span> Widget for your own site</li>
+            <li class="dim"><span class="check">—</span> Online booking</li>
+            <li class="dim"><span class="check">—</span> POS sync</li>
+          </ul>
+          <div class="best-for">
+            <strong>Best for</strong>
+            Shops wanting to test the platform before committing. Immediate visibility with zero risk.
+          </div>
+        </div>
+      </div>
+
+      <!-- WIDGET — FEATURED -->
+      <div class="card featured">
+        <div class="badge">Most Popular</div>
+        <div class="card-accent" style="background:#00dcf4"></div>
+        <div class="card-inner">
+          <div class="tier-label">Tier 2</div>
+          <div class="tier-name">Site Integration</div>
+          <div class="tier-sub">Power your own site with real inventory</div>
+          <div class="price-block">
+            <div class="price-main" style="color:#00dcf4">$99<span style="font-size:1.2rem;font-weight:400">/mo</span>
+            </div>
+            <div class="price-sub">Flat rate — no revenue share, no surprises</div>
+          </div>
+          <div class="section-label">Everything in Storefront, plus</div>
+          <ul class="features">
+            <li><span class="check" style="color:#00dcf4">✓</span> Embeddable booking widget for your site</li>
+            <li><span class="check" style="color:#00dcf4">✓</span> Your branding — colors, logo, fonts</li>
+            <li><span class="check" style="color:#00dcf4">✓</span> Skill-level filter UI for customers</li>
+            <li><span class="check" style="color:#00dcf4">✓</span> Online booking & inquiry flow</li>
+            <li><span class="check" style="color:#00dcf4">✓</span> POS integration (Square, Lightspeed, etc.)</li>
+            <li><span class="check" style="color:#00dcf4">✓</span> AI-powered real-time availability sync</li>
+            <li><span class="check" style="color:#00dcf4">✓</span> We catalog your initial inventory</li>
+            <li><span class="check" style="color:#00dcf4">✓</span> Priority support</li>
+            <li class="dim"><span class="check">—</span> New website build</li>
+          </ul>
+          <div class="best-for">
+            <strong>Best for</strong>
+            Shops with an existing site who want real gear browsing without a full rebuild.
+          </div>
+        </div>
+      </div>
+
+      <!-- FULL STACK -->
+      <div class="card">
+        <div class="card-accent" style="background:#f59e0b"></div>
+        <div class="card-inner">
+          <div class="tier-label">Tier 3</div>
+          <div class="tier-name">Full Stack</div>
+          <div class="tier-sub">Complete modernization — we do everything</div>
+          <div class="price-block">
+            <div class="price-main" style="color:#f59e0b">$2,500–5k<span style="font-size:1rem;font-weight:400">
+                setup</span></div>
+            <div class="price-sub">+ $199/mo ongoing — includes everything</div>
+          </div>
+          <div class="section-label">Everything in Site Integration, plus</div>
+          <ul class="features">
+            <li><span class="check" style="color:#f59e0b">✓</span> New website (DemoStoke-powered template)</li>
+            <li><span class="check" style="color:#f59e0b">✓</span> AI Recommendation Engine</li>
+            <li><span class="check" style="color:#f59e0b">✓</span> Chatbot Integration</li>
+            <li><span class="check" style="color:#f59e0b">✓</span> Agentic Automation</li>
+            <li><span class="check" style="color:#f59e0b">✓</span> Dedicated onboarding support</li>
+            <li><span class="check" style="color:#f59e0b">✓</span> Live within 1 week</li>
+          </ul>
+          <div class="best-for">
+            <strong>Best for</strong>
+            Shops ready to fully modernize. Treat us as your tech partner, not just a listing service.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+
+    <!-- COMPARISON TABLE -->
+    <div class="compare">
+      <div class="compare-header">
+        <div class="col-name">Feature</div>
+        <div style="color:#0ea5e9;text-align:center">Storefront</div>
+        <div style="color:#00dcf4;text-align:center">Site Integration</div>
+        <div style="color:#f59e0b;text-align:center">Full Stack</div>
+      </div>
+      <div class="compare-row">
+        <div class="feat">Marketplace listing on DemoStoke</div>
+        <div class="val yes">✓</div>
+        <div class="val yes">✓</div>
+        <div class="val yes">✓</div>
+      </div>
+      <div class="compare-row">
+        <div class="feat">Inventory dashboard (brands, models, dims)</div>
+        <div class="val yes">✓</div>
+        <div class="val yes">✓</div>
+        <div class="val yes">✓</div>
+      </div>
+      <div class="compare-row">
+        <div class="feat">AI search-optimized structured data</div>
+        <div class="val yes">✓</div>
+        <div class="val yes">✓</div>
+        <div class="val yes">✓</div>
+      </div>
+      <div class="compare-row">
+        <div class="feat">Embeddable widget for your own site</div>
+        <div class="val no">—</div>
+        <div class="val yes">✓</div>
+        <div class="val yes">✓</div>
+      </div>
+      <div class="compare-row">
+        <div class="feat">Online booking & inquiry flow</div>
+        <div class="val no">—</div>
+        <div class="val yes">✓</div>
+        <div class="val yes">✓</div>
+      </div>
+      <div class="compare-row">
+        <div class="feat">Custom branding on widget</div>
+        <div class="val no">—</div>
+        <div class="val yes">✓</div>
+        <div class="val yes">✓</div>
+      </div>
+      <div class="compare-row">
+        <div class="feat">POS integration (Square, Lightspeed, etc.)</div>
+        <div class="val no">—</div>
+        <div class="val yes">✓</div>
+        <div class="val yes">✓</div>
+      </div>
+      <div class="compare-row">
+        <div class="feat">Real-time availability sync (AI agent)</div>
+        <div class="val no">—</div>
+        <div class="val yes">✓</div>
+        <div class="val yes">✓</div>
+      </div>
+      <div class="compare-row">
+        <div class="feat">We catalog your inventory for you</div>
+        <div class="val no">—</div>
+        <div class="val yes">✓</div>
+        <div class="val yes">✓</div>
+      </div>
+      <div class="compare-row">
+        <div class="feat">New website (DemoStoke-powered template)</div>
+        <div class="val no">—</div>
+        <div class="val no">—</div>
+        <div class="val yes">✓</div>
+      </div>
+      <div class="compare-row">
+        <div class="feat">AI Recommendation Engine</div>
+        <div class="val no">—</div>
+        <div class="val no">—</div>
+        <div class="val yes">✓</div>
+      </div>
+      <div class="compare-row">
+        <div class="feat">Chatbot & Agentic Automation</div>
+        <div class="val no">—</div>
+        <div class="val no">—</div>
+        <div class="val yes">✓</div>
+      </div>
+      <div class="compare-row">
+        <div class="feat">Support level</div>
+        <div class="val part" style="text-align:center">Email</div>
+        <div class="val part" style="text-align:center">Priority</div>
+        <div class="val part" style="text-align:center">Dedicated</div>
+      </div>
+      <div class="compare-row">
+        <div class="feat">Monthly cost</div>
+        <div class="val" style="color:#0ea5e9;font-weight:700">Free</div>
+        <div class="val" style="color:#00dcf4;font-weight:700">$99/mo</div>
+        <div class="val" style="color:#f59e0b;font-weight:700">$199/mo</div>
+      </div>
+      <div class="compare-row">
+        <div class="feat">Setup fee</div>
+        <div class="val" style="color:#6b7280">None</div>
+        <div class="val" style="color:#6b7280">None</div>
+        <div class="val" style="color:#f59e0b;font-weight:700">$2,500–5k</div>
+      </div>
+    </div> <!-- /compare -->
+
+    <!-- CUSTOM QUOTE SECTION -->
+    <div class="custom-quote">
+      <div class="quote-content">
+        <h3>Need a Custom Solution?</h3>
+        <p>Looking for a specific feature set or specialized automation not listed above? We build bespoke tools for
+          high-volume shops.</p>
+        <a href="mailto:mzick@zickonezero.com" class="quote-btn">Get a Custom Quote</a>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footnote">
+      Start free. Upgrade when you see results. &nbsp;|&nbsp; <a href="https://www.demostoke.com/" target="_blank"
+        style="color: var(--cyan); text-decoration: none; font-weight: 700;">demostoke.com</a> &nbsp;|&nbsp; No
+      contracts.
+      Cancel anytime.
+    </div>
+
+  </div> <!-- /page -->
+</body>
+
+</html>
