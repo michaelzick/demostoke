@@ -1,5 +1,5 @@
 
-import { memo } from "react";
+import { memo, type ReactNode } from "react";
 import { Routes, Route } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
@@ -38,7 +38,9 @@ import GearQuizPage from "../pages/GearQuizPage";
 import GearIndexPage from "../pages/GearIndexPage";
 import GearCategoryPage from "../pages/GearCategoryPage";
 import ApiGearSearchPage from "../pages/ApiGearSearchPage";
+import WidgetPage from "../pages/WidgetPage";
 import { useAuth } from "@/contexts/auth";
+import { useIsAdmin } from "@/hooks/useUserRole";
 
 const AdminRouteGate = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -48,6 +50,17 @@ const AdminRouteGate = () => {
   }
 
   return isAuthenticated ? <AdminPage /> : <NotFoundPage />;
+};
+
+const AdminOnlyRouteGate = ({ children }: { children: ReactNode }) => {
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const { isAdmin, isLoading: isRoleLoading } = useIsAdmin();
+
+  if (isAuthLoading || (isAuthenticated && isRoleLoading)) {
+    return <div className="min-h-screen" />;
+  }
+
+  return isAuthenticated && isAdmin ? <>{children}</> : <NotFoundPage />;
 };
 
 const AppRoutes = memo(() => {
@@ -97,6 +110,14 @@ const AppRoutes = memo(() => {
         <Route path="demo-calendar" element={<DemoCalendarPage />} />
         <Route path="demo-calendar/event/:eventSlug" element={<DemoCalendarPage />} />
         <Route path="event/:eventSlug" element={<DemoCalendarPage />} />
+        <Route
+          path="widget"
+          element={
+            <AdminOnlyRouteGate>
+              <WidgetPage />
+            </AdminOnlyRouteGate>
+          }
+        />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

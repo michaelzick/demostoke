@@ -21,7 +21,6 @@ import {
   Plus,
   Edit,
   Trash2,
-  Copy,
   MapPin,
   CalendarDays,
   Star,
@@ -47,7 +46,6 @@ import {
 } from "@/hooks/useUserEquipment";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useAuth } from "@/helpers";
-import type { UserEquipment } from "@/types/equipment";
 import { buildEquipmentTrackingFrom } from "@/utils/tracking";
 import { useScrollToTopButton } from "@/hooks/useScrollToTopButton";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
@@ -126,25 +124,6 @@ const MyEquipmentPage = () => {
     }
   };
 
-  const handleDuplicate = (equipmentItem: UserEquipment) => {
-    const duplicateData = {
-      name: equipmentItem.name,
-      category: equipmentItem.category,
-      description: equipmentItem.description,
-      location_address: equipmentItem.location?.address || "", // Changed from zip to address
-      size: equipmentItem.specifications?.size || "",
-      weight: equipmentItem.specifications?.weight || "",
-      material: equipmentItem.specifications?.material || "",
-      suitable_skill_level: equipmentItem.specifications?.suitable || "",
-      price_per_day: equipmentItem.price_per_day,
-      damage_deposit: equipmentItem.damage_deposit || 0,
-      image_url: equipmentItem.images?.[0] || "",
-    };
-
-    sessionStorage.setItem("duplicateGearData", JSON.stringify(duplicateData));
-    navigate("/list-your-gear/add-gear-form");
-  };
-
   const handleSyncShopGear = async () => {
     const endpointInput = widgetEndpointUrl.trim();
     if (!endpointInput) {
@@ -166,7 +145,7 @@ const MyEquipmentPage = () => {
           result.syncedCount === 1 ? "" : "s"
         } and removed ${result.removedCount} stale item${
           result.removedCount === 1 ? "" : "s"
-        } from ${result.shopSlug}.`,
+        } from ${result.shopSlug}. My Gear, the profile page, and the map now reflect the synced database rows.`,
       });
     } catch (error) {
       toast({
@@ -310,7 +289,8 @@ const MyEquipmentPage = () => {
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
             Paste your widget feed URL (must include <code>?shop=...</code>)
-            and sync to populate this shop&apos;s My Gear cards.
+            and sync to update this shop&apos;s database-backed inventory for
+            My Gear, the public profile page, and the map.
           </p>
           <div className="flex flex-col gap-2 sm:flex-row">
             <Input

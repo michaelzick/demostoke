@@ -1,7 +1,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useUserProfileBySlug } from "@/hooks/useUserProfileBySlug";
 import { useUserStats } from "@/hooks/useUserStats";
 import { useUserEquipment } from "@/hooks/useUserEquipment";
@@ -29,12 +29,9 @@ import { useProfileImageHandlers } from "@/hooks/useProfileImageHandlers";
 import { useHeroImageHandlers } from "@/hooks/useHeroImageHandlers";
 import { useProfileData } from "@/hooks/useProfileData";
 import { useProfileUpdate } from "@/hooks/useProfileUpdate";
-import { fetchEquipmentFromShopGearFeed } from "@/services/equipment/shopGearFeedService";
 import useScrollToTop from "@/hooks/useScrollToTop";
 import { useScrollToTopButton } from "@/hooks/useScrollToTopButton";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
-import { supabase } from "@/integrations/supabase/client";
-import type { Equipment } from "@/types";
 import type { UserProfile } from "@/types";
 import type { UserEquipment } from "@/types/equipment";
 
@@ -43,7 +40,6 @@ const RealUserProfilePage = () => {
   useScrollToTop();
 
   const { slug } = useParams();
-  const [searchParams] = useSearchParams();
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { isAdmin } = useIsAdmin();
@@ -74,9 +70,6 @@ const RealUserProfilePage = () => {
   const { data: dbStats, isLoading: statsLoading } = useUserStats(profileId || "");
   // Only show visible equipment on public profiles (visibleOnly = true for other users, false for own profile)
   const { data: dbUserEquipment, isLoading: equipmentLoading } = useUserEquipment(profileId || "", !isOwnProfile);
-  const [liveFeedEquipment, setLiveFeedEquipment] = useState<UserEquipment[] | null>(null);
-  const [isLiveFeedLoading, setIsLiveFeedLoading] = useState(false);
-  const [liveFeedError, setLiveFeedError] = useState<string | null>(null);
 
   // Profile editing hooks (always call hooks, but conditionally use data)
   const profileDataResult = useProfileData();
@@ -162,132 +155,6 @@ const RealUserProfilePage = () => {
     }
   };
 
-  const feedStart =
-    searchParams.get("start") ??
-    searchParams.get("startDate") ??
-    searchParams.get("from") ??
-    searchParams.get("checkin") ??
-    undefined;
-  const feedEnd =
-    searchParams.get("end") ??
-    searchParams.get("endDate") ??
-    searchParams.get("to") ??
-    searchParams.get("checkout") ??
-    undefined;
-
-  useEffect(() => {
-    if (!profileId) {
-      setLiveFeedEquipment(null);
-      return;
-    }
-
-    let cancelled = false;
-
-    const mapFeedItemToUserEquipment = (item: Equipment): UserEquipment => ({
-      id: item.id,
-      user_id: item.user_id || profileId,
-      name: item.name,
-      category: item.category,
-      description: item.description || "",
-      image_url: item.image_url || "",
-      images: item.images || (item.image_url ? [item.image_url] : []),
-      price_per_day: Number(item.price_per_day || 0),
-      price_per_hour: item.price_per_hour,
-      price_per_week: item.price_per_week,
-      damage_deposit: item.damage_deposit,
-      rating: Number(item.rating || 0),
-      review_count: Number(item.review_count || 0),
-      status: (item.status as "available" | "booked" | "unavailable") || "available",
-      created_at: item.created_at || new Date().toISOString(),
-      updated_at: item.updated_at || new Date().toISOString(),
-      visible_on_map: item.visible_on_map ?? true,
-      location: {
-        lat: item.location?.lat || 0,
-        lng: item.location?.lng || 0,
-        address: item.location?.address || "",
-      },
-      specifications: {
-        size: item.specifications?.size || "",
-        weight: item.specifications?.weight || "",
-        material: item.specifications?.material || "",
-        suitable: item.specifications?.suitable || "",
-      },
-      availability: {
-        available: item.availability?.available ?? item.status === "available",
-      },
-      owner: {
-        id: profileId,
-        name: dbProfile?.name || "User",
-      },
-    });
-
-    const loadLiveFeedEquipment = async () => {
-      setLiveFeedError(null);
-
-      const { data: mapping, error: mappingError } = await supabase
-        .from("shop_gear_feed_mappings")
-        .select("endpoint_url, shop_slug, include_hidden")
-        .eq("profile_id", profileId)
-        .eq("provider", "demostoke_widget")
-        .eq("is_active", true)
-        .maybeSingle();
-
-      if (cancelled) return;
-
-      if (mappingError || !mapping) {
-        setLiveFeedEquipment(null);
-        return;
-      }
-
-      setIsLiveFeedLoading(true);
-
-      try {
-        const apiKey = import.meta.env.VITE_SHOP_GEAR_FEED_APIKEY as
-          | string
-          | undefined;
-        const headers = apiKey
-          ? {
-              apikey: apiKey,
-              Authorization: `Bearer ${apiKey}`,
-            }
-          : undefined;
-
-        const gear = await fetchEquipmentFromShopGearFeed({
-          endpointUrl: mapping.endpoint_url,
-          shopSlug: mapping.shop_slug,
-          includeHidden: !!mapping.include_hidden,
-          start: feedStart,
-          end: feedEnd,
-          headers,
-        });
-
-        if (!cancelled) {
-          setLiveFeedEquipment(gear.map(mapFeedItemToUserEquipment));
-        }
-      } catch (error) {
-        if (!cancelled) {
-          setLiveFeedEquipment(null);
-          setLiveFeedError(
-            error instanceof Error
-              ? error.message
-              : "Unable to load live shop feed inventory.",
-          );
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLiveFeedLoading(false);
-        }
-      }
-    };
-
-    loadLiveFeedEquipment();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [profileId, feedStart, feedEnd, dbProfile?.name]);
-
-
   let profile: UserProfile | undefined;
   if (isOwnProfile && ownProfileData) {
     console.log('Using own profile data, displayRole:', ownProfileData.displayRole);
@@ -318,7 +185,7 @@ const RealUserProfilePage = () => {
   }
 
   const stats = dbStats;
-  const userEquipment = liveFeedEquipment ?? dbUserEquipment;
+  const userEquipment = dbUserEquipment;
 
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
@@ -353,7 +220,7 @@ const RealUserProfilePage = () => {
     : `No gear matches "${searchTerm.trim()}". Try another model or clear your search.`;
 
   const isLoading = profileLoading || statsLoading;
-  const isEquipmentSectionLoading = equipmentLoading || isLiveFeedLoading;
+  const isEquipmentSectionLoading = equipmentLoading;
   const isEditLoading = (authLoading || (!profileLoaded && isAuthenticated)) && isEditMode;
 
   const profileName = profile?.name;
@@ -449,11 +316,19 @@ const RealUserProfilePage = () => {
   };
 
   const isUserHidden = (dbProfile as any)?.is_hidden === true;
+  const canAdminToggleVisibility = isAdmin && !!profileId;
+  const visibilityBannerMessage = isOwnProfile
+    ? isUserHidden
+      ? "Your profile and gear are hidden from the site"
+      : "Your profile and gear are visible on the site"
+    : isUserHidden
+      ? "This user and their gear are hidden from the site"
+      : "This user and their gear are visible on the site";
 
   return (
     <div className="min-h-screen">
       {/* Admin visibility toggle banner */}
-      {isAdmin && !isOwnProfile && profileId && (
+      {canAdminToggleVisibility && (
         <div className={`border-b px-4 py-3 flex items-center justify-between ${isUserHidden ? 'bg-destructive/10 border-destructive/20' : 'bg-muted border-border'}`}>
           <div className="container mx-auto flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -463,9 +338,7 @@ const RealUserProfilePage = () => {
                 <Eye className="h-4 w-4 text-muted-foreground" />
               )}
               <span className="text-sm font-medium">
-                {isUserHidden
-                  ? 'This user and their gear are hidden from the site'
-                  : 'This user and their gear are visible on the site'}
+                {visibilityBannerMessage}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -567,11 +440,6 @@ const RealUserProfilePage = () => {
               isMockUser={false}
               emptyMessage={emptyEquipmentMessage}
             />
-            {liveFeedError && (
-              <p className="mt-4 text-sm text-destructive">
-                {liveFeedError}
-              </p>
-            )}
           </div>
         </div>
       </div>
