@@ -21,4 +21,5 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /widget
 Sitemap: https://www.demostoke.com/sitemap.xml
