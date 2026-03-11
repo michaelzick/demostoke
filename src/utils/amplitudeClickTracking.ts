@@ -35,23 +35,28 @@ const setupClickTracking = () => {
   document.body.addEventListener('click', (event) => {
     const target = event.target as HTMLElement;
 
-    // Check if clicked element has any of our target classes
-    const matchedClass = targetClasses.find(className =>
-      target.classList.contains(className)
-    );
+    // Use closest to ensure we capture clicks on child elements (e.g. icons, spans) inside our target
+    const selector = targetClasses.map(c => `.${c}`).join(', ');
+    const matchedElement = target.closest(selector) as HTMLElement | null;
 
-    if (matchedClass && target.id) {
+    if (matchedElement && matchedElement.id) {
+      // Find which specific target class was matched
+      const matchedClass = targetClasses.find(className =>
+        matchedElement.classList.contains(className)
+      );
+
       // Send tracking data to Amplitude
-      if (window.amplitude && window.amplitude.track) {
+      if (matchedClass && window.amplitude && window.amplitude.track) {
         window.amplitude.track('element_clicked', {
           element_class: matchedClass,
-          element_id: target.id,
-          element_type: target.tagName.toLowerCase()
+          element_id: matchedElement.id,
+          element_type: matchedElement.tagName.toLowerCase()
         });
 
         console.log('Amplitude tracking sent:', {
           element_class: matchedClass,
-          element_id: target.id
+          element_id: matchedElement.id,
+          element_type: matchedElement.tagName.toLowerCase()
         });
       }
     }
