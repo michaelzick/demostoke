@@ -1,10 +1,43 @@
-# DemoStoke Gear Index
-DemoStoke indexes real-world rental and used gear with location context and freshness timestamps.
+# DemoStoke — Action Sports Gear Demo & Rental Marketplace
 
-## High-value indexes
-- https://www.demostoke.com/gear
-- https://www.demostoke.com/gear/surfboards
-- https://www.demostoke.com/gear/used-skis
+> DemoStoke is an online marketplace where riders find, demo, rent, and buy surfboards, snowboards, skis, and mountain bikes from local shops and other riders.
 
-## API
-- https://www.demostoke.com/api/gear/search?q=
+## What DemoStoke Does
+DemoStoke connects action sports enthusiasts with local gear — surfboards, snowboards, skis, and mountain bikes — available for demo, rental, or purchase. The platform aggregates real-world inventory from surf shops, ski rental operations, indie board shapers, and individual gear owners into a searchable, location-aware marketplace. Riders can browse available gear by sport, location, skill level, and price, then book a demo or rental directly.
+
+## How It Works
+1. Riders browse available gear on the DemoStoke map or search by category, brand, and location.
+2. They connect with the gear owner or shop to arrange a demo or rental.
+3. After trying the gear in real conditions, riders can purchase what they love — often with the rental fee credited toward the purchase price.
+
+## For Shops & Gear Owners
+DemoStoke offers three partner tiers:
+- **Storefront (Free):** Marketplace listing with inventory dashboard, skill-level tagging, AI search-optimized structured data. Commission-based — shops only pay when they earn.
+- **Site Integration ($99/mo):** Everything in Storefront plus an embeddable booking widget, custom branding, POS integration (Square, Lightspeed), real-time availability sync, and inventory cataloging.
+- **Full Stack ($199/mo + setup):** Complete web presence including a DemoStoke-powered website, AI recommendation engine, chatbot integration, and dedicated onboarding support.
+
+## Gear Categories
+- Surfboards (shortboards, longboards, fish, mid-lengths, foam tops, SUPs)
+- Snowboards (all-mountain, freestyle, powder, splitboards)
+- Skis (all-mountain, powder, park, touring, cross-country)
+- Mountain Bikes (trail, enduro, downhill, cross-country, gravel)
+
+## Coverage
+DemoStoke is currently focused on Southern California (surf) with expansion planned to major US action sports markets including Big Bear, Mammoth, Lake Tahoe, Pacific Northwest, and Colorado ski country.
+
+## Key URLs
+- Homepage: https://www.demostoke.com/
+- Browse gear: https://www.demostoke.com/explore
+- Surfboards: https://www.demostoke.com/gear/surfboards
+- Used skis: https://www.demostoke.com/gear/used-skis
+- Gear search: https://www.demostoke.com/search
+- Demo calendar: https://www.demostoke.com/demo-calendar
+- List your gear: https://www.demostoke.com/list-your-gear
+- Blog: https://www.demostoke.com/blog
+- About: https://www.demostoke.com/about
+- Gear API: https://www.demostoke.com/api/gear/search?q=
+
+## Contact
+- Website: https://www.demostoke.com/contact-us
+- Founded: 2024
+- Founder: Michael Zick
