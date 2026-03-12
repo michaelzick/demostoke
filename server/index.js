@@ -288,6 +288,84 @@ async function getGearPageMeta(gearSlug, protocol, host) {
   }
 }
 
+const STATIC_ROUTE_META = {
+  '/': {
+    title: 'DemoStoke | Demo & Rent Surfboards, Snowboards, Skis & Mountain Bikes',
+    description: 'DemoStoke is the go-to marketplace to demo, rent, and try action sports gear from local shops and riders. Surfboards, snowboards, skis, and mountain bikes — find the right board, try it in real conditions, and buy what you love.',
+    type: 'website',
+  },
+  '/about': {
+    title: 'About DemoStoke | The Action Sports Gear Demo Marketplace',
+    description: 'DemoStoke connects riders with local shops, indie shapers, and gear owners for surfboard, snowboard, ski, and mountain bike demos and rentals. Built by riders, for riders.',
+    type: 'website',
+  },
+  '/explore': {
+    title: 'Explore Gear | Surfboards, Snowboards, Skis & Bikes Near You | DemoStoke',
+    description: 'Browse available surfboards, snowboards, skis, and mountain bikes for demo and rental near you. Filter by sport, location, skill level, and price.',
+    type: 'website',
+  },
+  '/how-it-works': {
+    title: 'How DemoStoke Works | Try Before You Buy Gear Rentals',
+    description: 'Browse gear on the DemoStoke map, connect with local shops or owners, try the gear in real conditions, and buy what you love. No lines, no outdated rentals.',
+    type: 'website',
+  },
+  '/blog': {
+    title: 'DemoStoke Blog | Gear Reviews, Surf Culture & Action Sports',
+    description: 'Gear reviews, surf and snow culture, demo day calendars, and rider stories from the DemoStoke community.',
+    type: 'website',
+  },
+  '/contact-us': {
+    title: 'Contact DemoStoke | Get in Touch',
+    description: 'Have questions about DemoStoke? Want to list your shop or gear? Reach out to the DemoStoke team.',
+    type: 'website',
+  },
+  '/list-your-gear': {
+    title: 'List Your Gear or Shop on DemoStoke | Partner With Us',
+    description: 'List your surf shop, ski rental, or personal gear on DemoStoke. Get discovered by riders looking for demos and rentals in your area. Free to start.',
+    type: 'website',
+  },
+  '/search': {
+    title: 'Search Gear | DemoStoke',
+    description: 'Search for surfboards, snowboards, skis, and mountain bikes available for demo and rental on DemoStoke.',
+    type: 'website',
+  },
+  '/gear': {
+    title: 'Gear Index | DemoStoke',
+    description: 'DemoStoke indexes real-world rental, demo, and used action sports gear with model details, location context, and freshness timestamps.',
+    type: 'website',
+  },
+  '/gear/surfboards': {
+    title: 'Surfboard Demos & Rentals | DemoStoke',
+    description: 'Browse surfboards available for demo and rental from local surf shops and riders. Shortboards, longboards, fish, mid-lengths, and more.',
+    type: 'website',
+  },
+  '/gear/used-skis': {
+    title: 'Used Ski Rentals & Demos | DemoStoke',
+    description: 'Browse used skis available for rental and demo with current availability, location, and pricing.',
+    type: 'website',
+  },
+  '/demo-calendar': {
+    title: 'Demo Day Calendar | Upcoming Gear Demo Events | DemoStoke',
+    description: 'Find upcoming surfboard, snowboard, and ski demo days near you. Try new gear from top brands at local shops and events.',
+    type: 'website',
+  },
+  '/gear-quiz': {
+    title: 'Gear Quiz | Find Your Perfect Board | DemoStoke',
+    description: 'Answer a few questions about your riding style, skill level, and conditions to get personalized gear recommendations from DemoStoke.',
+    type: 'website',
+  },
+  '/privacy-policy': {
+    title: 'Privacy Policy | DemoStoke',
+    description: 'DemoStoke privacy policy. How we collect, use, and protect your data.',
+    type: 'website',
+  },
+  '/terms-of-service': {
+    title: 'Terms of Service | DemoStoke',
+    description: 'DemoStoke terms of service for riders, gear owners, and shop partners.',
+    type: 'website',
+  },
+};
+
 const app = express();
 
 // Security headers middleware
@@ -347,6 +425,113 @@ app.use(sirv(clientDist, {
   immutable: true,
 }));
 
+app.get('/sitemap.xml', async (req, res) => {
+  const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
+  const host = req.get('host') || 'www.demostoke.com';
+  const baseUrl = `${protocol}://${host}`;
+
+  // Public static routes only — no auth-gated pages
+  const staticRoutes = [
+    { path: '/', priority: '1.0', changefreq: 'daily' },
+    { path: '/explore', priority: '0.9', changefreq: 'daily' },
+    { path: '/gear', priority: '0.8', changefreq: 'daily' },
+    { path: '/gear/surfboards', priority: '0.8', changefreq: 'daily' },
+    { path: '/gear/used-skis', priority: '0.8', changefreq: 'daily' },
+    { path: '/blog', priority: '0.7', changefreq: 'daily' },
+    { path: '/demo-calendar', priority: '0.7', changefreq: 'weekly' },
+    { path: '/about', priority: '0.5', changefreq: 'monthly' },
+    { path: '/how-it-works', priority: '0.5', changefreq: 'monthly' },
+    { path: '/list-your-gear', priority: '0.6', changefreq: 'monthly' },
+    { path: '/contact-us', priority: '0.4', changefreq: 'monthly' },
+    { path: '/search', priority: '0.6', changefreq: 'daily' },
+    { path: '/gear-quiz', priority: '0.5', changefreq: 'monthly' },
+    { path: '/privacy-policy', priority: '0.2', changefreq: 'yearly' },
+    { path: '/terms-of-service', priority: '0.2', changefreq: 'yearly' },
+  ];
+
+  let blogUrls = [];
+  let equipmentUrls = [];
+  let eventUrls = [];
+
+  if (supabase) {
+    try {
+      const [blogRes, equipRes, eventRes] = await Promise.all([
+        supabase.from('blog_posts').select('slug, updated_at').eq('status', 'published'),
+        supabase.from('equipment').select('id, name, size, updated_at'),
+        supabase.from('demo_calendar').select('title, event_date, event_time, updated_at'),
+      ]);
+
+      if (blogRes.data) {
+        blogUrls = blogRes.data.map(post => ({
+          path: `/blog/${post.slug}`,
+          lastmod: post.updated_at ? new Date(post.updated_at).toISOString().slice(0, 10) : null,
+          priority: '0.6',
+          changefreq: 'monthly',
+        }));
+      }
+
+      if (equipRes.data) {
+        equipmentUrls = equipRes.data.map(item => ({
+          path: `/gear/${buildGearSlug({ id: item.id, name: item.name, size: item.size })}`,
+          lastmod: item.updated_at ? new Date(item.updated_at).toISOString().slice(0, 10) : null,
+          priority: '0.7',
+          changefreq: 'weekly',
+        }));
+      }
+
+      if (eventRes.data) {
+        const { format } = await import('date-fns');
+        eventUrls = eventRes.data.map(ev => {
+          const titlePart = slugify(ev.title);
+          const datePart = ev.event_date ? format(new Date(ev.event_date + 'T00:00:00'), 'MM-dd-yyyy') : 'tbd';
+          const timePart = ev.event_time ? ev.event_time.replace(':', '') : 'tbd';
+          return {
+            path: `/demo-calendar/event/${titlePart}-${datePart}-${timePart}`,
+            lastmod: ev.updated_at ? new Date(ev.updated_at).toISOString().slice(0, 10) : null,
+            priority: '0.5',
+            changefreq: 'weekly',
+          };
+        });
+      }
+    } catch (err) {
+      console.error('Error generating dynamic sitemap:', err);
+    }
+  }
+
+  const allUrls = [
+    ...staticRoutes,
+    ...blogUrls,
+    ...equipmentUrls,
+    ...eventUrls,
+  ];
+
+  const xmlLines = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+  ];
+
+  for (const url of allUrls) {
+    xmlLines.push('  <url>');
+    xmlLines.push(`    <loc>${baseUrl}${url.path}</loc>`);
+    if (url.lastmod) {
+      xmlLines.push(`    <lastmod>${url.lastmod}</lastmod>`);
+    }
+    if (url.changefreq) {
+      xmlLines.push(`    <changefreq>${url.changefreq}</changefreq>`);
+    }
+    if (url.priority) {
+      xmlLines.push(`    <priority>${url.priority}</priority>`);
+    }
+    xmlLines.push('  </url>');
+  }
+
+  xmlLines.push('</urlset>');
+
+  res.set('Content-Type', 'application/xml');
+  res.set('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+  res.send(xmlLines.join('\n'));
+});
+
 app.get('*', async (req, res) => {
   try {
     const template = fs.readFileSync(path.join(clientDist, 'index.html'), 'utf-8');
@@ -367,6 +552,73 @@ app.get('*', async (req, res) => {
       }
       return inputHtml.replace('</head>', `${canonicalTag}</head>`);
     };
+
+    // Static route meta injection
+    const staticMeta = STATIC_ROUTE_META[req.path];
+    if (staticMeta) {
+      const escapedTitle = escapeContent(staticMeta.title);
+      const escapedDescription = escapeContent(staticMeta.description);
+
+      html = html
+        .replace(/<title>[^<]*<\/title>/i, `<title>${escapedTitle}</title>`)
+        .replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i, `<meta name="description" content="${escapedDescription}" />`)
+        .replace(/<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:title" content="${escapedTitle}" />`)
+        .replace(/<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:description" content="${escapedDescription}" />`)
+        .replace(/<meta\s+property="og:type"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:type" content="${staticMeta.type || 'website'}" />`)
+        .replace(/<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:url" content="${ogUrl}" />`)
+        .replace(/<meta\s+(?:name|property)="twitter:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:title" content="${escapedTitle}" />`)
+        .replace(/<meta\s+(?:name|property)="twitter:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:description" content="${escapedDescription}" />`);
+      html = upsertCanonical(html, ogUrl);
+    }
+
+    if (req.path === '/') {
+      const siteSchema = JSON.stringify([
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "DemoStoke",
+          "url": "https://www.demostoke.com",
+          "logo": "https://www.demostoke.com/img/demostoke-square-transparent.webp",
+          "description": "DemoStoke is an action sports gear marketplace where riders demo, rent, and try surfboards, snowboards, skis, and mountain bikes from local shops and other riders.",
+          "foundingDate": "2024",
+          "sameAs": []
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "DemoStoke",
+          "url": "https://www.demostoke.com",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://www.demostoke.com/search?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        }
+      ]);
+      html = html
+        .replace(/<script\s+id="structured-data"[^>]*>.*?<\/script>/i, '')
+        .replace('</head>', `<script id="structured-data" type="application/ld+json">${siteSchema}</script></head>`);
+        
+      const homepageNoscript = `<noscript><section id="homepage-crawl-summary" style="padding:16px;max-width:720px;margin:0 auto;">
+        <h1>DemoStoke — Demo & Rent Action Sports Gear</h1>
+        <p>DemoStoke is the go-to marketplace to demo, rent, and try surfboards, snowboards, skis, and mountain bikes from local shops and riders. Try before you buy.</p>
+        <h2>How It Works</h2>
+        <p>Browse available gear by sport and location. Connect with the shop or owner. Try the gear in real conditions. Buy what you love.</p>
+        <h2>Gear Categories</h2>
+        <ul>
+          <li><a href="/gear/surfboards">Surfboards</a> — shortboards, longboards, fish, mid-lengths</li>
+          <li><a href="/gear/used-skis">Skis</a> — all-mountain, powder, park, touring</li>
+          <li><a href="/explore?category=snowboards">Snowboards</a> — all-mountain, freestyle, powder</li>
+          <li><a href="/explore?category=bikes">Mountain Bikes</a> — trail, enduro, downhill</li>
+        </ul>
+        <h2>For Shops</h2>
+        <p><a href="/list-your-gear">List your shop on DemoStoke</a> — free to start, commission-based.</p>
+      </section></noscript>`;
+      html = html.replace('<div id="root">', `${homepageNoscript}<div id="root">`);
+    }
 
     // Inject Open Graph and structured metadata for blog posts
     if (req.path.startsWith('/blog/')) {
@@ -389,16 +641,32 @@ app.get('*', async (req, res) => {
 
         console.log('Image being used for meta tags:', escapedImage);
 
-        const schema = {
-          '@context': 'https://schema.org',
-          '@type': 'BlogPosting',
-          headline: meta.title,
-          description: meta.description,
-          image: meta.image,
-          datePublished: meta.publishedAt,
-          author: { '@type': 'Person', name: meta.author },
-          url: ogUrl
-        };
+        const schema = [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BlogPosting',
+            headline: meta.title,
+            description: meta.description,
+            image: meta.image,
+            datePublished: meta.publishedAt,
+            author: { '@type': 'Person', name: meta.author },
+            publisher: {
+              '@type': 'Organization',
+              name: 'DemoStoke',
+              logo: { '@type': 'ImageObject', url: 'https://www.demostoke.com/img/demostoke-square-transparent.webp' }
+            },
+            url: ogUrl
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: `${protocol}://${host}/` },
+              { '@type': 'ListItem', position: 2, name: 'Blog', item: `${protocol}://${host}/blog` },
+              { '@type': 'ListItem', position: 3, name: meta.title, item: ogUrl },
+            ]
+          }
+        ];
 
         console.log('Using author for replacements:', meta.author);
 

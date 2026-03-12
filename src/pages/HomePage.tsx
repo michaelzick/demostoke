@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import HeroSection from "@/components/HeroSection";
 import HowItWorksSection from "@/components/home/HowItWorksSection";
+import SeoContentSection from "@/components/home/SeoContentSection";
 import FeaturedGearSection from "@/components/home/FeaturedGearSection";
 import FeaturedPostsSection from "@/components/home/FeaturedPostsSection";
 import FeaturedEventsSection from "@/components/home/FeaturedEventsSection";
@@ -276,6 +277,7 @@ const HomePage = () => {
       <HeroSection />
       <FeaturedEventsSection />
       <HowItWorksSection />
+      <SeoContentSection />
       <RecentlyViewedGearSection userId={user?.id} />
 
       {/* Featured section with admin-selected equipment */}

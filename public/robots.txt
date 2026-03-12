@@ -22,4 +22,18 @@ Allow: /
 User-agent: *
 Allow: /
 Disallow: /widget
+Disallow: /admin
+Disallow: /my-gear
+Disallow: /analytics
+Disallow: /bookings
+Disallow: /profile
+Disallow: /edit-gear/
+Disallow: /blog/create
+Disallow: /blog/drafts
+Disallow: /blog/edit/
+Disallow: /blog/preview/
+Disallow: /auth/
+Disallow: /list-your-gear/add-gear-form
+Disallow: /api/
+
 Sitemap: https://www.demostoke.com/sitemap.xml
