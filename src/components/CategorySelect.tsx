@@ -7,7 +7,10 @@ interface CategorySelectProps {
   className?: string;
 }
 
-const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+const formatCategory = (str: string) => 
+  str.split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 
 const CategorySelect = ({ categories, selected, onChange, className }: CategorySelectProps) => {
   return (
@@ -22,7 +25,7 @@ const CategorySelect = ({ categories, selected, onChange, className }: CategoryS
       <option value="all">All Categories</option>
       {categories.map((category) => (
         <option key={category} value={category}>
-          {capitalize(category)}
+          {formatCategory(category)}
         </option>
       ))}
     </select>

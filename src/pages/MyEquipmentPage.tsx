@@ -457,7 +457,7 @@ const MyEquipmentPage = () => {
                           </CardTitle>
                         </Link>
                         <div className="flex items-center justify-between text-sm text-muted-foreground">
-                          <span className="capitalize">{item.category}</span>
+                          <span className="capitalize">{item.category.replace(/-/g, ' ')}</span>
                           <div className="flex items-center gap-1">
                             <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
                             <span>{item.rating}</span>
