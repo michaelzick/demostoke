@@ -28,11 +28,11 @@ if (SUPABASE_URL && SUPABASE_ANON_KEY) {
 const escapeContent = (str) =>
   str
     ? String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
     : '';
 
 const slugify = (value) =>
@@ -237,13 +237,13 @@ async function getGearPageMeta(gearSlug, protocol, host) {
     const offerSchema =
       offers.length > 1
         ? {
-            '@type': 'AggregateOffer',
-            priceCurrency: 'USD',
-            lowPrice: String(Math.min(...offerPrices)),
-            highPrice: String(Math.max(...offerPrices)),
-            offerCount: String(offers.length),
-            offers,
-          }
+          '@type': 'AggregateOffer',
+          priceCurrency: 'USD',
+          lowPrice: String(Math.min(...offerPrices)),
+          highPrice: String(Math.max(...offerPrices)),
+          offerCount: String(offers.length),
+          offers,
+        }
         : offers[0];
 
     const schema = {
@@ -258,10 +258,10 @@ async function getGearPageMeta(gearSlug, protocol, host) {
       aggregateRating:
         Number(gear.review_count) > 0 && Number(gear.rating) > 0
           ? {
-              '@type': 'AggregateRating',
-              ratingValue: Number(gear.rating),
-              reviewCount: Number(gear.review_count),
-            }
+            '@type': 'AggregateRating',
+            ratingValue: Number(gear.rating),
+            reviewCount: Number(gear.review_count),
+          }
           : undefined,
     };
 
@@ -419,12 +419,6 @@ app.use(compression({
   },
 }));
 
-app.use(sirv(clientDist, {
-  extensions: [],
-  maxAge: 31536000, // 1 year for static assets
-  immutable: true,
-}));
-
 app.get('/sitemap.xml', async (req, res) => {
   const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
   const host = req.get('host') || 'www.demostoke.com';
@@ -532,6 +526,13 @@ app.get('/sitemap.xml', async (req, res) => {
   res.send(xmlLines.join('\n'));
 });
 
+app.use(sirv(clientDist, {
+  extensions: [],
+  maxAge: 31536000, // 1 year for static assets
+  immutable: true,
+}));
+
+
 app.get('*', async (req, res) => {
   try {
     const template = fs.readFileSync(path.join(clientDist, 'index.html'), 'utf-8');
@@ -601,7 +602,7 @@ app.get('*', async (req, res) => {
       html = html
         .replace(/<script\s+id="structured-data"[^>]*>.*?<\/script>/i, '')
         .replace('</head>', `<script id="structured-data" type="application/ld+json">${siteSchema}</script></head>`);
-        
+
       const homepageNoscript = `<noscript><section id="homepage-crawl-summary" style="padding:16px;max-width:720px;margin:0 auto;">
         <h1>DemoStoke — Demo & Rent Action Sports Gear</h1>
         <p>DemoStoke is the go-to marketplace to demo, rent, and try surfboards, snowboards, skis, and mountain bikes from local shops and riders. Try before you buy.</p>
