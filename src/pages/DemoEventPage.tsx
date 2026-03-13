@@ -210,10 +210,8 @@ const DemoEventPage = () => {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-          <div className="aspect-[16/9]">
-            <DemoEventThumbnail event={event} />
-          </div>
+        <div className="aspect-[16/9] overflow-hidden rounded-2xl">
+          <DemoEventThumbnail event={event} imageClassName="rounded-2xl" />
         </div>
 
         <div className="space-y-6">
