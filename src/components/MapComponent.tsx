@@ -119,7 +119,10 @@ const MapComponent = ({
     const existingMarkers = document.querySelectorAll('.mapboxgl-marker');
     existingMarkers.forEach(marker => marker.remove());
 
-    const showCategoryColors = isSearchRoute || viewMode === 'hybrid';
+    const showCategoryColors =
+      isSearchRoute ||
+      viewMode === 'hybrid' ||
+      (isExploreRoute && activeCategory !== null);
 
     if (isEquipmentDetailMode) {
       // Equipment detail mode: Show single gear item without popup
