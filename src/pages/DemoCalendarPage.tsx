@@ -14,10 +14,10 @@ import CalendarList from "@/components/demo-calendar/CalendarList";
 import CategoryFilter from "@/components/demo-calendar/CategoryFilter";
 import ProximityFilter from "@/components/demo-calendar/ProximityFilter";
 import AddEventModal from "@/components/demo-calendar/AddEventModal";
-import { useNavigate, useParams } from "react-router-dom";
-import EventModal from "@/components/demo-calendar/EventModal";
-import { generateEventSlug, findEventBySlug } from "@/utils/eventSlug";
+import { useNavigate } from "react-router-dom";
+import { buildDemoEventPath } from "@/utils/eventSlug";
 import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
+import { DEMO_EVENT_CATEGORY_FILTERS } from "@/utils/demoEventPresentation";
 
 const DemoCalendarPage = () => {
   useScrollToTop();
@@ -26,8 +26,7 @@ const DemoCalendarPage = () => {
   const { isAuthenticated } = useAuth();
   const { isAdmin, isLoading: isLoadingRole } = useIsAdmin();
   const navigate = useNavigate();
-  const { eventSlug } = useParams<{ eventSlug?: string }>();
-  const { currentDate, setCurrentDate, goToPreviousMonth, goToNextMonth, goToToday } = useCalendarNavigation();
+  const { currentDate, goToPreviousMonth, goToNextMonth, goToToday } = useCalendarNavigation();
   const { events, createEvent, updateEvent, deleteEvent, isCreating, isUpdating, isDeleting } = useDemoEvents();
   const isMobile = useIsMobile();
 
@@ -39,18 +38,14 @@ const DemoCalendarPage = () => {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<DemoEvent | null>(null);
-  const [selectedEvent, setSelectedEvent] = useState<DemoEvent | null>(null);
   const [proximityRadius, setProximityRadius] = useState<number | null>(null);
 
   // Get user location for proximity filtering
   const { latitude, longitude, loading: locationLoading, permissionDenied } = useGeolocation();
 
-  const [categoryFilters, setCategoryFilters] = useState<CategoryFilterType[]>([
-    { category: 'snowboards', name: 'Snowboards', color: 'bg-rose-500', enabled: true },
-    { category: 'skis', name: 'Skis', color: 'bg-fuchsia-500', enabled: true },
-    { category: 'surfboards', name: 'Surfboards', color: 'bg-sky-500', enabled: true },
-    { category: 'mountain-bikes', name: 'Mountain Bikes', color: 'bg-orange-400', enabled: true },
-  ]);
+  const [categoryFilters, setCategoryFilters] = useState<CategoryFilterType[]>(() =>
+    DEMO_EVENT_CATEGORY_FILTERS.map((filter) => ({ ...filter })),
+  );
 
   const handleToggleCategory = (category: string) => {
     setCategoryFilters(prev =>
@@ -109,41 +104,8 @@ const DemoCalendarPage = () => {
   };
 
   const handleEventClick = (event: DemoEvent) => {
-    setSelectedEvent(event);
-    navigate(`/demo-calendar/event/${generateEventSlug(event)}`);
+    navigate(buildDemoEventPath(event));
   };
-
-  const handleCloseEventModal = () => {
-    setSelectedEvent(null);
-    navigate('/demo-calendar', { replace: true });
-  };
-
-  const handleEditFromModal = (event: DemoEvent) => {
-    setSelectedEvent(null);
-    navigate('/demo-calendar', { replace: true });
-    handleEditEvent(event);
-  };
-
-  const handleDeleteFromModal = (eventId: string) => {
-    setSelectedEvent(null);
-    navigate('/demo-calendar', { replace: true });
-    handleDeleteEvent(eventId);
-  };
-
-  useEffect(() => {
-    if (eventSlug && events.length > 0) {
-      const matched = findEventBySlug(events, eventSlug);
-      if (matched) {
-        setSelectedEvent(matched);
-        if (matched.event_date) {
-          const date = new Date(matched.event_date + 'T00:00:00');
-          setCurrentDate(date);
-        }
-      }
-    } else {
-      setSelectedEvent(null);
-    }
-  }, [eventSlug, events, setCurrentDate]);
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -238,17 +200,6 @@ const DemoCalendarPage = () => {
           )}
         </div>
       </div>
-
-      {/* Event Modal */}
-      <EventModal
-        event={selectedEvent}
-        categoryColors={categoryFilters}
-        onClose={handleCloseEventModal}
-        onEdit={handleEditFromModal}
-        onDelete={handleDeleteFromModal}
-        isDeleting={isDeleting}
-        isAdmin={isAdmin}
-      />
 
       {/* Add/Edit Event Modal */}
       <AddEventModal

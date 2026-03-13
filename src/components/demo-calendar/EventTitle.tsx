@@ -1,5 +1,6 @@
 
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
+import { getDemoEventCategoryMeta } from "@/utils/demoEventPresentation";
 
 interface EventTitleProps {
   event: DemoEvent;
@@ -7,32 +8,13 @@ interface EventTitleProps {
   onClick: () => void;
 }
 
-const EventTitle = ({ event, categoryColors, onClick }: EventTitleProps) => {
-  const categoryFilter = categoryColors.find(c => c.category === event.gear_category);
-  const colorClass = categoryFilter?.color || 'bg-gray-500';
-
-  // Map background colors to their corresponding text colors
-  const getTextColor = (bgColor: string) => {
-    switch (bgColor) {
-      case 'bg-rose-500':
-        return 'text-rose-500';
-      case 'bg-fuchsia-500':
-        return 'text-fuchsia-500';
-      case 'bg-sky-500':
-        return 'text-sky-500';
-      case 'bg-orange-400':
-        return 'text-orange-400';
-      default:
-        return 'text-gray-500';
-    }
-  };
-
-  const textColorClass = getTextColor(colorClass);
+const EventTitle = ({ event, onClick }: EventTitleProps) => {
+  const categoryMeta = getDemoEventCategoryMeta(event.gear_category);
 
   return (
     <button
       onClick={onClick}
-      className={`text-xs ${textColorClass} hover:underline text-left w-full truncate font-medium`}
+      className={`text-xs ${categoryMeta.textColorClass} hover:underline text-left w-full truncate font-medium`}
       title={event.title}
     >
       {event.title}

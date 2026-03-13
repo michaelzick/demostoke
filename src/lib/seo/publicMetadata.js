@@ -42,6 +42,7 @@ export const extractGearNameFromSlug = (gearSlug) => {
 export const buildBlogPostTitle = (title) => `${title} | DemoStoke`;
 export const buildGearDetailTitle = (displayName) => `${displayName} | DemoStoke`;
 export const buildUserProfileTitle = (name) => `${name} | DemoStoke`;
+export const buildDemoEventTitle = (title) => `${title} | Demo Event | DemoStoke`;
 
 const sanitizeMetaText = (value) =>
   (value || "")
@@ -59,6 +60,41 @@ const truncateMetaText = (value, maxLength = 160) => {
   return `${truncated}...`;
 };
 
+const DEMO_EVENT_CATEGORY_LABELS = {
+  snowboards: "snowboard",
+  skis: "ski",
+  surfboards: "surfboard",
+  "mountain-bikes": "mountain bike",
+};
+
+const formatMetaDate = (value) => {
+  if (!value) return "";
+
+  const parsed = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(parsed.getTime())) {
+    return sanitizeMetaText(value);
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(parsed);
+};
+
+const formatMetaTime = (value) => {
+  if (!value) return "";
+
+  const [hours, minutes] = String(value).split(":");
+  const parsed = new Date();
+  parsed.setHours(Number(hours) || 0, Number(minutes) || 0, 0, 0);
+
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(parsed);
+};
+
 export const buildUserProfileDescription = (name, detail = "") => {
   const baseDescription = `View the profile and listed gear from ${name} on DemoStoke.`;
   const sanitizedDetail = sanitizeMetaText(detail);
@@ -68,6 +104,47 @@ export const buildUserProfileDescription = (name, detail = "") => {
   }
 
   return truncateMetaText(`${baseDescription} ${sanitizedDetail}`);
+};
+
+export const buildDemoEventDescription = ({
+  title,
+  company,
+  gearCategory,
+  eventDate,
+  eventTime,
+  location,
+  equipmentAvailable,
+}) => {
+  const normalizedCategory = DEMO_EVENT_CATEGORY_LABELS[gearCategory]
+    || sanitizeMetaText(humanizeSlug(gearCategory || "gear")).toLowerCase();
+  const leadText = sanitizeMetaText(title)
+    ? `${sanitizeMetaText(title)} is a ${normalizedCategory} demo event on DemoStoke.`
+    : `Find details for this ${normalizedCategory} demo event on DemoStoke.`;
+  const detailParts = [];
+
+  if (company) {
+    detailParts.push(`Hosted by ${sanitizeMetaText(company)}`);
+  }
+
+  const formattedDate = formatMetaDate(eventDate);
+  const formattedTime = formatMetaTime(eventTime);
+  if (formattedDate && formattedTime) {
+    detailParts.push(`Happening ${formattedDate} at ${formattedTime}`);
+  } else if (formattedDate) {
+    detailParts.push(`Happening ${formattedDate}`);
+  } else if (formattedTime) {
+    detailParts.push(`Starts at ${formattedTime}`);
+  }
+
+  if (location) {
+    detailParts.push(`Location: ${sanitizeMetaText(location)}`);
+  }
+
+  if (equipmentAvailable) {
+    detailParts.push(`Gear highlights: ${sanitizeMetaText(equipmentAvailable)}`);
+  }
+
+  return truncateMetaText(`${leadText} ${detailParts.join(". ")}.`.replace(/\.\s+\./g, "."));
 };
 
 export const PUBLIC_ROUTE_META = {

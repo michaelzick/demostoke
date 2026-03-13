@@ -1,6 +1,7 @@
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
+import { getDemoEventCategoryMeta } from "@/utils/demoEventPresentation";
 
 interface EventListItemProps {
   event: DemoEvent;
@@ -14,32 +15,13 @@ interface EventListItemProps {
 
 const EventListItem = ({
   event,
-  categoryColors,
   onEdit,
   onDelete,
   onEventClick,
   isDeleting,
   isAdmin
 }: EventListItemProps) => {
-  const categoryFilter = categoryColors.find(c => c.category === event.gear_category);
-  const colorClass = categoryFilter?.color || 'bg-gray-500';
-
-  const getTextColor = (bgColor: string) => {
-    switch (bgColor) {
-      case 'bg-rose-500':
-        return 'text-rose-500';
-      case 'bg-fuchsia-500':
-        return 'text-fuchsia-500';
-      case 'bg-sky-500':
-        return 'text-sky-500';
-      case 'bg-orange-400':
-        return 'text-orange-400';
-      default:
-        return 'text-gray-500';
-    }
-  };
-
-  const textColorClass = getTextColor(colorClass);
+  const categoryMeta = getDemoEventCategoryMeta(event.gear_category);
 
   return (
     <div className="flex items-center justify-between gap-2 py-2">
@@ -47,7 +29,7 @@ const EventListItem = ({
         className="flex-1 text-left"
         onClick={() => onEventClick(event)}
       >
-        <p className={`font-semibold text-sm truncate hover:underline ${textColorClass}`}>{event.title}</p>
+        <p className={`font-semibold text-sm truncate hover:underline ${categoryMeta.textColorClass}`}>{event.title}</p>
         {event.company && (
           <p className="text-sm font-semibold text-foreground truncate">{event.company}</p>
         )}

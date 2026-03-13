@@ -2,9 +2,10 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useMemo } from "react";
 import { useDemoEvents } from "@/hooks/useDemoEvents";
-import { generateEventSlug } from "@/utils/eventSlug";
+import { buildDemoEventPath } from "@/utils/eventSlug";
 import { format } from "date-fns";
 import { HorizontalScrollSection } from "./HorizontalScrollSection";
+import DemoEventThumbnail from "@/components/demo-calendar/DemoEventThumbnail";
 
 const FeaturedEventsSection = () => {
   const { events } = useDemoEvents();
@@ -25,8 +26,7 @@ const FeaturedEventsSection = () => {
         sectionClassName="pt-10 pb-5 bg-white dark:bg-muted/50"
         desktopCols={{ md: 3, lg: 5 }}
         renderItem={(ev) => {
-          const href = `/event/${generateEventSlug(ev)}`;
-          const thumb = ev.thumbnail_url || "/placeholder.svg";
+          const href = buildDemoEventPath(ev);
 
           return (
             <Link 
@@ -35,11 +35,9 @@ const FeaturedEventsSection = () => {
               className="group block snap-start w-[208px] min-w-[208px] shrink-0 md:w-full md:min-w-0"
             >
               <div className="aspect-square overflow-hidden rounded-lg mb-2">
-                <img
-                  src={thumb}
-                  alt={`${ev.title} demo event thumbnail`}
-                  loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                <DemoEventThumbnail
+                  event={ev}
+                  imageClassName="group-hover:scale-110 transition-transform duration-300"
                 />
               </div>
               <h3 className="text-sm font-medium leading-tight group-hover:text-primary transition-colors line-clamp-2 text-left">

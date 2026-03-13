@@ -1,6 +1,6 @@
 
 import { memo, type ReactNode } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Navigate, Routes, Route, useParams } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import AddGearForm from '../pages/AddGearForm';
@@ -34,6 +34,7 @@ import GeminiProfilePage from "../pages/GeminiProfilePage";
 import PrivatePartyPage from "../pages/PrivatePartyPage";
 import SearchResultsPage from "../pages/SearchResultsPage";
 import DemoCalendarPage from "../pages/DemoCalendarPage";
+import DemoEventPage from "../pages/DemoEventPage";
 import GearQuizPage from "../pages/GearQuizPage";
 import GearIndexPage from "../pages/GearIndexPage";
 import GearCategoryPage from "../pages/GearCategoryPage";
@@ -61,6 +62,11 @@ const AdminOnlyRouteGate = ({ children }: { children: ReactNode }) => {
   }
 
   return isAuthenticated && isAdmin ? <>{children}</> : <NotFoundPage />;
+};
+
+const LegacyDemoEventRedirect = () => {
+  const { eventSlug = "" } = useParams();
+  return <Navigate to={`/demo-events/${eventSlug}`} replace />;
 };
 
 const AppRoutes = memo(() => {
@@ -108,8 +114,9 @@ const AppRoutes = memo(() => {
         <Route path="search" element={<SearchResultsPage />} />
         <Route path="gear-quiz" element={<GearQuizPage />} />
         <Route path="demo-calendar" element={<DemoCalendarPage />} />
-        <Route path="demo-calendar/event/:eventSlug" element={<DemoCalendarPage />} />
-        <Route path="event/:eventSlug" element={<DemoCalendarPage />} />
+        <Route path="demo-events/:eventSlug" element={<DemoEventPage />} />
+        <Route path="demo-calendar/event/:eventSlug" element={<LegacyDemoEventRedirect />} />
+        <Route path="event/:eventSlug" element={<LegacyDemoEventRedirect />} />
         <Route
           path="widget"
           element={

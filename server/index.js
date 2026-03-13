@@ -5,6 +5,8 @@ import fs from 'fs';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
 import {
+  buildDemoEventDescription,
+  buildDemoEventTitle,
   PUBLIC_ROUTE_META,
   buildBlogPostTitle,
   buildGearDetailTitle,
@@ -75,6 +77,51 @@ const buildGearDisplayName = (name, size) => {
 
 const buildGearSlug = ({ id, name, size }) =>
   `${slugify(buildGearDisplayName(name, size))}--${id}`;
+
+const buildDemoEventTimeSlug = (value) => (value ? String(value).replace(/[^0-9]/g, '') : 'tbd');
+const buildLegacyDemoEventTimeSlug = (value) => (value ? String(value).replace(':', '') : 'tbd');
+
+const generateDemoEventSlug = (event) => {
+  const titlePart = slugify(event.title);
+  const datePart = event.event_date
+    ? new Intl.DateTimeFormat('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric',
+    })
+      .format(new Date(`${event.event_date}T00:00:00`))
+      .replace(/\//g, '-')
+    : 'tbd';
+  const timePart = buildDemoEventTimeSlug(event.event_time);
+
+  return `${titlePart}-${datePart}-${timePart}`;
+};
+
+const generateLegacyDemoEventSlug = (event) => {
+  const titlePart = slugify(event.title);
+  const datePart = event.event_date
+    ? new Intl.DateTimeFormat('en-US', {
+      month: '2-digit',
+      day: '2-digit',
+      year: 'numeric',
+    })
+      .format(new Date(`${event.event_date}T00:00:00`))
+      .replace(/\//g, '-')
+    : 'tbd';
+  const timePart = buildLegacyDemoEventTimeSlug(event.event_time);
+
+  return `${titlePart}-${datePart}-${timePart}`;
+};
+
+const buildDemoEventPath = (event) => `/demo-events/${generateDemoEventSlug(event)}`;
+
+const buildDemoEventStartDate = (event) => {
+  if (!event.event_date) {
+    return undefined;
+  }
+
+  return event.event_time ? `${event.event_date}T${event.event_time}` : event.event_date;
+};
 
 const toISODate = (dateInput) => {
   const date = dateInput ? new Date(dateInput) : new Date();
@@ -428,6 +475,128 @@ async function getGearPageMeta(gearSlug, protocol, host) {
   }
 }
 
+async function getDemoEventPageMeta(eventSlug, protocol, host) {
+  if (!supabase || !eventSlug) {
+    return null;
+  }
+
+  try {
+    const { data: events, error } = await supabase
+      .from('demo_calendar')
+      .select(
+        `
+        id,
+        title,
+        gear_category,
+        event_date,
+        event_time,
+        location,
+        equipment_available,
+        thumbnail_url,
+        company,
+        source_primary_url,
+        updated_at
+      `,
+      )
+      .order('event_date', { ascending: true, nullsFirst: false });
+
+    if (error || !events) {
+      return null;
+    }
+
+    const event = events.find((item) => {
+      const canonicalSlug = generateDemoEventSlug(item);
+      const legacySlug = generateLegacyDemoEventSlug(item);
+      return canonicalSlug === eventSlug || legacySlug === eventSlug;
+    });
+    if (!event) {
+      return null;
+    }
+
+    const canonicalPath = buildDemoEventPath(event);
+    const canonicalUrl = `${protocol}://${host}${canonicalPath}`;
+    const description = buildDemoEventDescription({
+      title: event.title,
+      company: event.company,
+      gearCategory: event.gear_category,
+      eventDate: event.event_date,
+      eventTime: event.event_time,
+      location: event.location,
+      equipmentAvailable: event.equipment_available,
+    });
+    const schema = [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: `${protocol}://${host}/` },
+          { '@type': 'ListItem', position: 2, name: 'Demo Calendar', item: `${protocol}://${host}/demo-calendar` },
+          { '@type': 'ListItem', position: 3, name: event.title, item: canonicalUrl },
+        ],
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Event',
+        name: event.title,
+        description,
+        startDate: buildDemoEventStartDate(event),
+        eventStatus: 'https://schema.org/EventScheduled',
+        eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+        image: event.thumbnail_url || `${protocol}://${host}/img/demostoke-square-transparent.webp`,
+        url: canonicalUrl,
+        location: event.location
+          ? {
+            '@type': 'Place',
+            name: event.location,
+            address: event.location,
+          }
+          : undefined,
+        organizer: event.company
+          ? {
+            '@type': 'Organization',
+            name: event.company,
+          }
+          : undefined,
+      },
+    ];
+
+    const summaryParts = [
+      event.company ? `Hosted by ${event.company}.` : '',
+      event.event_date ? `Date: ${event.event_date}.` : 'Date TBD.',
+      event.event_time ? `Time: ${event.event_time}.` : 'Time TBD.',
+      event.location ? `Location: ${event.location}.` : 'Location TBD.',
+      event.equipment_available ? `Gear: ${event.equipment_available}.` : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+
+    const noscriptSummary = [
+      '<noscript><section id="demo-event-crawl-summary" style="padding:16px;max-width:720px;margin:0 auto;">',
+      `<nav aria-label="Breadcrumb"><a href="${escapeContent(`${protocol}://${host}/`)}">Home</a> / <a href="${escapeContent(`${protocol}://${host}/demo-calendar`)}">Demo Calendar</a> / ${escapeContent(event.title)}</nav>`,
+      `<h1>${escapeContent(event.title)}</h1>`,
+      `<p>${escapeContent(description)}</p>`,
+      summaryParts ? `<p>${escapeContent(summaryParts)}</p>` : '',
+      event.source_primary_url
+        ? `<p>Source: <a href="${escapeContent(event.source_primary_url)}">${escapeContent(event.source_primary_url)}</a></p>`
+        : '',
+      `<p>Canonical: <a href="${escapeContent(canonicalUrl)}">${escapeContent(canonicalUrl)}</a></p>`,
+      '</section></noscript>',
+    ].join('');
+
+    return {
+      title: buildDemoEventTitle(event.title),
+      description,
+      image: event.thumbnail_url || `${protocol}://${host}/img/demostoke-square-transparent.webp`,
+      canonicalUrl,
+      schema,
+      noscriptSummary,
+    };
+  } catch (error) {
+    console.error('Error fetching demo event meta', error);
+    return null;
+  }
+}
+
 const STATIC_ROUTE_META = PUBLIC_ROUTE_META;
 
 const app = express();
@@ -482,6 +651,14 @@ app.use(compression({
     return compression.filter(req, res);
   },
 }));
+
+app.get(['/event/:eventSlug', '/demo-calendar/event/:eventSlug'], (req, res) => {
+  const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
+  const host = req.get('host') || 'www.demostoke.com';
+  const redirectUrl = `${protocol}://${host}/demo-events/${req.params.eventSlug}`;
+
+  res.redirect(301, redirectUrl);
+});
 
 app.get('/sitemap.xml', async (req, res) => {
   const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
@@ -538,13 +715,9 @@ app.get('/sitemap.xml', async (req, res) => {
       }
 
       if (eventRes.data) {
-        const { format } = await import('date-fns');
         eventUrls = eventRes.data.map(ev => {
-          const titlePart = slugify(ev.title);
-          const datePart = ev.event_date ? format(new Date(ev.event_date + 'T00:00:00'), 'MM-dd-yyyy') : 'tbd';
-          const timePart = ev.event_time ? ev.event_time.replace(':', '') : 'tbd';
           return {
-            path: `/demo-calendar/event/${titlePart}-${datePart}-${timePart}`,
+            path: buildDemoEventPath(ev),
             lastmod: ev.updated_at ? new Date(ev.updated_at).toISOString().slice(0, 10) : null,
             priority: '0.5',
             changefreq: 'weekly',
@@ -764,6 +937,39 @@ app.get('*', async (req, res) => {
         }
       } else {
         console.log('No meta found for slug:', slug);
+      }
+    }
+
+    if (req.path.startsWith('/demo-events/')) {
+      const eventSlug = req.path.split('/demo-events/')[1];
+      const meta = await getDemoEventPageMeta(eventSlug, protocol, host);
+
+      if (meta) {
+        const canonicalPathname = new URL(meta.canonicalUrl).pathname;
+        if (req.path !== canonicalPathname) {
+          return res.redirect(301, meta.canonicalUrl);
+        }
+
+        const escapedTitle = escapeContent(meta.title);
+        const escapedDescription = escapeContent(meta.description);
+        const escapedImage = escapeContent(meta.image);
+
+        html = html
+          .replace(/<title>[^<]*<\/title>/i, `<title>${escapedTitle}</title>`)
+          .replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i, `<meta name="description" content="${escapedDescription}" />`)
+          .replace(/<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:title" content="${escapedTitle}" />`)
+          .replace(/<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:description" content="${escapedDescription}" />`)
+          .replace(/<meta\s+property="og:type"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:type" content="website" />`)
+          .replace(/<meta\s+property="og:image"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:image" content="${escapedImage}" />`)
+          .replace(/<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:url" content="${escapeContent(meta.canonicalUrl)}" />`)
+          .replace(/<meta\s+(?:name|property)="twitter:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:title" content="${escapedTitle}" />`)
+          .replace(/<meta\s+(?:name|property)="twitter:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:description" content="${escapedDescription}" />`)
+          .replace(/<meta\s+(?:name|property)="twitter:image"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:image" content="${escapedImage}" />`)
+          .replace(/<script\s+id="structured-data"[^>]*>.*?<\/script>/i, '')
+          .replace('</head>', `<script id="structured-data" type="application/ld+json">${JSON.stringify(meta.schema)}</script></head>`)
+          .replace('<div id="root">', `${meta.noscriptSummary}<div id="root">`);
+
+        html = upsertCanonical(html, meta.canonicalUrl);
       }
     }
 

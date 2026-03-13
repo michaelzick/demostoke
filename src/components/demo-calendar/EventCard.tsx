@@ -2,6 +2,7 @@
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
+import { getDemoEventCategoryMeta } from "@/utils/demoEventPresentation";
 
 interface EventCardProps {
   event: DemoEvent;
@@ -15,39 +16,19 @@ interface EventCardProps {
 
 const EventCard = ({
   event,
-  categoryColors,
   onEdit,
   onDelete,
   onEventClick,
   isDeleting,
   isAdmin
 }: EventCardProps) => {
-  const categoryFilter = categoryColors.find(c => c.category === event.gear_category);
-  const colorClass = categoryFilter?.color || 'bg-gray-500';
-
-  // Map background colors to their corresponding text colors
-  const getTextColor = (bgColor: string) => {
-    switch (bgColor) {
-      case 'bg-rose-500':
-        return 'text-rose-500';
-      case 'bg-fuchsia-500':
-        return 'text-fuchsia-500';
-      case 'bg-sky-500':
-        return 'text-sky-500';
-      case 'bg-orange-400':
-        return 'text-orange-400';
-      default:
-        return 'text-gray-500';
-    }
-  };
-
-  const textColorClass = getTextColor(colorClass);
+  const categoryMeta = getDemoEventCategoryMeta(event.gear_category);
 
   return (
     <div className="bg-card rounded-lg p-3 shadow-sm border hover:shadow-md transition-shadow">
       <div className="mb-2">
         <h4
-          className={`font-semibold text-sm cursor-pointer hover:underline truncate ${textColorClass}`}
+          className={`font-semibold text-sm cursor-pointer hover:underline truncate ${categoryMeta.textColorClass}`}
           onClick={() => onEventClick(event)}
           title={event.title}
         >
