@@ -70,6 +70,7 @@ const HybridView = ({
   const map = useRef<mapboxgl.Map | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const desktopListRef = useRef<HTMLDivElement>(null);
+  const previousResetSignalRef = useRef(resetSignal);
 
   // Scroll to top buttons for different layouts
   const { showButton: showMobileScrollButton, scrollToTop: scrollMobileToTop } = useScrollToTopButton({
@@ -164,7 +165,11 @@ const HybridView = ({
   // Reset view when resetSignal changes
   useEffect(() => {
     if (!map.current || !isMapLoaded) return;
+    if (previousResetSignalRef.current === resetSignal) return;
+
+    previousResetSignalRef.current = resetSignal;
     setSelectedEquipmentId(null);
+
     if (mapUserLocations.length > 0) {
       fitMapBounds(map.current, mapUserLocations);
     }
