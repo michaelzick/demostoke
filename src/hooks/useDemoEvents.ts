@@ -8,7 +8,7 @@ export const useDemoEvents = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: events = [], isLoading, error } = useQuery({
+  const { data: events = [], isLoading, error } = useQuery<DemoEvent[]>({
     queryKey: ['demo-events'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -21,7 +21,7 @@ export const useDemoEvents = () => {
     },
   });
 
-  const createEventMutation = useMutation({
+  const createEventMutation = useMutation<DemoEvent, Error, DemoEventInput>({
     mutationFn: async (eventData: DemoEventInput) => {
       const { data, error } = await supabase
         .from('demo_calendar')
@@ -30,7 +30,7 @@ export const useDemoEvents = () => {
         .single();
 
       if (error) throw error;
-      return data;
+      return data as DemoEvent;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['demo-events'] });
@@ -49,7 +49,11 @@ export const useDemoEvents = () => {
     },
   });
 
-  const updateEventMutation = useMutation({
+  const updateEventMutation = useMutation<
+    DemoEvent,
+    Error,
+    { id: string; eventData: Partial<DemoEventInput> }
+  >({
     mutationFn: async ({ id, eventData }: { id: string; eventData: Partial<DemoEventInput> }) => {
       const { data, error } = await supabase
         .from('demo_calendar')
@@ -59,7 +63,7 @@ export const useDemoEvents = () => {
         .single();
 
       if (error) throw error;
-      return data;
+      return data as DemoEvent;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['demo-events'] });
@@ -78,7 +82,7 @@ export const useDemoEvents = () => {
     },
   });
 
-  const deleteEventMutation = useMutation({
+  const deleteEventMutation = useMutation<void, Error, string>({
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('demo_calendar')
