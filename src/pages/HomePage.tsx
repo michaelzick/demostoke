@@ -275,7 +275,6 @@ const HomePage = () => {
       <HeroSection />
       <FeaturedEventsSection />
       <HowItWorksSection />
-      <SeoContentSection />
       <RecentlyViewedGearSection userId={user?.id} />
 
       {/* Featured section with admin-selected equipment */}
@@ -305,6 +304,7 @@ const HomePage = () => {
       )} */}
 
       <FeaturedPostsSection />
+      <SeoContentSection />
     </div>
   );
 };

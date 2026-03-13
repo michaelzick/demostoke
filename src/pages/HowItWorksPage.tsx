@@ -5,6 +5,7 @@ import { MapPin, Snowflake, Waves, Shield, Clock, Users } from "lucide-react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import useScrollToTop from "@/hooks/useScrollToTop";
 import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
+import SeoContentSection from "@/components/home/SeoContentSection";
 
 const HowItWorksPage = () => {
   useScrollToTop();
@@ -145,6 +146,8 @@ const HowItWorksPage = () => {
           </div>
         </div>
       </section>
+
+      <SeoContentSection />
     </div>
   );
 };
