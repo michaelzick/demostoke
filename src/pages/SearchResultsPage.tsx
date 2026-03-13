@@ -24,6 +24,7 @@ import { useUserLocations } from "@/hooks/useUserLocations";
 import useScrollToTop from "@/hooks/useScrollToTop";
 import { useScrollToTopButton } from "@/hooks/useScrollToTopButton";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 const toDateInputValue = (value?: string): string => {
   if (!value) return "";
@@ -35,10 +36,7 @@ const toDateInputValue = (value?: string): string => {
 };
 
 const SearchResultsPage = () => {
-  usePageMetadata({
-    title: 'Search Results | DemoStoke',
-    description: 'Find gear near you with DemoStoke search.'
-  });
+  usePageMetadata(PUBLIC_ROUTE_META["/search"]);
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
   const feedStart =

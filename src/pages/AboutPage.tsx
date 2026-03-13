@@ -2,14 +2,12 @@ import { useEffect } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 const FOUNDER_ID = "98f914a6-2a72-455d-aa4b-41b081f4014d";
 
 const AboutPage = () => {
-  usePageMetadata({
-    title: 'About DemoStoke',
-    description: 'Learn how DemoStoke connects riders with local gear owners.'
-  });
+  usePageMetadata(PUBLIC_ROUTE_META["/about"]);
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);

@@ -2,15 +2,12 @@
 import { Link } from "react-router-dom";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import useScrollToTop from "@/hooks/useScrollToTop";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 const PrivacyPolicyPage = () => {
   useScrollToTop();
   
-  usePageMetadata({
-    title: "Privacy Policy | DemoStoke",
-    description: "Learn about how DemoStoke protects your privacy and handles your personal information.",
-    type: "website"
-  });
+  usePageMetadata(PUBLIC_ROUTE_META["/privacy-policy"]);
 
   return (
     <div className="min-h-screen bg-background">

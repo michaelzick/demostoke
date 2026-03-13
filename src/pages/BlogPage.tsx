@@ -32,14 +32,12 @@ import { toast } from "@/hooks/use-toast";
 import { featuredPostsService, MAX_FEATURED_POSTS } from "@/services/featuredPostsService";
 import BlogFooter from "@/components/BlogFooter";
 import { useAuth } from "@/contexts/auth";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 const POSTS_PER_PAGE = 12;
 
 const BlogPageInner = () => {
-  usePageMetadata({
-    title: 'DemoStoke Blog',
-    description: 'Tips, gear reviews and stories from the DemoStoke community.'
-  });
+  usePageMetadata(PUBLIC_ROUTE_META["/blog"]);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();

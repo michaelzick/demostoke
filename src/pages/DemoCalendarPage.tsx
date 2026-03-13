@@ -18,14 +18,12 @@ import { Button } from "@/components/ui/button";
 import { useNavigate, useParams } from "react-router-dom";
 import EventModal from "@/components/demo-calendar/EventModal";
 import { generateEventSlug, findEventBySlug } from "@/utils/eventSlug";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 const DemoCalendarPage = () => {
   useScrollToTop();
 
-  usePageMetadata({
-    title: 'Demo Events Calendar | DemoStoke',
-    description: 'Explore upcoming demo events and manage your own.'
-  });
+  usePageMetadata(PUBLIC_ROUTE_META["/demo-calendar"]);
   const { isAuthenticated } = useAuth();
   const { isAdmin, isLoading: isLoadingRole } = useIsAdmin();
   const navigate = useNavigate();

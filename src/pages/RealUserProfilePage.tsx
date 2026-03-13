@@ -34,6 +34,12 @@ import { useScrollToTopButton } from "@/hooks/useScrollToTopButton";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import type { UserProfile } from "@/types";
 import type { UserEquipment } from "@/types/equipment";
+import {
+  PUBLIC_SITE_URL,
+  buildUserProfileDescription,
+  buildUserProfileTitle,
+  humanizeSlug,
+} from "@/lib/seo/publicMetadata";
 
 const RealUserProfilePage = () => {
   // Scroll to top on mount
@@ -45,6 +51,8 @@ const RealUserProfilePage = () => {
   const { isAdmin } = useIsAdmin();
   const { toggleUserVisibility } = useUserVisibilityToggle();
   const availableEquipmentRef = useRef<HTMLHeadingElement | null>(null);
+  const currentDocumentTitle =
+    typeof document !== "undefined" ? document.title : undefined;
 
   const handleAvailableClick = () => {
     if (availableEquipmentRef.current) {
@@ -224,10 +232,16 @@ const RealUserProfilePage = () => {
   const isEditLoading = (authLoading || (!profileLoaded && isAuthenticated)) && isEditMode;
 
   const profileName = profile?.name;
+  const fallbackProfileName = profileName || humanizeSlug(slug || "");
+  const canonicalUrl = slug ? `${PUBLIC_SITE_URL}/user-profile/${slug}` : undefined;
 
   usePageMetadata({
-    title: profileName ? `User Profile | ${profileName}` : 'User Profile | DemoStoke',
-    description: 'View rider profiles and their listed gear on DemoStoke.'
+    title: fallbackProfileName ? buildUserProfileTitle(fallbackProfileName) : currentDocumentTitle,
+    description: fallbackProfileName
+      ? buildUserProfileDescription(fallbackProfileName)
+      : 'View rider profiles and their listed gear on DemoStoke.',
+    canonicalUrl,
+    trackingReady: Boolean(profileName),
   });
 
   if (isLoading) {

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 interface GearCategoryPageProps {
   categoryKey: "surfboards" | "used-skis";
@@ -12,6 +13,7 @@ const categoryConfig: Record<
   {
     title: string;
     description: string;
+    pathname: string;
     canonicalUrl: string;
     exploreHref: string;
     searchHref: string;
@@ -26,6 +28,7 @@ const categoryConfig: Record<
     title: "Surfboard Demos & Rentals | DemoStoke",
     description:
       "Browse surfboards available for demo and rental from local surf shops and riders. Shortboards, longboards, fish, mid-lengths, and more. Try before you buy on DemoStoke.",
+    pathname: "/gear/surfboards",
     canonicalUrl: "https://www.demostoke.com/gear/surfboards",
     exploreHref: "/explore?category=surfboards",
     searchHref: "/search?q=surfboards",
@@ -43,6 +46,7 @@ const categoryConfig: Record<
     title: "Used Ski Rentals & Demos | DemoStoke",
     description:
       "Browse used skis available for rental and demo with current availability, location, and pricing on DemoStoke.",
+    pathname: "/gear/used-skis",
     canonicalUrl: "https://www.demostoke.com/gear/used-skis",
     exploreHref: "/explore?category=skis&q=used",
     searchHref: "/search?q=used+skis",
@@ -59,6 +63,7 @@ const categoryConfig: Record<
 
 const GearCategoryPage = ({ categoryKey }: GearCategoryPageProps) => {
   const config = categoryConfig[categoryKey];
+  const routeMeta = PUBLIC_ROUTE_META[config.pathname];
 
   const { data: gearCount } = useQuery({
     queryKey: ["gear-count", config.dbCategory],
@@ -72,8 +77,7 @@ const GearCategoryPage = ({ categoryKey }: GearCategoryPageProps) => {
   });
 
   usePageMetadata({
-    title: config.title,
-    description: config.description,
+    ...routeMeta,
     canonicalUrl: config.canonicalUrl,
     schema: {
       "@context": "https://schema.org",

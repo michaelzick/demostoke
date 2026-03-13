@@ -1,11 +1,9 @@
 // Update this page (the content is just a fallback if you fail to update the page)
 import usePageMetadata from "@/hooks/usePageMetadata";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 const Index = () => {
-  usePageMetadata({
-    title: 'DemoStoke | Find it. Ride it. Love it? Buy it.',
-    description: 'DemoStoke is the go-to platform to find, try, and buy the gear you\'ll eventually fall in love with.'
-  });
+  usePageMetadata(PUBLIC_ROUTE_META["/"]);
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="text-center">

@@ -11,12 +11,10 @@ import HCaptcha from "@/components/HCaptcha";
 import { RequiredIndicator } from "@/components/waiver/RequiredIndicator";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 const ContactUsPage = () => {
-  usePageMetadata({
-    title: 'Contact Us | DemoStoke',
-    description: 'Get in touch with the DemoStoke team.'
-  });
+  usePageMetadata(PUBLIC_ROUTE_META["/contact-us"]);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);

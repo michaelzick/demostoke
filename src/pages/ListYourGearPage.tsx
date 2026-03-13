@@ -15,12 +15,10 @@ import {
   CheckCircle,
   Lightbulb
 } from "lucide-react";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 const ListYourGearPage = () => {
-  usePageMetadata({
-    title: 'List Your Gear | DemoStoke',
-    description: 'Earn money by renting out your gear to the DemoStoke community.'
-  });
+  usePageMetadata(PUBLIC_ROUTE_META["/list-your-gear"]);
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);

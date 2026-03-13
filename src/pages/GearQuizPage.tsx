@@ -16,6 +16,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { validateQuizData, sanitizeQuizData } from "@/utils/quizValidation";
 import useScrollToTop from "@/hooks/useScrollToTop";
 import { useEstimatedProgress } from "@/hooks/useEstimatedProgress";
+import usePageMetadata from "@/hooks/usePageMetadata";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 interface QuizData {
   category: string;
@@ -33,6 +35,7 @@ const QUIZ_ANALYSIS_ESTIMATED_MS = 45000;
 
 const GearQuizPage = () => {
   useScrollToTop();
+  usePageMetadata(PUBLIC_ROUTE_META["/gear-quiz"]);
 
   const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);

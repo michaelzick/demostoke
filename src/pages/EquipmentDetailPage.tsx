@@ -18,6 +18,11 @@ import {
   extractGearIdFromSlug,
   toISODate,
 } from "@/utils/gearUrl";
+import {
+  buildGearDetailTitle,
+  extractGearNameFromSlug,
+  humanizeSlug,
+} from "@/lib/seo/publicMetadata";
 
 // Import component modules
 import EquipmentDetailPageDb from "./EquipmentDetailPageDb";
@@ -41,6 +46,8 @@ const EquipmentDetailPage = () => {
   const queryClient = useQueryClient();
   const location = useLocation();
   const navigate = useNavigate();
+  const currentDocumentTitle =
+    typeof document !== "undefined" ? document.title : undefined;
 
   const isCanonicalGearRoute = Boolean(gearSlug);
   const gearIdFromSlug = useMemo(
@@ -325,10 +332,13 @@ const EquipmentDetailPage = () => {
     offers,
   ]);
 
+  const fallbackGearName = gearDisplayName
+    || (gearSlug ? extractGearNameFromSlug(gearSlug) : humanizeSlug(slug));
+
   usePageMetadata({
-    title: gearDisplayName
-      ? `${gearDisplayName} | DemoStoke Gear`
-      : "Gear Details | DemoStoke",
+    title: fallbackGearName
+      ? buildGearDetailTitle(fallbackGearName)
+      : currentDocumentTitle,
     description: gearDisplayName
       ? `${gearDisplayName} available for demo and rental in ${currentEquipment?.location.address}. Last verified ${lastVerifiedDate}.`
       : "View detailed information about this gear listing.",
@@ -336,6 +346,7 @@ const EquipmentDetailPage = () => {
     type: "product",
     schema: productSchema,
     canonicalUrl,
+    trackingReady: Boolean(gearDisplayName),
   });
 
   const handleWaiverComplete = () => {

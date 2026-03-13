@@ -8,6 +8,7 @@ export interface PageMetadata {
   type?: string;
   schema?: Record<string, any> | Record<string, any>[];
   canonicalUrl?: string;
+  trackingReady?: boolean;
 }
 
 const setMeta = (attr: 'name' | 'property', key: string, value: string) => {
@@ -32,7 +33,15 @@ const setCanonical = (url: string) => {
   element.setAttribute("href", url);
 };
 
-const usePageMetadata = ({ title, description, image, type = 'website', schema, canonicalUrl }: PageMetadata) => {
+const usePageMetadata = ({
+  title,
+  description,
+  image,
+  type = 'website',
+  schema,
+  canonicalUrl,
+  trackingReady = true,
+}: PageMetadata) => {
   useEffect(() => {
     if (title) {
       document.title = title;
@@ -82,7 +91,20 @@ const usePageMetadata = ({ title, description, image, type = 'website', schema, 
     } else if (script) {
       script.remove();
     }
-  }, [title, description, image, type, schema, canonicalUrl]);
+
+    if (trackingReady) {
+      window.dispatchEvent(
+        new CustomEvent('page_metadata_applied', {
+          detail: {
+            pagePath:
+              window.location.pathname + window.location.search + window.location.hash,
+            title: document.title,
+            canonicalUrl: canonicalUrl || window.location.href,
+          },
+        }),
+      );
+    }
+  }, [title, description, image, type, schema, canonicalUrl, trackingReady]);
 };
 
 export default usePageMetadata;

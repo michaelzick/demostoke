@@ -1,12 +1,11 @@
 import { Link } from "react-router-dom";
 import usePageMetadata from "@/hooks/usePageMetadata";
+import { PUBLIC_ROUTE_META, PUBLIC_SITE_URL } from "@/lib/seo/publicMetadata";
 
 const GearIndexPage = () => {
   usePageMetadata({
-    title: "Gear Index | DemoStoke",
-    description:
-      "DemoStoke indexes real-world rental and used gear with location and freshness timestamps.",
-    canonicalUrl: "https://www.demostoke.com/gear",
+    ...PUBLIC_ROUTE_META["/gear"],
+    canonicalUrl: `${PUBLIC_SITE_URL}/gear`,
   });
 
   return (

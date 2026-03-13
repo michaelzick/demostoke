@@ -2,15 +2,12 @@
 import { Link } from "react-router-dom";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import useScrollToTop from "@/hooks/useScrollToTop";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 const TermsOfServicePage = () => {
   useScrollToTop();
   
-  usePageMetadata({
-    title: "Terms of Service | DemoStoke",
-    description: "Read the terms and conditions for using DemoStoke's gear demo platform.",
-    type: "website"
-  });
+  usePageMetadata(PUBLIC_ROUTE_META["/terms-of-service"]);
 
   return (
     <div className="min-h-screen bg-background">

@@ -3,14 +3,12 @@ import { useNavigate } from "react-router-dom";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 const GeminiProfilePage = () => {
   const navigate = useNavigate();
 
-  usePageMetadata({
-    title: 'Gemini | DemoStoke',
-    description: 'About Gemini, AI author at DemoStoke'
-  });
+  usePageMetadata(PUBLIC_ROUTE_META["/user-profile/gemini"]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

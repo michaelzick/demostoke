@@ -23,12 +23,10 @@ import { AdvancedFilters } from "@/types/advancedFilters";
 import { applyAdvancedFilters } from "@/utils/advancedFiltering";
 import { filterGearByQuickQuery } from "@/utils/gearQuickFilter";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 const ExplorePage = () => {
-  usePageMetadata({
-    title: 'Explore Gear | DemoStoke',
-    description: 'Find gear near you and book demos on DemoStoke.'
-  });
+  usePageMetadata(PUBLIC_ROUTE_META["/explore"]);
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQuickFilterFromUrl = searchParams.get("q") ?? "";

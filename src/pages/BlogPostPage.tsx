@@ -13,6 +13,11 @@ import ContentRenderer from "@/components/blog/ContentRenderer";
 import { BlogPost } from "@/lib/blog/types";
 import { useIsAdmin } from "@/hooks/useUserRole";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import {
+  PUBLIC_SITE_URL,
+  buildBlogPostTitle,
+  humanizeSlug,
+} from "@/lib/seo/publicMetadata";
 
 const BlogPostPage = () => {
   const { slug, id } = useParams<{ slug?: string; id?: string; }>();
@@ -24,6 +29,9 @@ const BlogPostPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { isAdmin } = useIsAdmin();
   const isPreviewMode = location.pathname.startsWith('/blog/preview/');
+  const currentDocumentTitle =
+    typeof document !== "undefined" ? document.title : undefined;
+  const canonicalUrl = !isPreviewMode && slug ? `${PUBLIC_SITE_URL}/blog/${slug}` : undefined;
 
   useEffect(() => {
     const loadPost = async () => {
@@ -72,10 +80,18 @@ const BlogPostPage = () => {
   }, [post]);
 
   usePageMetadata({
-    title: post ? `${post.title} | DemoStoke` : 'Blog Post | DemoStoke',
+    title: post
+      ? buildBlogPostTitle(post.title)
+      : isPreviewMode
+        ? 'Blog Preview | DemoStoke'
+        : slug
+          ? buildBlogPostTitle(humanizeSlug(slug))
+          : currentDocumentTitle,
     description: post?.excerpt,
     image: post?.thumbnail,
     type: 'article',
+    canonicalUrl,
+    trackingReady: isPreviewMode || Boolean(post),
     schema: post
       ? {
         '@context': 'https://schema.org',

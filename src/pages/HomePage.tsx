@@ -29,12 +29,10 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import HCaptcha from "@/components/HCaptcha";
 import { safeLocalStorage } from "@/utils/ssrSafe";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 const HomePage = () => {
-  usePageMetadata({
-    title: 'DemoStoke | Find it. Ride it. Love it? Buy it.',
-    description: 'DemoStoke is the go-to platform to find, try, and buy the gear you\'ll eventually fall in love with.'
-  });
+  usePageMetadata(PUBLIC_ROUTE_META["/"]);
 
   // Client-only state
   const [mounted, setMounted] = useState(false);

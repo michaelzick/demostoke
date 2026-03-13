@@ -4,6 +4,18 @@ import sirv from 'sirv';
 import fs from 'fs';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
+import {
+  PUBLIC_ROUTE_META,
+  buildBlogPostTitle,
+  buildGearDetailTitle,
+  buildUserProfileDescription,
+  buildUserProfileTitle,
+  humanizeSlug,
+} from '../src/lib/seo/publicMetadata.js';
+import {
+  SUPABASE_PUBLISHABLE_KEY as DEFAULT_SUPABASE_PUBLISHABLE_KEY,
+  SUPABASE_URL as DEFAULT_SUPABASE_URL,
+} from '../src/integrations/supabase/config.js';
 
 const isProd = process.env.NODE_ENV === 'production';
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -11,8 +23,9 @@ const clientDist = path.join(__dirname, '../dist/client');
 const serverDist = path.join(__dirname, '../dist/server');
 
 // Supabase client for fetching blog metadata on the server
-const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+const SUPABASE_ANON_KEY =
+  process.env.VITE_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_PUBLISHABLE_KEY;
 
 let supabase = null;
 if (SUPABASE_URL && SUPABASE_ANON_KEY) {
@@ -130,6 +143,133 @@ async function getBlogPostMeta(slug) {
     };
   } catch (e) {
     console.error('Error fetching blog meta', e);
+    return null;
+  }
+}
+
+async function getUserProfileMeta(profileSlug, protocol, host) {
+  if (!supabase || !profileSlug) {
+    return null;
+  }
+
+  const canonicalUrl = `${protocol}://${host}/user-profile/${profileSlug}`;
+  const pattern = `%${profileSlug.split('-').filter(Boolean).join('%')}%`;
+
+  const fetchPublicProfileById = async (profileId) => {
+    if (!profileId) return null;
+
+    const { data, error } = await supabase
+      .from('public_profiles')
+      .select('id, name, about, address, website')
+      .eq('id', profileId)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching public profile by id for metadata', error);
+      return null;
+    }
+
+    return data || null;
+  };
+
+  try {
+    const { data: profileMatches, error: profileError } = await supabase
+      .from('public_profiles')
+      .select('id, name, about, address, website')
+      .ilike('name', pattern)
+      .limit(10);
+
+    if (profileError) {
+      console.error('Error fetching public profile metadata by slug', profileError);
+    }
+
+    const exactProfileMatch =
+      profileMatches?.find((profile) => slugify(profile.name || '') === profileSlug) || null;
+
+    let profile = exactProfileMatch;
+    let resolvedName = exactProfileMatch?.name?.trim() || '';
+
+    if (!profile) {
+      const { data: exactMapping, error: exactMappingError } = await supabase
+        .from('shop_gear_feed_mappings')
+        .select('profile_id, shop_slug')
+        .eq('provider', 'demostoke_widget')
+        .eq('is_active', true)
+        .eq('shop_slug', profileSlug)
+        .limit(1)
+        .maybeSingle();
+
+      if (exactMappingError) {
+        console.error('Error fetching exact shop metadata mapping', exactMappingError);
+      }
+
+      let mapping = exactMapping;
+
+      if (!mapping) {
+        const { data: prefixMapping, error: prefixMappingError } = await supabase
+          .from('shop_gear_feed_mappings')
+          .select('profile_id, shop_slug')
+          .eq('provider', 'demostoke_widget')
+          .eq('is_active', true)
+          .like('shop_slug', `${profileSlug}-%`)
+          .limit(1)
+          .maybeSingle();
+
+        if (prefixMappingError) {
+          console.error('Error fetching prefix shop metadata mapping', prefixMappingError);
+        }
+
+        mapping = prefixMapping;
+      }
+
+      if (mapping?.profile_id) {
+        profile = await fetchPublicProfileById(mapping.profile_id);
+      }
+
+      if (mapping?.shop_slug && !resolvedName) {
+        resolvedName = humanizeSlug(mapping.shop_slug);
+      }
+
+      if (profile?.name?.trim()) {
+        resolvedName = profile.name.trim();
+      }
+    }
+
+    if (!profile) {
+      const { data: syncedEquipment, error: syncedEquipmentError } = await supabase
+        .from('equipment')
+        .select('user_id')
+        .eq('external_source_provider', 'demostoke_widget')
+        .eq('external_source_shop_slug', profileSlug)
+        .limit(1)
+        .maybeSingle();
+
+      if (syncedEquipmentError) {
+        console.error('Error fetching synced equipment metadata fallback', syncedEquipmentError);
+      }
+
+      if (syncedEquipment?.user_id) {
+        profile = await fetchPublicProfileById(syncedEquipment.user_id);
+        if (profile?.name?.trim()) {
+          resolvedName = profile.name.trim();
+        }
+      }
+    }
+
+    if (!resolvedName) {
+      return null;
+    }
+
+    const detailSuffix = profile?.about || profile?.address || profile?.website || '';
+    const description = buildUserProfileDescription(resolvedName, detailSuffix);
+
+    return {
+      title: buildUserProfileTitle(resolvedName),
+      description,
+      canonicalUrl,
+    };
+  } catch (error) {
+    console.error('Error fetching user profile meta', error);
     return null;
   }
 }
@@ -275,7 +415,7 @@ async function getGearPageMeta(gearSlug, protocol, host) {
     ].join('');
 
     return {
-      title: `${displayName} | DemoStoke Gear`,
+      title: buildGearDetailTitle(displayName),
       description: descriptionText,
       image: imageUrls[0] || '',
       canonicalUrl,
@@ -288,83 +428,7 @@ async function getGearPageMeta(gearSlug, protocol, host) {
   }
 }
 
-const STATIC_ROUTE_META = {
-  '/': {
-    title: 'DemoStoke | Demo & Rent Surfboards, Snowboards, Skis & Mountain Bikes',
-    description: 'DemoStoke is the go-to marketplace to demo, rent, and try action sports gear from local shops and riders. Surfboards, snowboards, skis, and mountain bikes — find the right board, try it in real conditions, and buy what you love.',
-    type: 'website',
-  },
-  '/about': {
-    title: 'About DemoStoke | The Action Sports Gear Demo Marketplace',
-    description: 'DemoStoke connects riders with local shops, indie shapers, and gear owners for surfboard, snowboard, ski, and mountain bike demos and rentals. Built by riders, for riders.',
-    type: 'website',
-  },
-  '/explore': {
-    title: 'Explore Gear | Surfboards, Snowboards, Skis & Bikes Near You | DemoStoke',
-    description: 'Browse available surfboards, snowboards, skis, and mountain bikes for demo and rental near you. Filter by sport, location, skill level, and price.',
-    type: 'website',
-  },
-  '/how-it-works': {
-    title: 'How DemoStoke Works | Try Before You Buy Gear Rentals',
-    description: 'Browse gear on the DemoStoke map, connect with local shops or owners, try the gear in real conditions, and buy what you love. No lines, no outdated rentals.',
-    type: 'website',
-  },
-  '/blog': {
-    title: 'DemoStoke Blog | Gear Reviews, Surf Culture & Action Sports',
-    description: 'Gear reviews, surf and snow culture, demo day calendars, and rider stories from the DemoStoke community.',
-    type: 'website',
-  },
-  '/contact-us': {
-    title: 'Contact DemoStoke | Get in Touch',
-    description: 'Have questions about DemoStoke? Want to list your shop or gear? Reach out to the DemoStoke team.',
-    type: 'website',
-  },
-  '/list-your-gear': {
-    title: 'List Your Gear or Shop on DemoStoke | Partner With Us',
-    description: 'List your surf shop, ski rental, or personal gear on DemoStoke. Get discovered by riders looking for demos and rentals in your area. Free to start.',
-    type: 'website',
-  },
-  '/search': {
-    title: 'Search Gear | DemoStoke',
-    description: 'Search for surfboards, snowboards, skis, and mountain bikes available for demo and rental on DemoStoke.',
-    type: 'website',
-  },
-  '/gear': {
-    title: 'Gear Index | DemoStoke',
-    description: 'DemoStoke indexes real-world rental, demo, and used action sports gear with model details, location context, and freshness timestamps.',
-    type: 'website',
-  },
-  '/gear/surfboards': {
-    title: 'Surfboard Demos & Rentals | DemoStoke',
-    description: 'Browse surfboards available for demo and rental from local surf shops and riders. Shortboards, longboards, fish, mid-lengths, and more.',
-    type: 'website',
-  },
-  '/gear/used-skis': {
-    title: 'Used Ski Rentals & Demos | DemoStoke',
-    description: 'Browse used skis available for rental and demo with current availability, location, and pricing.',
-    type: 'website',
-  },
-  '/demo-calendar': {
-    title: 'Demo Day Calendar | Upcoming Gear Demo Events | DemoStoke',
-    description: 'Find upcoming surfboard, snowboard, and ski demo days near you. Try new gear from top brands at local shops and events.',
-    type: 'website',
-  },
-  '/gear-quiz': {
-    title: 'Gear Quiz | Find Your Perfect Board | DemoStoke',
-    description: 'Answer a few questions about your riding style, skill level, and conditions to get personalized gear recommendations from DemoStoke.',
-    type: 'website',
-  },
-  '/privacy-policy': {
-    title: 'Privacy Policy | DemoStoke',
-    description: 'DemoStoke privacy policy. How we collect, use, and protect your data.',
-    type: 'website',
-  },
-  '/terms-of-service': {
-    title: 'Terms of Service | DemoStoke',
-    description: 'DemoStoke terms of service for riders, gear owners, and shop partners.',
-    type: 'website',
-  },
-};
+const STATIC_ROUTE_META = PUBLIC_ROUTE_META;
 
 const app = express();
 
@@ -636,6 +700,8 @@ app.get('*', async (req, res) => {
         });
 
         const escapedTitle = escapeContent(meta.title);
+        const fullTitle = buildBlogPostTitle(meta.title);
+        const escapedFullTitle = escapeContent(fullTitle);
         const escapedDescription = escapeContent(meta.description);
         const escapedAuthor = escapeContent(meta.author);
         const escapedImage = escapeContent(meta.image);
@@ -673,15 +739,15 @@ app.get('*', async (req, res) => {
 
         // More robust replacement with better regex patterns
         html = html
-          .replace(/<title>[^<]*<\/title>/i, `<title>${escapedTitle} | DemoStoke</title>`)
+          .replace(/<title>[^<]*<\/title>/i, `<title>${escapedFullTitle}</title>`)
           .replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i, `<meta name="description" content="${escapedDescription}" />`)
           .replace(/<meta\s+name="author"\s+content="[^"]*"\s*\/?>/i, `<meta name="author" content="${escapedAuthor}" />`)
-          .replace(/<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:title" content="${escapedTitle} | DemoStoke" />`)
+          .replace(/<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:title" content="${escapedFullTitle}" />`)
           .replace(/<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:description" content="${escapedDescription}" />`)
           .replace(/<meta\s+property="og:type"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:type" content="article" />`)
           .replace(/<meta\s+property="og:image"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:image" content="${escapedImage}" />`)
           .replace(/<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:url" content="${ogUrl}" />`)
-          .replace(/<meta\s+(?:name|property)="twitter:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:title" content="${escapedTitle} | DemoStoke" />`)
+          .replace(/<meta\s+(?:name|property)="twitter:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:title" content="${escapedFullTitle}" />`)
           .replace(/<meta\s+(?:name|property)="twitter:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:description" content="${escapedDescription}" />`)
           .replace(/<meta\s+(?:name|property)="twitter:image"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:image" content="${escapedImage}" />`)
           .replace(/<script\s+id="structured-data"[^>]*>.*?<\/script>/i, '') // Remove existing structured data
@@ -698,6 +764,28 @@ app.get('*', async (req, res) => {
         }
       } else {
         console.log('No meta found for slug:', slug);
+      }
+    }
+
+    if (req.path.startsWith('/user-profile/')) {
+      const profileSlug = req.path.split('/user-profile/')[1];
+      const meta = await getUserProfileMeta(profileSlug, protocol, host);
+
+      if (meta) {
+        const escapedTitle = escapeContent(meta.title);
+        const escapedDescription = escapeContent(meta.description);
+
+        html = html
+          .replace(/<title>[^<]*<\/title>/i, `<title>${escapedTitle}</title>`)
+          .replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i, `<meta name="description" content="${escapedDescription}" />`)
+          .replace(/<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:title" content="${escapedTitle}" />`)
+          .replace(/<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:description" content="${escapedDescription}" />`)
+          .replace(/<meta\s+property="og:type"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:type" content="profile" />`)
+          .replace(/<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:url" content="${escapeContent(meta.canonicalUrl)}" />`)
+          .replace(/<meta\s+(?:name|property)="twitter:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:title" content="${escapedTitle}" />`)
+          .replace(/<meta\s+(?:name|property)="twitter:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:description" content="${escapedDescription}" />`);
+
+        html = upsertCanonical(html, meta.canonicalUrl);
       }
     }
 

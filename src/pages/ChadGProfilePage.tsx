@@ -5,14 +5,12 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 const ChadGProfilePage = () => {
   const navigate = useNavigate();
 
-  usePageMetadata({
-    title: 'Chad G. | DemoStoke',
-    description: 'About Chad G., AI author at DemoStoke'
-  });
+  usePageMetadata(PUBLIC_ROUTE_META["/user-profile/chad-g"]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

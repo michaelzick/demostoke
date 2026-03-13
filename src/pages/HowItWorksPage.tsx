@@ -4,15 +4,12 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Snowflake, Waves, Shield, Clock, Users } from "lucide-react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import useScrollToTop from "@/hooks/useScrollToTop";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 const HowItWorksPage = () => {
   useScrollToTop();
   
-  usePageMetadata({
-    title: "How It Works | DemoStoke - Try Before You Buy",
-    description: "Learn how DemoStoke connects you with local gear for snowboards, skis, surfboards, and mountain bikes. Find, demo, and buy the perfect equipment for your adventures.",
-    type: "website"
-  });
+  usePageMetadata(PUBLIC_ROUTE_META["/how-it-works"]);
 
   return (
     <div className="min-h-screen bg-background">
