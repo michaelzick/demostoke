@@ -17,3 +17,12 @@ verify_jwt = false
 
 [functions.discover-demo-events]
 verify_jwt = false
+
+[functions.ingest-security-report]
+verify_jwt = false
+
+[functions.security-redteam-target]
+verify_jwt = false
+
+[functions.trigger-security-redteam]
+verify_jwt = false

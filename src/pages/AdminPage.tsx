@@ -12,6 +12,7 @@ import GeocodingRecoverySection from "@/components/admin/GeocodingRecoverySectio
 import DemoEventGeocodingSection from "@/components/admin/DemoEventGeocodingSection";
 import AddMissingImagesSection from "@/components/admin/AddMissingImagesSection";
 import BrokenImageScannerSection from "@/components/admin/BrokenImageScannerSection";
+import SecurityDashboardSection from "@/components/admin/SecurityDashboardSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GearUrlScraperSection from "@/components/admin/GearUrlScraperSection";
 import RetailerDiscoverySection from "@/components/admin/RetailerDiscoverySection";
@@ -43,11 +44,12 @@ const AdminPage = () => {
       </div>
 
       <Tabs defaultValue="users" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="users">User Management</TabsTrigger>
           <TabsTrigger value="content">Content</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
           <TabsTrigger value="tools">Tools</TabsTrigger>
+          <TabsTrigger value="security">Security</TabsTrigger>
         </TabsList>
 
         <TabsContent value="users" className="space-y-6">
@@ -74,6 +76,10 @@ const AdminPage = () => {
           <AddMissingImagesSection />
           <GeocodingRecoverySection />
           <DemoEventGeocodingSection />
+        </TabsContent>
+
+        <TabsContent value="security" className="space-y-6">
+          <SecurityDashboardSection />
         </TabsContent>
       </Tabs>
     </div>

@@ -1322,6 +1322,107 @@ export type Database = {
         }
         Relationships: []
       }
+      security_findings: {
+        Row: {
+          branch: string | null
+          category: string | null
+          commit_sha: string | null
+          created_at: string
+          fingerprint: string
+          id: string
+          labels: string[]
+          passed: boolean | null
+          plugin_id: string | null
+          plugin_label: string | null
+          prompt_excerpt: string | null
+          provider_id: string | null
+          provider_label: string | null
+          raw: Json
+          resolution_notes: string | null
+          response_excerpt: string | null
+          run_id: string
+          score: number | null
+          severity: string
+          target_id: string | null
+          target_label: string | null
+          test_description: string | null
+          test_id: string | null
+          triage_status: string
+          triaged_at: string | null
+          triaged_by: string | null
+          updated_at: string
+          vulnerability_type: string | null
+        }
+        Insert: {
+          branch?: string | null
+          category?: string | null
+          commit_sha?: string | null
+          created_at?: string
+          fingerprint: string
+          id?: string
+          labels?: string[]
+          passed?: boolean | null
+          plugin_id?: string | null
+          plugin_label?: string | null
+          prompt_excerpt?: string | null
+          provider_id?: string | null
+          provider_label?: string | null
+          raw?: Json
+          resolution_notes?: string | null
+          response_excerpt?: string | null
+          run_id: string
+          score?: number | null
+          severity?: string
+          target_id?: string | null
+          target_label?: string | null
+          test_description?: string | null
+          test_id?: string | null
+          triage_status?: string
+          triaged_at?: string | null
+          triaged_by?: string | null
+          updated_at?: string
+          vulnerability_type?: string | null
+        }
+        Update: {
+          branch?: string | null
+          category?: string | null
+          commit_sha?: string | null
+          created_at?: string
+          fingerprint?: string
+          id?: string
+          labels?: string[]
+          passed?: boolean | null
+          plugin_id?: string | null
+          plugin_label?: string | null
+          prompt_excerpt?: string | null
+          provider_id?: string | null
+          provider_label?: string | null
+          raw?: Json
+          resolution_notes?: string | null
+          response_excerpt?: string | null
+          run_id?: string
+          score?: number | null
+          severity?: string
+          target_id?: string | null
+          target_label?: string | null
+          test_description?: string | null
+          test_id?: string | null
+          triage_status?: string
+          triaged_at?: string | null
+          triaged_by?: string | null
+          updated_at?: string
+          vulnerability_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "security_findings_run_id_fkey"
+            columns: ["run_id"]
+            isOneToOne: false
+            referencedRelation: "security_runs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       security_audit_log: {
         Row: {
           action: string
@@ -1358,6 +1459,108 @@ export type Database = {
           table_name?: string | null
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      security_runs: {
+        Row: {
+          branch: string | null
+          commit_sha: string | null
+          completed_at: string | null
+          created_at: string
+          critical_count: number
+          environment: string | null
+          error_message: string | null
+          github_repository: string | null
+          github_run_attempt: number | null
+          github_run_id: number | null
+          github_run_number: number | null
+          github_run_url: string | null
+          github_workflow: string | null
+          high_count: number
+          id: string
+          informational_count: number
+          inputs: Json
+          low_count: number
+          medium_count: number
+          metadata: Json
+          promptfoo_report_path: string | null
+          promptfoo_results_path: string | null
+          promptfoo_version: string | null
+          requested_by: string | null
+          started_at: string | null
+          status: string
+          suite: string
+          summary: Json
+          total_findings: number
+          trigger_source: string
+          updated_at: string
+        }
+        Insert: {
+          branch?: string | null
+          commit_sha?: string | null
+          completed_at?: string | null
+          created_at?: string
+          critical_count?: number
+          environment?: string | null
+          error_message?: string | null
+          github_repository?: string | null
+          github_run_attempt?: number | null
+          github_run_id?: number | null
+          github_run_number?: number | null
+          github_run_url?: string | null
+          github_workflow?: string | null
+          high_count?: number
+          id?: string
+          informational_count?: number
+          inputs?: Json
+          low_count?: number
+          medium_count?: number
+          metadata?: Json
+          promptfoo_report_path?: string | null
+          promptfoo_results_path?: string | null
+          promptfoo_version?: string | null
+          requested_by?: string | null
+          started_at?: string | null
+          status?: string
+          suite?: string
+          summary?: Json
+          total_findings?: number
+          trigger_source?: string
+          updated_at?: string
+        }
+        Update: {
+          branch?: string | null
+          commit_sha?: string | null
+          completed_at?: string | null
+          created_at?: string
+          critical_count?: number
+          environment?: string | null
+          error_message?: string | null
+          github_repository?: string | null
+          github_run_attempt?: number | null
+          github_run_id?: number | null
+          github_run_number?: number | null
+          github_run_url?: string | null
+          github_workflow?: string | null
+          high_count?: number
+          id?: string
+          informational_count?: number
+          inputs?: Json
+          low_count?: number
+          medium_count?: number
+          metadata?: Json
+          promptfoo_report_path?: string | null
+          promptfoo_results_path?: string | null
+          promptfoo_version?: string | null
+          requested_by?: string | null
+          started_at?: string | null
+          status?: string
+          suite?: string
+          summary?: Json
+          total_findings?: number
+          trigger_source?: string
+          updated_at?: string
         }
         Relationships: []
       }

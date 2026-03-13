@@ -1,0 +1,178 @@
+name: Security Red Team Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: Promptfoo security suite to run
+        required: true
+        default: full
+        type: choice
+        options:
+          - smoke
+          - full
+      target_branch:
+        description: Branch/environment to exercise
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - main
+      security_run_id:
+        description: Existing security_runs.id to update
+        required: false
+        type: string
+      source:
+        description: Trigger source label
+        required: false
+        default: manual
+        type: string
+      requested_by:
+        description: User id that initiated the run
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  promptfoo-redteam:
+    runs-on: ubuntu-latest
+    env:
+      PROMPTFOO_SUITE: ${{ inputs.suite }}
+      PROMPTFOO_SUPABASE_URL: ${{ secrets.PROMPTFOO_SUPABASE_URL }}
+      PROMPTFOO_REDTEAM_SHARED_SECRET: ${{ secrets.PROMPTFOO_REDTEAM_SHARED_SECRET }}
+      PROMPTFOO_TEST_USER_EMAIL: ${{ secrets.PROMPTFOO_TEST_USER_EMAIL }}
+      PROMPTFOO_TEST_USER_PASSWORD: ${{ secrets.PROMPTFOO_TEST_USER_PASSWORD }}
+      SECURITY_RESULTS_INGEST_SECRET: ${{ secrets.SECURITY_RESULTS_INGEST_SECRET }}
+      SECURITY_INGEST_URL: ${{ secrets.SECURITY_INGEST_URL }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      PROMPTFOO_CONFIG_PATH: promptfoo/security/generated/promptfooconfig.manual.json
+      PROMPTFOO_RESULTS_PATH: promptfoo/security/generated/results.manual.json
+      PROMPTFOO_REPORT_PATH: promptfoo/security/generated/report.manual.html
+      PROMPTFOO_NORMALIZED_PATH: promptfoo/security/generated/normalized-results.manual.json
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_branch }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Capture Promptfoo version
+        run: |
+          echo "PROMPTFOO_VERSION=$(npx promptfoo@latest --version | tail -n 1)" >> "$GITHUB_ENV"
+
+      - name: Mark run started
+        run: |
+          node scripts/security/postIngestPayload.mjs \
+            --phase started \
+            --run-id "${{ inputs.security_run_id }}" \
+            --requested-by "${{ inputs.requested_by }}" \
+            --trigger-source "${{ inputs.source }}" \
+            --suite "$PROMPTFOO_SUITE" \
+            --branch "${{ inputs.target_branch }}" \
+            --environment "${{ inputs.target_branch }}" \
+            --commit-sha "${GITHUB_SHA}" \
+            --status running \
+            --promptfoo-version "${PROMPTFOO_VERSION}" \
+            --results-path "$PROMPTFOO_RESULTS_PATH" \
+            --report-path "$PROMPTFOO_REPORT_PATH"
+
+      - name: Generate Promptfoo config
+        run: |
+          node scripts/security/writePromptfooConfig.mjs \
+            --suite "$PROMPTFOO_SUITE" \
+            --output "$PROMPTFOO_CONFIG_PATH"
+
+      - name: Run Promptfoo red team
+        id: redteam
+        continue-on-error: true
+        run: |
+          mkdir -p promptfoo/security/generated
+          npx promptfoo@latest redteam run \
+            --config "$PROMPTFOO_CONFIG_PATH" \
+            -o "$PROMPTFOO_RESULTS_PATH" \
+            -o "$PROMPTFOO_REPORT_PATH"
+
+      - name: Normalize raw Promptfoo output
+        if: always()
+        run: |
+          node scripts/security/normalizePromptfooResults.mjs \
+            --input "$PROMPTFOO_RESULTS_PATH" \
+            --output "$PROMPTFOO_NORMALIZED_PATH" \
+            --suite "$PROMPTFOO_SUITE" \
+            --branch "${{ inputs.target_branch }}" \
+            --commit-sha "${GITHUB_SHA}" \
+            --job-status running
+
+      - name: Enforce security thresholds
+        id: thresholds
+        if: always()
+        continue-on-error: true
+        run: |
+          node scripts/security/assertThresholds.mjs \
+            --input "$PROMPTFOO_NORMALIZED_PATH" \
+            --suite "$PROMPTFOO_SUITE"
+
+      - name: Determine final security status
+        if: always()
+        run: |
+          if [ "${{ steps.redteam.outcome }}" != "success" ]; then
+            echo "FINAL_SECURITY_STATUS=errored" >> "$GITHUB_ENV"
+          elif [ "${{ steps.thresholds.outcome }}" != "success" ]; then
+            echo "FINAL_SECURITY_STATUS=failed" >> "$GITHUB_ENV"
+          else
+            echo "FINAL_SECURITY_STATUS=passed" >> "$GITHUB_ENV"
+          fi
+
+      - name: Rewrite normalized payload with final status
+        if: always()
+        run: |
+          node scripts/security/normalizePromptfooResults.mjs \
+            --input "$PROMPTFOO_RESULTS_PATH" \
+            --output "$PROMPTFOO_NORMALIZED_PATH" \
+            --suite "$PROMPTFOO_SUITE" \
+            --branch "${{ inputs.target_branch }}" \
+            --commit-sha "${GITHUB_SHA}" \
+            --job-status "${FINAL_SECURITY_STATUS}"
+
+      - name: Mark run completed
+        if: always()
+        run: |
+          node scripts/security/postIngestPayload.mjs \
+            --phase completed \
+            --payload-file "$PROMPTFOO_NORMALIZED_PATH" \
+            --run-id "${{ inputs.security_run_id }}" \
+            --requested-by "${{ inputs.requested_by }}" \
+            --trigger-source "${{ inputs.source }}" \
+            --suite "$PROMPTFOO_SUITE" \
+            --branch "${{ inputs.target_branch }}" \
+            --environment "${{ inputs.target_branch }}" \
+            --commit-sha "${GITHUB_SHA}" \
+            --status "${FINAL_SECURITY_STATUS}" \
+            --promptfoo-version "${PROMPTFOO_VERSION}" \
+            --results-path "$PROMPTFOO_RESULTS_PATH" \
+            --report-path "$PROMPTFOO_REPORT_PATH" \
+            --error-message "Promptfoo outcome=${{ steps.redteam.outcome }}, thresholds outcome=${{ steps.thresholds.outcome }}"
+
+      - name: Upload Promptfoo artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: promptfoo-security-manual-${{ github.run_id }}
+          path: |
+            promptfoo/security/generated/*.json
+            promptfoo/security/generated/*.html
+          if-no-files-found: warn
+
+      - name: Fail workflow when security checks fail
+        if: always()
+        run: |
+          if [ "${{ steps.redteam.outcome }}" != "success" ] || [ "${{ steps.thresholds.outcome }}" != "success" ]; then
+            exit 1
+          fi

@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 .env
+.promptfoo
+promptfoo/security/generated
 
 # Editor directories and files
 supabase/.temp
