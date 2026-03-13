@@ -31,7 +31,7 @@ export const uploadProfileImage = async (file: File, userId: string): Promise<st
   return urlData.publicUrl;
 };
 
-export const deleteProfileImage = async (imageUrl: string, userId: string): Promise<void> => {
+export const deleteProfileImage = async (imageUrl: string, _userId: string): Promise<void> => {
   // Extract the file path from the URL
   const urlParts = imageUrl.split('/');
   const bucketIndex = urlParts.findIndex(part => part === 'profile-images');

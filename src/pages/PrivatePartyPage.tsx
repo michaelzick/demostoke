@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { StarIcon, MapPinIcon, MessageCircleIcon, CalendarIcon } from "lucide-react";
 import EquipmentCard from "@/components/EquipmentCard";
 import { mockEquipment } from "@/lib/mockData";
-import { Equipment } from "@/types";
 
 interface PrivateParty {
   id: string;

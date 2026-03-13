@@ -1,7 +1,6 @@
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Search } from "lucide-react";
-import { useAuth } from "@/helpers";
 import SquiggleUnderline from "./SquiggleUnderline";
 import {
   NavigationMenu,
@@ -25,19 +24,8 @@ const gearCategories = [
 ];
 
 const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
   const [isExploreOpen, setIsExploreOpen] = useState(false);
   const { hasFavorites } = useFavorites();
-
-  const handleListGearClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (isAuthenticated) {
-      navigate("/list-your-gear");
-    } else {
-      navigate("/auth/signin");
-    }
-  };
 
   const handleCategoryClick = () => {
     setIsExploreOpen(false);

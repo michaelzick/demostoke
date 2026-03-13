@@ -1,5 +1,4 @@
 
-import { User as SupabaseUser, Session } from "@supabase/supabase-js";
 import { User } from "@/types";
 
 export interface AuthContextType {

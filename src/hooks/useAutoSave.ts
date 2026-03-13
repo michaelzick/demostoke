@@ -50,7 +50,7 @@ export function useAutoSave<T>({
     };
 
     save();
-  }, [debouncedData, enabled]);
+  }, [debouncedData, enabled, onSave]);
 
   return { isSaving, lastSaved, error };
 }

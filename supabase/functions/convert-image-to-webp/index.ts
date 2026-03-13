@@ -12,7 +12,6 @@ const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
 const MAX_WIDTH = 2000;
-const WEBP_QUALITY = 85;
 
 serve(async (req) => {
   // Handle CORS preflight requests

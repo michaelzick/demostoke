@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Plus, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, User, Calendar, Filter } from "lucide-react";
+import { User, Calendar, Filter } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Sidebar,
@@ -46,7 +46,7 @@ const BlogPageInner = () => {
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || "");
   const [searchResults, setSearchResults] = useState<BlogPost[]>([]);
   const [allPosts, setAllPosts] = useState<BlogPost[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const [_isSearching, setIsSearching] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFilter, setSelectedFilter] = useState<string>(searchParams.get('category') || "");
   const [featuredPosts, setFeaturedPosts] = useState<string[]>([]);
@@ -86,13 +86,6 @@ const BlogPageInner = () => {
     loadData();
   }, []);
 
-  // Perform search whenever query, filter, or sort changes
-  useEffect(() => {
-    if (allPosts.length > 0) {
-      handleSearch();
-    }
-  }, [searchQuery, selectedFilter, sortBy, selectedDateFilter, showFeaturedOnly, allPosts]);
-
   // Sync state with URL params (e.g. when navigating with browser controls)
   useEffect(() => {
     const urlSearch = searchParams.get('search') || "";
@@ -120,7 +113,44 @@ const BlogPageInner = () => {
     { label: "Stories That Suck", value: "stories that suck" },
   ];
 
-  const handleSearch = async (query?: string, filter?: string) => {
+  const sortPosts = useCallback((posts: BlogPost[]) => {
+    return [...posts].sort((a, b) => {
+      const dateA = new Date(a.publishedAt).getTime();
+      const dateB = new Date(b.publishedAt).getTime();
+      return sortBy === 'latest' ? dateB - dateA : dateA - dateB;
+    });
+  }, [sortBy]);
+
+  const applyFilter = useCallback((filter: string) => {
+    setSelectedFilter(filter);
+
+    let filtered = !filter ? allPosts : allPosts.filter(post =>
+      post.category === filter || post.tags.includes(filter)
+    );
+
+    if (selectedDateFilter) {
+      filtered = filtered.filter(post => {
+        const postDate = new Date(post.publishedAt);
+        return selectedDateFilter === `${postDate.getFullYear()}-${String(postDate.getMonth() + 1).padStart(2, '0')}`;
+      });
+    }
+
+    if (showFeaturedOnly) {
+      filtered = filtered.filter(post => featuredPosts.includes(post.id));
+    }
+
+    filtered = sortPosts(filtered);
+
+    setSearchResults(filtered);
+    setCurrentPage(1);
+
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('search', searchQuery);
+    if (filter) params.set('category', filter);
+    navigate(`/blog${params.toString() ? `?${params.toString()}` : ''}`, { replace: true });
+  }, [allPosts, featuredPosts, navigate, searchQuery, selectedDateFilter, showFeaturedOnly, sortPosts]);
+
+  const handleSearch = useCallback(async (query?: string, filter?: string) => {
     const searchTerm = query !== undefined ? query : searchQuery;
     const filterTerm = filter !== undefined ? filter : selectedFilter;
 
@@ -179,49 +209,14 @@ const BlogPageInner = () => {
     } finally {
       setIsSearching(false);
     }
-  };
+  }, [allPosts, applyFilter, featuredPosts, navigate, searchQuery, selectedDateFilter, selectedFilter, showFeaturedOnly, sortPosts]);
 
-
-  const sortPosts = (posts: BlogPost[]) => {
-    return [...posts].sort((a, b) => {
-      const dateA = new Date(a.publishedAt).getTime();
-      const dateB = new Date(b.publishedAt).getTime();
-      return sortBy === 'latest' ? dateB - dateA : dateA - dateB;
-    });
-  };
-
-  const applyFilter = (filter: string) => {
-    setSelectedFilter(filter);
-
-    let filtered = !filter ? allPosts : allPosts.filter(post =>
-      post.category === filter || post.tags.includes(filter)
-    );
-
-    // Apply date filter
-    if (selectedDateFilter) {
-      filtered = filtered.filter(post => {
-        const postDate = new Date(post.publishedAt);
-        return selectedDateFilter === `${postDate.getFullYear()}-${String(postDate.getMonth() + 1).padStart(2, '0')}`;
-      });
+  // Perform search whenever query, filter, or sort changes
+  useEffect(() => {
+    if (allPosts.length > 0) {
+      handleSearch();
     }
-
-    // Apply featured posts filter
-    if (showFeaturedOnly) {
-      filtered = filtered.filter(post => featuredPosts.includes(post.id));
-    }
-
-    // Apply sorting
-    filtered = sortPosts(filtered);
-
-    setSearchResults(filtered);
-    setCurrentPage(1);
-
-    // Update URL
-    const params = new URLSearchParams();
-    if (searchQuery) params.set('search', searchQuery);
-    if (filter) params.set('category', filter);
-    navigate(`/blog${params.toString() ? `?${params.toString()}` : ''}`, { replace: true });
-  };
+  }, [allPosts, handleSearch]);
 
   const clearSearch = () => {
     setSearchQuery("");

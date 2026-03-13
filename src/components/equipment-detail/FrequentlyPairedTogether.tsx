@@ -22,7 +22,6 @@ interface FrequentlyBoughtTogetherProps {
 const FrequentlyPairedTogether = ({
   equipment,
   onDemoRequest,
-  selectedRange,
   isDateSelected,
 }: FrequentlyBoughtTogetherProps) => {
   const addOns = getAddOnsForCategory(equipment.category);

@@ -6,7 +6,6 @@ import CalendarHeader from "./CalendarHeader";
 import CalendarDaysHeader from "./CalendarDaysHeader";
 import CalendarDay from "./CalendarDay";
 import TBDEventsSection from "./TBDEventsSection";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 interface CalendarGridProps {
   currentDate: Date;
@@ -55,7 +54,6 @@ const CalendarGrid = ({
   isAdmin,
   isLoadingRole
 }: CalendarGridProps) => {
-  const isMobile = useIsMobile();
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   

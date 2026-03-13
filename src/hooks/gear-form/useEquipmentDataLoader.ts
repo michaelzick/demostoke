@@ -125,5 +125,5 @@ export const useEquipmentDataLoader = ({
       equipmentDataLoadedRef.current = true;
       console.log('Equipment basic data loaded successfully for editing - form is now editable');
     }
-  }, [equipment]); // Depend on the entire equipment object to catch any changes
+  }, [equipment, setAddress, setDamageDeposit, setDescription, setGearName, setGearType, setImageUrl, setMeasurementUnit, setPricePerDay, setPricePerHour, setPricePerWeek, setSelectedSizes, setSelectedSkillLevels, setSize, setSkillLevel]); // Depend on the entire equipment object to catch any changes
 };

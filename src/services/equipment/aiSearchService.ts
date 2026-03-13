@@ -1,7 +1,7 @@
 
 import { Equipment } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
-import { findCanonicalBrand, extractBrandFromQuery } from "@/data/brandAliases";
+import { extractBrandFromQuery } from "@/data/brandAliases";
 import { fuzzySearchScore, calculateSimilarity } from "@/utils/textSimilarity";
 
 // Simple map of singular/plural synonyms for gear types
@@ -54,7 +54,7 @@ export const searchWithAI = async (query: string, equipmentData: Equipment[], us
         lng: position.coords.longitude
       };
       
-    } catch (locationError) {
+    } catch (_locationError) {
       // Continue without location - AI will handle this gracefully
     }
   }

@@ -249,30 +249,6 @@ const ExplorePage = () => {
     setHasShownNoEquipmentToast(false);
   };
 
-  // Handle removing individual price range filters
-  const handleRemovePriceRange = (rangeId: string) => {
-    setAdvancedFilters(prev => ({
-      ...prev,
-      priceRanges: prev.priceRanges.filter(id => id !== rangeId)
-    }));
-  };
-
-  // Handle removing individual rating range filters  
-  const handleRemoveRatingRange = (rangeId: string) => {
-    setAdvancedFilters(prev => ({
-      ...prev,
-      ratingRanges: prev.ratingRanges.filter(id => id !== rangeId)
-    }));
-  };
-
-  const handleRemoveFeatured = () => {
-    setAdvancedFilters(prev => ({
-      ...prev,
-      featured: false
-    }));
-  };
-
-
   return (
     <div className="min-h-screen">
       <FilterBar

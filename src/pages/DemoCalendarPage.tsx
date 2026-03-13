@@ -14,7 +14,6 @@ import CalendarList from "@/components/demo-calendar/CalendarList";
 import CategoryFilter from "@/components/demo-calendar/CategoryFilter";
 import ProximityFilter from "@/components/demo-calendar/ProximityFilter";
 import AddEventModal from "@/components/demo-calendar/AddEventModal";
-import { Button } from "@/components/ui/button";
 import { useNavigate, useParams } from "react-router-dom";
 import EventModal from "@/components/demo-calendar/EventModal";
 import { generateEventSlug, findEventBySlug } from "@/utils/eventSlug";
@@ -144,7 +143,7 @@ const DemoCalendarPage = () => {
     } else {
       setSelectedEvent(null);
     }
-  }, [eventSlug, events]);
+  }, [eventSlug, events, setCurrentDate]);
 
   return (
     <div className="container mx-auto py-8 px-4">

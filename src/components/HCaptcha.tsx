@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
+import { useState, useEffect, useImperativeHandle, forwardRef, useCallback } from 'react';
 
 interface HCaptchaProps {
   siteKey: string;
@@ -26,25 +26,25 @@ const HCaptcha = forwardRef<{ reset: () => void }, HCaptchaProps>(({ siteKey, on
     setMounted(true);
   }, []);
 
-  useImperativeHandle(ref, () => ({
-    reset: () => {
-      resetCaptcha();
-    }
-  }));
-
-  const resetCaptcha = () => {
+  const resetCaptcha = useCallback(() => {
     if (typeof window !== "undefined" && window.hcaptcha && widgetId) {
       window.hcaptcha.reset(widgetId);
       onVerify(''); // Clear the token
     }
-  };
+  }, [onVerify, widgetId]);
+
+  useImperativeHandle(ref, () => ({
+    reset: () => {
+      resetCaptcha();
+    }
+  }), [resetCaptcha]);
 
   // Handle reset from parent component
   useEffect(() => {
     if (shouldReset && typeof window !== "undefined" && window.hcaptcha && widgetId) {
       resetCaptcha();
     }
-  }, [shouldReset, widgetId]);
+  }, [resetCaptcha, shouldReset, widgetId]);
 
   // Load the hCaptcha script once
   useEffect(() => {

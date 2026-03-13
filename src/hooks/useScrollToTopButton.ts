@@ -15,10 +15,12 @@ export const useScrollToTopButton = (options: UseScrollToTopButtonOptions = {}) 
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
+    const scrollContainer = containerRef?.current ?? null;
+
     const handleScroll = () => {
-      if (containerRef?.current) {
+      if (scrollContainer) {
         // For container-specific scrolling
-        setShowButton(containerRef.current.scrollTop > threshold);
+        setShowButton(scrollContainer.scrollTop > threshold);
       } else {
         // For window scrolling
         setShowButton(window.scrollY > threshold);
@@ -26,15 +28,15 @@ export const useScrollToTopButton = (options: UseScrollToTopButtonOptions = {}) 
     };
 
     
-    if (containerRef?.current) {
-      containerRef.current.addEventListener('scroll', handleScroll);
+    if (scrollContainer) {
+      scrollContainer.addEventListener('scroll', handleScroll);
     } else {
       window.addEventListener('scroll', handleScroll);
     }
 
     return () => {
-      if (containerRef?.current) {
-        containerRef.current.removeEventListener('scroll', handleScroll);
+      if (scrollContainer) {
+        scrollContainer.removeEventListener('scroll', handleScroll);
       } else {
         window.removeEventListener('scroll', handleScroll);
       }

@@ -41,7 +41,7 @@ export const updatePricingOptions = async (
 
 
     // Then, insert new pricing options
-    const pricingData = pricingOptions.map((option, index) => {
+    const pricingData = pricingOptions.map((option) => {
       const price = parseFloat(option.price);
       
       return {

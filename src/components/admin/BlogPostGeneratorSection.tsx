@@ -10,7 +10,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { useToast } from "@/hooks/use-toast";
-import { blogPosts } from "@/lib/blog";
 import { slugify } from "@/utils/slugify";
 import { format } from "date-fns";
 import { CalendarIcon, Sparkles, Loader2 } from "lucide-react";

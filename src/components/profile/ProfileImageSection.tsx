@@ -1,9 +1,7 @@
 
 import { useRef } from "react";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { User, Upload, Trash2, Eye } from "lucide-react";
-import { slugify } from "@/utils/slugify";
+import { User, Upload, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,7 +33,7 @@ export const ProfileImageSection = ({
   isDeletingImage,
   onImageUpload,
   onDeletePhoto,
-  userId,
+  userId: _userId,
 }: ProfileImageSectionProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 

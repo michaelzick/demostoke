@@ -29,7 +29,7 @@ export const prepareEquipmentData = ({
   pricePerDay,
   pricePerHour,
   pricePerWeek,
-  finalImageUrl,
+  finalImageUrl: _finalImageUrl,
   damageDeposit,
 }: PrepareEquipmentDataParams) => {
   // Parse numeric values

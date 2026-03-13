@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/auth";
 import { blogService } from "@/services/blogService";
@@ -29,6 +29,15 @@ export default function MyDraftsPage() {
   const [publishDialogOpen, setPublishDialogOpen] = useState(false);
   const [selectedDraftId, setSelectedDraftId] = useState<string | null>(null);
 
+  const loadDrafts = useCallback(async () => {
+    if (!user?.id) return;
+
+    setLoading(true);
+    const userDrafts = await blogService.getDrafts(user.id);
+    setDrafts(userDrafts);
+    setLoading(false);
+  }, [user?.id]);
+
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/sign-in");
@@ -36,16 +45,7 @@ export default function MyDraftsPage() {
     }
 
     loadDrafts();
-  }, [isAuthenticated, user]);
-
-  const loadDrafts = async () => {
-    if (!user?.id) return;
-
-    setLoading(true);
-    const userDrafts = await blogService.getDrafts(user.id);
-    setDrafts(userDrafts);
-    setLoading(false);
-  };
+  }, [isAuthenticated, loadDrafts, navigate]);
 
   const handleDelete = async () => {
     if (!selectedDraftId) return;

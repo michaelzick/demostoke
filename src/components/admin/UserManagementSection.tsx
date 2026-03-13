@@ -44,7 +44,7 @@ const UserManagementSection = () => {
       }
 
       // Check if user already has admin role
-      const { data: existingRole, error: roleCheckError } = await supabase
+      const { data: existingRole } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', targetUser.id)

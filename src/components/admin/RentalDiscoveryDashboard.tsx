@@ -68,7 +68,7 @@ export function RentalDiscoveryDashboard() {
         });
         await loadRetailers();
       }
-    } catch (err) {
+    } catch (_error) {
       toast({
         title: "Error",
         description: "Failed to run agent",

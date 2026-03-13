@@ -13,7 +13,7 @@ export const useProfileQuery = () => {
 
     try {
       // First get the current email from auth.users table
-      const { data: authData, error: authError } = await supabase.auth.getUser();
+      const { data: authData } = await supabase.auth.getUser();
       const currentEmail = authData?.user?.email || user.email || "";
 
       const { data: profileData, error } = await supabase

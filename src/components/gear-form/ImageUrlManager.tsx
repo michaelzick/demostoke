@@ -1,7 +1,6 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { X, Search, Globe, Plus, Loader2, ImagePlus } from "lucide-react";
 import { useState, useEffect } from "react";
 import ImageSearchDialog from "./ImageSearchDialog";

@@ -1,11 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useAuth } from '@/contexts/auth';
 import { supabase } from '@/integrations/supabase/client';
 import {
   getLocalFavorites,
   addLocalFavorite,
   removeLocalFavorite,
-  isLocalFavorite,
   mergeFavoritesArrays,
 } from '@/services/localStorageFavoritesService';
 import type { FavoriteItem } from '@/services/localStorageFavoritesService';
@@ -26,12 +25,7 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load favorites on mount and when user changes
-  useEffect(() => {
-    loadFavorites();
-  }, [user?.id, isAuthenticated]);
-
-  const loadFavorites = async () => {
+  const loadFavorites = useCallback(async () => {
     setIsLoading(true);
     try {
       const localFavs = getLocalFavorites();
@@ -69,7 +63,12 @@ export const FavoritesProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [isAuthenticated, user?.id]);
+
+  // Load favorites on mount and when user changes
+  useEffect(() => {
+    loadFavorites();
+  }, [loadFavorites]);
 
   const toggleFavorite = async (equipmentId: string) => {
     const isFav = favorites.includes(equipmentId);

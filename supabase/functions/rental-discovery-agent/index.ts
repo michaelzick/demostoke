@@ -188,7 +188,7 @@ async function scraperAgent(shops: any[]) {
 }
 
 // AGENT 3: Parser Agent - Extract equipment data
-async function parserAgent(scrapedData: any[], shopUserId: string) {
+async function parserAgent(scrapedData: any[], _shopUserId: string) {
   console.log("🔄 AGENT 3: Parser Agent starting...");
   
   if (!OPENAI_API_KEY) {

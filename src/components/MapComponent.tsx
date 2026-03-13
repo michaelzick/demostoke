@@ -46,7 +46,7 @@ const MapComponent = ({
   activeCategory,
   initialEquipment,
   userRole,
-  searchQuery,
+  searchQuery: _searchQuery,
   isEquipmentLoading = false,
   interactive = true,
   ownerIds,
@@ -135,7 +135,7 @@ const MapComponent = ({
           ? createUserLocationMarkerElement(userRole, activeCategory || undefined)
           : createMarkerElement(item.category);
 
-        const marker = new mapboxgl.Marker(el)
+        new mapboxgl.Marker(el)
           .setLngLat([item.location.lng, item.location.lat])
           .addTo(map.current!);
       });
@@ -158,7 +158,7 @@ const MapComponent = ({
           : undefined;
         const el = createUserLocationMarkerElement(user.role, categoryForMarker);
 
-        const marker = new mapboxgl.Marker(el)
+        new mapboxgl.Marker(el)
           .setLngLat([user.location.lng, user.location.lat])
           .setPopup(
             new mapboxgl.Popup({ offset: 25 }).setHTML(
@@ -189,7 +189,7 @@ const MapComponent = ({
           : undefined;
         const el = createUserLocationMarkerElement(user.role, categoryForMarker);
 
-        const marker = new mapboxgl.Marker(el)
+        new mapboxgl.Marker(el)
           .setLngLat([user.location.lng, user.location.lat])
           .setPopup(
             new mapboxgl.Popup({ offset: 25 }).setHTML(
@@ -203,7 +203,7 @@ const MapComponent = ({
         fitMapBounds(map.current, locationsToShow);
       }
     }
-  }, [isSearchRoute, isExploreRoute, isEquipmentDetailMode, initialEquipment, userLocations, activeCategory, isLoading, ownerIds, viewMode, filteredUserLocations]);
+  }, [isSearchRoute, isExploreRoute, isEquipmentDetailMode, initialEquipment, userLocations, activeCategory, isLoading, ownerIds, userRole, viewMode, filteredUserLocations]);
 
   const showLoading = isLoading ||
     (isSearchRoute ? isEquipmentLoading : (isExploreRoute ? isUserLocationsLoading : false));

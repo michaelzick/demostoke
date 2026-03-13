@@ -55,7 +55,7 @@ export const searchBlogPostsWithNLP = async (query: string, posts: BlogPost[]): 
     };
 
     // Add keyword matching scores
-    Object.entries(keywords).forEach(([category, synonyms]) => {
+    Object.entries(keywords).forEach(([_category, synonyms]) => {
       if (synonyms.some(word => lowerQuery.includes(word))) {
         score += 2;
       }

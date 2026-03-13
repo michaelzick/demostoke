@@ -3,7 +3,7 @@ import usePageMetadata from "@/hooks/usePageMetadata";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { Clock, User, Calendar, Share2, ArrowUp, Edit, ArrowLeft, FileText } from "lucide-react";
+import { User, Calendar, Share2, ArrowUp, Edit, ArrowLeft, FileText } from "lucide-react";
 import { blogService } from "@/services/blogService";
 import { slugify } from "@/utils/slugify";
 import { useEffect, useState } from "react";

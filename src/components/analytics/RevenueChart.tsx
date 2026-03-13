@@ -9,8 +9,7 @@ import {
   Area, 
   XAxis, 
   YAxis, 
-  CartesianGrid, 
-  ResponsiveContainer 
+  CartesianGrid 
 } from "recharts";
 
 interface RevenueChartProps {

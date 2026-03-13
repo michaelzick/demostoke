@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/auth";
 import { blogService } from "@/services/blogService";
@@ -11,10 +11,8 @@ import { toast } from "sonner";
 import { Loader2, Save, Send } from "lucide-react";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { format } from "date-fns";
-import { BlogPost } from "@/lib/blog/types";
 import BlogFooter from "@/components/BlogFooter";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { BlogCreateSidebar } from "@/components/blog/BlogCreateSidebar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { slugify } from "@/utils/slugify";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -62,16 +60,7 @@ function BlogEditPageInner() {
   
   const [tagsString, setTagsString] = useState("");
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/sign-in");
-      return;
-    }
-
-    loadDraft();
-  }, [isAuthenticated, id]);
-
-  const loadDraft = async () => {
+  const loadDraft = useCallback(async () => {
     if (!id) {
       navigate("/blog/drafts");
       return;
@@ -121,7 +110,16 @@ function BlogEditPageInner() {
     }
     
     setLoading(false);
-  };
+  }, [id, navigate]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/sign-in");
+      return;
+    }
+
+    loadDraft();
+  }, [isAuthenticated, loadDraft, navigate]);
 
   const handleSaveDraft = async () => {
     if (!user?.id || !id) return;
@@ -213,7 +211,7 @@ function BlogEditPageInner() {
   };
   
   // Validate slugs in real-time
-  const validateSlugs = async () => {
+  const validateSlugs = useCallback(async () => {
     if (!createdFromPostId || !originalPostSlug || !newPostSlug) {
       setSlugValidationError(null);
       return true;
@@ -241,14 +239,14 @@ function BlogEditPageInner() {
     
     setSlugValidationError(null);
     return true;
-  };
+  }, [createdFromPostId, databaseId, newPostSlug, originalPostSlug]);
   
   // Run validation when slugs change
   useEffect(() => {
     if (createdFromPostId) {
       validateSlugs();
     }
-  }, [originalPostSlug, newPostSlug, createdFromPostId]);
+  }, [createdFromPostId, validateSlugs]);
   
   const handlePublishFromExisting = async () => {
     if (!id || !createdFromPostId) return;
@@ -414,7 +412,7 @@ function BlogEditPageInner() {
                 onClick={async () => {
                   try {
                     await handleSaveDraft();
-                  } catch (error) {
+                  } catch (_error) {
                     // Error already handled in handleSaveDraft
                   }
                 }} 

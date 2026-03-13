@@ -7,10 +7,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { myBookings, bookingsForMyGear, Booking } from "@/lib/mockBookings";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 // Helper function to convert dates into a format needed for the calendar
 const getDatesInRange = (startDateStr: string, endDateStr: string): Date[] => {
@@ -44,7 +42,6 @@ const BookingsPage = () => {
   });
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>("myBookings");
-  const isMobile = useIsMobile();
 
   // Get all dates with bookings based on the current view mode
   const bookedDates = getBookingDates(

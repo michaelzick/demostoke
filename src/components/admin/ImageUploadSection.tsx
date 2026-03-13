@@ -54,7 +54,6 @@ const ImageUploadSection = () => {
 
     setUploading(true);
     try {
-      const fileExt = selectedFile.name.split('.').pop();
       const fileName = `admin-image-${Date.now()}-${selectedFile.name}`;
       
       const { data, error } = await supabase.storage

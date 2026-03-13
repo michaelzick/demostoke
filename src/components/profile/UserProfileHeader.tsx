@@ -1,8 +1,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "react-router-dom";
-import { StarIcon, CalendarIcon } from "lucide-react";
+import { StarIcon } from "lucide-react";
 
 import { getRoleDisplayName } from "@/utils/mapUtils";
 
@@ -23,7 +22,7 @@ interface UserProfileHeaderProps {
   memberSinceDate: number;
 }
 
-export const UserProfileHeader = ({ profile, stats, memberSinceDate }: UserProfileHeaderProps) => {
+export const UserProfileHeader = ({ profile, stats }: UserProfileHeaderProps) => {
   const hasHeroImage = !!profile.hero_image_url;
   const roleName = getRoleDisplayName(profile.displayRole || 'retail-store');
 

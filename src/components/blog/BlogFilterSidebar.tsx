@@ -48,7 +48,7 @@ export function BlogFilterSidebar({
   filters,
   showFeaturedOnly,
   setShowFeaturedOnly,
-  featuredPostIds,
+  featuredPostIds: _featuredPostIds,
 }: BlogFilterSidebarProps) {
   const { setOpen, setOpenMobile } = useSidebar();
   const isMobile = useIsMobile();

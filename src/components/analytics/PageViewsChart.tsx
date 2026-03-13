@@ -9,8 +9,7 @@ import {
   Bar, 
   XAxis, 
   YAxis, 
-  CartesianGrid, 
-  ResponsiveContainer 
+  CartesianGrid 
 } from "recharts";
 
 interface PageViewsChartProps {

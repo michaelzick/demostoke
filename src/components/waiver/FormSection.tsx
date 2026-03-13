@@ -1,5 +1,4 @@
 
-import { FormLabel } from "@/components/ui/form";
 import { ReactNode } from "react";
 
 interface FormSectionProps {

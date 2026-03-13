@@ -1,8 +1,7 @@
 
 import { useState } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
-import { useNavigate, Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -22,8 +21,7 @@ const SignUpPage = () => {
     title: 'Sign Up | DemoStoke',
     description: 'Create your DemoStoke account.'
   });
-  const navigate = useNavigate();
-  const { signup, isLoading } = useAuth();
+  const { signup } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -49,8 +47,6 @@ const SignUpPage = () => {
       setError(message);
     }
   };
-
-  const buttonDisabled = isLoading || !captchaToken;
 
   return (
     <Card className="w-full max-w-md mx-auto shadow-lg dark:border-muted">

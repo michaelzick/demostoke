@@ -1,5 +1,5 @@
 
-import { addDays, subDays, format } from "date-fns";
+import { subDays, format } from "date-fns";
 
 export const generateViewsData = () => {
   return [

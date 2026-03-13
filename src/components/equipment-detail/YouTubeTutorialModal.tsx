@@ -36,7 +36,7 @@ export function YouTubeTutorialModal({ isOpen, onClose, trick }: YouTubeTutorial
         }
       });
     }
-  }, [isOpen, trick]);
+  }, [isOpen, reset, searchVideos, trick]);
 
   if (!trick) return null;
 

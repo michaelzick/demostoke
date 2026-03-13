@@ -133,6 +133,8 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
       isActive = false;
       subscription.unsubscribe();
     };
+  // Auth bootstrap intentionally keys off mount only; the session handler is invoked by listeners.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mounted]);
 
   const syncLocalRVIToDatabase = async (userId: string) => {

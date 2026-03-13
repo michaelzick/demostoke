@@ -34,7 +34,7 @@ const CustomerWaiverForm = ({ equipment, onComplete }: CustomerWaiverFormProps) 
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = (_data: FormValues) => {
     if (!signature) {
       toast({
         title: "Signature Required",

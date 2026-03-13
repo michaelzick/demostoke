@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { UserEquipment } from "@/types/equipment";
-import { mapCategoryToGearType, mapSkillLevel, parseSize } from "@/utils/gearDataMapping";
+import { mapCategoryToGearType, mapSkillLevel } from "@/utils/gearDataMapping";
 
 interface UseDuplicatedGearDataProps {
   setGearName: (value: string) => void;

@@ -54,7 +54,7 @@ const ReviewItem = ({ review }: { review: Review }) => {
   );
 };
 
-const ReviewsTab = ({ equipmentId, rating, reviewCount }: ReviewsTabProps) => {
+const ReviewsTab = ({ equipmentId, rating }: ReviewsTabProps) => {
   const { data: reviews, isLoading, error } = useEquipmentReviews(equipmentId);
 
   const actualReviewCount = reviews?.length || 0;

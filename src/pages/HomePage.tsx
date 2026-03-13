@@ -10,7 +10,6 @@ import FeaturedEventsSection from "@/components/home/FeaturedEventsSection";
 import RecentlyViewedGearSection from "@/components/home/RecentlyViewedGearSection";
 import { useTrendingEquipment } from "@/hooks/useTrendingEquipment";
 import { useAuth } from "@/contexts/auth";
-import { useRecentEquipment } from "@/hooks/useRecentEquipment";
 import { useFeaturedEquipment } from "@/hooks/useFeaturedEquipment";
 import {
   Dialog,
@@ -34,22 +33,13 @@ import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 const HomePage = () => {
   usePageMetadata(PUBLIC_ROUTE_META["/"]);
 
-  // Client-only state
-  const [mounted, setMounted] = useState(false);
-
   // Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Set mounted state
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   // Fetch trending, recent, and featured equipment
   const { data: trendingEquipment, isLoading: trendingLoading } = useTrendingEquipment();
-  const { data: recentEquipment, isLoading: recentLoading } = useRecentEquipment();
   const { data: featuredEquipment, isLoading: featuredLoading } = useFeaturedEquipment();
 
   // Modal state and localStorage logic
@@ -65,20 +55,6 @@ const HomePage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const { user } = useAuth();
-
-  useEffect(() => {
-    if (!mounted) return;
-
-    const dontShow = safeLocalStorage.getItem("hideEmailModal");
-    const sent = safeLocalStorage.getItem("emailModalSent");
-    // Not showing the modal for now. Uncomment to show it.
-    // if (!dontShow && !sent) {
-    //   timerRef.current = setTimeout(() => setShowModal(true), 3000);
-    // }
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [mounted]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -98,6 +74,11 @@ const HomePage = () => {
     captchaToken;
 
   const handleDontShowAgain = () => {
+    const timer = timerRef.current;
+    if (timer) {
+      clearTimeout(timer);
+      timerRef.current = null;
+    }
     safeLocalStorage.setItem("hideEmailModal", "1");
     setShowModal(false);
   };

@@ -1,5 +1,5 @@
 
-import { Equipment, GearOwner } from "@/types";
+import { Equipment } from "@/types";
 import { generateRandomLocation, losAngelesLocations, losAngelesLat, losAngelesLng } from "./locations";
 import { shopOwners } from "./shopOwners";
 import { ownerPersonas } from "./ownerPersonas";
@@ -9,11 +9,6 @@ const staticIds = Array.from({ length: 30 }, (_, i) => `equip-${i + 1}`);
 
 // Combine shop owners and persona owners
 const allOwners = [...shopOwners, ...ownerPersonas];
-
-// Map owner IDs to owner objects
-const ownerIdToOwner = Object.fromEntries(
-  allOwners.map((owner) => [owner.id, owner])
-);
 
 // Image arrays for different categories
 const snowboardImages = [
@@ -37,13 +32,6 @@ const surfboardImages = [
   "https://images.unsplash.com/photo-1455264745730-cb3b76250ae8?auto=format&fit=crop&w=800&q=80"
 ];
 
-const supImages = [
-  "https://images.unsplash.com/photo-1597175971918-76e969f42f74?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1655213721792-113a056d9267?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1569118793811-5ea7a250313b?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1598112747595-0ac8aa788d4d?auto=format&fit=crop&w=800&q=80"
-];
-
 const bikeImages = [
   "https://images.unsplash.com/photo-1673121414328-52eff37bc6d0?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1566480047210-b10eaa1f8095?auto=format&fit=crop&w=800&q=80",
@@ -57,7 +45,6 @@ export function generateMockEquipment(count: number = 20): Equipment[] {
   const snowboardMaterials = ["Wood Core", "Carbon", "Fiberglass", "Cap Construction"];
   const skiMaterials = ["Wood Core", "Carbon", "Fiberglass", "Cap Construction"];
   const surfboardMaterials = ["Polyurethane", "Epoxy", "Soft-top", "Carbon Fiber"];
-  const paddleMaterials = ["Epoxy", "Inflatable", "Carbon Fiber", "Plastic"];
   const bikeMaterials = ["Aluminum", "Carbon Fiber", "Steel", "Titanium"];
 
   const suitableSkills = ["Beginner", "Intermediate", "Advanced", "Expert"];

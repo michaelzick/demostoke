@@ -1,5 +1,3 @@
-import { Equipment } from "@/types";
-
 export type AddOn = {
   name: string;
   imageUrl: string;

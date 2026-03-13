@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface GeolocationState {
   latitude: number | null;
@@ -25,7 +25,7 @@ export const useGeolocation = () => {
     setMounted(true);
   }, []);
 
-  const getCurrentLocation = () => {
+  const getCurrentLocation = useCallback(() => {
     // Only proceed if we're in a browser environment
     if (!mounted || typeof window === "undefined" || !navigator.geolocation) {
       setState(prev => ({
@@ -97,7 +97,7 @@ export const useGeolocation = () => {
         maximumAge: 300000, // 5 minutes
       }
     );
-  };
+  }, [mounted]);
 
   // Try to load cached location on mount, but only on client side
   useEffect(() => {
@@ -130,7 +130,7 @@ export const useGeolocation = () => {
     if (!state.permissionDenied) {
       getCurrentLocation();
     }
-  }, [mounted]);
+  }, [getCurrentLocation, mounted, state.permissionDenied]);
 
   return {
     ...state,

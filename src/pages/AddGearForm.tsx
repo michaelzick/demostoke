@@ -10,7 +10,6 @@ import FormActions from "@/components/gear-form/FormActions";
 import { useMultipleGearFormState } from "@/hooks/gear-form/useMultipleGearFormState";
 import { useMultipleGearFormSubmission } from "@/hooks/gear-form/useMultipleGearFormSubmission";
 import { useDuplicatedGearData } from "@/hooks/gear-form/useDuplicatedGearData";
-import { useAuth } from "@/helpers";
 
 const AddGearForm = () => {
   usePageMetadata({
@@ -22,7 +21,6 @@ const AddGearForm = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const { user } = useAuth();
   const formState = useMultipleGearFormState();
 
   // Handle duplicated gear data using the correct hook that reads from sessionStorage

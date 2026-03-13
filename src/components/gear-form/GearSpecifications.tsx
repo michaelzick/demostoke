@@ -18,7 +18,6 @@ interface GearSpecificationsProps {
 const GearSpecifications = ({
   size,
   setSize,
-  skillLevel,
   setSkillLevel,
   gearType,
   selectedSizes = [],

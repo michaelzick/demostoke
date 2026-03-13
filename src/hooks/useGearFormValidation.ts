@@ -1,6 +1,6 @@
 
 import { useToast } from "@/hooks/use-toast";
-import { FormData, PricingOption } from "@/hooks/gear-form/types";
+import { FormData } from "@/hooks/gear-form/types";
 
 export const useGearFormValidation = () => {
   const { toast } = useToast();
@@ -17,7 +17,6 @@ export const useGearFormValidation = () => {
       pricingOptions,
       imageUrl,
       useImageUrl,
-      role
     } = formData;
 
     // Validate required fields

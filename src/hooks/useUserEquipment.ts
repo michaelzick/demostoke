@@ -163,7 +163,7 @@ export const useDeleteEquipment = () => {
 
   return useMutation({
     mutationFn: async (equipmentId: string) => {
-      const { data, error, count } = await supabase
+      const { data, error } = await supabase
         .from("equipment")
         .delete()
         .eq("id", equipmentId)

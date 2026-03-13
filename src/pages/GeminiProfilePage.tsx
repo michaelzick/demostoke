@@ -1,13 +1,10 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
 const GeminiProfilePage = () => {
-  const navigate = useNavigate();
-
   usePageMetadata(PUBLIC_ROUTE_META["/user-profile/gemini"]);
 
   useEffect(() => {

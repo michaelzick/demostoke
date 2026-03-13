@@ -152,7 +152,7 @@ const HybridView = ({
     emptyMessage || "Try changing your filters or explore a different category.";
 
   // Add markers with click handlers
-  const markers = useMapMarkers({
+  useMapMarkers({
     map: map.current,
     mapLoaded: isMapLoaded,
     equipment: selectedEquipment ? [selectedEquipment] : [],
@@ -168,7 +168,7 @@ const HybridView = ({
     if (mapUserLocations.length > 0) {
       fitMapBounds(map.current, mapUserLocations);
     }
-  }, [resetSignal]);
+  }, [resetSignal, isMapLoaded, mapUserLocations]);
 
   // Fit bounds when equipment or user locations change
   useEffect(() => {
@@ -199,18 +199,6 @@ const HybridView = ({
       if (isMobile) {
         // Scroll to top to show the map
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }
-  };
-
-  const handleMapPinClick = (equipmentId: string) => {
-    setSelectedEquipmentId(equipmentId);
-    
-    if (isMobile) {
-      // Scroll to the equipment card in the list
-      const cardElement = document.getElementById(`equipment-card-${equipmentId}`);
-      if (cardElement) {
-        cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
   };

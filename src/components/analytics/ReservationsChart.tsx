@@ -9,8 +9,7 @@ import {
   Line, 
   XAxis, 
   YAxis, 
-  CartesianGrid, 
-  ResponsiveContainer 
+  CartesianGrid 
 } from "recharts";
 
 interface ReservationsChartProps {
