@@ -154,16 +154,23 @@ export const createPopupContent = (item: {
     <div>
       <h3 class="text-base font-medium">${item.name}</h3>
       <p class="text-sm text-gray-500">
-        <a href="/user-profile/${slugify(item.ownerName)}" class="underline underline-offset-2 hover:text-blue-600">${item.ownerName}</a>
+        <a
+          href="/user-profile/${slugify(item.ownerName)}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="underline underline-offset-2 hover:text-blue-600"
+        >${item.ownerName}</a>
       </p>
       <p class="text-sm text-gray-500">${item.category}</p>
       <p class="text-sm mt-1">$${item.price_per_day}/day</p>
-      <button
-        class="mt-2 px-2 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
-        onclick="window.location.href='${detailPath}'"
+      <a
+        href="${detailPath}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mt-2 inline-block px-2 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
       >
         View Details
-      </button>
+      </a>
     </div>
   `;
 };
@@ -175,12 +182,14 @@ export const createUserLocationPopupContent = (user: { id: string; name: string;
       <h3 class="text-base font-medium">${user.name}</h3>
       <p class="text-sm text-gray-500">${roleDisplay}</p>
       <p class="text-sm mt-1">${user.address}</p>
-      <button
-        class="mt-2 px-2 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
-        onclick="window.location.href='/user-profile/${slugify(user.name)}'"
+      <a
+        href="/user-profile/${slugify(user.name)}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="mt-2 inline-block px-2 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
       >
         View Profile
-      </button>
+      </a>
     </div>
   `;
 };
