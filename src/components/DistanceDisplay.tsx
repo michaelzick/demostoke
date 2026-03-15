@@ -1,5 +1,6 @@
 
 import { useDynamicDistance } from '@/hooks/useDynamicDistance';
+import { Button } from '@/components/ui/button';
 
 interface Equipment {
   location?: {
@@ -12,27 +13,13 @@ interface Equipment {
 interface DistanceDisplayProps {
   equipment: Equipment;
   className?: string;
-  showUnit?: boolean;
-  unitText?: string;
 }
 
-const DistanceDisplay = ({ 
-  equipment, 
-  className = "", 
-  showUnit = true,
-  unitText = "away"
-}: DistanceDisplayProps) => {
-  const { distance, loading, isLocationBased, permissionDenied } = useDynamicDistance(equipment);
+const DistanceDisplay = ({ equipment, className = "" }: DistanceDisplayProps) => {
+  const { distance, permissionState, requestLocation } = useDynamicDistance(equipment);
 
-  if (loading) {
-    return (
-      <span className={`text-muted-foreground ${className}`}>
-        Calculating distance...
-      </span>
-    );
-  }
-
-  if (permissionDenied) {
+  // Geolocation unsupported
+  if (typeof navigator === 'undefined' || !navigator.geolocation) {
     return (
       <span className={`text-muted-foreground ${className}`}>
         Distance not available
@@ -40,21 +27,43 @@ const DistanceDisplay = ({
     );
   }
 
-  if (distance === null || distance === undefined) {
+  if (permissionState === 'idle') {
+    return (
+      <Button variant="outline" onClick={requestLocation} className={className}>
+        Calculate Distance
+      </Button>
+    );
+  }
+
+  if (permissionState === 'loading') {
     return (
       <span className={`text-muted-foreground ${className}`}>
-        Distance unknown
+        Calculating distance...
       </span>
     );
   }
 
-  const displayDistance = distance < 0.1 ? '< 0.1' : distance.toString();
-  const unit = showUnit ? (distance === 1 ? ' mile' : ' miles') : 'mi';
-  const fullText = showUnit ? `${displayDistance} ${unit} ${unitText}` : `${displayDistance}${unit} ${unitText}`;
+  if (permissionState === 'denied') {
+    return (
+      <span className={`text-muted-foreground ${className}`}>
+        Distance not available
+      </span>
+    );
+  }
+
+  // granted
+  if (distance !== null && distance !== undefined) {
+    const displayDistance = distance < 0.1 ? '< 0.1' : distance.toString();
+    return (
+      <span className={className}>
+        {displayDistance}mi away
+      </span>
+    );
+  }
 
   return (
-    <span className={className} title={isLocationBased ? "Distance calculated from your location" : "Approximate distance"}>
-      {fullText}
+    <span className={`text-muted-foreground ${className}`}>
+      Distance not available
     </span>
   );
 };

@@ -1,5 +1,7 @@
-
 import { useState, useEffect, useCallback } from 'react';
+
+const CACHE_KEY = 'userLocation';
+const CACHE_TTL_MS = 300_000; // 5 minutes
 
 interface GeolocationState {
   latitude: number | null;
@@ -7,59 +9,105 @@ interface GeolocationState {
   error: string | null;
   loading: boolean;
   permissionDenied: boolean;
+  permissionState: 'idle' | 'loading' | 'granted' | 'denied';
+}
+
+interface CachedLocation {
+  latitude: number;
+  longitude: number;
+  timestamp: number;
+}
+
+function readCache(): CachedLocation | null {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const parsed: CachedLocation = JSON.parse(raw);
+    if (Date.now() - parsed.timestamp < CACHE_TTL_MS) return parsed;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(latitude: number, longitude: number): void {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ latitude, longitude, timestamp: Date.now() }));
+  } catch {
+    // silently ignore
+  }
 }
 
 export const useGeolocation = () => {
-  const [state, setState] = useState<GeolocationState>({
-    latitude: null,
-    longitude: null,
-    error: null,
-    loading: false,
-    permissionDenied: false,
+  const [state, setState] = useState<GeolocationState>(() => {
+    // Initialise from cache on first render (client-side only)
+    if (typeof window !== 'undefined') {
+      const cached = readCache();
+      if (cached) {
+        return {
+          latitude: cached.latitude,
+          longitude: cached.longitude,
+          error: null,
+          loading: false,
+          permissionDenied: false,
+          permissionState: 'granted',
+        };
+      }
+    }
+    return {
+      latitude: null,
+      longitude: null,
+      error: null,
+      loading: false,
+      permissionDenied: false,
+      permissionState: 'idle',
+    };
   });
 
-  const [mounted, setMounted] = useState(false);
-
-  // Set mounted state to track when component is hydrated
+  // Re-check cache after hydration (handles SSR where window is unavailable during useState init)
   useEffect(() => {
-    setMounted(true);
+    if (state.permissionState !== 'idle') return;
+    const cached = readCache();
+    if (cached) {
+      setState({
+        latitude: cached.latitude,
+        longitude: cached.longitude,
+        error: null,
+        loading: false,
+        permissionDenied: false,
+        permissionState: 'granted',
+      });
+    }
+    // Only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getCurrentLocation = useCallback(() => {
-    // Only proceed if we're in a browser environment
-    if (!mounted || typeof window === "undefined" || !navigator.geolocation) {
+  const requestLocation = useCallback(() => {
+    if (typeof window === 'undefined' || !navigator.geolocation) {
       setState(prev => ({
         ...prev,
         error: 'Geolocation is not supported by this browser',
         loading: false,
+        permissionState: 'denied',
+        permissionDenied: true,
       }));
       return;
     }
 
-    setState(prev => ({ ...prev, loading: true, error: null }));
+    setState(prev => ({ ...prev, loading: true, error: null, permissionState: 'loading' }));
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        const { latitude, longitude } = position.coords;
+        writeCache(latitude, longitude);
         setState({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
+          latitude,
+          longitude,
           error: null,
           loading: false,
           permissionDenied: false,
+          permissionState: 'granted',
         });
-        
-        // Cache location in localStorage only if available
-        if (typeof window !== "undefined" && window.localStorage) {
-          try {
-            localStorage.setItem('userLocation', JSON.stringify({
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              timestamp: Date.now(),
-            }));
-          } catch (error) {
-            console.error('Error saving location to localStorage:', error);
-          }
-        }
       },
       (error) => {
         let errorMessage = 'Unable to retrieve location';
@@ -78,62 +126,25 @@ export const useGeolocation = () => {
             break;
         }
 
-        // Only log errors in development to reduce console noise
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('Geolocation error:', error.message);
-        }
-
         setState({
           latitude: null,
           longitude: null,
           error: errorMessage,
           loading: false,
           permissionDenied,
+          permissionState: permissionDenied ? 'denied' : 'idle',
         });
       },
       {
         enableHighAccuracy: false,
         timeout: 10000,
-        maximumAge: 300000, // 5 minutes
+        maximumAge: CACHE_TTL_MS,
       }
     );
-  }, [mounted]);
-
-  // Try to load cached location on mount, but only on client side
-  useEffect(() => {
-    if (!mounted || typeof window === "undefined") return;
-
-    try {
-      const cachedLocation = localStorage.getItem('userLocation');
-      if (cachedLocation) {
-        const parsed = JSON.parse(cachedLocation);
-        const isStale = Date.now() - parsed.timestamp > 300000; // 5 minutes
-        
-        if (!isStale) {
-          setState({
-            latitude: parsed.latitude,
-            longitude: parsed.longitude,
-            error: null,
-            loading: false,
-            permissionDenied: false,
-          });
-          return;
-        }
-      }
-    } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Error parsing cached location:', error);
-      }
-    }
-
-    // Only auto-request location if user hasn't previously denied permission
-    if (!state.permissionDenied) {
-      getCurrentLocation();
-    }
-  }, [getCurrentLocation, mounted, state.permissionDenied]);
+  }, []);
 
   return {
     ...state,
-    getCurrentLocation,
+    requestLocation,
   };
 };
