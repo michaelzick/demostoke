@@ -2,7 +2,7 @@ const SeoContentSection = () => {
   return (
     <section className="container px-4 md:px-6 py-16 max-w-4xl mx-auto">
       <h2 className="text-2xl md:text-3xl font-bold mb-6">
-        The Smarter Way to Find Your Next Board
+        The Smarter Way to Find Your Next Ride
       </h2>
       <div className="space-y-4 text-muted-foreground leading-relaxed">
         <p>
