@@ -29,7 +29,7 @@ const DistanceDisplay = ({ equipment, className = "" }: DistanceDisplayProps) =>
 
   if (permissionState === 'idle') {
     return (
-      <Button variant="outline" onClick={requestLocation} className={className}>
+      <Button variant="outline" size="sm" onClick={requestLocation} className={`text-xs px-2 py-0.5 h-auto ${className}`}>
         Calculate Distance
       </Button>
     );

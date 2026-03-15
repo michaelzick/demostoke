@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "./contexts/auth/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { FavoritesProvider } from "./contexts/FavoritesContext";
+import { GeolocationProvider } from "./contexts/GeolocationContext";
 import { ClientOnlyAmplitudeInit } from "./components/ClientOnlyAmplitudeInit";
 import GoogleTagManager from "./components/GoogleTagManager";
 import AppRoutes from "./components/AppRoutes";
@@ -24,12 +25,14 @@ const App = () => {
       <ThemeProvider>
         <AuthProvider>
           <FavoritesProvider>
-            <TooltipProvider>
-              <ClientOnlyToaster />
-              <ClientOnlyAmplitudeInit />
-              <GoogleTagManager />
-              <AppRoutes />
-            </TooltipProvider>
+            <GeolocationProvider>
+              <TooltipProvider>
+                <ClientOnlyToaster />
+                <ClientOnlyAmplitudeInit />
+                <GoogleTagManager />
+                <AppRoutes />
+              </TooltipProvider>
+            </GeolocationProvider>
           </FavoritesProvider>
         </AuthProvider>
       </ThemeProvider>
