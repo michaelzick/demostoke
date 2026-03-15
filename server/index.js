@@ -113,7 +113,7 @@ const generateLegacyDemoEventSlug = (event) => {
   return `${titlePart}-${datePart}-${timePart}`;
 };
 
-const buildDemoEventPath = (event) => `/demo-events/${generateDemoEventSlug(event)}`;
+const buildDemoEventPath = (event) => `/demo-calendar/event/${generateDemoEventSlug(event)}`;
 
 const buildDemoEventStartDate = (event) => {
   if (!event.event_date) {
@@ -651,14 +651,6 @@ app.use(compression({
     return compression.filter(req, res);
   },
 }));
-
-app.get(['/event/:eventSlug', '/demo-calendar/event/:eventSlug'], (req, res) => {
-  const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
-  const host = req.get('host') || 'www.demostoke.com';
-  const redirectUrl = `${protocol}://${host}/demo-events/${req.params.eventSlug}`;
-
-  res.redirect(301, redirectUrl);
-});
 
 app.get('/sitemap.xml', async (req, res) => {
   const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
