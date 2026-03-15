@@ -1,4 +1,3 @@
-
 import { memo, type ReactNode } from "react";
 import { Navigate, Routes, Route, useParams } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
@@ -66,7 +65,7 @@ const AdminOnlyRouteGate = ({ children }: { children: ReactNode }) => {
 
 const LegacyDemoEventRedirect = () => {
   const { eventSlug = "" } = useParams();
-  return <Navigate to={`/demo-events/${eventSlug}`} replace />;
+  return <Navigate to={`/demo-calendar/event/${eventSlug}`} replace />;
 };
 
 const AppRoutes = memo(() => {
@@ -114,8 +113,8 @@ const AppRoutes = memo(() => {
         <Route path="search" element={<SearchResultsPage />} />
         <Route path="gear-quiz" element={<GearQuizPage />} />
         <Route path="demo-calendar" element={<DemoCalendarPage />} />
-        <Route path="demo-events/:eventSlug" element={<DemoEventPage />} />
-        <Route path="demo-calendar/event/:eventSlug" element={<LegacyDemoEventRedirect />} />
+        <Route path="demo-events/:eventSlug" element={<LegacyDemoEventRedirect />} />
+        <Route path="demo-calendar/event/:eventSlug" element={<DemoEventPage />} />
         <Route path="event/:eventSlug" element={<LegacyDemoEventRedirect />} />
         <Route
           path="widget"
