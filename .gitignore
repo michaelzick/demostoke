@@ -14,6 +14,7 @@ dist-ssr
 .env
 .promptfoo
 promptfoo/security/generated
+.nvmrc
 
 # Editor directories and files
 supabase/.temp
