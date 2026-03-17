@@ -1,5 +1,11 @@
 project_id = "qtlhqsqanbxgfbcjigrl"
 
+[functions.ai-search]
+verify_jwt = false
+
+[functions.gear-quiz-analysis]
+verify_jwt = false
+
 [functions.rental-discovery-agent]
 verify_jwt = false
 

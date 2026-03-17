@@ -41,6 +41,28 @@ Notes:
 
 - `SECURITY_RESULTS_INGEST_SECRET`
 
+### Downstream AI target functions
+
+- `ai-search`: `OPENAI_API_KEY`
+- `gear-quiz-analysis`: `OPENAI_API_KEY`
+- `generate-description`: `OPENAI_API_KEY`
+- `analyze-blog-seo`: `OPENAI_API_KEY`
+- `generate-blog-text`: `LOVABLE_API_KEY`
+
+## Required Supabase config
+
+- `ai-search` must be configured with `verify_jwt = false`
+- `gear-quiz-analysis` must be configured with `verify_jwt = false`
+- `generate-tricks` must be configured with `verify_jwt = false`
+- `security-redteam-target` must be configured with `verify_jwt = false`
+- `ingest-security-report` must be configured with `verify_jwt = false`
+- `trigger-security-redteam` must be configured with `verify_jwt = false`
+
+## Required database state
+
+- The `security_runs` and `security_findings` tables from `20260313010000_create_security_redteam_tables.sql` must be applied.
+- The database must expose a zero-argument `public.is_admin()` helper so the admin dashboard, RLS policies, and the `trigger-security-redteam` RPC check all resolve consistently.
+
 ## Local usage
 
 Generate a config:
