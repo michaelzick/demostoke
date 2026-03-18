@@ -159,7 +159,13 @@ export function TricksSection({ equipmentId, category, subcategory, equipmentNam
             <p className="text-muted-foreground mb-4">
               Discover {categoryActivity} tricks and techniques.
             </p>
-            <Button onClick={() => handleGenerateTricks(false)} disabled={isLoading}>
+            <Button
+              onClick={() => handleGenerateTricks(false)}
+              disabled={isLoading}
+              variant="outline"
+              size="lg"
+              className="bg-white/20 dark:bg-zinc-900/50 dark:border-white border-zinc-600 dark:hover:bg-white/30 dark:hover:bg-zinc-500/40 transition-colors"
+            >
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
