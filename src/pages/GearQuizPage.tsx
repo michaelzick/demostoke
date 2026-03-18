@@ -18,6 +18,19 @@ import useScrollToTop from "@/hooks/useScrollToTop";
 import { useEstimatedProgress } from "@/hooks/useEstimatedProgress";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
+import { GearCandidate } from "@/types/quiz";
+
+// Task 3.1: Fetch lightweight DB candidates for a given category
+async function fetchDbCandidates(category: string): Promise<GearCandidate[]> {
+  const { data, error } = await supabase
+    .from("equipment")
+    .select("id, name, description, suitable_skill_level, price_per_day, location_lat, location_lng, location_address")
+    .eq("category", category)
+    .eq("status", "available");
+
+  if (error) throw error;
+  return (data ?? []) as GearCandidate[];
+}
 
 interface QuizData {
   category: string;
@@ -41,6 +54,8 @@ const GearQuizPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState(null);
+  // Task 3.3: DB candidates state
+  const [dbCandidates, setDbCandidates] = useState<GearCandidate[]>([]);
   const totalSteps = 6;
   const {
     progress: analysisProgress,
@@ -122,8 +137,24 @@ const GearQuizPage = () => {
 
       const sanitizedData = sanitizeQuizData(quizData);
 
+      // Task 3.4: Fetch DB candidates first; bail out on failure
+      let candidates: GearCandidate[] = [];
+      try {
+        candidates = await fetchDbCandidates(quizData.category);
+        setDbCandidates(candidates);
+      } catch (dbError) {
+        console.error('Error fetching DB candidates:', dbError);
+        toast({
+          title: "Error",
+          description: "Failed to analyze your quiz. Please try again.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke('gear-quiz-analysis', {
-        body: sanitizedData
+        body: { ...sanitizedData, availableGear: candidates }
       });
 
       if (error) throw error;
@@ -145,6 +176,7 @@ const GearQuizPage = () => {
   const resetQuiz = () => {
     setCurrentStep(1);
     setResults(null);
+    setDbCandidates([]);
     setQuizData({
       category: '',
       height: '',
@@ -183,7 +215,7 @@ const GearQuizPage = () => {
       case 6:
         return <AdditionalNotes value={quizData.additionalNotes} onChange={(value) => updateQuizData('additionalNotes', value)} />;
       case 7:
-        return <QuizResults results={results} onRetakeQuiz={resetQuiz} quizData={quizData} />;
+        return <QuizResults results={results} onRetakeQuiz={resetQuiz} quizData={quizData} dbCandidates={dbCandidates} />;
       default:
         return null;
     }

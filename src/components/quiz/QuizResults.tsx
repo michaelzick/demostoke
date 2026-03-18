@@ -2,26 +2,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { RefreshCw, CheckCircle, MapPin, TrendingUp, Target } from "lucide-react";
-import { useEffect, useState } from "react";
+import { RefreshCw, CheckCircle, Target } from "lucide-react";
 import { Equipment } from "@/types";
-import { fetchEquipmentFromSupabase } from "@/services/equipment/equipmentDataService";
+import { GearCandidate, QuizAnalysisResult, QuizRecommendation } from "@/types/quiz";
 import CompactEquipmentCard from "@/components/CompactEquipmentCard";
+import MapComponent from "@/components/MapComponent";
 import { sanitizeQuizResults } from "@/utils/contentSanitization";
 
 interface QuizResultsProps {
-  results: any;
+  results: QuizAnalysisResult | null;
   onRetakeQuiz: () => void;
   quizData?: {
     category: string;
     skillLevel: string;
   };
+  dbCandidates: GearCandidate[];
 }
 
-const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
-  const [recommendedGear, setRecommendedGear] = useState<Equipment[]>([]);
-  const [loadingGear, setLoadingGear] = useState(true);
-
+const QuizResults = ({ results, onRetakeQuiz, quizData, dbCandidates }: QuizResultsProps) => {
   // Skill level badge colors
   const getSkillBadgeVariant = (skillLevel: string) => {
     switch (skillLevel?.toLowerCase()) {
@@ -38,90 +36,38 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
     }
   };
 
-  useEffect(() => {
-    const fetchRecommendedGear = async () => {
-      if (!quizData?.category || !quizData?.skillLevel) return;
-
-      try {
-        setLoadingGear(true);
-        const allEquipment = await fetchEquipmentFromSupabase();
-
-        // Progressive filtering strategy to ensure at least 3 recommendations
-        const getFilteredGear = (equipment: Equipment[], category: string, skillLevel: string) => {
-          // Helper function to check if equipment matches skill level
-          const matchesSkillLevel = (suitable: string | undefined, targetLevel: string, exact = false) => {
-            if (!suitable) return false;
-            const suitableItems = suitable.toLowerCase().split(',').map(s => s.trim());
-            const target = targetLevel.toLowerCase();
-
-            if (exact) {
-              return suitableItems.includes(target);
-            }
-
-            // Check if any suitable level matches or includes the target
-            return suitableItems.some(item =>
-              item === target ||
-              item.includes(target) ||
-              target.includes(item)
-            );
-          };
-
-          // Get adjacent skill levels for fallback
-          const getAdjacentSkillLevels = (level: string) => {
-            const levels = ['beginner', 'intermediate', 'advanced', 'expert'];
-            const currentIndex = levels.indexOf(level.toLowerCase());
-            const adjacent = [];
-
-            if (currentIndex > 0) adjacent.push(levels[currentIndex - 1]);
-            if (currentIndex < levels.length - 1) adjacent.push(levels[currentIndex + 1]);
-
-            return adjacent;
-          };
-
-          // Step 1: Try exact skill level match
-          let filtered = equipment.filter(item =>
-            item.category === category &&
-            matchesSkillLevel(item.specifications?.suitable, skillLevel, true)
-          );
-
-          // Step 2: If less than 3, include adjacent skill levels
-          if (filtered.length < 3) {
-            const adjacentLevels = getAdjacentSkillLevels(skillLevel);
-            const additionalGear = equipment.filter(item =>
-              item.category === category &&
-              !filtered.find(f => f.id === item.id) && // Don't duplicate
-              (matchesSkillLevel(item.specifications?.suitable, skillLevel) ||
-               adjacentLevels.some(level => matchesSkillLevel(item.specifications?.suitable, level)))
-            );
-            filtered = [...filtered, ...additionalGear];
-          }
-
-          // Step 3: If still less than 3, show all in category
-          if (filtered.length < 3) {
-            const remainingGear = equipment.filter(item =>
-              item.category === category &&
-              !filtered.find(f => f.id === item.id) // Don't duplicate
-            );
-            filtered = [...filtered, ...remainingGear];
-          }
-
-          // Return up to 8 items, prioritizing exact matches
-          return filtered.slice(0, 8);
-        };
-
-        const filteredGear = getFilteredGear(allEquipment, quizData.category, quizData.skillLevel);
-        setRecommendedGear(filteredGear);
-      } catch (error) {
-        console.error('Error fetching recommended gear:', error);
-      } finally {
-        setLoadingGear(false);
-      }
-    };
-
-    fetchRecommendedGear();
-  }, [quizData?.category, quizData?.skillLevel]);
   // Sanitize results for safe display
   const sanitizedResults = sanitizeQuizResults(results);
+
+  // Derive matchedEquipment from matchedIds + dbCandidates
+  const matchedEquipment: Equipment[] = (results?.matchedIds ?? [])
+    .map(id => dbCandidates.find(c => c.id === id))
+    .filter((c): c is GearCandidate => c !== undefined)
+    .map(c => ({
+      id: c.id,
+      name: c.name,
+      category: quizData?.category ?? "",
+      description: c.description,
+      price_per_day: c.price_per_day,
+      location: {
+        lat: c.location_lat ?? 0,
+        lng: c.location_lng ?? 0,
+        address: c.location_address ?? "",
+      },
+      image_url: "",
+      rating: 0,
+      review_count: 0,
+      distance: 0,
+      owner: { id: "", name: "", imageUrl: "", rating: 0, reviewCount: 0, responseRate: 0 },
+      specifications: { size: "", weight: "", material: "", suitable: c.suitable_skill_level ?? "" },
+      availability: { available: true },
+      pricing_options: [],
+    }));
+
+  // Derive mapItems — only items with valid coordinates
+  const mapItems = matchedEquipment.filter(
+    item => item.location.lat !== 0 && item.location.lng !== 0
+  );
 
   if (!sanitizedResults) {
     return (
@@ -134,7 +80,7 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
     );
   }
 
-  const { recommendations = [], personalizedAdvice, skillDevelopment, locationConsiderations } = sanitizedResults;
+  const { recommendations = [] } = sanitizedResults;
 
   return (
     <div className="space-y-6">
@@ -156,7 +102,7 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
             <Target className="w-5 h-5 text-primary" />
             Recommended Gear
           </h3>
-          {recommendations.map((rec: any, index: number) => (
+          {recommendations.map((rec: QuizRecommendation, index: number) => (
             <Card key={index} className="bg-card rounded-lg shadow-sm border">
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -198,78 +144,47 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
 
       <Separator />
 
-      {/* Additional Advice Sections */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {personalizedAdvice && (
-          <Card className="bg-card rounded-lg shadow-sm border">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-blue-500" />
-                Personalized Advice
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">{personalizedAdvice}</p>
-            </CardContent>
-          </Card>
+      {/* Gear Matched for You */}
+      <div className="space-y-4">
+        <h3 className="text-xl font-semibold flex items-center gap-2">
+          <Target className="w-5 h-5 text-primary" />
+          Gear Matched for You
+        </h3>
+
+        {/* Mini map — only when there are items with valid coordinates */}
+        {mapItems.length > 0 && (
+          <div className="h-80 rounded-lg overflow-hidden mb-4">
+            <MapComponent
+              initialEquipment={mapItems.map(item => ({
+                id: item.id,
+                name: item.name,
+                category: item.category,
+                price_per_day: item.price_per_day,
+                location: { lat: item.location.lat, lng: item.location.lng },
+                ownerId: "",
+                ownerName: "",
+              }))}
+              activeCategory={quizData?.category ?? null}
+              interactive={true}
+            />
+          </div>
         )}
 
-        {skillDevelopment && (
-          <Card className="bg-card rounded-lg shadow-sm border">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-green-500" />
-                Skill Development
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">{skillDevelopment}</p>
-            </CardContent>
-          </Card>
-        )}
-
-        {locationConsiderations && (
-          <Card className="bg-card rounded-lg shadow-sm border">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-orange-500" />
-                Location Tips
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">{locationConsiderations}</p>
-            </CardContent>
-          </Card>
+        {matchedEquipment.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {matchedEquipment.map((equipment) => (
+              <CompactEquipmentCard
+                key={equipment.id}
+                equipment={equipment}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            No matching gear found in our current inventory
+          </p>
         )}
       </div>
-
-      <Separator />
-
-      {/* Recommended Gear from Database */}
-      {recommendedGear.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold flex items-center gap-2">
-            <Target className="w-5 h-5 text-primary" />
-            Available Gear for You
-          </h3>
-          {loadingGear ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-64 bg-muted animate-pulse rounded-lg" />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {recommendedGear.map((equipment) => (
-                <CompactEquipmentCard
-                  key={equipment.id}
-                  equipment={equipment}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
 
       <Separator />
 

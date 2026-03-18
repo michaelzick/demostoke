@@ -7,6 +7,18 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
+// Inlined from src/types/quiz.ts — cannot import from src/ in Deno edge functions
+interface GearCandidate {
+  id: string;
+  name: string;
+  description: string | null;
+  suitable_skill_level: string | null;
+  price_per_day: number;
+  location_lat: number | null;
+  location_lng: number | null;
+  location_address: string | null;
+}
+
 interface QuizData {
   category: string;
   height: string;
@@ -17,7 +29,13 @@ interface QuizData {
   locations: string;
   currentGear: string;
   additionalNotes: string;
+  availableGear?: GearCandidate[];
 }
+
+// Filter raw AI-returned IDs to only those present in the provided set
+export const filterMatchedIds = (rawIds: string[], validIds: Set<string>): string[] => {
+  return rawIds.filter(id => validIds.has(id));
+};
 
 // Input validation and sanitization
 const FIELD_LIMITS = {
@@ -46,7 +64,8 @@ const validateQuizData = (data: QuizData): { isValid: boolean; error?: string } 
   const requiredFields = ['category', 'height', 'weight', 'age', 'sex', 'skillLevel', 'locations', 'currentGear'];
 
   for (const field of requiredFields) {
-    if (!data[field as keyof QuizData] || (typeof data[field as keyof QuizData] === 'string' && !data[field as keyof QuizData].trim())) {
+    const value = data[field as keyof QuizData];
+    if (!value || (typeof value === 'string' && !value.trim())) {
       return { isValid: false, error: `${field} is required` };
     }
   }
@@ -85,7 +104,6 @@ serve(async (req) => {
     const rawData = await req.json();
     console.log('Received quiz data:', rawData);
 
-    // Validate and sanitize input data
     const validation = validateQuizData(rawData);
     if (!validation.isValid) {
       console.error('Validation error:', validation.error);
@@ -95,7 +113,6 @@ serve(async (req) => {
       );
     }
 
-    // Sanitize text fields
     const quizData: QuizData = {
       category: rawData.category,
       height: rawData.height,
@@ -105,7 +122,8 @@ serve(async (req) => {
       skillLevel: rawData.skillLevel,
       locations: sanitizeText(rawData.locations),
       currentGear: sanitizeText(rawData.currentGear),
-      additionalNotes: sanitizeText(rawData.additionalNotes)
+      additionalNotes: sanitizeText(rawData.additionalNotes),
+      availableGear: Array.isArray(rawData.availableGear) ? rawData.availableGear : undefined,
     };
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
@@ -117,60 +135,86 @@ serve(async (req) => {
       );
     }
 
-    const systemPrompt = `You are an expert outdoor gear consultant with extensive knowledge of ${quizData.category}. Analyze the user's profile and provide detailed, specific gear recommendations.
+    const hasAvailableGear = quizData.availableGear && quizData.availableGear.length > 0;
+    let systemPrompt: string;
 
-CRITICAL: You MUST respond with a valid JSON object that exactly matches this structure. Do not include any text before or after the JSON.
+    if (hasAvailableGear) {
+      const gearList = quizData.availableGear!
+        .map((g, i) => {
+          const raw = g.description ?? '';
+          const desc = raw.length > 200 ? raw.substring(0, 200) + '...' : raw;
+          return `${i + 1}. ID: ${g.id} | Name: ${g.name} | Skill Level: ${g.suitable_skill_level ?? 'any'} | Price/day: ${g.price_per_day} | Description: ${desc}`;
+        })
+        .join('\n');
 
-IMPORTANT: Provide 2-3 different gear recommendations to give the user variety and options. Each recommendation should represent different styles, approaches, or price points within the category.
-
-{
-  "recommendations": [
-    {
-      "category": "${quizData.skillLevel}",
-      "title": "Specific gear name/model if possible",
-      "description": "Detailed explanation of why this gear fits their profile, including specific technical details and why it's perfect for their skill level and riding style",
-      "keyFeatures": ["feature1", "feature2", "feature3"],
-      "suitableFor": "Specific scenarios/conditions where this gear excels"
-    },
-    {
-      "category": "${quizData.skillLevel}",
-      "title": "Different gear name/model representing another style or approach",
-      "description": "Detailed explanation of why this alternative gear fits their profile, with different characteristics or use cases",
-      "keyFeatures": ["feature1", "feature2", "feature3"],
-      "suitableFor": "Different scenarios/conditions where this gear excels"
-    },
-    {
-      "category": "${quizData.skillLevel}",
-      "title": "Third gear option providing additional variety",
-      "description": "Detailed explanation of this third option, offering another perspective or specialty focus",
-      "keyFeatures": ["feature1", "feature2", "feature3"],
-      "suitableFor": "Unique scenarios/conditions where this gear excels"
+      systemPrompt = [
+        `You are an expert outdoor gear consultant with extensive knowledge of ${quizData.category}.`,
+        `Analyze the user's profile and select the best matching gear from the provided inventory list.`,
+        ``,
+        `CRITICAL: Respond with a valid JSON object only. No text before or after the JSON.`,
+        ``,
+        `AVAILABLE GEAR INVENTORY (select from these only):`,
+        gearList,
+        ``,
+        `Select items that best match the user's profile. Return their IDs in "matchedIds".`,
+        `You may select 0 to all items — only include genuinely good fits.`,
+        `Also provide 2-3 generic recommendations, personalized advice, skill development tips, and location considerations.`,
+        ``,
+        `{`,
+        `  "matchedIds": ["id-from-list", "another-id-from-list"],`,
+        `  "recommendations": [`,
+        `    {`,
+        `      "category": "${quizData.skillLevel}",`,
+        `      "title": "Specific gear name/model",`,
+        `      "description": "Why this gear fits their profile",`,
+        `      "keyFeatures": ["feature1", "feature2", "feature3"],`,
+        `      "suitableFor": "Scenarios where this gear excels"`,
+        `    }`,
+        `  ],`,
+        `  "personalizedAdvice": "Personalized advice based on their profile.",`,
+        `  "skillDevelopment": "Skill development tips for ${quizData.skillLevel} level riders.",`,
+        `  "locationConsiderations": "Advice for riding in ${quizData.locations}."`,
+        `}`,
+        ``,
+        `RULES: matchedIds must only contain IDs from the inventory above. Use "${quizData.skillLevel}" as the category value.`,
+      ].join('\n');
+    } else {
+      systemPrompt = [
+        `You are an expert outdoor gear consultant with extensive knowledge of ${quizData.category}.`,
+        `Analyze the user's profile and provide 2-3 detailed gear recommendations.`,
+        ``,
+        `CRITICAL: Respond with a valid JSON object only. No text before or after the JSON.`,
+        ``,
+        `{`,
+        `  "matchedIds": [],`,
+        `  "recommendations": [`,
+        `    {`,
+        `      "category": "${quizData.skillLevel}",`,
+        `      "title": "Specific gear name/model",`,
+        `      "description": "Why this gear fits their profile",`,
+        `      "keyFeatures": ["feature1", "feature2", "feature3"],`,
+        `      "suitableFor": "Scenarios where this gear excels"`,
+        `    }`,
+        `  ],`,
+        `  "personalizedAdvice": "Personalized advice based on their profile.",`,
+        `  "skillDevelopment": "Skill development tips for ${quizData.skillLevel} level riders.",`,
+        `  "locationConsiderations": "Advice for riding in ${quizData.locations}."`,
+        `}`,
+        ``,
+        `Use "${quizData.skillLevel}" as the category value for all recommendations.`,
+      ].join('\n');
     }
-  ],
-  "personalizedAdvice": "Comprehensive personalized advice based on their skill level, physical characteristics, and riding style. Include specific recommendations for gear setup, maintenance, and progression tips.",
-  "skillDevelopment": "Detailed skill development advice with specific techniques, drills, and progression paths for ${quizData.skillLevel} level riders in ${quizData.category}.",
-  "locationConsiderations": "Specific advice for riding in ${quizData.locations}, including terrain considerations, weather factors, and gear adaptations needed for local conditions."
-}
 
-FORMATTING RULES:
-- Start immediately with opening brace {
-- End with closing brace }
-- Use proper JSON syntax with double quotes
-- Escape any quotes within strings using \"
-- Do not truncate the response mid-sentence
-- Ensure all JSON objects and arrays are properly closed
-- Always use "${quizData.skillLevel}" exactly as the category value`;
-
-    const userPrompt = `Please analyze this user profile and provide gear recommendations:
-
-Category: ${quizData.category}
-Physical Stats: ${quizData.height} tall, ${quizData.weight} lbs, ${quizData.age} years old, ${quizData.sex}
-Skill Level: ${quizData.skillLevel}
-Riding Locations: ${quizData.locations}
-Current Gear Preferences: ${quizData.currentGear}
-Additional Notes: ${quizData.additionalNotes}
-
-Provide specific gear recommendations with explanations tailored to their profile.`;
+    const userPrompt = [
+      `Please analyze this user profile and provide gear recommendations:`,
+      ``,
+      `Category: ${quizData.category}`,
+      `Physical Stats: ${quizData.height} tall, ${quizData.weight} lbs, ${quizData.age} years old, ${quizData.sex}`,
+      `Skill Level: ${quizData.skillLevel}`,
+      `Riding Locations: ${quizData.locations}`,
+      `Current Gear Preferences: ${quizData.currentGear}`,
+      `Additional Notes: ${quizData.additionalNotes}`,
+    ].join('\n');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -179,12 +223,12 @@ Provide specific gear recommendations with explanations tailored to their profil
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        max_completion_tokens: 5000,
+        max_tokens: 5000,
       }),
     });
 
@@ -198,56 +242,48 @@ Provide specific gear recommendations with explanations tailored to their profil
     const analysisResult = aiResponse.choices[0].message.content.trim();
     console.log('Raw AI response:', analysisResult);
 
-    // Enhanced JSON parsing with better error handling
     let parsedResult;
     try {
-      // Clean up potential JSON formatting issues
       let cleanedResult = analysisResult;
-
-      // Remove any text before the first {
       const firstBrace = cleanedResult.indexOf('{');
-      if (firstBrace > 0) {
-        cleanedResult = cleanedResult.substring(firstBrace);
-      }
-
-      // Remove any text after the last }
+      if (firstBrace > 0) cleanedResult = cleanedResult.substring(firstBrace);
       const lastBrace = cleanedResult.lastIndexOf('}');
-      if (lastBrace < cleanedResult.length - 1) {
-        cleanedResult = cleanedResult.substring(0, lastBrace + 1);
-      }
+      if (lastBrace < cleanedResult.length - 1) cleanedResult = cleanedResult.substring(0, lastBrace + 1);
 
       parsedResult = JSON.parse(cleanedResult);
 
-      // Validate the structure
       if (!parsedResult.recommendations || !Array.isArray(parsedResult.recommendations)) {
         throw new Error('Invalid response structure');
       }
 
-      console.log('Successfully parsed JSON response');
+      const validIds = new Set((quizData.availableGear ?? []).map((g: GearCandidate) => g.id));
+      parsedResult.matchedIds = filterMatchedIds(
+        Array.isArray(parsedResult.matchedIds) ? parsedResult.matchedIds : [],
+        validIds
+      );
+
+      console.log('Successfully parsed JSON response, matchedIds:', parsedResult.matchedIds);
     } catch (parseError) {
       console.error('JSON parsing failed:', parseError);
-      console.log('Attempting to extract useful content from raw response');
 
-      // Enhanced fallback with better content extraction
       let fallbackDescription = analysisResult;
-
-      // Try to extract meaningful content from malformed JSON
       const descriptionMatch = analysisResult.match(/"description":\s*"([^"]+)"/);
-      if (descriptionMatch) {
-        fallbackDescription = descriptionMatch[1];
-      }
+      if (descriptionMatch) fallbackDescription = descriptionMatch[1];
 
       parsedResult = {
+        matchedIds: [],
         recommendations: [{
           category: quizData.skillLevel,
           title: `${quizData.skillLevel} ${quizData.category} Recommendations`,
-          description: fallbackDescription.length > 100 ? fallbackDescription : `Based on your profile as a ${quizData.skillLevel} ${quizData.category} enthusiast, here are personalized recommendations tailored to your experience level and riding locations in ${quizData.locations}.`,
+          description: fallbackDescription.length > 100
+            ? fallbackDescription
+            : `Based on your profile as a ${quizData.skillLevel} ${quizData.category} enthusiast, here are personalized recommendations tailored to your experience level and riding locations in ${quizData.locations}.`,
           keyFeatures: ["Appropriate for your skill level", "Suited to your riding locations", "Matches your physical profile"],
           suitableFor: `Perfect for ${quizData.skillLevel} level ${quizData.category} enthusiasts`
         }],
-        personalizedAdvice: `Based on your profile as a ${quizData.skillLevel} ${quizData.category} rider, focus on gear that matches your skill level and local riding conditions. Consider equipment that will help you progress while remaining comfortable with your current abilities.`,
-        skillDevelopment: `As a ${quizData.skillLevel} rider, focus on developing core techniques and building confidence. Consider taking lessons or riding with more experienced friends to accelerate your progression in ${quizData.category}.`,
-        locationConsiderations: `For riding in ${quizData.locations}, research local conditions, weather patterns, and terrain types. Connect with local riding communities and consider gear specific to your region's unique challenges.`
+        personalizedAdvice: `As a ${quizData.skillLevel} ${quizData.category} rider, focus on gear that matches your skill level and local conditions.`,
+        skillDevelopment: `Focus on developing core techniques and building confidence as a ${quizData.skillLevel} rider.`,
+        locationConsiderations: `For riding in ${quizData.locations}, research local conditions and connect with local riding communities.`
       };
     }
 
