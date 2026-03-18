@@ -1,13 +1,16 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { RefreshCw, CheckCircle, Target } from "lucide-react";
+import { RefreshCw, CheckCircle, Target, Loader2 } from "lucide-react";
 import { Equipment } from "@/types";
-import { GearCandidate, QuizAnalysisResult, QuizRecommendation } from "@/types/quiz";
+import { QuizAnalysisResult, QuizRecommendation } from "@/types/quiz";
 import CompactEquipmentCard from "@/components/CompactEquipmentCard";
 import MapComponent from "@/components/MapComponent";
 import { sanitizeQuizResults } from "@/utils/contentSanitization";
+import { getEquipmentData } from "@/services/searchService";
+import { resolveQuizRecommendationsToEquipment } from "@/utils/quizRecommendationResolver";
 
 interface QuizResultsProps {
   results: QuizAnalysisResult | null;
@@ -16,10 +19,13 @@ interface QuizResultsProps {
     category: string;
     skillLevel: string;
   };
-  dbCandidates: GearCandidate[];
 }
 
-const QuizResults = ({ results, onRetakeQuiz, quizData, dbCandidates }: QuizResultsProps) => {
+const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
+  const [matchedEquipment, setMatchedEquipment] = useState<Equipment[]>([]);
+  const [isMatchingGear, setIsMatchingGear] = useState(false);
+  const [matchingError, setMatchingError] = useState<string | null>(null);
+
   // Skill level badge colors
   const getSkillBadgeVariant = (skillLevel: string) => {
     switch (skillLevel?.toLowerCase()) {
@@ -39,30 +45,52 @@ const QuizResults = ({ results, onRetakeQuiz, quizData, dbCandidates }: QuizResu
   // Sanitize results for safe display
   const sanitizedResults = sanitizeQuizResults(results);
 
-  // Derive matchedEquipment from matchedIds + dbCandidates
-  const matchedEquipment: Equipment[] = (results?.matchedIds ?? [])
-    .map(id => dbCandidates.find(c => c.id === id))
-    .filter((c): c is GearCandidate => c !== undefined)
-    .map(c => ({
-      id: c.id,
-      name: c.name,
-      category: quizData?.category ?? "",
-      description: c.description,
-      price_per_day: c.price_per_day,
-      location: {
-        lat: c.location_lat ?? 0,
-        lng: c.location_lng ?? 0,
-        address: c.location_address ?? "",
-      },
-      image_url: "",
-      rating: 0,
-      review_count: 0,
-      distance: 0,
-      owner: { id: "", name: "", imageUrl: "", rating: 0, reviewCount: 0, responseRate: 0 },
-      specifications: { size: "", weight: "", material: "", suitable: c.suitable_skill_level ?? "" },
-      availability: { available: true },
-      pricing_options: [],
-    }));
+  useEffect(() => {
+    let isCancelled = false;
+
+    const resolveInventoryMatches = async () => {
+      if (!results) {
+        setMatchedEquipment([]);
+        setMatchingError(null);
+        return;
+      }
+
+      setIsMatchingGear(true);
+      setMatchingError(null);
+
+      try {
+        const inventory = await getEquipmentData();
+        const resolvedMatches = resolveQuizRecommendationsToEquipment({
+          inventory,
+          matchedIds: results.matchedIds,
+          recommendations: results.recommendations,
+          category: quizData?.category,
+          skillLevel: quizData?.skillLevel,
+        });
+
+        if (!isCancelled) {
+          setMatchedEquipment(resolvedMatches);
+        }
+      } catch (error) {
+        console.error("Failed to resolve quiz recommendations to inventory:", error);
+
+        if (!isCancelled) {
+          setMatchedEquipment([]);
+          setMatchingError("We couldn't load current inventory matches.");
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsMatchingGear(false);
+        }
+      }
+    };
+
+    void resolveInventoryMatches();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [results, quizData?.category, quizData?.skillLevel]);
 
   // Derive mapItems — only items with valid coordinates
   const mapItems = matchedEquipment.filter(
@@ -170,7 +198,12 @@ const QuizResults = ({ results, onRetakeQuiz, quizData, dbCandidates }: QuizResu
           </div>
         )}
 
-        {matchedEquipment.length > 0 ? (
+        {isMatchingGear ? (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Matching AI picks to current public inventory...
+          </div>
+        ) : matchedEquipment.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {matchedEquipment.map((equipment) => (
               <CompactEquipmentCard
@@ -180,9 +213,14 @@ const QuizResults = ({ results, onRetakeQuiz, quizData, dbCandidates }: QuizResu
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground text-sm">
-            No matching gear found in our current inventory
-          </p>
+          <div className="space-y-1">
+            <p className="text-muted-foreground text-sm">
+              No current public inventory matched these AI recommendations.
+            </p>
+            {matchingError && (
+              <p className="text-muted-foreground text-xs">{matchingError}</p>
+            )}
+          </div>
         )}
       </div>
 

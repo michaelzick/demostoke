@@ -26,7 +26,8 @@ async function fetchDbCandidates(category: string): Promise<GearCandidate[]> {
     .from("equipment")
     .select("id, name, description, suitable_skill_level, price_per_day, location_lat, location_lng, location_address")
     .eq("category", category)
-    .eq("status", "available");
+    .eq("status", "available")
+    .eq("visible_on_map", true);
 
   if (error) throw error;
   return (data ?? []) as GearCandidate[];
@@ -54,8 +55,6 @@ const GearQuizPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState(null);
-  // Task 3.3: DB candidates state
-  const [dbCandidates, setDbCandidates] = useState<GearCandidate[]>([]);
   const totalSteps = 6;
   const {
     progress: analysisProgress,
@@ -141,7 +140,6 @@ const GearQuizPage = () => {
       let candidates: GearCandidate[] = [];
       try {
         candidates = await fetchDbCandidates(quizData.category);
-        setDbCandidates(candidates);
       } catch (dbError) {
         console.error('Error fetching DB candidates:', dbError);
         toast({
@@ -176,7 +174,6 @@ const GearQuizPage = () => {
   const resetQuiz = () => {
     setCurrentStep(1);
     setResults(null);
-    setDbCandidates([]);
     setQuizData({
       category: '',
       height: '',
@@ -215,7 +212,7 @@ const GearQuizPage = () => {
       case 6:
         return <AdditionalNotes value={quizData.additionalNotes} onChange={(value) => updateQuizData('additionalNotes', value)} />;
       case 7:
-        return <QuizResults results={results} onRetakeQuiz={resetQuiz} quizData={quizData} dbCandidates={dbCandidates} />;
+        return <QuizResults results={results} onRetakeQuiz={resetQuiz} quizData={quizData} />;
       default:
         return null;
     }

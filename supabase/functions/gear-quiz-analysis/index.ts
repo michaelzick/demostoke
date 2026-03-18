@@ -158,6 +158,9 @@ serve(async (req) => {
         ``,
         `Select items that best match the user's profile. Return their IDs in "matchedIds".`,
         `You may select 0 to all items — only include genuinely good fits.`,
+        `Prefer recommendation titles that exactly match a Name from the inventory above whenever you are recommending an inventory item.`,
+        `If no inventory item is a strong fit, keep the recommendation title generic instead of inventing a brand or model.`,
+        `Any recommendation that refers to an inventory item must also include that item's ID in "matchedIds".`,
         `Also provide 2-3 generic recommendations, personalized advice, skill development tips, and location considerations.`,
         ``,
         `{`,
@@ -176,7 +179,7 @@ serve(async (req) => {
         `  "locationConsiderations": "Advice for riding in ${quizData.locations}."`,
         `}`,
         ``,
-        `RULES: matchedIds must only contain IDs from the inventory above. Use "${quizData.skillLevel}" as the category value.`,
+        `RULES: matchedIds must only contain IDs from the inventory above. Use "${quizData.skillLevel}" as the category value. Do not hallucinate inventory titles or IDs.`,
       ].join('\n');
     } else {
       systemPrompt = [
