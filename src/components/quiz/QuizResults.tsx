@@ -25,6 +25,7 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
   const [matchedEquipment, setMatchedEquipment] = useState<Equipment[]>([]);
   const [isMatchingGear, setIsMatchingGear] = useState(false);
   const [matchingError, setMatchingError] = useState<string | null>(null);
+  const [selectedEquipmentId, setSelectedEquipmentId] = useState<string | null>(null);
 
   // Skill level badge colors
   const getSkillBadgeVariant = (skillLevel: string) => {
@@ -92,10 +93,46 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
     };
   }, [results, quizData?.category, quizData?.skillLevel]);
 
+  useEffect(() => {
+    if (
+      selectedEquipmentId &&
+      !matchedEquipment.some((equipment) => equipment.id === selectedEquipmentId)
+    ) {
+      setSelectedEquipmentId(null);
+    }
+  }, [matchedEquipment, selectedEquipmentId]);
+
   // Derive mapItems — only items with valid coordinates
   const mapItems = matchedEquipment.filter(
     item => item.location.lat !== 0 && item.location.lng !== 0
   );
+
+  const hasMapPin = (equipmentId: string) =>
+    mapItems.some((item) => item.id === equipmentId);
+
+  const handleEquipmentCardClick = (equipmentId: string) => {
+    if (!hasMapPin(equipmentId)) {
+      return;
+    }
+
+    setSelectedEquipmentId(equipmentId);
+  };
+
+  const handleCardWrapperClick = (
+    event: React.MouseEvent,
+    equipmentId: string,
+  ) => {
+    const target = event.target as HTMLElement;
+    if (
+      target.tagName === "A" ||
+      target.tagName === "BUTTON" ||
+      target.closest("a, button")
+    ) {
+      return;
+    }
+
+    handleEquipmentCardClick(equipmentId);
+  };
 
   if (!sanitizedResults) {
     return (
@@ -189,11 +226,14 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
                 category: item.category,
                 price_per_day: item.price_per_day,
                 location: { lat: item.location.lat, lng: item.location.lng },
-                ownerId: "",
-                ownerName: "",
+                ownerId: item.owner.id,
+                ownerName: item.owner.name,
               }))}
               activeCategory={quizData?.category ?? null}
               interactive={true}
+              focusedEquipmentId={selectedEquipmentId}
+              onEquipmentSelect={setSelectedEquipmentId}
+              showEquipmentPopups={true}
             />
           </div>
         )}
@@ -206,10 +246,21 @@ const QuizResults = ({ results, onRetakeQuiz, quizData }: QuizResultsProps) => {
         ) : matchedEquipment.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {matchedEquipment.map((equipment) => (
-              <CompactEquipmentCard
+              <div
                 key={equipment.id}
-                equipment={equipment}
-              />
+                className={`transition-all duration-300 rounded-lg hover:shadow-md ${
+                  hasMapPin(equipment.id) ? "cursor-pointer" : ""
+                } ${
+                  selectedEquipmentId === equipment.id
+                    ? "ring-2 ring-primary ring-offset-2"
+                    : ""
+                }`}
+                onClick={(event) => handleCardWrapperClick(event, equipment.id)}
+              >
+                <CompactEquipmentCard
+                  equipment={equipment}
+                />
+              </div>
             ))}
           </div>
         ) : (

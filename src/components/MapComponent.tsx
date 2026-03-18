@@ -10,6 +10,7 @@ import {
   initializeMap,
   fitMapBounds,
   createMarkerElement,
+  createPopupContent,
   createUserLocationMarkerElement,
   createUserLocationPopupContent,
   resolveMarkerCategory,
@@ -40,6 +41,9 @@ interface MapProps {
     location: { lat: number; lng: number };
     equipment_categories: string[];
   }>;
+  focusedEquipmentId?: string | null;
+  onEquipmentSelect?: (equipmentId: string) => void;
+  showEquipmentPopups?: boolean;
 }
 
 const MapComponent = ({
@@ -51,7 +55,10 @@ const MapComponent = ({
   interactive = true,
   ownerIds,
   viewMode,
-  filteredUserLocations
+  filteredUserLocations,
+  focusedEquipmentId,
+  onEquipmentSelect,
+  showEquipmentPopups = false,
 }: MapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -125,7 +132,7 @@ const MapComponent = ({
       (isExploreRoute && activeCategory !== null);
 
     if (isEquipmentDetailMode) {
-      // Equipment detail mode: Show single gear item without popup
+      // Equipment detail mode: Show gear markers and optionally allow popup selection.
 
       const validEquipment = initialEquipment.filter(item =>
         item.location &&
@@ -138,12 +145,27 @@ const MapComponent = ({
           ? createUserLocationMarkerElement(userRole, activeCategory || undefined)
           : createMarkerElement(item.category);
 
-        new mapboxgl.Marker(el)
-          .setLngLat([item.location.lng, item.location.lat])
-          .addTo(map.current!);
+        if (onEquipmentSelect) {
+          el.addEventListener('click', () => {
+            onEquipmentSelect(item.id);
+          });
+        }
+
+        const marker = new mapboxgl.Marker(el)
+          .setLngLat([item.location.lng, item.location.lat]);
+
+        if (showEquipmentPopups) {
+          marker.setPopup(
+            new mapboxgl.Popup({ offset: 25 }).setHTML(
+              createPopupContent(item)
+            )
+          );
+        }
+
+        marker.addTo(map.current!);
       });
 
-      if (validEquipment.length > 0) {
+      if (validEquipment.length > 0 && !focusedEquipmentId) {
         fitMapBounds(map.current, validEquipment, validEquipment.length === 1);
       }
     } else if (isSearchRoute) {
@@ -206,7 +228,23 @@ const MapComponent = ({
         fitMapBounds(map.current, locationsToShow);
       }
     }
-  }, [isSearchRoute, isExploreRoute, isEquipmentDetailMode, initialEquipment, userLocations, activeCategory, isLoading, ownerIds, userRole, viewMode, filteredUserLocations]);
+  }, [isSearchRoute, isExploreRoute, isEquipmentDetailMode, initialEquipment, userLocations, activeCategory, isLoading, ownerIds, userRole, viewMode, filteredUserLocations, focusedEquipmentId, onEquipmentSelect, showEquipmentPopups]);
+
+  useEffect(() => {
+    if (!map.current || isLoading || !focusedEquipmentId || !initialEquipment) return;
+
+    const focusedEquipment = initialEquipment.find(
+      (item) => item.id === focusedEquipmentId,
+    );
+
+    if (!focusedEquipment) return;
+
+    map.current.flyTo({
+      center: [focusedEquipment.location.lng, focusedEquipment.location.lat],
+      zoom: 15,
+      duration: 1000,
+    });
+  }, [focusedEquipmentId, initialEquipment, isLoading]);
 
   const showLoading = isLoading ||
     (isSearchRoute ? isEquipmentLoading : (isExploreRoute ? isUserLocationsLoading : false));
