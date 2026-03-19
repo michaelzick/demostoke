@@ -18,7 +18,7 @@ import { useDeleteEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUse
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  filterEquipmentByViewportBounds,
+  filterItemsByViewportBounds,
   MapViewportBounds,
 } from "@/utils/mapViewportFiltering";
 
@@ -90,11 +90,6 @@ const HybridView = ({
 
   const allHybridEquipment = filteredEquipment;
 
-  const visibleHybridEquipment = useMemo(
-    () => filterEquipmentByViewportBounds(allHybridEquipment, viewportBounds),
-    [allHybridEquipment, viewportBounds],
-  );
-
   const syncViewportBounds = useCallback(() => {
     if (!map.current) return;
 
@@ -139,6 +134,25 @@ const HybridView = ({
       ),
     [filteredUserLocationsByEquipment],
   );
+  const visibleOwnerIds = useMemo(() => {
+    if (selectedEquipmentId) {
+      return new Set<string>();
+    }
+
+    return new Set(
+      filterItemsByViewportBounds(mapUserLocations, viewportBounds).map(
+        (user) => user.id,
+      ),
+    );
+  }, [mapUserLocations, selectedEquipmentId, viewportBounds]);
+  const visibleHybridEquipment = useMemo(() => {
+    if (selectedEquipmentId) {
+      return allHybridEquipment.filter((item) => item.id === selectedEquipmentId);
+    }
+
+    return allHybridEquipment
+      .filter(item => visibleOwnerIds.has(item.owner.id));
+  }, [allHybridEquipment, selectedEquipmentId, visibleOwnerIds]);
 
   // Fetch Mapbox token
   useEffect(() => {

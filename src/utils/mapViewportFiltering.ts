@@ -7,11 +7,20 @@ export interface MapViewportBounds {
   west: number;
 }
 
-const hasValidMapCoordinates = (equipment: Equipment): boolean =>
-  typeof equipment.location?.lat === "number" &&
-  Number.isFinite(equipment.location.lat) &&
-  typeof equipment.location?.lng === "number" &&
-  Number.isFinite(equipment.location.lng);
+type WithMapLocation = {
+  location?: {
+    lat?: number;
+    lng?: number;
+  } | null;
+};
+
+const hasValidMapCoordinates = <T extends WithMapLocation>(
+  item: T,
+): item is T & { location: { lat: number; lng: number } } =>
+  typeof item.location?.lat === "number" &&
+  Number.isFinite(item.location.lat) &&
+  typeof item.location?.lng === "number" &&
+  Number.isFinite(item.location.lng);
 
 const isLongitudeWithinBounds = (lng: number, bounds: MapViewportBounds): boolean => {
   if (bounds.west <= bounds.east) {
@@ -21,23 +30,33 @@ const isLongitudeWithinBounds = (lng: number, bounds: MapViewportBounds): boolea
   return lng >= bounds.west || lng <= bounds.east;
 };
 
+export const isPointWithinViewportBounds = (
+  lat: number,
+  lng: number,
+  bounds: MapViewportBounds,
+): boolean =>
+  lat >= bounds.south &&
+  lat <= bounds.north &&
+  isLongitudeWithinBounds(lng, bounds);
+
+export const filterItemsByViewportBounds = <T extends WithMapLocation>(
+  items: T[],
+  bounds: MapViewportBounds | null,
+): Array<T & { location: { lat: number; lng: number } }> => {
+  const mappableItems = items.filter(hasValidMapCoordinates);
+
+  if (!bounds) {
+    return mappableItems;
+  }
+
+  return mappableItems.filter((item) =>
+    isPointWithinViewportBounds(item.location.lat, item.location.lng, bounds),
+  );
+};
+
 export const filterEquipmentByViewportBounds = (
   equipment: Equipment[],
   bounds: MapViewportBounds | null,
 ): Equipment[] => {
-  const mappableEquipment = equipment.filter(hasValidMapCoordinates);
-
-  if (!bounds) {
-    return mappableEquipment;
-  }
-
-  return mappableEquipment.filter((item) => {
-    const { lat, lng } = item.location;
-
-    return (
-      lat >= bounds.south &&
-      lat <= bounds.north &&
-      isLongitudeWithinBounds(lng, bounds)
-    );
-  });
+  return filterItemsByViewportBounds(equipment, bounds);
 };

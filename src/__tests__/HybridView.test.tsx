@@ -292,6 +292,21 @@ const renderHybridView = () =>
     />,
   );
 
+const renderHybridViewWithProps = (
+  customEquipment: Equipment[],
+  customUserLocations: UserLocation[],
+) =>
+  render(
+    <HybridView
+      filteredEquipment={customEquipment}
+      activeCategory="skis"
+      isLocationBased={false}
+      userLocations={customUserLocations}
+      sortBy="distance"
+      onSortChange={vi.fn()}
+    />,
+  );
+
 describe("HybridView viewport sync", () => {
   beforeEach(() => {
     mapHarness.reset();
@@ -350,6 +365,68 @@ describe("HybridView viewport sync", () => {
 
     expect(screen.getByText("No gear in this map area. Move the map or zoom out.")).toBeInTheDocument();
     expect(screen.queryAllByTestId("equipment-card")).toHaveLength(0);
+  });
+
+  it("includes gear from visible shop pins even when the gear coordinates fall just outside the tight viewport", async () => {
+    const summitGear = createEquipment("summit-gear", "Snow Summit Bike", 34.24, -116.89, "shop-summit");
+    const valleyGear = createEquipment("valley-gear", "Snow Valley Bike", 34.24, -116.89, "shop-valley");
+    const summitShop = createUserLocation("shop-summit", 34.24, -116.89);
+    const valleyShop = createUserLocation("shop-valley", 34.18, -117.00);
+
+    renderHybridViewWithProps(
+      [summitGear, valleyGear],
+      [summitShop, valleyShop],
+    );
+
+    await screen.findByText("Showing 2 of 2 gear in this map area");
+
+    act(() => {
+      mapHarness.setBounds({
+        north: 34.22,
+        south: 34.14,
+        east: -116.96,
+        west: -117.04,
+      });
+      mapHarness.emit("moveend");
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Showing 1 of 2 gear in this map area")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Snow Valley Bike")).toBeInTheDocument();
+    expect(screen.queryByText("Snow Summit Bike")).not.toBeInTheDocument();
+  });
+
+  it("does not show another shop's gear when both shops share the same gear coordinates", async () => {
+    const summitGear = createEquipment("summit-gear", "Snow Summit Bike", 34.24, -116.89, "shop-summit");
+    const valleyGear = createEquipment("valley-gear", "Snow Valley Bike", 34.24, -116.89, "shop-valley");
+    const summitShop = createUserLocation("shop-summit", 34.24, -116.89);
+    const valleyShop = createUserLocation("shop-valley", 34.18, -117.00);
+
+    renderHybridViewWithProps(
+      [summitGear, valleyGear],
+      [summitShop, valleyShop],
+    );
+
+    await screen.findByText("Showing 2 of 2 gear in this map area");
+
+    act(() => {
+      mapHarness.setBounds({
+        north: 34.28,
+        south: 34.20,
+        east: -116.85,
+        west: -116.93,
+      });
+      mapHarness.emit("moveend");
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Showing 1 of 2 gear in this map area")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Snow Summit Bike")).toBeInTheDocument();
+    expect(screen.queryByText("Snow Valley Bike")).not.toBeInTheDocument();
   });
 
   it("recomputes the visible list after clicking a gear card and flying to it", async () => {
