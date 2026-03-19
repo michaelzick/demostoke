@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { Equipment } from "@/types";
 import CompactEquipmentCard from "./CompactEquipmentCard";
 import MapLegend from "./map/MapLegend";
@@ -17,6 +17,10 @@ import { useIsAdmin } from "@/hooks/useUserRole";
 import { useDeleteEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+  filterEquipmentByViewportBounds,
+  MapViewportBounds,
+} from "@/utils/mapViewportFiltering";
 
 interface HybridViewProps {
   filteredEquipment: Equipment[];
@@ -71,6 +75,7 @@ const HybridView = ({
   const listRef = useRef<HTMLDivElement>(null);
   const desktopListRef = useRef<HTMLDivElement>(null);
   const previousResetSignalRef = useRef(resetSignal);
+  const [viewportBounds, setViewportBounds] = useState<MapViewportBounds | null>(null);
 
   // Scroll to top buttons for different layouts
   const { showButton: showMobileScrollButton, scrollToTop: scrollMobileToTop } = useScrollToTopButton({
@@ -83,25 +88,57 @@ const HybridView = ({
     containerRef: desktopListRef
   });
 
+  const allHybridEquipment = filteredEquipment;
+
+  const visibleHybridEquipment = useMemo(
+    () => filterEquipmentByViewportBounds(allHybridEquipment, viewportBounds),
+    [allHybridEquipment, viewportBounds],
+  );
+
+  const syncViewportBounds = useCallback(() => {
+    if (!map.current) return;
+
+    const bounds = map.current.getBounds();
+    setViewportBounds({
+      north: bounds.getNorth(),
+      south: bounds.getSouth(),
+      east: bounds.getEast(),
+      west: bounds.getWest(),
+    });
+  }, []);
+
   // Convert equipment to map format
-  const mapEquipment: MapEquipment[] = filteredEquipment
-    .filter(item => item.location?.lat && item.location?.lng)
-    .map(item => ({
-      id: item.id,
-      name: item.name,
-      category: item.category,
-      price_per_day: item.price_per_day,
-      location: {
-        lat: item.location.lat,
-        lng: item.location.lng,
-      },
-      ownerId: item.owner.id,
-      ownerName: item.owner.name,
-    }));
+  const mapEquipment: MapEquipment[] = useMemo(
+    () =>
+      allHybridEquipment
+        .filter(item => item.location?.lat && item.location?.lng)
+        .map(item => ({
+          id: item.id,
+          name: item.name,
+          category: item.category,
+          price_per_day: item.price_per_day,
+          location: {
+            lat: item.location.lat,
+            lng: item.location.lng,
+          },
+          ownerId: item.owner.id,
+          ownerName: item.owner.name,
+        })),
+    [allHybridEquipment],
+  );
 
   // Filter user locations to only show those that have equipment in the filtered results
-  const filteredUserLocationsByEquipment = getFilteredUserLocations(filteredEquipment, userLocations);
-  const mapUserLocations = filteredUserLocationsByEquipment.filter(user => user.location?.lat && user.location?.lng);
+  const filteredUserLocationsByEquipment = useMemo(
+    () => getFilteredUserLocations(allHybridEquipment, userLocations),
+    [allHybridEquipment, userLocations],
+  );
+  const mapUserLocations = useMemo(
+    () =>
+      filteredUserLocationsByEquipment.filter(
+        user => user.location?.lat && user.location?.lng,
+      ),
+    [filteredUserLocationsByEquipment],
+  );
 
   // Fetch Mapbox token
   useEffect(() => {
@@ -151,6 +188,12 @@ const HybridView = ({
     : undefined;
   const resolvedEmptyMessage =
     emptyMessage || "Try changing your filters or explore a different category.";
+  const mapAreaEmptyMessage = "No gear in this map area. Move the map or zoom out.";
+  const hasViewportResults = visibleHybridEquipment.length > 0;
+  const hasAnyHybridResults = allHybridEquipment.length > 0;
+  const hybridEmptyMessage = hasAnyHybridResults
+    ? mapAreaEmptyMessage
+    : resolvedEmptyMessage;
 
   // Add markers with click handlers
   useMapMarkers({
@@ -161,6 +204,22 @@ const HybridView = ({
     isSingleView: false,
     activeCategory,
   });
+
+  useEffect(() => {
+    if (!map.current || !isMapLoaded) return;
+
+    const mapInstance = map.current;
+    const handleMoveEnd = () => {
+      syncViewportBounds();
+    };
+
+    mapInstance.on("moveend", handleMoveEnd);
+    syncViewportBounds();
+
+    return () => {
+      mapInstance.off("moveend", handleMoveEnd);
+    };
+  }, [isMapLoaded, syncViewportBounds]);
 
   // Reset view when resetSignal changes
   useEffect(() => {
@@ -255,6 +314,11 @@ const HybridView = ({
                 Distances calculated from your location
               </div>
             )}
+            {hasAnyHybridResults && (
+              <div className="text-sm text-muted-foreground">
+                Showing {visibleHybridEquipment.length} of {allHybridEquipment.length} gear in this map area
+              </div>
+            )}
             <div className="w-full mt-2">
               <SortDropdown
                 sortBy={sortBy}
@@ -264,7 +328,7 @@ const HybridView = ({
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredEquipment.map((equipment) => (
+            {visibleHybridEquipment.map((equipment) => (
               <div
                 key={equipment.id}
                 id={`equipment-card-${equipment.id}`}
@@ -286,11 +350,11 @@ const HybridView = ({
               </div>
             ))}
           </div>
-          {filteredEquipment.length === 0 && (
+          {!hasViewportResults && (
             <div className="text-center py-12">
               <h3 className="text-xl font-medium mb-2">No equipment found</h3>
               <p className="text-muted-foreground">
-                {resolvedEmptyMessage}
+                {hybridEmptyMessage}
               </p>
             </div>
           )}
@@ -313,6 +377,11 @@ const HybridView = ({
               Distances calculated from your location
             </div>
           )}
+          {hasAnyHybridResults && (
+            <div className="text-sm text-muted-foreground">
+              Showing {visibleHybridEquipment.length} of {allHybridEquipment.length} gear in this map area
+            </div>
+          )}
           <div className="w-full lg:w-auto lg:ml-auto mt-2 lg:mt-0">
             <SortDropdown
               sortBy={sortBy}
@@ -322,7 +391,7 @@ const HybridView = ({
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEquipment.map((equipment) => (
+          {visibleHybridEquipment.map((equipment) => (
             <div
               key={equipment.id}
               id={`equipment-card-${equipment.id}`}
@@ -343,11 +412,11 @@ const HybridView = ({
               />
             </div>
           ))}
-          {filteredEquipment.length === 0 && (
+          {!hasViewportResults && (
             <div className="text-center py-12">
               <h3 className="text-xl font-medium mb-2">No equipment found</h3>
               <p className="text-muted-foreground">
-                {resolvedEmptyMessage}
+                {hybridEmptyMessage}
               </p>
             </div>
           )}
