@@ -53,8 +53,9 @@ interface HybridMapPanelProps {
   viewMode: "map" | "list" | "hybrid";
   containerClassName: string;
   mapUserLocations: UserLocation[];
-  selectedEquipment?: MapEquipment;
+  focusedEquipment?: MapEquipment;
   resetSignal?: number;
+  onFocusedMapInteraction: () => void;
   onViewportBoundsChange: (bounds: MapViewportBounds | null) => void;
 }
 
@@ -84,8 +85,9 @@ const HybridMapPanel = memo(
     viewMode,
     containerClassName,
     mapUserLocations,
-    selectedEquipment,
+    focusedEquipment,
     resetSignal,
+    onFocusedMapInteraction,
     onViewportBoundsChange,
   }: HybridMapPanelProps) => {
     const [mapboxToken, setMapboxToken] = useState<string | null>(null);
@@ -96,6 +98,7 @@ const HybridMapPanel = memo(
     const lastAppliedCameraKeyRef = useRef<string | null>(null);
     const programmaticCameraChangeRef = useRef(false);
     const userAdjustedMapRef = useRef(false);
+    const manualFocusExitPendingRef = useRef(false);
 
     const shopCameraKey = useMemo(
       () => buildShopCameraKey(mapUserLocations),
@@ -144,6 +147,7 @@ const HybridMapPanel = memo(
       lastAppliedCameraKeyRef.current = null;
       programmaticCameraChangeRef.current = false;
       userAdjustedMapRef.current = false;
+      manualFocusExitPendingRef.current = false;
 
       try {
         map.current = initializeMap(mapContainer.current, mapboxToken);
@@ -165,8 +169,8 @@ const HybridMapPanel = memo(
     useMapMarkers({
       map: map.current,
       mapLoaded: isMapLoaded,
-      equipment: selectedEquipment ? [selectedEquipment] : [],
-      userLocations: selectedEquipment ? [] : mapUserLocations,
+      equipment: focusedEquipment ? [focusedEquipment] : [],
+      userLocations: focusedEquipment ? [] : mapUserLocations,
       isSingleView: false,
       activeCategory,
     });
@@ -176,12 +180,22 @@ const HybridMapPanel = memo(
 
       const mapInstance = map.current;
       const markUserAdjusted = () => {
-        if (!programmaticCameraChangeRef.current) {
-          userAdjustedMapRef.current = true;
+        if (programmaticCameraChangeRef.current) return;
+
+        userAdjustedMapRef.current = true;
+
+        if (focusedEquipment) {
+          manualFocusExitPendingRef.current = true;
         }
       };
 
       const handleMoveEnd = () => {
+        if (manualFocusExitPendingRef.current && focusedEquipment) {
+          lastAppliedCameraKeyRef.current = `shops:${shopCameraKey}`;
+          manualFocusExitPendingRef.current = false;
+          onFocusedMapInteraction();
+        }
+
         syncViewportBounds();
 
         if (programmaticCameraChangeRef.current) {
@@ -203,7 +217,13 @@ const HybridMapPanel = memo(
         mapInstance.off("zoomstart", markUserAdjusted);
         mapInstance.off("touchstart", markUserAdjusted);
       };
-    }, [isMapLoaded, syncViewportBounds]);
+    }, [
+      focusedEquipment,
+      isMapLoaded,
+      onFocusedMapInteraction,
+      shopCameraKey,
+      syncViewportBounds,
+    ]);
 
     useEffect(() => {
       if (!map.current || !isMapLoaded) return;
@@ -211,6 +231,7 @@ const HybridMapPanel = memo(
 
       previousResetSignalRef.current = resetSignal;
       userAdjustedMapRef.current = false;
+      manualFocusExitPendingRef.current = false;
 
       if (mapUserLocations.length === 0) return;
 
@@ -227,7 +248,7 @@ const HybridMapPanel = memo(
     ]);
 
     useEffect(() => {
-      if (!map.current || !isMapLoaded || selectedEquipment) return;
+      if (!map.current || !isMapLoaded || focusedEquipment) return;
       if (mapUserLocations.length === 0) return;
 
       const cameraKey = `shops:${shopCameraKey}`;
@@ -248,26 +269,26 @@ const HybridMapPanel = memo(
       });
     }, [
       applyCameraChange,
+      focusedEquipment,
       isMapLoaded,
       mapUserLocations,
-      selectedEquipment,
       shopCameraKey,
     ]);
 
     useEffect(() => {
-      if (!map.current || !isMapLoaded || !selectedEquipment) return;
+      if (!map.current || !isMapLoaded || !focusedEquipment) return;
 
-      const cameraKey = `gear:${selectedEquipment.id}`;
+      const cameraKey = `gear:${focusedEquipment.id}`;
       if (lastAppliedCameraKeyRef.current === cameraKey) return;
 
       applyCameraChange(cameraKey, (mapInstance) => {
         mapInstance.flyTo({
-          center: [selectedEquipment.location.lng, selectedEquipment.location.lat],
+          center: [focusedEquipment.location.lng, focusedEquipment.location.lat],
           zoom: 15,
           duration: 1000,
         });
       });
-    }, [applyCameraChange, isMapLoaded, selectedEquipment]);
+    }, [applyCameraChange, focusedEquipment, isMapLoaded]);
 
     return (
       <div className={containerClassName}>
@@ -299,7 +320,8 @@ const HybridView = ({
   const deleteEquipmentMutation = useDeleteEquipment();
   const updateVisibilityMutation = useUpdateEquipmentVisibility();
   const queryClient = useQueryClient();
-  const [selectedEquipmentId, setSelectedEquipmentId] = useState<string | null>(null);
+  const [focusedEquipmentId, setFocusedEquipmentId] = useState<string | null>(null);
+  const [focusedShopId, setFocusedShopId] = useState<string | null>(null);
   const [viewportBounds, setViewportBounds] = useState<MapViewportBounds | null>(
     null,
   );
@@ -326,6 +348,15 @@ const HybridView = ({
     },
     [],
   );
+
+  const clearFocusedShop = useCallback(() => {
+    setFocusedEquipmentId(null);
+    setFocusedShopId(null);
+  }, []);
+
+  const handleFocusedMapInteraction = useCallback(() => {
+    clearFocusedShop();
+  }, [clearFocusedShop]);
 
   const allHybridEquipment = filteredEquipment;
 
@@ -361,52 +392,84 @@ const HybridView = ({
     [filteredUserLocationsByEquipment],
   );
 
-  const selectedEquipment = useMemo(
+  const focusedEquipment = useMemo(
     () =>
-      selectedEquipmentId
-        ? mapEquipment.find((item) => item.id === selectedEquipmentId)
+      focusedEquipmentId
+        ? mapEquipment.find((item) => item.id === focusedEquipmentId)
         : undefined,
-    [mapEquipment, selectedEquipmentId],
+    [focusedEquipmentId, mapEquipment],
   );
 
   const visibleOwnerIds = useMemo(() => {
-    if (selectedEquipmentId) {
-      return new Set<string>();
-    }
-
     return new Set(
       filterItemsByViewportBounds(mapUserLocations, viewportBounds).map(
         (user) => user.id,
       ),
     );
-  }, [mapUserLocations, selectedEquipmentId, viewportBounds]);
+  }, [mapUserLocations, viewportBounds]);
+
+  const focusedShopEquipmentCount = useMemo(
+    () =>
+      focusedShopId
+        ? allHybridEquipment.filter((item) => item.owner.id === focusedShopId).length
+        : 0,
+    [allHybridEquipment, focusedShopId],
+  );
 
   const visibleHybridEquipment = useMemo(() => {
-    if (selectedEquipmentId) {
-      return allHybridEquipment.filter((item) => item.id === selectedEquipmentId);
+    if (focusedShopId) {
+      return allHybridEquipment.filter((item) => item.owner.id === focusedShopId);
     }
 
     return allHybridEquipment.filter((item) => visibleOwnerIds.has(item.owner.id));
-  }, [allHybridEquipment, selectedEquipmentId, visibleOwnerIds]);
+  }, [allHybridEquipment, focusedShopId, visibleOwnerIds]);
+
+  useEffect(() => {
+    if (!focusedEquipmentId && !focusedShopId) return;
+
+    const focusedEquipmentStillExists = focusedEquipmentId
+      ? allHybridEquipment.some((item) => item.id === focusedEquipmentId)
+      : true;
+    const focusedShopStillExists = focusedShopId
+      ? allHybridEquipment.some((item) => item.owner.id === focusedShopId)
+      : true;
+
+    if (!focusedEquipmentStillExists || !focusedShopStillExists) {
+      clearFocusedShop();
+    }
+  }, [
+    allHybridEquipment,
+    clearFocusedShop,
+    focusedEquipmentId,
+    focusedShopId,
+  ]);
 
   useEffect(() => {
     if (previousResetSignalRef.current === resetSignal) return;
 
     previousResetSignalRef.current = resetSignal;
-    setSelectedEquipmentId(null);
-  }, [resetSignal]);
+    clearFocusedShop();
+  }, [clearFocusedShop, resetSignal]);
 
   const resolvedEmptyMessage =
     emptyMessage || "Try changing your filters or explore a different category.";
   const mapAreaEmptyMessage = "No gear in this map area. Move the map or zoom out.";
-  const hasViewportResults = visibleHybridEquipment.length > 0;
+  const hasVisibleResults = visibleHybridEquipment.length > 0;
   const hasAnyHybridResults = allHybridEquipment.length > 0;
+  const isFocusedShopView = focusedShopId !== null;
   const hybridEmptyMessage = hasAnyHybridResults
     ? mapAreaEmptyMessage
     : resolvedEmptyMessage;
+  const hybridSummaryMessage = isFocusedShopView
+    ? `Showing ${visibleHybridEquipment.length} of ${focusedShopEquipmentCount} gear at this shop`
+    : `Showing ${visibleHybridEquipment.length} of ${allHybridEquipment.length} gear in this map area`;
 
   const handleEquipmentCardClick = (equipmentId: string) => {
-    setSelectedEquipmentId(equipmentId);
+    const clickedEquipment = allHybridEquipment.find((item) => item.id === equipmentId);
+    if (!clickedEquipment) return;
+
+    setFocusedEquipmentId(equipmentId);
+    setFocusedShopId(clickedEquipment.owner.id);
 
     if (isMobile) {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -475,8 +538,9 @@ const HybridView = ({
           viewMode={viewMode}
           containerClassName="h-[50vh] relative"
           mapUserLocations={mapUserLocations}
-          selectedEquipment={selectedEquipment}
+          focusedEquipment={focusedEquipment}
           resetSignal={resetSignal}
+          onFocusedMapInteraction={handleFocusedMapInteraction}
           onViewportBoundsChange={handleViewportBoundsChange}
         />
 
@@ -489,7 +553,7 @@ const HybridView = ({
             )}
             {hasAnyHybridResults && (
               <div className="text-sm text-muted-foreground">
-                Showing {visibleHybridEquipment.length} of {allHybridEquipment.length} gear in this map area
+                {hybridSummaryMessage}
               </div>
             )}
             <div className="w-full mt-2">
@@ -506,7 +570,7 @@ const HybridView = ({
                 key={equipment.id}
                 id={`equipment-card-${equipment.id}`}
                 className={`transition-all duration-300 rounded-lg hover:shadow-md cursor-pointer ${
-                  selectedEquipmentId === equipment.id
+                  focusedEquipmentId === equipment.id
                     ? "ring-2 ring-primary ring-offset-2"
                     : ""
                 }`}
@@ -523,7 +587,7 @@ const HybridView = ({
               </div>
             ))}
           </div>
-          {!hasViewportResults && (
+          {!hasVisibleResults && (
             <div className="text-center py-12">
               <h3 className="text-xl font-medium mb-2">No equipment found</h3>
               <p className="text-muted-foreground">{hybridEmptyMessage}</p>
@@ -550,7 +614,7 @@ const HybridView = ({
           )}
           {hasAnyHybridResults && (
             <div className="text-sm text-muted-foreground">
-              Showing {visibleHybridEquipment.length} of {allHybridEquipment.length} gear in this map area
+              {hybridSummaryMessage}
             </div>
           )}
           <div className="w-full lg:w-auto lg:ml-auto mt-2 lg:mt-0">
@@ -567,7 +631,7 @@ const HybridView = ({
               key={equipment.id}
               id={`equipment-card-${equipment.id}`}
               className={`transition-all duration-300 cursor-pointer rounded-lg hover:shadow-md ${
-                selectedEquipmentId === equipment.id
+                focusedEquipmentId === equipment.id
                   ? "ring-2 ring-primary ring-offset-2"
                   : ""
               }`}
@@ -583,7 +647,7 @@ const HybridView = ({
               />
             </div>
           ))}
-          {!hasViewportResults && (
+          {!hasVisibleResults && (
             <div className="text-center py-12">
               <h3 className="text-xl font-medium mb-2">No equipment found</h3>
               <p className="text-muted-foreground">{hybridEmptyMessage}</p>
@@ -602,8 +666,9 @@ const HybridView = ({
         viewMode={viewMode}
         containerClassName="w-2/5 relative"
         mapUserLocations={mapUserLocations}
-        selectedEquipment={selectedEquipment}
+        focusedEquipment={focusedEquipment}
         resetSignal={resetSignal}
+        onFocusedMapInteraction={handleFocusedMapInteraction}
         onViewportBoundsChange={handleViewportBoundsChange}
       />
     </div>

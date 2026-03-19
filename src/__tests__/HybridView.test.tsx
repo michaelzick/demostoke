@@ -216,10 +216,11 @@ const createEquipment = (
   lat: number,
   lng: number,
   ownerId: string,
+  category = "skis",
 ): Equipment => ({
   id,
   name,
-  category: "skis",
+  category,
   description: "Test gear",
   image_url: "",
   images: [],
@@ -255,6 +256,7 @@ const createUserLocation = (
   id: string,
   lat: number,
   lng: number,
+  equipmentCategories: string[] = ["skis"],
 ): UserLocation => ({
   id,
   name: `Shop ${id}`,
@@ -265,7 +267,7 @@ const createUserLocation = (
     lng,
   },
   avatar_url: null,
-  equipment_categories: ["skis"],
+  equipment_categories: equipmentCategories,
 });
 
 const equipment = [
@@ -482,20 +484,288 @@ describe("HybridView viewport sync", () => {
     expect(screen.queryByText("Snow Valley Bike")).not.toBeInTheDocument();
   });
 
-  it("recomputes the visible list after clicking a gear card and flying to it", async () => {
-    renderHybridView();
+  it("clicking a gear card flies to that gear but shows all filtered gear at the focused shop", async () => {
+    const shopOneBoard = createEquipment(
+      "gear-1a",
+      "Shop One Board",
+      34.05,
+      -118.25,
+      "shop-1",
+    );
+    const shopOneSkis = createEquipment(
+      "gear-1b",
+      "Shop One Skis",
+      34.051,
+      -118.251,
+      "shop-1",
+    );
+    const shopTwoBike = createEquipment(
+      "gear-2",
+      "Shop Two Bike",
+      36.17,
+      -115.14,
+      "shop-2",
+    );
 
-    await screen.findByText("Gear Two");
+    renderHybridViewWithProps(
+      [shopOneBoard, shopOneSkis, shopTwoBike],
+      [
+        createUserLocation("shop-1", 34.05, -118.25),
+        createUserLocation("shop-2", 36.17, -115.14),
+      ],
+    );
 
-    fireEvent.click(screen.getByText("Gear Two"));
+    await screen.findByText("Showing 3 of 3 gear in this map area");
+
+    fireEvent.click(screen.getByText("Shop One Board"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Showing 2 of 2 gear at this shop")).toBeInTheDocument();
+    });
+
+    expect(mapHarness.mapMock.flyTo).toHaveBeenCalled();
+    expect(screen.getByText("Shop One Board")).toBeInTheDocument();
+    expect(screen.getByText("Shop One Skis")).toBeInTheDocument();
+    expect(screen.queryByText("Shop Two Bike")).not.toBeInTheDocument();
+  });
+
+  it("returns to viewport sync after a manual map interaction while focused on a shop", async () => {
+    const shopOneBoard = createEquipment(
+      "gear-1a",
+      "Shop One Board",
+      34.05,
+      -118.25,
+      "shop-1",
+    );
+    const shopOneSkis = createEquipment(
+      "gear-1b",
+      "Shop One Skis",
+      34.051,
+      -118.251,
+      "shop-1",
+    );
+    const shopTwoBike = createEquipment(
+      "gear-2",
+      "Shop Two Bike",
+      36.17,
+      -115.14,
+      "shop-2",
+    );
+
+    renderHybridViewWithProps(
+      [shopOneBoard, shopOneSkis, shopTwoBike],
+      [
+        createUserLocation("shop-1", 34.05, -118.25),
+        createUserLocation("shop-2", 36.17, -115.14),
+      ],
+    );
+
+    await screen.findByText("Showing 3 of 3 gear in this map area");
+    fireEvent.click(screen.getByText("Shop One Board"));
+
+    await screen.findByText("Showing 2 of 2 gear at this shop");
+
+    act(() => {
+      mapHarness.emit("wheel");
+      mapHarness.setBounds({
+        north: 36.5,
+        south: 35.5,
+        east: -114.5,
+        west: -115.5,
+      });
+      mapHarness.emit("moveend");
+    });
 
     await waitFor(() => {
       expect(screen.getByText("Showing 1 of 3 gear in this map area")).toBeInTheDocument();
     });
 
-    expect(mapHarness.mapMock.flyTo).toHaveBeenCalled();
-    expect(screen.getByText("Gear Two")).toBeInTheDocument();
-    expect(screen.queryByText("Gear One")).not.toBeInTheDocument();
-    expect(screen.queryByText("Gear Three")).not.toBeInTheDocument();
+    expect(screen.getByText("Shop Two Bike")).toBeInTheDocument();
+    expect(screen.queryByText("Shop One Board")).not.toBeInTheDocument();
+    expect(screen.queryByText("Shop One Skis")).not.toBeInTheDocument();
+  });
+
+  it("clears focused-shop mode on category-reset rerenders and shows the new category list", async () => {
+    const surfShopOne = createEquipment(
+      "surf-1",
+      "Surf Shop One",
+      34.05,
+      -118.25,
+      "shop-1",
+      "surfboards",
+    );
+    const surfShopTwo = createEquipment(
+      "surf-2",
+      "Surf Shop Two",
+      36.17,
+      -115.14,
+      "shop-2",
+      "surfboards",
+    );
+    const snowboardShop = createEquipment(
+      "snow-1",
+      "Snow Shop Board",
+      37.77,
+      -122.42,
+      "shop-3",
+      "snowboards",
+    );
+
+    const { rerender } = renderHybridViewWithProps(
+      [surfShopOne, surfShopTwo, snowboardShop],
+      [
+        createUserLocation("shop-1", 34.05, -118.25, ["surfboards"]),
+        createUserLocation("shop-2", 36.17, -115.14, ["surfboards"]),
+        createUserLocation("shop-3", 37.77, -122.42, ["snowboards"]),
+      ],
+      { activeCategory: null },
+    );
+
+    await screen.findByText("Showing 3 of 3 gear in this map area");
+    fireEvent.click(screen.getByText("Snow Shop Board"));
+    await screen.findByText("Showing 1 of 1 gear at this shop");
+
+    rerender(
+      <HybridView
+        filteredEquipment={[surfShopOne, surfShopTwo]}
+        activeCategory="surfboards"
+        isLocationBased={false}
+        userLocations={[
+          createUserLocation("shop-1", 34.05, -118.25, ["surfboards"]),
+          createUserLocation("shop-2", 36.17, -115.14, ["surfboards"]),
+        ]}
+        resetSignal={1}
+        sortBy="distance"
+        onSortChange={vi.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Showing 2 of 2 gear in this map area")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Surf Shop One")).toBeInTheDocument();
+    expect(screen.getByText("Surf Shop Two")).toBeInTheDocument();
+    expect(screen.queryByText("Snow Shop Board")).not.toBeInTheDocument();
+  });
+
+  it("same-category reset rerenders clear focused-shop mode and refit to all visible shops", async () => {
+    const surfShopOneBoard = createEquipment(
+      "surf-1",
+      "Surf Shop One Board",
+      34.05,
+      -118.25,
+      "shop-1",
+      "surfboards",
+    );
+    const surfShopOneFish = createEquipment(
+      "surf-2",
+      "Surf Shop One Fish",
+      34.051,
+      -118.251,
+      "shop-1",
+      "surfboards",
+    );
+    const surfShopTwoLongboard = createEquipment(
+      "surf-3",
+      "Surf Shop Two Longboard",
+      36.17,
+      -115.14,
+      "shop-2",
+      "surfboards",
+    );
+
+    const surfShops = [
+      createUserLocation("shop-1", 34.05, -118.25, ["surfboards"]),
+      createUserLocation("shop-2", 36.17, -115.14, ["surfboards"]),
+    ];
+
+    const { rerender } = renderHybridViewWithProps(
+      [surfShopOneBoard, surfShopOneFish, surfShopTwoLongboard],
+      surfShops,
+      { activeCategory: "surfboards" },
+    );
+
+    await screen.findByText("Showing 3 of 3 gear in this map area");
+    fireEvent.click(screen.getByText("Surf Shop One Board"));
+    await screen.findByText("Showing 2 of 2 gear at this shop");
+
+    mapHarness.fitMapBoundsMock.mockClear();
+
+    rerender(
+      <HybridView
+        filteredEquipment={[surfShopOneBoard, surfShopOneFish, surfShopTwoLongboard]}
+        activeCategory="surfboards"
+        isLocationBased={false}
+        userLocations={surfShops}
+        resetSignal={1}
+        sortBy="distance"
+        onSortChange={vi.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Showing 3 of 3 gear in this map area")).toBeInTheDocument();
+    });
+
+    expect(mapHarness.fitMapBoundsMock).toHaveBeenCalled();
+    expect(screen.getByText("Surf Shop One Board")).toBeInTheDocument();
+    expect(screen.getByText("Surf Shop One Fish")).toBeInTheDocument();
+    expect(screen.getByText("Surf Shop Two Longboard")).toBeInTheDocument();
+  });
+
+  it("clears focused-shop mode when the focused gear disappears from the filtered dataset", async () => {
+    const shopOneBoard = createEquipment(
+      "gear-1a",
+      "Shop One Board",
+      34.05,
+      -118.25,
+      "shop-1",
+    );
+    const shopOneSkis = createEquipment(
+      "gear-1b",
+      "Shop One Skis",
+      34.051,
+      -118.251,
+      "shop-1",
+    );
+    const shopTwoBike = createEquipment(
+      "gear-2",
+      "Shop Two Bike",
+      36.17,
+      -115.14,
+      "shop-2",
+    );
+
+    const { rerender } = renderHybridViewWithProps(
+      [shopOneBoard, shopOneSkis, shopTwoBike],
+      [
+        createUserLocation("shop-1", 34.05, -118.25),
+        createUserLocation("shop-2", 36.17, -115.14),
+      ],
+    );
+
+    await screen.findByText("Showing 3 of 3 gear in this map area");
+    fireEvent.click(screen.getByText("Shop One Board"));
+    await screen.findByText("Showing 2 of 2 gear at this shop");
+
+    rerender(
+      <HybridView
+        filteredEquipment={[shopTwoBike]}
+        activeCategory="skis"
+        isLocationBased={false}
+        userLocations={[createUserLocation("shop-2", 36.17, -115.14)]}
+        sortBy="distance"
+        onSortChange={vi.fn()}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Showing 1 of 1 gear in this map area")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Shop Two Bike")).toBeInTheDocument();
+    expect(screen.queryByText("Shop One Board")).not.toBeInTheDocument();
+    expect(screen.queryByText("Shop One Skis")).not.toBeInTheDocument();
   });
 });

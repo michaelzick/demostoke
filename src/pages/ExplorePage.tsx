@@ -127,6 +127,12 @@ const ExplorePage = () => {
 
   const handleCategoryChange = (category: string | null) => {
     setActiveCategory(category);
+    setHasShownNoEquipmentToast(false);
+
+    if (viewMode === "hybrid") {
+      setResetCounter((c) => c + 1);
+    }
+
     if (category === null) {
       const newParams = new URLSearchParams(location.search);
       newParams.delete('category');

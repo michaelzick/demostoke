@@ -139,6 +139,14 @@ const SearchResultsPage = () => {
     setUserSelectedSort(true);
   };
 
+  const handleCategoryChange = (category: string | null) => {
+    setActiveCategory(category);
+
+    if (viewMode === "hybrid") {
+      setResetCounter((c) => c + 1);
+    }
+  };
+
   // Filter results by category if selected
   const categoryFilteredResults = activeCategory
     ? equipmentWithDynamicDistances.filter(item => item.category === activeCategory)
@@ -364,7 +372,7 @@ const SearchResultsPage = () => {
 
       <FilterBar
         activeCategory={activeCategory}
-        setActiveCategory={setActiveCategory}
+        setActiveCategory={handleCategoryChange}
         viewMode={viewMode}
         setViewMode={setViewMode}
         onReset={handleReset}
