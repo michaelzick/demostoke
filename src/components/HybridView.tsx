@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { memo, useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { Equipment } from "@/types";
 import CompactEquipmentCard from "./CompactEquipmentCard";
 import MapLegend from "./map/MapLegend";
@@ -27,7 +27,7 @@ interface HybridViewProps {
   activeCategory: string | null;
   isLocationBased: boolean;
   userLocations?: UserLocation[];
-  viewMode?: 'map' | 'list' | 'hybrid';
+  viewMode?: "map" | "list" | "hybrid";
   resetSignal?: number;
   sortBy: string;
   onSortChange: (value: string) => void;
@@ -48,12 +48,244 @@ interface MapEquipment {
   ownerName: string;
 }
 
+interface HybridMapPanelProps {
+  activeCategory: string | null;
+  viewMode: "map" | "list" | "hybrid";
+  containerClassName: string;
+  mapUserLocations: UserLocation[];
+  selectedEquipment?: MapEquipment;
+  resetSignal?: number;
+  onViewportBoundsChange: (bounds: MapViewportBounds | null) => void;
+}
+
+const buildShopCameraKey = (mapUserLocations: UserLocation[]): string =>
+  mapUserLocations
+    .map(
+      (user) =>
+        `${user.id}:${user.location.lat.toFixed(6)}:${user.location.lng.toFixed(6)}`,
+    )
+    .sort()
+    .join("|");
+
+const readViewportBounds = (map: mapboxgl.Map): MapViewportBounds => {
+  const bounds = map.getBounds();
+
+  return {
+    north: bounds.getNorth(),
+    south: bounds.getSouth(),
+    east: bounds.getEast(),
+    west: bounds.getWest(),
+  };
+};
+
+const HybridMapPanel = memo(
+  ({
+    activeCategory,
+    viewMode,
+    containerClassName,
+    mapUserLocations,
+    selectedEquipment,
+    resetSignal,
+    onViewportBoundsChange,
+  }: HybridMapPanelProps) => {
+    const [mapboxToken, setMapboxToken] = useState<string | null>(null);
+    const [isMapLoaded, setIsMapLoaded] = useState(false);
+    const mapContainer = useRef<HTMLDivElement>(null);
+    const map = useRef<mapboxgl.Map | null>(null);
+    const previousResetSignalRef = useRef(resetSignal);
+    const lastAppliedCameraKeyRef = useRef<string | null>(null);
+    const programmaticCameraChangeRef = useRef(false);
+    const userAdjustedMapRef = useRef(false);
+
+    const shopCameraKey = useMemo(
+      () => buildShopCameraKey(mapUserLocations),
+      [mapUserLocations],
+    );
+
+    const syncViewportBounds = useCallback(() => {
+      if (!map.current) return;
+      onViewportBoundsChange(readViewportBounds(map.current));
+    }, [onViewportBoundsChange]);
+
+    const applyCameraChange = useCallback(
+      (cameraKey: string, action: (mapInstance: mapboxgl.Map) => void) => {
+        if (!map.current) return;
+
+        programmaticCameraChangeRef.current = true;
+        action(map.current);
+        lastAppliedCameraKeyRef.current = cameraKey;
+      },
+      [],
+    );
+
+    useEffect(() => {
+      const fetchMapboxToken = async () => {
+        try {
+          const { data, error } = await supabase.functions.invoke("get-mapbox-token");
+          if (error) throw error;
+          setMapboxToken(data.token);
+        } catch (err) {
+          console.error("Error fetching Mapbox token:", err);
+        }
+      };
+
+      fetchMapboxToken();
+    }, []);
+
+    useEffect(() => {
+      if (!mapContainer.current || !mapboxToken) return;
+
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
+
+      setIsMapLoaded(false);
+      lastAppliedCameraKeyRef.current = null;
+      programmaticCameraChangeRef.current = false;
+      userAdjustedMapRef.current = false;
+
+      try {
+        map.current = initializeMap(mapContainer.current, mapboxToken);
+        map.current.on("load", () => {
+          setIsMapLoaded(true);
+        });
+      } catch (err) {
+        console.error("Error initializing map:", err);
+      }
+
+      return () => {
+        if (map.current) {
+          map.current.remove();
+          map.current = null;
+        }
+      };
+    }, [mapboxToken]);
+
+    useMapMarkers({
+      map: map.current,
+      mapLoaded: isMapLoaded,
+      equipment: selectedEquipment ? [selectedEquipment] : [],
+      userLocations: selectedEquipment ? [] : mapUserLocations,
+      isSingleView: false,
+      activeCategory,
+    });
+
+    useEffect(() => {
+      if (!map.current || !isMapLoaded) return;
+
+      const mapInstance = map.current;
+      const markUserAdjusted = () => {
+        if (!programmaticCameraChangeRef.current) {
+          userAdjustedMapRef.current = true;
+        }
+      };
+
+      const handleMoveEnd = () => {
+        syncViewportBounds();
+
+        if (programmaticCameraChangeRef.current) {
+          programmaticCameraChangeRef.current = false;
+        }
+      };
+
+      mapInstance.on("moveend", handleMoveEnd);
+      mapInstance.on("wheel", markUserAdjusted);
+      mapInstance.on("dragstart", markUserAdjusted);
+      mapInstance.on("zoomstart", markUserAdjusted);
+      mapInstance.on("touchstart", markUserAdjusted);
+      syncViewportBounds();
+
+      return () => {
+        mapInstance.off("moveend", handleMoveEnd);
+        mapInstance.off("wheel", markUserAdjusted);
+        mapInstance.off("dragstart", markUserAdjusted);
+        mapInstance.off("zoomstart", markUserAdjusted);
+        mapInstance.off("touchstart", markUserAdjusted);
+      };
+    }, [isMapLoaded, syncViewportBounds]);
+
+    useEffect(() => {
+      if (!map.current || !isMapLoaded) return;
+      if (previousResetSignalRef.current === resetSignal) return;
+
+      previousResetSignalRef.current = resetSignal;
+      userAdjustedMapRef.current = false;
+
+      if (mapUserLocations.length === 0) return;
+
+      const cameraKey = `shops:${shopCameraKey}`;
+      applyCameraChange(cameraKey, (mapInstance) => {
+        fitMapBounds(mapInstance, mapUserLocations);
+      });
+    }, [
+      applyCameraChange,
+      isMapLoaded,
+      mapUserLocations,
+      resetSignal,
+      shopCameraKey,
+    ]);
+
+    useEffect(() => {
+      if (!map.current || !isMapLoaded || selectedEquipment) return;
+      if (mapUserLocations.length === 0) return;
+
+      const cameraKey = `shops:${shopCameraKey}`;
+
+      if (
+        userAdjustedMapRef.current &&
+        lastAppliedCameraKeyRef.current === cameraKey
+      ) {
+        return;
+      }
+
+      if (lastAppliedCameraKeyRef.current === cameraKey) {
+        return;
+      }
+
+      applyCameraChange(cameraKey, (mapInstance) => {
+        fitMapBounds(mapInstance, mapUserLocations);
+      });
+    }, [
+      applyCameraChange,
+      isMapLoaded,
+      mapUserLocations,
+      selectedEquipment,
+      shopCameraKey,
+    ]);
+
+    useEffect(() => {
+      if (!map.current || !isMapLoaded || !selectedEquipment) return;
+
+      const cameraKey = `gear:${selectedEquipment.id}`;
+      if (lastAppliedCameraKeyRef.current === cameraKey) return;
+
+      applyCameraChange(cameraKey, (mapInstance) => {
+        mapInstance.flyTo({
+          center: [selectedEquipment.location.lng, selectedEquipment.location.lat],
+          zoom: 15,
+          duration: 1000,
+        });
+      });
+    }, [applyCameraChange, isMapLoaded, selectedEquipment]);
+
+    return (
+      <div className={containerClassName}>
+        <div ref={mapContainer} className="w-full h-full" />
+        <MapLegend activeCategory={activeCategory} viewMode={viewMode} />
+      </div>
+    );
+  },
+);
+
+HybridMapPanel.displayName = "HybridMapPanel";
+
 const HybridView = ({
   filteredEquipment,
   activeCategory,
   isLocationBased,
   userLocations = [],
-  viewMode = 'hybrid',
+  viewMode = "hybrid",
   resetSignal,
   sortBy,
   onSortChange,
@@ -68,46 +300,40 @@ const HybridView = ({
   const updateVisibilityMutation = useUpdateEquipmentVisibility();
   const queryClient = useQueryClient();
   const [selectedEquipmentId, setSelectedEquipmentId] = useState<string | null>(null);
-  const [mapboxToken, setMapboxToken] = useState<string | null>(null);
-  const [isMapLoaded, setIsMapLoaded] = useState(false);
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
+  const [viewportBounds, setViewportBounds] = useState<MapViewportBounds | null>(
+    null,
+  );
   const listRef = useRef<HTMLDivElement>(null);
   const desktopListRef = useRef<HTMLDivElement>(null);
   const previousResetSignalRef = useRef(resetSignal);
-  const [viewportBounds, setViewportBounds] = useState<MapViewportBounds | null>(null);
 
-  // Scroll to top buttons for different layouts
-  const { showButton: showMobileScrollButton, scrollToTop: scrollMobileToTop } = useScrollToTopButton({
-    threshold: 200
-    // No containerRef for mobile - it should scroll the window since mobile layout scrolls the whole page
-  });
+  const { showButton: showMobileScrollButton, scrollToTop: scrollMobileToTop } =
+    useScrollToTopButton({
+      threshold: 200,
+    });
 
-  const { showButton: showDesktopScrollButton, scrollToTop: scrollDesktopToTop } = useScrollToTopButton({
+  const {
+    showButton: showDesktopScrollButton,
+    scrollToTop: scrollDesktopToTop,
+  } = useScrollToTopButton({
     threshold: 200,
-    containerRef: desktopListRef
+    containerRef: desktopListRef,
   });
+
+  const handleViewportBoundsChange = useCallback(
+    (bounds: MapViewportBounds | null) => {
+      setViewportBounds(bounds);
+    },
+    [],
+  );
 
   const allHybridEquipment = filteredEquipment;
 
-  const syncViewportBounds = useCallback(() => {
-    if (!map.current) return;
-
-    const bounds = map.current.getBounds();
-    setViewportBounds({
-      north: bounds.getNorth(),
-      south: bounds.getSouth(),
-      east: bounds.getEast(),
-      west: bounds.getWest(),
-    });
-  }, []);
-
-  // Convert equipment to map format
   const mapEquipment: MapEquipment[] = useMemo(
     () =>
       allHybridEquipment
-        .filter(item => item.location?.lat && item.location?.lng)
-        .map(item => ({
+        .filter((item) => item.location?.lat && item.location?.lng)
+        .map((item) => ({
           id: item.id,
           name: item.name,
           category: item.category,
@@ -122,18 +348,27 @@ const HybridView = ({
     [allHybridEquipment],
   );
 
-  // Filter user locations to only show those that have equipment in the filtered results
   const filteredUserLocationsByEquipment = useMemo(
     () => getFilteredUserLocations(allHybridEquipment, userLocations),
     [allHybridEquipment, userLocations],
   );
+
   const mapUserLocations = useMemo(
     () =>
       filteredUserLocationsByEquipment.filter(
-        user => user.location?.lat && user.location?.lng,
+        (user) => user.location?.lat && user.location?.lng,
       ),
     [filteredUserLocationsByEquipment],
   );
+
+  const selectedEquipment = useMemo(
+    () =>
+      selectedEquipmentId
+        ? mapEquipment.find((item) => item.id === selectedEquipmentId)
+        : undefined,
+    [mapEquipment, selectedEquipmentId],
+  );
+
   const visibleOwnerIds = useMemo(() => {
     if (selectedEquipmentId) {
       return new Set<string>();
@@ -145,61 +380,22 @@ const HybridView = ({
       ),
     );
   }, [mapUserLocations, selectedEquipmentId, viewportBounds]);
+
   const visibleHybridEquipment = useMemo(() => {
     if (selectedEquipmentId) {
       return allHybridEquipment.filter((item) => item.id === selectedEquipmentId);
     }
 
-    return allHybridEquipment
-      .filter(item => visibleOwnerIds.has(item.owner.id));
+    return allHybridEquipment.filter((item) => visibleOwnerIds.has(item.owner.id));
   }, [allHybridEquipment, selectedEquipmentId, visibleOwnerIds]);
 
-  // Fetch Mapbox token
   useEffect(() => {
-    const fetchMapboxToken = async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke('get-mapbox-token');
-        if (error) throw error;
-        setMapboxToken(data.token);
-      } catch (err) {
-        console.error('Error fetching Mapbox token:', err);
-      }
-    };
+    if (previousResetSignalRef.current === resetSignal) return;
 
-    fetchMapboxToken();
-  }, []);
+    previousResetSignalRef.current = resetSignal;
+    setSelectedEquipmentId(null);
+  }, [resetSignal]);
 
-  // Initialize or reinitialize the map
-  useEffect(() => {
-    if (!mapContainer.current || !mapboxToken) return;
-
-    if (map.current) {
-      map.current.remove();
-      map.current = null;
-    }
-
-    setIsMapLoaded(false);
-
-    try {
-      map.current = initializeMap(mapContainer.current, mapboxToken);
-      map.current.on('load', () => {
-        setIsMapLoaded(true);
-      });
-    } catch (err) {
-      console.error('Error initializing map:', err);
-    }
-
-    return () => {
-      if (map.current) {
-        map.current.remove();
-        map.current = null;
-      }
-    };
-  }, [mapboxToken, isMobile]);
-
-  const selectedEquipment = selectedEquipmentId
-    ? mapEquipment.find(item => item.id === selectedEquipmentId)
-    : undefined;
   const resolvedEmptyMessage =
     emptyMessage || "Try changing your filters or explore a different category.";
   const mapAreaEmptyMessage = "No gear in this map area. Move the map or zoom out.";
@@ -209,75 +405,11 @@ const HybridView = ({
     ? mapAreaEmptyMessage
     : resolvedEmptyMessage;
 
-  // Add markers with click handlers
-  useMapMarkers({
-    map: map.current,
-    mapLoaded: isMapLoaded,
-    equipment: selectedEquipment ? [selectedEquipment] : [],
-    userLocations: selectedEquipment ? [] : mapUserLocations,
-    isSingleView: false,
-    activeCategory,
-  });
-
-  useEffect(() => {
-    if (!map.current || !isMapLoaded) return;
-
-    const mapInstance = map.current;
-    const handleMoveEnd = () => {
-      syncViewportBounds();
-    };
-
-    mapInstance.on("moveend", handleMoveEnd);
-    syncViewportBounds();
-
-    return () => {
-      mapInstance.off("moveend", handleMoveEnd);
-    };
-  }, [isMapLoaded, syncViewportBounds]);
-
-  // Reset view when resetSignal changes
-  useEffect(() => {
-    if (!map.current || !isMapLoaded) return;
-    if (previousResetSignalRef.current === resetSignal) return;
-
-    previousResetSignalRef.current = resetSignal;
-    setSelectedEquipmentId(null);
-
-    if (mapUserLocations.length > 0) {
-      fitMapBounds(map.current, mapUserLocations);
-    }
-  }, [resetSignal, isMapLoaded, mapUserLocations]);
-
-  // Fit bounds when equipment or user locations change
-  useEffect(() => {
-    if (!map.current || !isMapLoaded) return;
-
-    if (selectedEquipmentId) {
-      const equipment = mapEquipment.find(e => e.id === selectedEquipmentId);
-      if (equipment) {
-        fitMapBounds(map.current, [equipment], true);
-      }
-    } else if (mapUserLocations.length > 0) {
-      fitMapBounds(map.current, mapUserLocations);
-    }
-  }, [mapEquipment, mapUserLocations, isMapLoaded, selectedEquipmentId]);
-
   const handleEquipmentCardClick = (equipmentId: string) => {
     setSelectedEquipmentId(equipmentId);
-    
-    const equipment = mapEquipment.find(item => item.id === equipmentId);
-    if (equipment && map.current) {
-      // Center map on equipment location
-      map.current.flyTo({
-        center: [equipment.location.lng, equipment.location.lat],
-        zoom: 15,
-        duration: 1000
-      });
 
-      if (isMobile) {
-        // Scroll to top to show the map
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
+    if (isMobile) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -285,42 +417,69 @@ const HybridView = ({
     try {
       await deleteEquipmentMutation.mutateAsync(equipmentId);
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
-      toast({ title: "Equipment Deleted", description: "Equipment has been successfully deleted." });
+      toast({
+        title: "Equipment Deleted",
+        description: "Equipment has been successfully deleted.",
+      });
     } catch {
-      toast({ title: "Error", description: "Failed to delete equipment.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to delete equipment.",
+        variant: "destructive",
+      });
     }
   };
 
-  const handleVisibilityToggle = async (equipmentId: string, currentVisibility: boolean) => {
+  const handleVisibilityToggle = async (
+    equipmentId: string,
+    currentVisibility: boolean,
+  ) => {
     try {
-      await updateVisibilityMutation.mutateAsync({ equipmentId, visible: !currentVisibility });
+      await updateVisibilityMutation.mutateAsync({
+        equipmentId,
+        visible: !currentVisibility,
+      });
       queryClient.invalidateQueries({ queryKey: ["equipment"] });
-      toast({ title: "Visibility Updated", description: `Equipment is now ${!currentVisibility ? "visible" : "hidden"} on the map.` });
+      toast({
+        title: "Visibility Updated",
+        description: `Equipment is now ${
+          !currentVisibility ? "visible" : "hidden"
+        } on the map.`,
+      });
     } catch {
-      toast({ title: "Error", description: "Failed to update visibility.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: "Failed to update visibility.",
+        variant: "destructive",
+      });
     }
   };
 
-  const handleCardWrapperClick = (e: React.MouseEvent, equipmentId: string) => {
-    // Don't trigger if clicking on links or buttons
+  const handleCardWrapperClick = (
+    e: React.MouseEvent,
+    equipmentId: string,
+  ) => {
     const target = e.target as HTMLElement;
-    if (target.tagName === 'A' || target.tagName === 'BUTTON' || target.closest('a, button')) {
+    if (target.tagName === "A" || target.tagName === "BUTTON" || target.closest("a, button")) {
       return;
     }
-    
+
     handleEquipmentCardClick(equipmentId);
   };
 
   if (isMobile) {
     return (
       <div className="min-h-screen">
-        {/* Map at top for mobile */}
-        <div className="h-[50vh] relative">
-          <div ref={mapContainer} className="w-full h-full" />
-          <MapLegend activeCategory={activeCategory} viewMode={viewMode} />
-        </div>
-        
-        {/* Equipment list below map */}
+        <HybridMapPanel
+          activeCategory={activeCategory}
+          viewMode={viewMode}
+          containerClassName="h-[50vh] relative"
+          mapUserLocations={mapUserLocations}
+          selectedEquipment={selectedEquipment}
+          resetSignal={resetSignal}
+          onViewportBoundsChange={handleViewportBoundsChange}
+        />
+
         <div ref={listRef} className="p-4">
           <div className="mb-4 flex flex-col gap-3">
             {isLocationBased && (
@@ -348,8 +507,8 @@ const HybridView = ({
                 id={`equipment-card-${equipment.id}`}
                 className={`transition-all duration-300 rounded-lg hover:shadow-md cursor-pointer ${
                   selectedEquipmentId === equipment.id
-                    ? 'ring-2 ring-primary ring-offset-2'
-                    : ''
+                    ? "ring-2 ring-primary ring-offset-2"
+                    : ""
                 }`}
                 onClick={(e) => handleCardWrapperClick(e, equipment.id)}
               >
@@ -367,23 +526,21 @@ const HybridView = ({
           {!hasViewportResults && (
             <div className="text-center py-12">
               <h3 className="text-xl font-medium mb-2">No equipment found</h3>
-              <p className="text-muted-foreground">
-                {hybridEmptyMessage}
-              </p>
+              <p className="text-muted-foreground">{hybridEmptyMessage}</p>
             </div>
           )}
-          
-          {/* Scroll to top button for mobile */}
-          <ScrollToTopButton show={showMobileScrollButton} onClick={scrollMobileToTop} />
+
+          <ScrollToTopButton
+            show={showMobileScrollButton}
+            onClick={scrollMobileToTop}
+          />
         </div>
       </div>
     );
   }
 
-  // Desktop layout: list on left, map on right
   return (
     <div className="h-[calc(100vh-12rem)] flex">
-      {/* Equipment list on left */}
       <div ref={desktopListRef} className="w-3/5 overflow-y-auto p-4">
         <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           {isLocationBased && (
@@ -411,8 +568,8 @@ const HybridView = ({
               id={`equipment-card-${equipment.id}`}
               className={`transition-all duration-300 cursor-pointer rounded-lg hover:shadow-md ${
                 selectedEquipmentId === equipment.id
-                  ? 'ring-2 ring-primary ring-offset-2'
-                  : ''
+                  ? "ring-2 ring-primary ring-offset-2"
+                  : ""
               }`}
               onClick={(e) => handleCardWrapperClick(e, equipment.id)}
             >
@@ -429,22 +586,26 @@ const HybridView = ({
           {!hasViewportResults && (
             <div className="text-center py-12">
               <h3 className="text-xl font-medium mb-2">No equipment found</h3>
-              <p className="text-muted-foreground">
-                {hybridEmptyMessage}
-              </p>
+              <p className="text-muted-foreground">{hybridEmptyMessage}</p>
             </div>
           )}
         </div>
 
-        {/* Scroll to top button for desktop */}
-        <ScrollToTopButton show={showDesktopScrollButton} onClick={scrollDesktopToTop} />
+        <ScrollToTopButton
+          show={showDesktopScrollButton}
+          onClick={scrollDesktopToTop}
+        />
       </div>
-      
-      {/* Map on right */}
-      <div className="w-2/5 relative">
-        <div ref={mapContainer} className="w-full h-full" />
-        <MapLegend activeCategory={activeCategory} viewMode={viewMode} />
-      </div>
+
+      <HybridMapPanel
+        activeCategory={activeCategory}
+        viewMode={viewMode}
+        containerClassName="w-2/5 relative"
+        mapUserLocations={mapUserLocations}
+        selectedEquipment={selectedEquipment}
+        resetSignal={resetSignal}
+        onViewportBoundsChange={handleViewportBoundsChange}
+      />
     </div>
   );
 };

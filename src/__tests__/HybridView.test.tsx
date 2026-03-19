@@ -295,6 +295,7 @@ const renderHybridView = () =>
 const renderHybridViewWithProps = (
   customEquipment: Equipment[],
   customUserLocations: UserLocation[],
+  overrideProps: Partial<React.ComponentProps<typeof HybridView>> = {},
 ) =>
   render(
     <HybridView
@@ -304,6 +305,7 @@ const renderHybridViewWithProps = (
       userLocations={customUserLocations}
       sortBy="distance"
       onSortChange={vi.fn()}
+      {...overrideProps}
     />,
   );
 
@@ -318,6 +320,57 @@ describe("HybridView viewport sync", () => {
     expect(await screen.findByText("Showing 3 of 3 gear in this map area")).toBeInTheDocument();
     expect(screen.getAllByTestId("equipment-card")).toHaveLength(3);
     expect(mapHarness.fitMapBoundsMock).toHaveBeenCalled();
+    expect(mapHarness.initializeMapMock).toHaveBeenCalledWith(
+      expect.any(HTMLDivElement),
+      "test-token",
+    );
+  });
+
+  it("does not reinitialize or move the map on a non-map rerender", async () => {
+    const props = {
+      filteredEquipment: equipment,
+      activeCategory: "skis" as const,
+      isLocationBased: false,
+      userLocations,
+      sortBy: "distance",
+      onSortChange: vi.fn(),
+    };
+
+    const { rerender } = render(<HybridView {...props} />);
+
+    await screen.findByText("Showing 3 of 3 gear in this map area");
+
+    mapHarness.initializeMapMock.mockClear();
+    mapHarness.fitMapBoundsMock.mockClear();
+    mapHarness.mapMock.flyTo.mockClear();
+
+    rerender(<HybridView {...props} />);
+
+    expect(mapHarness.initializeMapMock).not.toHaveBeenCalled();
+    expect(mapHarness.fitMapBoundsMock).not.toHaveBeenCalled();
+    expect(mapHarness.mapMock.flyTo).not.toHaveBeenCalled();
+  });
+
+  it("does not refit the map when only sort changes", async () => {
+    const baseProps = {
+      filteredEquipment: equipment,
+      activeCategory: "skis" as const,
+      isLocationBased: false,
+      userLocations,
+      onSortChange: vi.fn(),
+    };
+
+    const { rerender } = render(<HybridView {...baseProps} sortBy="distance" />);
+
+    await screen.findByText("Showing 3 of 3 gear in this map area");
+
+    mapHarness.fitMapBoundsMock.mockClear();
+    mapHarness.mapMock.flyTo.mockClear();
+
+    rerender(<HybridView {...baseProps} sortBy="price-low" />);
+
+    expect(mapHarness.fitMapBoundsMock).not.toHaveBeenCalled();
+    expect(mapHarness.mapMock.flyTo).not.toHaveBeenCalled();
   });
 
   it("shrinks the list when the map moves to tighter bounds", async () => {

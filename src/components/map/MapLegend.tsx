@@ -33,7 +33,7 @@ const MapLegend = ({ activeCategory, viewMode }: MapLegendProps) => {
   const legendItems = showGearLegend ? gearLegendItems : profileLegendItems;
 
   return (
-    <div className="absolute top-4 left-4 z-10 bg-background/90 p-2 rounded-md backdrop-blur-sm">
+    <div className="pointer-events-none absolute top-4 left-4 z-10 bg-background/90 p-2 rounded-md backdrop-blur-sm">
       <div className="flex flex-col gap-2">
         {legendItems.map((item) => (
           <div key={item.category} className="flex items-center gap-2">

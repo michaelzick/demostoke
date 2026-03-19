@@ -194,14 +194,17 @@ export const createUserLocationPopupContent = (user: { id: string; name: string;
   `;
 };
 
-export const initializeMap = (container: HTMLDivElement, token: string): mapboxgl.Map => {
+export const initializeMap = (
+  container: HTMLDivElement,
+  token: string,
+): mapboxgl.Map => {
   mapboxgl.accessToken = token;
 
   const map = new mapboxgl.Map({
     container,
     style: 'mapbox://styles/mapbox/streets-v12',
     center: [0, 0], // Start centered on the world
-    zoom: 2
+    zoom: 2,
   });
 
   map.addControl(new mapboxgl.NavigationControl(), 'top-right');
