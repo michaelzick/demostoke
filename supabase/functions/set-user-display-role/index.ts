@@ -29,12 +29,17 @@ serve(async (req) => {
     }
 
     // Authenticate the requester and authorize: must be the same user or an admin
-    const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const authClient = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: req.headers.get('Authorization') || '' } },
-    });
+    const authorization = req.headers.get('Authorization');
+    if (!authorization?.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    const { data: authData, error: authError } = await authClient.auth.getUser();
+    const { data: authData, error: authError } = await supabase.auth.getUser(
+      authorization.slice('Bearer '.length)
+    );
     if (authError || !authData?.user) {
       return new Response(
         JSON.stringify({ error: 'Unauthorized' }),
@@ -44,8 +49,14 @@ serve(async (req) => {
 
     let allowed = authData.user.id === userId;
     if (!allowed) {
-      const { data: isAdmin, error: adminError } = await authClient.rpc('is_admin');
-      allowed = !adminError && isAdmin === true;
+      const { data: adminRole, error: adminError } = await supabase
+        .from('user_roles')
+        .select('id')
+        .eq('user_id', authData.user.id)
+        .eq('role', 'admin')
+        .limit(1)
+        .maybeSingle();
+      allowed = !adminError && Boolean(adminRole);
     }
 
     if (!allowed) {

@@ -4,7 +4,7 @@ import path from 'path';
 import { format } from 'date-fns';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
-const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY;
+const SUPABASE_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 let supabase;
 async function initSupabase() {

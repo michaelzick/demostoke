@@ -69,15 +69,34 @@ serve(async (req) => {
     }
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const anon = Deno.env.get('SUPABASE_ANON_KEY')!;
     const service = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const authorization = req.headers.get('Authorization');
+    if (!authorization?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
-    // Authenticated client (to check admin)
-    const authClient = createClient(supabaseUrl, anon, {
-      global: { headers: { Authorization: req.headers.get('Authorization') || '' } }
-    });
-    const { data: isAdmin, error: adminErr } = await authClient.rpc('is_admin');
-    if (adminErr || !isAdmin) {
+    const adminClient = createClient(supabaseUrl, service);
+    const { data: authData, error: authError } = await adminClient.auth.getUser(
+      authorization.slice('Bearer '.length)
+    );
+    if (authError || !authData?.user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const { data: adminRole, error: adminErr } = await adminClient
+      .from('user_roles')
+      .select('id')
+      .eq('user_id', authData.user.id)
+      .eq('role', 'admin')
+      .limit(1)
+      .maybeSingle();
+    if (adminErr || !adminRole) {
       return new Response(JSON.stringify({ error: 'Admin privileges required' }), {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -109,7 +128,6 @@ serve(async (req) => {
     columns.forEach((col, i) => { row[col] = values[i]; });
 
     // Use service role to insert
-    const adminClient = createClient(supabaseUrl, service);
     const { error: insertErr } = await adminClient.from('equipment').insert(row);
     if (insertErr) {
       return new Response(JSON.stringify({ error: insertErr.message }), {

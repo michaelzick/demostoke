@@ -8,7 +8,7 @@ DemoStoke's website has stopped receiving organic search traffic from Google and
 
 ### Current Behavior (Defect)
 
-1.1 WHEN the build process runs THEN the system generates a static `public/sitemap.xml` that omits all dynamic content (blog posts, gear listings, demo events) because `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are not available at build time and `generate-sitemap.js` silently skips dynamic routes
+1.1 WHEN the build process runs THEN the system generates a static `public/sitemap.xml` that omits all dynamic content (blog posts, gear listings, demo events) because `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` are not available at build time and `generate-sitemap.js` silently skips dynamic routes
 
 1.2 WHEN `generate-sitemap` is not included in the build script THEN the system deploys a stale `public/sitemap.xml` that is never updated with dynamic content
 

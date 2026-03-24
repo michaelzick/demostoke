@@ -1,4 +1,3 @@
-// @ts-expect-error Deno remote module import in edge function runtime
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -141,7 +140,6 @@ async function getImageCountForEquipment(
   return count || 0;
 }
 
-// @ts-expect-error Deno global is available in edge runtime
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -159,36 +157,33 @@ Deno.serve(async (req) => {
     }
 
     // Create Supabase client
-    // @ts-expect-error Deno env is available in edge runtime
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    // @ts-expect-error Deno env is available in edge runtime
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
+    const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
     // Verify user and check admin status
     const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } =
-      await supabase.auth.getClaims(token);
+    const { data: authData, error: authError } = await supabase.auth.getUser(token);
 
-    if (claimsError || !claimsData?.claims) {
+    if (authError || !authData?.user?.id) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const userId = claimsData.claims.sub;
+    const userId = authData.user.id;
 
-    // Check if user is admin using the is_admin RPC
-    const { data: isAdmin, error: adminError } = await supabase.rpc(
-      "is_admin",
-      { user_id: userId }
-    );
+    const { data: adminRole, error: adminError } = await supabase
+      .from("user_roles")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .limit(1)
+      .maybeSingle();
 
-    if (adminError || !isAdmin) {
+    if (adminError || !adminRole) {
       return new Response(
         JSON.stringify({ error: "Admin access required" }),
         {

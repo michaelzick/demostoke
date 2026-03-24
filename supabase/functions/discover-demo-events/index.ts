@@ -9,7 +9,6 @@ const corsHeaders = {
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY");
 const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
 const GOOGLE_CSE_ID = Deno.env.get("GOOGLE_CSE_ID");
 const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
@@ -347,27 +346,31 @@ async function fetchDiscoveryConfig(serviceClient: any): Promise<DemoEventDiscov
 async function verifyManualAdmin(
   req: Request,
   supabaseUrl: string,
-  supabaseAnonKey: string,
+  supabaseServiceRoleKey: string,
 ): Promise<string> {
   const authorization = req.headers.get("Authorization");
   if (!authorization?.startsWith("Bearer ")) {
     throw new Error("Manual runs require Authorization bearer token");
   }
 
-  const authClient = createClient(supabaseUrl, supabaseAnonKey, {
-    global: { headers: { Authorization: authorization } },
-  });
+  const serviceClient = createClient(supabaseUrl, supabaseServiceRoleKey);
 
-  const { data: userData, error: userError } = await authClient.auth.getUser();
+  const { data: userData, error: userError } = await serviceClient.auth.getUser(
+    authorization.slice("Bearer ".length)
+  );
   if (userError || !userData?.user?.id) {
     throw new Error("Unable to verify user for manual run");
   }
 
-  const { data: isAdmin, error: adminError } = await authClient.rpc("is_admin", {
-    user_id: userData.user.id,
-  });
+  const { data: adminRole, error: adminError } = await serviceClient
+    .from("user_roles")
+    .select("id")
+    .eq("user_id", userData.user.id)
+    .eq("role", "admin")
+    .limit(1)
+    .maybeSingle();
 
-  if (adminError || !isAdmin) {
+  if (adminError || !adminRole) {
     throw new Error("Admin access required for manual run");
   }
 
@@ -559,8 +562,7 @@ async function normalizeParsedEvent(
   const location = normalizeWhitespace(parsedEvent.location || "");
   const eventDateIso = toIsoDate(parsedEvent.event_date || null);
 
-  const hasRequired = Boolean(title && company && location && eventDateIso && isValidGearCategory(gearCategory));
-  if (!hasRequired) {
+  if (!title || !company || !location || !eventDateIso || !isValidGearCategory(gearCategory)) {
     return { event: null, missingRequired: true, outOfWindow: false };
   }
 
@@ -587,7 +589,7 @@ async function normalizeParsedEvent(
       external_event_id: externalEventId,
       title,
       company,
-      gear_category: gearCategory as GearCategory,
+      gear_category: gearCategory,
       event_date: eventDateIso,
       event_time: eventTime,
       location,
@@ -735,7 +737,6 @@ serve(async (req) => {
 
     const supabaseUrl = getRequiredEnv("SUPABASE_URL", SUPABASE_URL);
     const supabaseServiceRoleKey = getRequiredEnv("SUPABASE_SERVICE_ROLE_KEY", SUPABASE_SERVICE_ROLE_KEY);
-    const supabaseAnonKey = getRequiredEnv("SUPABASE_ANON_KEY", SUPABASE_ANON_KEY);
 
     const serviceClient = createClient(supabaseUrl, supabaseServiceRoleKey);
     const payload = (await req.json().catch(() => ({}))) as DiscoverPayload;
@@ -746,7 +747,7 @@ serve(async (req) => {
     if (source === "cron") {
       await verifyCronSecret(req, config);
     } else {
-      await verifyManualAdmin(req, supabaseUrl, supabaseAnonKey);
+      await verifyManualAdmin(req, supabaseUrl, supabaseServiceRoleKey);
     }
 
     const stats: DiscoveryStats = {

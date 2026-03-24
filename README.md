@@ -36,7 +36,7 @@ npm i
 # Example:
 ```env
 VITE_SUPABASE_URL=http://localhost:54321
-VITE_SUPABASE_ANON_KEY=your-local-anon-key
+VITE_SUPABASE_PUBLISHABLE_KEY=your-local-publishable-key
 ```
 
 # Step 4: Start the development server with auto-reloading and an instant preview.

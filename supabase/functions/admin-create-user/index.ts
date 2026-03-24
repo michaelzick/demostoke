@@ -107,30 +107,34 @@ serve(async (req) => {
   }
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
   const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceRoleKey) {
+  if (!supabaseUrl || !supabaseServiceRoleKey) {
     return jsonResponse(500, { error: "Missing required Supabase environment variables" });
   }
 
   const authorization = req.headers.get("Authorization");
-  if (!authorization) {
+  if (!authorization?.startsWith("Bearer ")) {
     return jsonResponse(401, { error: "Unauthorized" });
   }
 
-  const authClient = createClient(supabaseUrl, supabaseAnonKey, {
-    global: { headers: { Authorization: authorization } },
-  });
   const adminClient = createClient(supabaseUrl, supabaseServiceRoleKey);
 
   try {
-    const { data: authData, error: authError } = await authClient.auth.getUser();
+    const { data: authData, error: authError } = await adminClient.auth.getUser(
+      authorization.slice("Bearer ".length)
+    );
     if (authError || !authData?.user) {
       return jsonResponse(401, { error: "Unauthorized" });
     }
 
-    const { data: isAdmin, error: adminCheckError } = await authClient.rpc("is_admin");
-    if (adminCheckError || isAdmin !== true) {
+    const { data: adminRole, error: adminCheckError } = await adminClient
+      .from("user_roles")
+      .select("id")
+      .eq("user_id", authData.user.id)
+      .eq("role", "admin")
+      .limit(1)
+      .maybeSingle();
+    if (adminCheckError || !adminRole) {
       return jsonResponse(403, { error: "Forbidden" });
     }
 

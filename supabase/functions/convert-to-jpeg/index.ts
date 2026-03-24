@@ -27,16 +27,24 @@ serve(async (req) => {
     const { imageUrl, sourceTable, sourceColumn, sourceRecordId } = await req.json();
 
     // Auth: require admin
-    const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const authClient = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: req.headers.get('Authorization') || '' } },
-    });
-    const { data: authData, error: authError } = await authClient.auth.getUser();
+    const authorization = req.headers.get('Authorization');
+    if (!authorization?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+    const { data: authData, error: authError } = await supabase.auth.getUser(
+      authorization.slice('Bearer '.length)
+    );
     if (authError || !authData?.user) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
-    const { data: isAdmin, error: adminError } = await authClient.rpc('is_admin');
-    if (adminError || isAdmin !== true) {
+    const { data: adminRole, error: adminError } = await supabase
+      .from('user_roles')
+      .select('id')
+      .eq('user_id', authData.user.id)
+      .eq('role', 'admin')
+      .limit(1)
+      .maybeSingle();
+    if (adminError || !adminRole) {
       return new Response(JSON.stringify({ error: 'Forbidden' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
@@ -71,9 +79,9 @@ serve(async (req) => {
     const contentType = imageResponse.headers.get('content-type');
     if (contentType && (contentType.includes('image/jpeg') || contentType.includes('image/jpg'))) {
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           success: false,
-          error: 'Image is already in JPEG format' 
+          error: 'Image is already in JPEG format'
         }),
         {
           status: 400,
@@ -84,7 +92,7 @@ serve(async (req) => {
 
     // Step 3: Process the image with ImageScript
     console.log('Processing image...');
-    
+
     let originalImage;
     try {
       originalImage = await Image.decode(new Uint8Array(imageBuffer));
@@ -93,10 +101,10 @@ serve(async (req) => {
       const message = decodeError instanceof Error ? decodeError.message : 'Unknown decode error';
       throw new Error(`Failed to decode image: ${message}`);
     }
-    
+
     const originalWidth = originalImage.width;
     const originalHeight = originalImage.height;
-    
+
     console.log('Original dimensions:', originalWidth, 'x', originalHeight);
 
     // Step 4: Resize if necessary (maintain aspect ratio)
@@ -108,7 +116,7 @@ serve(async (req) => {
       const aspectRatio = originalHeight / originalWidth;
       newWidth = MAX_WIDTH;
       newHeight = Math.round(MAX_WIDTH * aspectRatio);
-      
+
       console.log('Resizing to:', newWidth, 'x', newHeight);
       try {
         processedImage = originalImage.resize(newWidth, newHeight);
@@ -129,10 +137,10 @@ serve(async (req) => {
       const message = encodeError instanceof Error ? encodeError.message : 'Unknown encode error';
       throw new Error(`Failed to encode JPEG: ${message}`);
     }
-    
+
     const jpegSize = jpegBuffer.byteLength;
     console.log('JPEG size:', jpegSize, 'bytes', 'Compression ratio:', Math.round((1 - jpegSize / originalSize) * 100) + '%');
-    
+
     // Step 6: Create JPEG blob
     const jpegBlob = new Blob([jpegBuffer as BlobPart], { type: 'image/jpeg' });
 
@@ -203,11 +211,11 @@ serve(async (req) => {
   } catch (error: unknown) {
     console.error('Error in convert-to-jpeg function:', error);
     const message = error instanceof Error ? error.message : 'Unknown error';
-    
+
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         success: false,
-        error: message 
+        error: message
       }),
       {
         status: 500,
@@ -221,12 +229,12 @@ serve(async (req) => {
 Example curl command for local testing:
 
 curl -X POST 'http://localhost:54321/functions/v1/convert-to-jpeg' \
-  -H 'Authorization: Bearer YOUR_ANON_KEY' \
+  -H 'Authorization: Bearer YOUR_PUBLISHABLE_KEY' \
   -H 'Content-Type: application/json' \
   -d '{
     "imageUrl": "https://example.com/image.png",
     "sourceTable": "equipment",
-    "sourceColumn": "image_url", 
+    "sourceColumn": "image_url",
     "sourceRecordId": "123e4567-e89b-12d3-a456-426614174000"
   }'
 */
