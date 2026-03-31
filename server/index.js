@@ -15,6 +15,13 @@ import {
   humanizeSlug,
 } from '../src/lib/seo/publicMetadata.js';
 import {
+  buildGearMetaDescription,
+  buildGearProductSchema,
+  buildGearSummaryText,
+  buildLegacyGearNamePattern,
+  parseLegacyGearRoute,
+} from '../src/lib/seo/gearSeo.js';
+import {
   SUPABASE_PUBLISHABLE_KEY as DEFAULT_SUPABASE_PUBLISHABLE_KEY,
   SUPABASE_URL as DEFAULT_SUPABASE_URL,
 } from '../src/integrations/supabase/config.js';
@@ -26,18 +33,42 @@ const serverDist = path.join(__dirname, '../dist/server');
 
 // Supabase client for fetching blog metadata on the server
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+const SUPABASE_URL_SOURCE = process.env.VITE_SUPABASE_URL
+  ? 'VITE_SUPABASE_URL'
+  : DEFAULT_SUPABASE_URL
+    ? 'default config'
+    : 'missing';
 const SUPABASE_PUBLISHABLE_KEY =
-  process.env.VITE_SUPABASE_PUBLISHABLE_KEY || DEFAULT_SUPABASE_PUBLISHABLE_KEY;
+  process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.VITE_SUPABASE_ANON_KEY ||
+  DEFAULT_SUPABASE_PUBLISHABLE_KEY;
+const SUPABASE_KEY_SOURCE = process.env.VITE_SUPABASE_PUBLISHABLE_KEY
+  ? 'VITE_SUPABASE_PUBLISHABLE_KEY'
+  : process.env.VITE_SUPABASE_ANON_KEY
+    ? 'VITE_SUPABASE_ANON_KEY'
+    : DEFAULT_SUPABASE_PUBLISHABLE_KEY
+      ? 'default config'
+      : 'missing';
 
 let supabase = null;
 if (SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY) {
   try {
     supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    console.info(
+      `Server metadata enrichment enabled. Supabase URL source: ${SUPABASE_URL_SOURCE}; key source: ${SUPABASE_KEY_SOURCE}.`,
+    );
+    if (SUPABASE_KEY_SOURCE === 'VITE_SUPABASE_ANON_KEY') {
+      console.warn(
+        'Server metadata enrichment is using VITE_SUPABASE_ANON_KEY. Prefer VITE_SUPABASE_PUBLISHABLE_KEY in production runtime config.',
+      );
+    }
   } catch (error) {
     console.warn('Supabase client init failed. Server metadata enrichment is disabled.', error);
   }
 } else {
-  console.warn('Supabase env vars are missing. Server metadata enrichment is disabled.');
+  console.warn(
+    `Supabase config is incomplete. Server metadata enrichment is disabled. URL source: ${SUPABASE_URL_SOURCE}; key source: ${SUPABASE_KEY_SOURCE}.`,
+  );
 }
 
 const escapeContent = (str) =>
@@ -149,6 +180,14 @@ const extractGearIdFromSlug = (gearSlug) => {
   if (lastDashIndex === -1) return null;
   const fallbackId = gearSlug.slice(lastDashIndex + 1).trim();
   return fallbackId || null;
+};
+
+const appendOriginalSearch = (baseUrl, originalUrl) => {
+  const queryIndex = originalUrl.indexOf('?');
+  if (queryIndex === -1) {
+    return baseUrl;
+  }
+  return `${baseUrl}${originalUrl.slice(queryIndex)}`;
 };
 
 async function getBlogPostMeta(slug) {
@@ -379,78 +418,29 @@ async function getGearPageMeta(gearSlug, protocol, host) {
     })}`;
     const canonicalUrl = `${protocol}://${host}${canonicalPath}`;
     const locationText = gear.location_address || 'United States';
-    const summaryText = `${displayName} is available in ${locationText}. Last verified ${lastVerified}.`;
-    const descriptionText =
-      `${summaryText} ${gear.description || ''}`.trim().slice(0, 350);
-
-    const offers = [];
-    const baseOffer = {
-      '@type': 'Offer',
-      priceCurrency: 'USD',
-      availability:
-        gear.status === 'available'
-          ? 'https://schema.org/InStock'
-          : 'https://schema.org/OutOfStock',
-      availabilityStarts: lastVerified,
-      businessFunction: 'http://purl.org/goodrelations/v1#LeaseOut',
-      url: canonicalUrl,
-    };
-
-    if (Number(gear.price_per_hour) > 0) {
-      offers.push({
-        ...baseOffer,
-        name: 'Hourly rental',
-        price: String(Number(gear.price_per_hour)),
-      });
-    }
-
-    if (Number(gear.price_per_day) > 0) {
-      offers.push({
-        ...baseOffer,
-        name: 'Daily rental',
-        price: String(Number(gear.price_per_day)),
-      });
-    }
-
-    if (Number(gear.price_per_week) > 0) {
-      offers.push({
-        ...baseOffer,
-        name: 'Weekly rental',
-        price: String(Number(gear.price_per_week)),
-      });
-    }
-
-    const offerPrices = offers.map((offer) => Number(offer.price));
-    const offerSchema =
-      offers.length > 1
-        ? {
-          '@type': 'AggregateOffer',
-          priceCurrency: 'USD',
-          lowPrice: String(Math.min(...offerPrices)),
-          highPrice: String(Math.max(...offerPrices)),
-          offerCount: String(offers.length),
-          offers,
-        }
-        : offers[0];
-
-    const schema = {
-      '@context': 'https://schema.org',
-      '@type': 'Product',
-      name: displayName,
-      description: summaryText,
-      image: imageUrls,
-      url: canonicalUrl,
+    const summaryText = buildGearSummaryText({
+      displayName,
+      locationText,
+      lastVerified,
+    });
+    const descriptionText = buildGearMetaDescription({
+      summaryText,
+      rawDescription: gear.description,
+    });
+    const schema = buildGearProductSchema({
+      canonicalUrl,
       category: gear.category,
-      offers: offerSchema,
-      aggregateRating:
-        Number(gear.review_count) > 0 && Number(gear.rating) > 0
-          ? {
-            '@type': 'AggregateRating',
-            ratingValue: Number(gear.rating),
-            reviewCount: Number(gear.review_count),
-          }
-          : undefined,
-    };
+      displayName,
+      imageUrls,
+      isAvailable: gear.status === 'available',
+      lastVerified,
+      pricePerHour: gear.price_per_hour,
+      pricePerDay: gear.price_per_day,
+      pricePerWeek: gear.price_per_week,
+      rating: gear.rating,
+      reviewCount: gear.review_count,
+      summaryText,
+    });
 
     const noscriptSummary = [
       '<noscript><section id="gear-crawl-summary" style="padding:16px;max-width:720px;margin:0 auto;">',
@@ -471,6 +461,69 @@ async function getGearPageMeta(gearSlug, protocol, host) {
     };
   } catch (error) {
     console.error('Error fetching gear meta', error);
+    return null;
+  }
+}
+
+async function resolveLegacyGearCanonicalUrl(req, protocol, host) {
+  if (!supabase) {
+    return null;
+  }
+
+  const legacyRoute = parseLegacyGearRoute(req.path);
+  if (!legacyRoute) {
+    return null;
+  }
+
+  const namePattern = buildLegacyGearNamePattern(legacyRoute.slug);
+  if (!namePattern) {
+    return null;
+  }
+
+  try {
+    const { data: rows, error } = await supabase
+      .from('equipment')
+      .select(
+        `
+        id,
+        name,
+        size,
+        status,
+        visible_on_map,
+        profiles!equipment_user_id_fkey (
+          name,
+          is_hidden
+        )
+      `,
+      )
+      .eq('category', legacyRoute.category)
+      .ilike('name', namePattern)
+      .limit(25);
+
+    if (error) {
+      console.error('Error resolving legacy gear URL', error);
+      return null;
+    }
+
+    const match = (rows || []).find((row) => {
+      const ownerName = row.profiles?.name || '';
+      const ownerMatches = slugify(ownerName) === legacyRoute.ownerSlug;
+      return ownerMatches && row.status === 'available' && row.visible_on_map && row.profiles?.is_hidden !== true;
+    });
+
+    if (!match) {
+      return null;
+    }
+
+    const canonicalPath = `/gear/${buildGearSlug({
+      id: match.id,
+      name: match.name,
+      size: match.size,
+    })}`;
+
+    return appendOriginalSearch(`${protocol}://${host}${canonicalPath}`, req.originalUrl);
+  } catch (error) {
+    console.error('Error resolving legacy gear URL', error);
     return null;
   }
 }
@@ -755,6 +808,23 @@ app.get('/sitemap.xml', async (req, res) => {
   res.send(xmlLines.join('\n'));
 });
 
+app.get('/:category/:ownerSlug/:slug', async (req, res, next) => {
+  try {
+    const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
+    const host = req.get('host') || 'www.demostoke.com';
+    const canonicalUrl = await resolveLegacyGearCanonicalUrl(req, protocol, host);
+
+    if (!canonicalUrl) {
+      return next();
+    }
+
+    return res.redirect(301, canonicalUrl);
+  } catch (error) {
+    console.error('Error handling legacy gear redirect', error);
+    return next();
+  }
+});
+
 app.use(sirv(clientDist, {
   extensions: [],
   maxAge: 31536000, // 1 year for static assets
@@ -992,6 +1062,11 @@ app.get('*', async (req, res) => {
       const meta = await getGearPageMeta(gearSlug, protocol, host);
 
       if (meta) {
+        const canonicalPathname = new URL(meta.canonicalUrl).pathname;
+        if (req.path !== canonicalPathname) {
+          return res.redirect(301, appendOriginalSearch(meta.canonicalUrl, req.originalUrl));
+        }
+
         const escapedTitle = escapeContent(meta.title);
         const escapedDescription = escapeContent(meta.description);
         const escapedImage = escapeContent(meta.image);

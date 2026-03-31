@@ -8,7 +8,6 @@ import { useSimilarEquipment } from "@/hooks/useSimilarEquipment";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import { trackEquipmentView } from "@/services/viewTrackingService";
-import { getCategoryDisplayName } from "@/helpers";
 import { useAuth } from "@/contexts/auth";
 import { useQueryClient } from "@tanstack/react-query";
 import {
@@ -23,6 +22,11 @@ import {
   extractGearNameFromSlug,
   humanizeSlug,
 } from "@/lib/seo/publicMetadata";
+import {
+  buildGearMetaDescription,
+  buildGearProductSchema,
+  buildGearSummaryText,
+} from "@/lib/seo/gearSeo.js";
 
 // Import component modules
 import EquipmentDetailPageDb from "./EquipmentDetailPageDb";
@@ -168,7 +172,6 @@ const EquipmentDetailPage = () => {
       currentEquipment.specifications?.size,
     )
     : "";
-  const categoryDisplay = currentEquipment ? getCategoryDisplayName(currentEquipment.category) : '';
   const lastVerifiedDate = currentEquipment
     ? toISODate(currentEquipment.updated_at || currentEquipment.created_at)
     : toISODate();
@@ -186,6 +189,21 @@ const EquipmentDetailPage = () => {
       size: currentEquipment.specifications?.size,
     })
     : undefined;
+  const locationText = currentEquipment?.location.address || "United States";
+  const summaryText =
+    currentEquipment && canonicalUrl
+      ? buildGearSummaryText({
+        displayName: gearDisplayName || currentEquipment.name,
+        locationText,
+        lastVerified: lastVerifiedDate,
+      })
+      : undefined;
+  const metaDescription = summaryText
+    ? buildGearMetaDescription({
+      summaryText,
+      rawDescription: currentEquipment?.description,
+    })
+    : undefined;
 
   useEffect(() => {
     if (isCanonicalGearRoute || !canonicalPath) {
@@ -199,53 +217,8 @@ const EquipmentDetailPage = () => {
     }
   }, [canonicalPath, isCanonicalGearRoute, location.pathname, location.search, navigate]);
 
-  const offers = useMemo(() => {
-    if (!currentEquipment || !canonicalUrl) {
-      return [];
-    }
-
-    const baseOffer = {
-      "@type": "Offer",
-      priceCurrency: "USD",
-      availability: currentEquipment.availability.available
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
-      availabilityStarts: lastVerifiedDate,
-      businessFunction: "http://purl.org/goodrelations/v1#LeaseOut",
-      url: canonicalUrl,
-    };
-
-    const rentalOffers: Array<Record<string, string>> = [];
-
-    if (Number(currentEquipment.price_per_hour) > 0) {
-      rentalOffers.push({
-        ...baseOffer,
-        name: "Hourly rental",
-        price: String(Number(currentEquipment.price_per_hour)),
-      });
-    }
-
-    if (Number(currentEquipment.price_per_day) > 0) {
-      rentalOffers.push({
-        ...baseOffer,
-        name: "Daily rental",
-        price: String(Number(currentEquipment.price_per_day)),
-      });
-    }
-
-    if (Number(currentEquipment.price_per_week) > 0) {
-      rentalOffers.push({
-        ...baseOffer,
-        name: "Weekly rental",
-        price: String(Number(currentEquipment.price_per_week)),
-      });
-    }
-
-    return rentalOffers;
-  }, [currentEquipment, canonicalUrl, lastVerifiedDate]);
-
   const productSchema = useMemo(() => {
-    if (!currentEquipment || !canonicalUrl) {
+    if (!currentEquipment || !canonicalUrl || !summaryText) {
       return undefined;
     }
 
@@ -253,83 +226,26 @@ const EquipmentDetailPage = () => {
       currentEquipment.images && currentEquipment.images.length > 0
         ? currentEquipment.images
         : [currentEquipment.image_url];
-    const validImageList = imageList.filter(Boolean);
-    const offerPrices = offers
-      .map((offer) => Number(offer.price))
-      .filter((price) => Number.isFinite(price));
-
-    const offerSchema =
-      offers.length > 1
-        ? {
-          "@type": "AggregateOffer",
-          priceCurrency: "USD",
-          lowPrice: String(Math.min(...offerPrices)),
-          highPrice: String(Math.max(...offerPrices)),
-          offerCount: String(offers.length),
-          offers,
-        }
-        : offers[0];
-
-    const breadcrumbSchema = {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": window.location.origin
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": categoryDisplay || currentEquipment.category,
-          "item": `${window.location.origin}/explore?category=${currentEquipment.category}`
-        },
-        {
-          "@type": "ListItem",
-          "position": 3,
-          "name": gearDisplayName || currentEquipment.name,
-          "item": canonicalUrl
-        }
-      ]
-    };
-
-    const gearProductSchema = {
-      "@context": "https://schema.org",
-      "@type": "Product",
-      name: gearDisplayName || currentEquipment.name,
-      description: currentEquipment.description || `${gearDisplayName || currentEquipment.name}. Last verified ${lastVerifiedDate}. Located in ${currentEquipment.location.address}.`,
-      image: validImageList,
-      url: canonicalUrl,
-      category: categoryDisplay || currentEquipment.category,
-      brand: {
-        "@type": "Brand",
-        "name": (currentEquipment.name.split(' ')[0]) // Rough brand extraction
-      },
-      sku: currentEquipment.id,
-      itemCondition: "https://schema.org/UsedCondition",
-      offers: offerSchema,
-      aggregateRating:
-        currentEquipment.review_count > 0 &&
-          currentEquipment.rating > 0 &&
-          currentEquipment.rating <= 5
-          ? {
-            "@type": "AggregateRating",
-            ratingValue: currentEquipment.rating,
-            reviewCount: currentEquipment.review_count,
-          }
-          : undefined,
-    };
-
-    return [breadcrumbSchema, gearProductSchema];
+    return buildGearProductSchema({
+      canonicalUrl,
+      category: currentEquipment.category,
+      displayName: gearDisplayName || currentEquipment.name,
+      imageUrls: imageList,
+      isAvailable: currentEquipment.availability.available,
+      lastVerified: lastVerifiedDate,
+      pricePerHour: currentEquipment.price_per_hour,
+      pricePerDay: currentEquipment.price_per_day,
+      pricePerWeek: currentEquipment.price_per_week,
+      rating: currentEquipment.rating,
+      reviewCount: currentEquipment.review_count,
+      summaryText,
+    });
   }, [
     canonicalUrl,
-    categoryDisplay,
     currentEquipment,
     gearDisplayName,
     lastVerifiedDate,
-    offers,
+    summaryText,
   ]);
 
   const fallbackGearName = gearDisplayName
@@ -339,9 +255,8 @@ const EquipmentDetailPage = () => {
     title: fallbackGearName
       ? buildGearDetailTitle(fallbackGearName)
       : currentDocumentTitle,
-    description: gearDisplayName
-      ? `${gearDisplayName} available for demo and rental in ${currentEquipment?.location.address}. Last verified ${lastVerifiedDate}.`
-      : "View detailed information about this gear listing.",
+    description:
+      metaDescription || "View detailed information about this gear listing.",
     image: currentEquipment?.images?.[0] || currentEquipment?.image_url,
     type: "product",
     schema: productSchema,
