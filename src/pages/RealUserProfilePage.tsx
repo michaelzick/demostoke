@@ -40,6 +40,7 @@ import {
   buildUserProfileTitle,
   humanizeSlug,
 } from "@/lib/seo/publicMetadata";
+import { ROBOTS_NOINDEX_FOLLOW } from "@/lib/seo/policy.js";
 
 const RealUserProfilePage = () => {
   // Scroll to top on mount
@@ -233,7 +234,7 @@ const RealUserProfilePage = () => {
 
   const profileName = profile?.name;
   const fallbackProfileName = profileName || humanizeSlug(slug || "");
-  const canonicalUrl = slug ? `${PUBLIC_SITE_URL}/user-profile/${slug}` : undefined;
+  const canonicalUrl = profile && slug ? `${PUBLIC_SITE_URL}/user-profile/${slug}` : undefined;
 
   usePageMetadata({
     title: fallbackProfileName ? buildUserProfileTitle(fallbackProfileName) : currentDocumentTitle,
@@ -241,6 +242,7 @@ const RealUserProfilePage = () => {
       ? buildUserProfileDescription(fallbackProfileName)
       : 'View rider profiles and their listed gear on DemoStoke.',
     canonicalUrl,
+    robots: !isLoading && !profile ? ROBOTS_NOINDEX_FOLLOW : undefined,
     trackingReady: Boolean(profileName),
   });
 

@@ -120,6 +120,7 @@ export const buildGearProductSchema = ({
   pricePerWeek,
   rating,
   reviewCount,
+  reviews,
   summaryText,
 }) => {
   const offers = buildGearOfferSchema({
@@ -149,6 +150,23 @@ export const buildGearProductSchema = ({
 
   const normalizedRating = Number(rating);
   const normalizedReviewCount = Number(reviewCount);
+  const reviewSchema = (reviews || [])
+    .filter((review) => review?.authorName && Number(review?.rating) > 0)
+    .map((review) => ({
+      '@type': 'Review',
+      author: {
+        '@type': 'Person',
+        name: review.authorName,
+      },
+      datePublished: review.createdAt,
+      reviewBody: review.reviewText || undefined,
+      reviewRating: {
+        '@type': 'Rating',
+        ratingValue: review.rating,
+        bestRating: 5,
+        worstRating: 1,
+      },
+    }));
 
   return {
     '@context': 'https://schema.org',
@@ -169,5 +187,6 @@ export const buildGearProductSchema = ({
             reviewCount: normalizedReviewCount,
           }
         : undefined,
+    review: reviewSchema.length > 0 ? reviewSchema : undefined,
   };
 };

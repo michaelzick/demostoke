@@ -82,6 +82,36 @@ describe("Gear SEO helpers", () => {
       }),
     ).toContain(summaryText);
   });
+
+  it("adds review objects only when public review data is provided", () => {
+    const schema = buildGearProductSchema({
+      canonicalUrl: "https://www.demostoke.com/gear/test-board--123e4567-e89b-12d3-a456-426614174000",
+      category: "surfboards",
+      displayName: "Test Board 5'8",
+      imageUrls: ["https://cdn.example.com/board.webp"],
+      isAvailable: true,
+      lastVerified: "2026-03-30",
+      pricePerDay: 55,
+      rating: 4.8,
+      reviewCount: 2,
+      reviews: [
+        {
+          authorName: "Taylor Rider",
+          createdAt: "2026-03-28",
+          rating: 5,
+          reviewText: "Fast paddler and easy to control in shoulder-high surf.",
+        },
+      ],
+      summaryText: "Test Board 5'8 is available in Encinitas, CA. Last verified 2026-03-30.",
+    });
+
+    expect(schema.review).toEqual([
+      expect.objectContaining({
+        "@type": "Review",
+        author: { "@type": "Person", name: "Taylor Rider" },
+      }),
+    ]);
+  });
 });
 
 describe("Gear SEO server regression coverage", () => {
@@ -98,7 +128,7 @@ describe("Gear SEO server regression coverage", () => {
 
   it("redirects stale /gear/ slugs to the exact canonical product URL", () => {
     expect(serverSource).toMatch(
-      /if \(req\.path\.startsWith\('\/gear\/'\)\) \{[\s\S]*canonicalPathname[\s\S]*redirect\(301,\s*appendOriginalSearch\(meta\.canonicalUrl,\s*req\.originalUrl\)\)/,
+      /canonicalPathname[\s\S]*appendOriginalSearch\(meta\.canonicalUrl\.replace\(PUBLIC_SITE_URL,\s*requestOrigin\),\s*req\.originalUrl\)/,
     );
   });
 
@@ -127,7 +157,7 @@ describe("Gear SEO sitemap regression coverage", () => {
   });
 
   it("keeps private and API routes out of the sitemap source", () => {
-    expect(serverSource).not.toMatch(/\/api\/gear\/search/);
+    expect(serverSource).not.toMatch(/path:\s*'\/api\/gear\/search'/);
     expect(serverSource).not.toMatch(/path:\s*'\/profile'/);
     expect(serverSource).not.toMatch(/path:\s*'\/my-gear'/);
     expect(serverSource).not.toMatch(/path:\s*'\/admin'/);

@@ -6,6 +6,7 @@ import { AuthProvider } from "./contexts/auth/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { FavoritesProvider } from "./contexts/FavoritesContext";
 import { GeolocationProvider } from "./contexts/GeolocationContext";
+import { SsrPageData, SsrPageDataProvider } from "./contexts/SsrPageDataContext";
 import { ClientOnlyAmplitudeInit } from "./components/ClientOnlyAmplitudeInit";
 import GoogleTagManager from "./components/GoogleTagManager";
 import AppRoutes from "./components/AppRoutes";
@@ -19,23 +20,29 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => {
+interface AppProps {
+  initialSsrPageData?: SsrPageData;
+}
+
+const App = ({ initialSsrPageData = {} }: AppProps) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <AuthProvider>
-          <FavoritesProvider>
-            <GeolocationProvider>
-              <TooltipProvider>
-                <ClientOnlyToaster />
-                <ClientOnlyAmplitudeInit />
-                <GoogleTagManager />
-                <AppRoutes />
-              </TooltipProvider>
-            </GeolocationProvider>
-          </FavoritesProvider>
-        </AuthProvider>
-      </ThemeProvider>
+      <SsrPageDataProvider value={initialSsrPageData}>
+        <ThemeProvider>
+          <AuthProvider>
+            <FavoritesProvider>
+              <GeolocationProvider>
+                <TooltipProvider>
+                  <ClientOnlyToaster />
+                  <ClientOnlyAmplitudeInit />
+                  <GoogleTagManager />
+                  <AppRoutes />
+                </TooltipProvider>
+              </GeolocationProvider>
+            </FavoritesProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </SsrPageDataProvider>
     </QueryClientProvider>
   );
 };

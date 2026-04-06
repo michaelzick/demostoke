@@ -14,7 +14,7 @@ export const generateEventSlug = (event: DemoEvent): string => {
 };
 
 export const buildDemoEventPath = (event: DemoEvent): string =>
-  `/demo-events/${generateEventSlug(event)}`;
+  `/demo-calendar/event/${generateEventSlug(event)}`;
 
 export const findEventBySlug = (events: DemoEvent[], slug: string): DemoEvent | null => {
   return events.find((ev) => {

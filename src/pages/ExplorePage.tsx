@@ -24,10 +24,14 @@ import { applyAdvancedFilters } from "@/utils/advancedFiltering";
 import { filterGearByQuickQuery } from "@/utils/gearQuickFilter";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
+import { resolveStaticRouteSeo } from "@/lib/seo/policy.js";
 
 const ExplorePage = () => {
-  usePageMetadata(PUBLIC_ROUTE_META["/explore"]);
   const location = useLocation();
+  usePageMetadata({
+    ...PUBLIC_ROUTE_META["/explore"],
+    ...resolveStaticRouteSeo("/explore", location.search),
+  });
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQuickFilterFromUrl = searchParams.get("q") ?? "";
   const feedStart =
@@ -257,6 +261,8 @@ const ExplorePage = () => {
 
   return (
     <div className="min-h-screen">
+      <h1 className="sr-only">Explore Action Sports Gear Near You</h1>
+
       <FilterBar
         activeCategory={activeCategory}
         setActiveCategory={handleCategoryChange}

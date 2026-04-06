@@ -5,8 +5,7 @@ import { slugify, unslugify } from "@/utils/slugify";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 import { deduplicateImageUrls } from "@/utils/imageDeduplication";
-import { useAuth } from "@/contexts/auth";
-import { useIsAdmin } from "@/hooks/useUserRole";
+import { isPublicEquipmentRecord } from "@/lib/seo/policy.js";
 
 export const useEquipmentBySlug = (
   category: string,
@@ -14,11 +13,8 @@ export const useEquipmentBySlug = (
   ownerSlug?: string,
   enabled = true,
 ) => {
-  const { user } = useAuth();
-  const { isAdmin } = useIsAdmin();
-
   return useQuery({
-    queryKey: ["equipment", category, slug, ownerSlug, user?.id, isAdmin],
+    queryKey: ["equipment", category, slug, ownerSlug],
     enabled: enabled && !!category && !!slug,
     queryFn: async (): Promise<Equipment | null> => {
       // First check the public equipment data
@@ -79,7 +75,13 @@ export const useEquipmentBySlug = (
       })();
 
       // If the equipment is not publicly visible or owner is hidden, ensure the user owns it or is an admin
-      if ((ownerIsHidden || (row.status !== 'available' || !row.visible_on_map)) && row.user_id !== user?.id && !isAdmin) {
+      if (
+        !isPublicEquipmentRecord({
+          status: row.status,
+          visibleOnMap: row.visible_on_map,
+          ownerIsHidden,
+        })
+      ) {
         return null;
       }
 

@@ -78,7 +78,7 @@ describe('Preservation 3.1 / 3.2 — SSR meta tag injection', () => {
     expect(
       source,
       'meta name="description" injection not found in server/index.js',
-    ).toMatch(/meta\s+name="description"/);
+    ).toMatch(/upsertMetaByName\(nextHtml,\s*'description'/);
   });
 
   it('server/index.js SSR handler injects <title> for blog routes', () => {
@@ -300,7 +300,7 @@ describe('Property-based: SSR handler always injects og: meta for blog routes', 
     expect(
       source,
       'og: meta injection code not found in server/index.js — SSR Open Graph tags will be missing',
-    ).toMatch(/meta\s+property="og:/);
+    ).toMatch(/upsertMetaByProperty\(nextHtml,\s*'og:/);
   });
 
   /**
@@ -313,7 +313,7 @@ describe('Property-based: SSR handler always injects og: meta for blog routes', 
    *
    * Validates: Requirements 3.1, 3.2
    */
-  it('property: for any random slug, server/index.js always contains <meta property="og: injection', () => {
+  it('property: for any random slug, server/index.js always contains og: injection helpers', () => {
     // Generate 50 random slug-like strings and verify the structural property holds for each
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789-';
     const randomSlug = (seed: number): string => {
@@ -333,7 +333,7 @@ describe('Property-based: SSR handler always injects og: meta for blog routes', 
       const slug = randomSlug(seed);
       // The server source is static — the injection code must always be present
       // regardless of what slug value would be passed at runtime.
-      const hasOgInjection = /meta\s+property="og:/.test(source);
+      const hasOgInjection = /upsertMetaByProperty\(nextHtml,\s*'og:/.test(source);
       expect(
         hasOgInjection,
         `For slug "${slug}": server/index.js does not contain og: meta injection code`,

@@ -8,6 +8,7 @@ export interface PageMetadata {
   type?: string;
   schema?: Record<string, any> | Record<string, any>[];
   canonicalUrl?: string;
+  robots?: string;
   trackingReady?: boolean;
 }
 
@@ -40,6 +41,7 @@ const usePageMetadata = ({
   type = 'website',
   schema,
   canonicalUrl,
+  robots,
   trackingReady = true,
 }: PageMetadata) => {
   useEffect(() => {
@@ -67,6 +69,13 @@ const usePageMetadata = ({
     } else {
       const canonicalElement = document.head.querySelector("link[rel='canonical']");
       canonicalElement?.remove();
+    }
+
+    if (robots) {
+      setMeta("name", "robots", robots);
+    } else {
+      const robotsElement = document.head.querySelector("meta[name='robots']");
+      robotsElement?.remove();
     }
 
     // Handle author from schema
@@ -104,7 +113,7 @@ const usePageMetadata = ({
         }),
       );
     }
-  }, [title, description, image, type, schema, canonicalUrl, trackingReady]);
+  }, [title, description, image, type, schema, canonicalUrl, robots, trackingReady]);
 };
 
 export default usePageMetadata;

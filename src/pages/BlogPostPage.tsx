@@ -18,6 +18,7 @@ import {
   buildBlogPostTitle,
   humanizeSlug,
 } from "@/lib/seo/publicMetadata";
+import { ROBOTS_NOINDEX_FOLLOW } from "@/lib/seo/policy.js";
 
 const BlogPostPage = () => {
   const { slug, id } = useParams<{ slug?: string; id?: string; }>();
@@ -31,7 +32,8 @@ const BlogPostPage = () => {
   const isPreviewMode = location.pathname.startsWith('/blog/preview/');
   const currentDocumentTitle =
     typeof document !== "undefined" ? document.title : undefined;
-  const canonicalUrl = !isPreviewMode && slug ? `${PUBLIC_SITE_URL}/blog/${slug}` : undefined;
+  const canonicalUrl = !isPreviewMode && post && slug ? `${PUBLIC_SITE_URL}/blog/${slug}` : undefined;
+  const robots = isPreviewMode || (!isLoading && !post) ? ROBOTS_NOINDEX_FOLLOW : undefined;
 
   useEffect(() => {
     const loadPost = async () => {
@@ -91,6 +93,7 @@ const BlogPostPage = () => {
     image: post?.thumbnail,
     type: 'article',
     canonicalUrl,
+    robots,
     trackingReady: isPreviewMode || Boolean(post),
     schema: post
       ? {
