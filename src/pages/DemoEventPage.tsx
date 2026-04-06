@@ -11,6 +11,7 @@ import usePageMetadata from "@/hooks/usePageMetadata";
 import useScrollToTop from "@/hooks/useScrollToTop";
 import { useDemoEvents } from "@/hooks/useDemoEvents";
 import { useIsAdmin } from "@/hooks/useUserRole";
+import { useSsrPageData } from "@/contexts/SsrPageDataContext";
 import { DemoEvent, DemoEventInput } from "@/types/demo-calendar";
 import {
   buildDemoEventMapHref,
@@ -24,6 +25,7 @@ import {
   buildDemoEventDescription,
   buildDemoEventTitle,
 } from "@/lib/seo/publicMetadata";
+import { ROBOTS_NOINDEX_FOLLOW, isPastDemoEvent } from "@/lib/seo/policy.js";
 
 const buildEventStartDate = (event: DemoEvent) => {
   if (!event.event_date) return undefined;
@@ -39,15 +41,26 @@ const DemoEventPage = () => {
   const { eventSlug } = useParams<{ eventSlug: string }>();
   const { events, isLoading, updateEventAsync, deleteEventAsync, isUpdating, isDeleting } = useDemoEvents();
   const { isAdmin, isLoading: isLoadingRole } = useIsAdmin();
+  const { demoEvent: ssrDemoEvent, demoEventResolved } = useSsrPageData();
   const [editingEvent, setEditingEvent] = useState<DemoEvent | null>(null);
 
-  const event = useMemo(
-    () => (eventSlug ? findEventBySlug(events, eventSlug) : null),
-    [eventSlug, events],
+  const preloadedEvent = useMemo(
+    () => (eventSlug && ssrDemoEvent ? findEventBySlug([ssrDemoEvent], eventSlug) : null),
+    [eventSlug, ssrDemoEvent],
   );
+  const event = useMemo(
+    () => preloadedEvent || (eventSlug ? findEventBySlug(events, eventSlug) : null),
+    [eventSlug, events, preloadedEvent],
+  );
+  const isAwaitingClientEventData = isLoading && !event && !demoEventResolved;
   const categoryMeta = getDemoEventCategoryMeta(event?.gear_category);
-  const canonicalPath = event ? buildDemoEventPath(event) : eventSlug ? `/demo-events/${eventSlug}` : "";
+  const canonicalPath = event ? buildDemoEventPath(event) : "";
   const canonicalUrl = canonicalPath ? `${PUBLIC_SITE_URL}${canonicalPath}` : undefined;
+  const robots = !isLoading && !event
+    ? ROBOTS_NOINDEX_FOLLOW
+    : event && isPastDemoEvent(event)
+      ? ROBOTS_NOINDEX_FOLLOW
+      : undefined;
   const eventDescription = event
     ? buildDemoEventDescription({
         title: event.title,
@@ -81,7 +94,9 @@ const DemoEventPage = () => {
         name: event.title,
         description: eventDescription,
         startDate: buildEventStartDate(event),
-        eventStatus: "https://schema.org/EventScheduled",
+        eventStatus: isPastDemoEvent(event)
+          ? "https://schema.org/EventCompleted"
+          : "https://schema.org/EventScheduled",
         eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
         image: event.thumbnail_url || `${PUBLIC_SITE_URL}/img/demostoke-square-transparent.webp`,
         url: canonicalUrl,
@@ -107,6 +122,7 @@ const DemoEventPage = () => {
     description: eventDescription,
     image: event?.thumbnail_url || `${PUBLIC_SITE_URL}/img/demostoke-square-transparent.webp`,
     canonicalUrl,
+    robots,
     schema,
     trackingReady: Boolean(event),
   });
@@ -138,7 +154,7 @@ const DemoEventPage = () => {
     }
   };
 
-  if (isLoading) {
+  if (isAwaitingClientEventData) {
     return (
       <div className="container px-4 py-8 md:px-6">
         <Skeleton className="mb-4 h-5 w-64" />

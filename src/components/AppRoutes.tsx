@@ -1,5 +1,5 @@
-import { memo, type ReactNode } from "react";
-import { Navigate, Routes, Route, useParams } from "react-router-dom";
+import { memo, type ReactNode, useEffect } from "react";
+import { Routes, Route, useNavigate, useParams } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import AuthLayout from "../layouts/AuthLayout";
 import AddGearForm from '../pages/AddGearForm';
@@ -65,7 +65,17 @@ const AdminOnlyRouteGate = ({ children }: { children: ReactNode }) => {
 
 const LegacyDemoEventRedirect = () => {
   const { eventSlug = "" } = useParams();
-  return <Navigate to={`/demo-calendar/event/${eventSlug}`} replace />;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!eventSlug) {
+      return;
+    }
+
+    navigate(`/demo-calendar/event/${eventSlug}`, { replace: true });
+  }, [eventSlug, navigate]);
+
+  return null;
 };
 
 const AppRoutes = memo(() => {

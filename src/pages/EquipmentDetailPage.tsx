@@ -27,6 +27,7 @@ import {
   buildGearProductSchema,
   buildGearSummaryText,
 } from "@/lib/seo/gearSeo.js";
+import { ROBOTS_NOINDEX_FOLLOW } from "@/lib/seo/policy.js";
 
 // Import component modules
 import EquipmentDetailPageDb from "./EquipmentDetailPageDb";
@@ -261,6 +262,7 @@ const EquipmentDetailPage = () => {
     type: "product",
     schema: productSchema,
     canonicalUrl,
+    robots: !isLoading && !currentEquipment ? ROBOTS_NOINDEX_FOLLOW : undefined,
     trackingReady: Boolean(gearDisplayName),
   });
 

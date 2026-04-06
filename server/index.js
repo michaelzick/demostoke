@@ -8,6 +8,7 @@ import {
   buildDemoEventDescription,
   buildDemoEventTitle,
   PUBLIC_ROUTE_META,
+  PUBLIC_SITE_URL,
   buildBlogPostTitle,
   buildGearDetailTitle,
   buildUserProfileDescription,
@@ -22,11 +23,22 @@ import {
   parseLegacyGearRoute,
 } from '../src/lib/seo/gearSeo.js';
 import {
+  ROBOTS_NOINDEX_FOLLOW,
+  SEO_STATUS_NOT_FOUND,
+  buildSeoPolicy,
+  getRouteMetaForPath,
+  isKnownAppRoute,
+  isPastDemoEvent,
+  isPublicEquipmentRecord,
+  resolveNotFoundSeo,
+  resolveStaticRouteSeo,
+  resolveUtilityRouteSeo,
+} from '../src/lib/seo/policy.js';
+import {
   SUPABASE_PUBLISHABLE_KEY as DEFAULT_SUPABASE_PUBLISHABLE_KEY,
   SUPABASE_URL as DEFAULT_SUPABASE_URL,
 } from '../src/integrations/supabase/config.js';
 
-const isProd = process.env.NODE_ENV === 'production';
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const clientDist = path.join(__dirname, '../dist/client');
 const serverDist = path.join(__dirname, '../dist/server');
@@ -190,6 +202,137 @@ const appendOriginalSearch = (baseUrl, originalUrl) => {
   return `${baseUrl}${originalUrl.slice(queryIndex)}`;
 };
 
+const DEFAULT_SOCIAL_IMAGE = `${PUBLIC_SITE_URL}/img/demostoke-square-transparent.webp`;
+
+const buildPublicUrl = (pathname = '/') => `${PUBLIC_SITE_URL}${pathname}`;
+
+const buildRequestOrigin = (req) => {
+  const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
+  const host = req.get('host') || 'www.demostoke.com';
+  return `${protocol}://${host}`;
+};
+
+const buildRequestUrl = (req, pathname = req.path) =>
+  `${buildRequestOrigin(req)}${pathname}`;
+
+const getRequestSearch = (req) => {
+  const queryIndex = req.originalUrl.indexOf('?');
+  return queryIndex === -1 ? '' : req.originalUrl.slice(queryIndex);
+};
+
+const escapeRegExp = (value) =>
+  String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const upsertTag = (inputHtml, pattern, tag) =>
+  pattern.test(inputHtml)
+    ? inputHtml.replace(pattern, tag)
+    : inputHtml.replace('</head>', `${tag}</head>`);
+
+const upsertTitle = (inputHtml, title) =>
+  inputHtml.replace(/<title>[^<]*<\/title>/i, `<title>${escapeContent(title)}</title>`);
+
+const upsertMetaByName = (inputHtml, name, value) =>
+  upsertTag(
+    inputHtml,
+    new RegExp(`<meta\\s+name=["']${escapeRegExp(name)}["'][^>]*\\/?>`, 'i'),
+    `<meta name="${name}" content="${escapeContent(value)}" />`,
+  );
+
+const upsertMetaByProperty = (inputHtml, property, value) =>
+  upsertTag(
+    inputHtml,
+    new RegExp(`<meta\\s+property=["']${escapeRegExp(property)}["'][^>]*\\/?>`, 'i'),
+    `<meta property="${property}" content="${escapeContent(value)}" />`,
+  );
+
+const upsertMetaByNameOrProperty = (inputHtml, key, value) =>
+  upsertTag(
+    inputHtml,
+    new RegExp(`<meta\\s+(?:name|property)=["']${escapeRegExp(key)}["'][^>]*\\/?>`, 'i'),
+    `<meta property="${key}" content="${escapeContent(value)}" />`,
+  );
+
+const upsertCanonical = (inputHtml, canonicalUrl) =>
+  upsertTag(
+    inputHtml,
+    /<link\s+rel=["']canonical["'][^>]*>/i,
+    `<link rel="canonical" href="${escapeContent(canonicalUrl)}" />`,
+  );
+
+const upsertStructuredData = (inputHtml, schema) => {
+  const scriptTag = `<script id="structured-data" type="application/ld+json">${JSON.stringify(schema)}</script>`;
+  const withoutExisting = inputHtml.replace(
+    /<script\s+id="structured-data"[^>]*>.*?<\/script>/i,
+    '',
+  );
+
+  return withoutExisting.replace('</head>', `${scriptTag}</head>`);
+};
+
+const prependBeforeRoot = (inputHtml, markup = '') =>
+  markup ? inputHtml.replace('<div id="root">', `${markup}<div id="root">`) : inputHtml;
+
+const injectSsrPageData = (inputHtml, pageData) => {
+  const serializedPageData = JSON.stringify(pageData).replace(/</g, '\\u003c');
+  const script = `<script id="ssr-page-data">window.__SSR_PAGE_DATA__=${serializedPageData};</script>`;
+
+  return inputHtml.replace('</body>', `${script}</body>`);
+};
+
+const applyHeadMetadata = (
+  inputHtml,
+  {
+    title,
+    description,
+    image = DEFAULT_SOCIAL_IMAGE,
+    type = 'website',
+    url,
+    canonicalUrl,
+    author,
+    robots,
+    schema,
+  },
+) => {
+  let nextHtml = inputHtml;
+
+  if (title) {
+    nextHtml = upsertTitle(nextHtml, title);
+    nextHtml = upsertMetaByProperty(nextHtml, 'og:title', title);
+    nextHtml = upsertMetaByNameOrProperty(nextHtml, 'twitter:title', title);
+  }
+
+  if (description) {
+    nextHtml = upsertMetaByName(nextHtml, 'description', description);
+    nextHtml = upsertMetaByProperty(nextHtml, 'og:description', description);
+    nextHtml = upsertMetaByNameOrProperty(nextHtml, 'twitter:description', description);
+  }
+
+  if (author) {
+    nextHtml = upsertMetaByName(nextHtml, 'author', author);
+  }
+
+  nextHtml = upsertMetaByProperty(nextHtml, 'og:type', type);
+  nextHtml = upsertMetaByProperty(nextHtml, 'og:url', url || canonicalUrl || PUBLIC_SITE_URL);
+  nextHtml = upsertMetaByProperty(nextHtml, 'og:image', image);
+  nextHtml = upsertMetaByNameOrProperty(nextHtml, 'twitter:card', 'summary_large_image');
+  nextHtml = upsertMetaByNameOrProperty(nextHtml, 'twitter:url', url || canonicalUrl || PUBLIC_SITE_URL);
+  nextHtml = upsertMetaByNameOrProperty(nextHtml, 'twitter:image', image);
+
+  if (canonicalUrl) {
+    nextHtml = upsertCanonical(nextHtml, canonicalUrl);
+  }
+
+  if (robots) {
+    nextHtml = upsertMetaByName(nextHtml, 'robots', robots);
+  }
+
+  if (schema) {
+    nextHtml = upsertStructuredData(nextHtml, schema);
+  }
+
+  return nextHtml;
+};
+
 async function getBlogPostMeta(slug) {
   if (!supabase) {
     return null;
@@ -198,7 +341,8 @@ async function getBlogPostMeta(slug) {
   try {
     const { data, error } = await supabase
       .from('blog_posts')
-      .select('title, excerpt, thumbnail, hero_image, author, slug, id, published_at')
+      .select('title, excerpt, thumbnail, hero_image, author, slug, id, published_at, status')
+      .eq('status', 'published')
       .eq('slug', slug)
       .single();
 
@@ -206,7 +350,8 @@ async function getBlogPostMeta(slug) {
       // Try by ID if slug doesn't work
       const { data: dataById, error: errorById } = await supabase
         .from('blog_posts')
-        .select('title, excerpt, thumbnail, hero_image, author, slug, id, published_at')
+        .select('title, excerpt, thumbnail, hero_image, author, slug, id, published_at, status')
+        .eq('status', 'published')
         .eq('id', slug)
         .single();
 
@@ -214,18 +359,22 @@ async function getBlogPostMeta(slug) {
       return {
         title: dataById.title,
         description: dataById.excerpt,
-        image: dataById.thumbnail || dataById.hero_image || '',
+        image: dataById.thumbnail || dataById.hero_image || DEFAULT_SOCIAL_IMAGE,
         author: dataById.author,
-        publishedAt: dataById.published_at
+        publishedAt: dataById.published_at,
+        slug: dataById.slug,
+        canonicalUrl: buildPublicUrl(`/blog/${dataById.slug}`),
       };
     }
 
     return {
       title: data.title,
       description: data.excerpt,
-      image: data.thumbnail || data.hero_image || '',
+      image: data.thumbnail || data.hero_image || DEFAULT_SOCIAL_IMAGE,
       author: data.author,
-      publishedAt: data.published_at
+      publishedAt: data.published_at,
+      slug: data.slug,
+      canonicalUrl: buildPublicUrl(`/blog/${data.slug}`),
     };
   } catch (e) {
     console.error('Error fetching blog meta', e);
@@ -233,12 +382,12 @@ async function getBlogPostMeta(slug) {
   }
 }
 
-async function getUserProfileMeta(profileSlug, protocol, host) {
+async function getUserProfileMeta(profileSlug) {
   if (!supabase || !profileSlug) {
     return null;
   }
 
-  const canonicalUrl = `${protocol}://${host}/user-profile/${profileSlug}`;
+  const canonicalUrl = buildPublicUrl(`/user-profile/${profileSlug}`);
   const pattern = `%${profileSlug.split('-').filter(Boolean).join('%')}%`;
 
   const fetchPublicProfileById = async (profileId) => {
@@ -353,6 +502,13 @@ async function getUserProfileMeta(profileSlug, protocol, host) {
       title: buildUserProfileTitle(resolvedName),
       description,
       canonicalUrl,
+      summaryMarkup: [
+        '<section data-ssr-profile-summary style="padding:16px;max-width:720px;margin:0 auto;">',
+        `<h1>${escapeContent(resolvedName)}</h1>`,
+        `<p>${escapeContent(description)}</p>`,
+        detailSuffix ? `<p>${escapeContent(detailSuffix)}</p>` : '',
+        '</section>',
+      ].join(''),
     };
   } catch (error) {
     console.error('Error fetching user profile meta', error);
@@ -360,7 +516,69 @@ async function getUserProfileMeta(profileSlug, protocol, host) {
   }
 }
 
-async function getGearPageMeta(gearSlug, protocol, host) {
+async function getPublicGearReviews(equipmentId) {
+  if (!supabase || !equipmentId) {
+    return [];
+  }
+
+  try {
+    const { data: reviewRows, error: reviewError } = await supabase
+      .from('equipment_reviews')
+      .select('id, rating, review_text, reviewer_id, created_at')
+      .eq('equipment_id', equipmentId)
+      .order('created_at', { ascending: false })
+      .limit(3);
+
+    if (reviewError || !reviewRows?.length) {
+      if (reviewError) {
+        console.error('Error fetching equipment reviews for SEO', reviewError);
+      }
+      return [];
+    }
+
+    const reviewerIds = [...new Set(reviewRows.map((review) => review.reviewer_id).filter(Boolean))];
+    if (reviewerIds.length === 0) {
+      return [];
+    }
+
+    const { data: publicProfiles, error: profileError } = await supabase
+      .from('public_profiles')
+      .select('id, name')
+      .in('id', reviewerIds);
+
+    if (profileError) {
+      console.error('Error fetching public reviewer profiles for SEO', profileError);
+      return [];
+    }
+
+    const reviewerNames = new Map(
+      (publicProfiles || [])
+        .filter((profile) => profile.id && profile.name)
+        .map((profile) => [profile.id, profile.name]),
+    );
+
+    return reviewRows
+      .map((review) => {
+        const authorName = reviewerNames.get(review.reviewer_id);
+        if (!authorName) {
+          return null;
+        }
+
+        return {
+          authorName,
+          createdAt: toISODate(review.created_at),
+          rating: Number(review.rating),
+          reviewText: review.review_text,
+        };
+      })
+      .filter(Boolean);
+  } catch (error) {
+    console.error('Error fetching public gear reviews for SEO', error);
+    return [];
+  }
+}
+
+async function getGearPageMeta(gearSlug) {
   if (!supabase) {
     return null;
   }
@@ -381,6 +599,7 @@ async function getGearPageMeta(gearSlug, protocol, host) {
         description,
         size,
         status,
+        visible_on_map,
         price_per_day,
         price_per_hour,
         price_per_week,
@@ -389,13 +608,27 @@ async function getGearPageMeta(gearSlug, protocol, host) {
         created_at,
         user_id,
         review_count,
-        rating
+        rating,
+        profiles!equipment_user_id_fkey (
+          name,
+          is_hidden
+        )
       `,
       )
       .eq('id', gearId)
       .single();
 
     if (gearError || !gear) {
+      return null;
+    }
+
+    if (
+      !isPublicEquipmentRecord({
+        status: gear.status,
+        visibleOnMap: gear.visible_on_map === true,
+        ownerIsHidden: gear.profiles?.is_hidden === true,
+      })
+    ) {
       return null;
     }
 
@@ -409,6 +642,7 @@ async function getGearPageMeta(gearSlug, protocol, host) {
     const imageUrls = (images || [])
       .map((item) => item.image_url)
       .filter(Boolean);
+    const reviews = await getPublicGearReviews(gear.id);
     const displayName = buildGearDisplayName(gear.name, gear.size);
     const lastVerified = toISODate(gear.updated_at || gear.created_at);
     const canonicalPath = `/gear/${buildGearSlug({
@@ -416,7 +650,7 @@ async function getGearPageMeta(gearSlug, protocol, host) {
       name: gear.name,
       size: gear.size,
     })}`;
-    const canonicalUrl = `${protocol}://${host}${canonicalPath}`;
+    const canonicalUrl = buildPublicUrl(canonicalPath);
     const locationText = gear.location_address || 'United States';
     const summaryText = buildGearSummaryText({
       displayName,
@@ -439,6 +673,7 @@ async function getGearPageMeta(gearSlug, protocol, host) {
       pricePerWeek: gear.price_per_week,
       rating: gear.rating,
       reviewCount: gear.review_count,
+      reviews,
       summaryText,
     });
 
@@ -454,7 +689,7 @@ async function getGearPageMeta(gearSlug, protocol, host) {
     return {
       title: buildGearDetailTitle(displayName),
       description: descriptionText,
-      image: imageUrls[0] || '',
+      image: imageUrls[0] || DEFAULT_SOCIAL_IMAGE,
       canonicalUrl,
       schema,
       noscriptSummary,
@@ -528,7 +763,7 @@ async function resolveLegacyGearCanonicalUrl(req, protocol, host) {
   }
 }
 
-async function getDemoEventPageMeta(eventSlug, protocol, host) {
+async function getDemoEventPageMeta(eventSlug) {
   if (!supabase || !eventSlug) {
     return null;
   }
@@ -567,7 +802,7 @@ async function getDemoEventPageMeta(eventSlug, protocol, host) {
     }
 
     const canonicalPath = buildDemoEventPath(event);
-    const canonicalUrl = `${protocol}://${host}${canonicalPath}`;
+    const canonicalUrl = buildPublicUrl(canonicalPath);
     const description = buildDemoEventDescription({
       title: event.title,
       company: event.company,
@@ -582,8 +817,8 @@ async function getDemoEventPageMeta(eventSlug, protocol, host) {
         '@context': 'https://schema.org',
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: `${protocol}://${host}/` },
-          { '@type': 'ListItem', position: 2, name: 'Demo Calendar', item: `${protocol}://${host}/demo-calendar` },
+          { '@type': 'ListItem', position: 1, name: 'Home', item: buildPublicUrl('/') },
+          { '@type': 'ListItem', position: 2, name: 'Demo Calendar', item: buildPublicUrl('/demo-calendar') },
           { '@type': 'ListItem', position: 3, name: event.title, item: canonicalUrl },
         ],
       },
@@ -593,9 +828,11 @@ async function getDemoEventPageMeta(eventSlug, protocol, host) {
         name: event.title,
         description,
         startDate: buildDemoEventStartDate(event),
-        eventStatus: 'https://schema.org/EventScheduled',
+        eventStatus: isPastDemoEvent(event)
+          ? 'https://schema.org/EventCompleted'
+          : 'https://schema.org/EventScheduled',
         eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-        image: event.thumbnail_url || `${protocol}://${host}/img/demostoke-square-transparent.webp`,
+        image: event.thumbnail_url || DEFAULT_SOCIAL_IMAGE,
         url: canonicalUrl,
         location: event.location
           ? {
@@ -624,8 +861,8 @@ async function getDemoEventPageMeta(eventSlug, protocol, host) {
       .join(' ');
 
     const noscriptSummary = [
-      '<noscript><section id="demo-event-crawl-summary" style="padding:16px;max-width:720px;margin:0 auto;">',
-      `<nav aria-label="Breadcrumb"><a href="${escapeContent(`${protocol}://${host}/`)}">Home</a> / <a href="${escapeContent(`${protocol}://${host}/demo-calendar`)}">Demo Calendar</a> / ${escapeContent(event.title)}</nav>`,
+      '<section id="demo-event-crawl-summary" style="padding:16px;max-width:720px;margin:0 auto;">',
+      `<nav aria-label="Breadcrumb"><a href="${escapeContent(buildPublicUrl('/'))}">Home</a> / <a href="${escapeContent(buildPublicUrl('/demo-calendar'))}">Demo Calendar</a> / ${escapeContent(event.title)}</nav>`,
       `<h1>${escapeContent(event.title)}</h1>`,
       `<p>${escapeContent(description)}</p>`,
       summaryParts ? `<p>${escapeContent(summaryParts)}</p>` : '',
@@ -633,16 +870,18 @@ async function getDemoEventPageMeta(eventSlug, protocol, host) {
         ? `<p>Source: <a href="${escapeContent(event.source_primary_url)}">${escapeContent(event.source_primary_url)}</a></p>`
         : '',
       `<p>Canonical: <a href="${escapeContent(canonicalUrl)}">${escapeContent(canonicalUrl)}</a></p>`,
-      '</section></noscript>',
+      '</section>',
     ].join('');
 
     return {
       title: buildDemoEventTitle(event.title),
       description,
-      image: event.thumbnail_url || `${protocol}://${host}/img/demostoke-square-transparent.webp`,
+      image: event.thumbnail_url || DEFAULT_SOCIAL_IMAGE,
       canonicalUrl,
       schema,
       noscriptSummary,
+      event,
+      robots: isPastDemoEvent(event) ? ROBOTS_NOINDEX_FOLLOW : undefined,
     };
   } catch (error) {
     console.error('Error fetching demo event meta', error);
@@ -650,7 +889,55 @@ async function getDemoEventPageMeta(eventSlug, protocol, host) {
   }
 }
 
-const STATIC_ROUTE_META = PUBLIC_ROUTE_META;
+const NOT_FOUND_HEAD = {
+  title: 'Page Not Found | DemoStoke',
+  description: 'The page you requested could not be found on DemoStoke.',
+  type: 'website',
+};
+
+const HOMEPAGE_SCHEMA = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'DemoStoke',
+    url: PUBLIC_SITE_URL,
+    logo: DEFAULT_SOCIAL_IMAGE,
+    description:
+      'DemoStoke is an action sports gear marketplace where riders demo, rent, and try surfboards, snowboards, skis, and mountain bikes from local shops and other riders.',
+    foundingDate: '2024',
+    sameAs: [],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'DemoStoke',
+    url: PUBLIC_SITE_URL,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${PUBLIC_SITE_URL}/search?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
+  },
+];
+
+const HOMEPAGE_SUMMARY = `<noscript><section id="homepage-crawl-summary" style="padding:16px;max-width:720px;margin:0 auto;">
+  <h1>DemoStoke — Demo & Rent Action Sports Gear</h1>
+  <p>DemoStoke is the go-to marketplace to demo, rent, and try surfboards, snowboards, skis, and mountain bikes from local shops and riders. Try before you buy.</p>
+  <h2>How It Works</h2>
+  <p>Browse available gear by sport and location. Connect with the shop or owner. Try the gear in real conditions. Buy what you love.</p>
+  <h2>Gear Categories</h2>
+  <ul>
+    <li><a href="/gear/surfboards">Surfboards</a> — shortboards, longboards, fish, mid-lengths</li>
+    <li><a href="/gear/used-skis">Skis</a> — all-mountain, powder, park, touring</li>
+    <li><a href="/explore?category=snowboards">Snowboards</a> — all-mountain, freestyle, powder</li>
+    <li><a href="/explore?category=bikes">Mountain Bikes</a> — trail, enduro, downhill</li>
+  </ul>
+  <h2>For Shops</h2>
+  <p><a href="/list-your-gear">List your shop on DemoStoke</a> — free to start, commission-based.</p>
+</section></noscript>`;
 
 const app = express();
 
@@ -706,9 +993,7 @@ app.use(compression({
 }));
 
 app.get('/sitemap.xml', async (req, res) => {
-  const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
-  const host = req.get('host') || 'www.demostoke.com';
-  const baseUrl = `${protocol}://${host}`;
+  const baseUrl = PUBLIC_SITE_URL;
 
   // Public static routes only — no auth-gated pages
   const staticRoutes = [
@@ -737,7 +1022,21 @@ app.get('/sitemap.xml', async (req, res) => {
     try {
       const [blogRes, equipRes, eventRes] = await Promise.all([
         supabase.from('blog_posts').select('slug, updated_at').eq('status', 'published'),
-        supabase.from('equipment').select('id, name, size, updated_at'),
+        supabase
+          .from('equipment')
+          .select(
+            `
+            id,
+            name,
+            size,
+            updated_at,
+            status,
+            visible_on_map,
+            profiles!equipment_user_id_fkey (
+              is_hidden
+            )
+          `,
+          ),
         supabase.from('demo_calendar').select('title, event_date, event_time, updated_at'),
       ]);
 
@@ -751,23 +1050,31 @@ app.get('/sitemap.xml', async (req, res) => {
       }
 
       if (equipRes.data) {
-        equipmentUrls = equipRes.data.map(item => ({
-          path: `/gear/${buildGearSlug({ id: item.id, name: item.name, size: item.size })}`,
-          lastmod: item.updated_at ? new Date(item.updated_at).toISOString().slice(0, 10) : null,
-          priority: '0.7',
-          changefreq: 'weekly',
-        }));
+        equipmentUrls = equipRes.data
+          .filter((item) =>
+            isPublicEquipmentRecord({
+              status: item.status,
+              visibleOnMap: item.visible_on_map === true,
+              ownerIsHidden: item.profiles?.is_hidden === true,
+            }),
+          )
+          .map((item) => ({
+            path: `/gear/${buildGearSlug({ id: item.id, name: item.name, size: item.size })}`,
+            lastmod: item.updated_at ? new Date(item.updated_at).toISOString().slice(0, 10) : null,
+            priority: '0.7',
+            changefreq: 'weekly',
+          }));
       }
 
       if (eventRes.data) {
-        eventUrls = eventRes.data.map(ev => {
-          return {
-            path: buildDemoEventPath(ev),
-            lastmod: ev.updated_at ? new Date(ev.updated_at).toISOString().slice(0, 10) : null,
+        eventUrls = eventRes.data
+          .filter((event) => !isPastDemoEvent(event))
+          .map((event) => ({
+            path: buildDemoEventPath(event),
+            lastmod: event.updated_at ? new Date(event.updated_at).toISOString().slice(0, 10) : null,
             priority: '0.5',
             changefreq: 'weekly',
-          };
-        });
+          }));
       }
     } catch (err) {
       console.error('Error generating dynamic sitemap:', err);
@@ -808,6 +1115,26 @@ app.get('/sitemap.xml', async (req, res) => {
   res.send(xmlLines.join('\n'));
 });
 
+app.get(['/event/:eventSlug', '/demo-events/:eventSlug'], async (req, res) => {
+  const requestOrigin = buildRequestOrigin(req);
+  const fallbackCanonicalUrl = appendOriginalSearch(
+    `${requestOrigin}/demo-calendar/event/${req.params.eventSlug}`,
+    req.originalUrl,
+  );
+
+  try {
+    const meta = await getDemoEventPageMeta(req.params.eventSlug);
+    if (!meta) {
+      return res.redirect(301, fallbackCanonicalUrl);
+    }
+
+    return res.redirect(301, appendOriginalSearch(meta.canonicalUrl.replace(PUBLIC_SITE_URL, requestOrigin), req.originalUrl));
+  } catch (error) {
+    console.error('Error resolving legacy demo event URL', error);
+    return res.redirect(301, fallbackCanonicalUrl);
+  }
+});
+
 app.get('/:category/:ownerSlug/:slug', async (req, res, next) => {
   try {
     const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
@@ -836,268 +1163,229 @@ app.get('*', async (req, res) => {
   try {
     const template = fs.readFileSync(path.join(clientDist, 'index.html'), 'utf-8');
     const { render } = await import(path.join(serverDist, 'entry-server.js'));
-    const appHtml = await render(req.url);
-    let html = template.replace(`<!--app-html-->`, appHtml);
-    const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
-    const host = req.get('host');
-    const ogUrl = `${protocol}://${host}${req.originalUrl}`;
+    const requestOrigin = buildRequestOrigin(req);
+    const requestSearch = getRequestSearch(req);
+    const routeMeta = getRouteMetaForPath(req.path);
+    const staticRouteSeo = resolveStaticRouteSeo(req.path, requestSearch);
+    const utilityRouteSeo = resolveUtilityRouteSeo(req.path);
+    const notFoundSeo = resolveNotFoundSeo();
+    const defaultSeo = buildSeoPolicy();
+    const rawBlogDetailMatch = req.path.match(/^\/blog\/([^/]+)$/);
+    const blogDetailMatch =
+      rawBlogDetailMatch && !['create', 'drafts'].includes(rawBlogDetailMatch[1])
+        ? rawBlogDetailMatch
+        : null;
+    const demoEventMatch = req.path.match(/^\/demo-calendar\/event\/([^/]+)$/);
+    const userProfileMatch = req.path.match(/^\/user-profile\/([^/]+)$/);
+    const gearDetailMatch = !PUBLIC_ROUTE_META[req.path]
+      ? req.path.match(/^\/gear\/([^/]+)$/)
+      : null;
 
-    const upsertCanonical = (inputHtml, canonicalUrl) => {
-      const canonicalTag = `<link rel="canonical" href="${escapeContent(canonicalUrl)}" />`;
-      if (/<link\s+rel=["']canonical["'][^>]*>/i.test(inputHtml)) {
-        return inputHtml.replace(
-          /<link\s+rel=["']canonical["'][^>]*>/i,
-          canonicalTag,
-        );
-      }
-      return inputHtml.replace('</head>', `${canonicalTag}</head>`);
-    };
+    let responseStatus = defaultSeo.status;
+    let headMeta = routeMeta
+      ? {
+          ...routeMeta,
+          canonicalUrl: staticRouteSeo?.canonicalUrl || routeMeta.canonicalUrl,
+          url: staticRouteSeo?.canonicalUrl || routeMeta.canonicalUrl || buildRequestUrl(req, `${req.path}${requestSearch}`),
+          robots: staticRouteSeo?.robots || utilityRouteSeo?.robots,
+        }
+      : null;
+    let prependMarkup = '';
+    const ssrPageData = {};
 
-    // Static route meta injection
-    const staticMeta = STATIC_ROUTE_META[req.path];
-    if (staticMeta) {
-      const escapedTitle = escapeContent(staticMeta.title);
-      const escapedDescription = escapeContent(staticMeta.description);
-
-      html = html
-        .replace(/<title>[^<]*<\/title>/i, `<title>${escapedTitle}</title>`)
-        .replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i, `<meta name="description" content="${escapedDescription}" />`)
-        .replace(/<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:title" content="${escapedTitle}" />`)
-        .replace(/<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:description" content="${escapedDescription}" />`)
-        .replace(/<meta\s+property="og:type"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:type" content="${staticMeta.type || 'website'}" />`)
-        .replace(/<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:url" content="${ogUrl}" />`)
-        .replace(/<meta\s+(?:name|property)="twitter:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:title" content="${escapedTitle}" />`)
-        .replace(/<meta\s+(?:name|property)="twitter:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:description" content="${escapedDescription}" />`);
-      html = upsertCanonical(html, ogUrl);
+    if (utilityRouteSeo?.robots) {
+      res.set('X-Robots-Tag', utilityRouteSeo.robots);
     }
 
     if (req.path === '/') {
-      const siteSchema = JSON.stringify([
-        {
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          "name": "DemoStoke",
-          "url": "https://www.demostoke.com",
-          "logo": "https://www.demostoke.com/img/demostoke-square-transparent.webp",
-          "description": "DemoStoke is an action sports gear marketplace where riders demo, rent, and try surfboards, snowboards, skis, and mountain bikes from local shops and other riders.",
-          "foundingDate": "2024",
-          "sameAs": []
-        },
-        {
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          "name": "DemoStoke",
-          "url": "https://www.demostoke.com",
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": {
-              "@type": "EntryPoint",
-              "urlTemplate": "https://www.demostoke.com/search?q={search_term_string}"
-            },
-            "query-input": "required name=search_term_string"
-          }
-        }
-      ]);
-      html = html
-        .replace(/<script\s+id="structured-data"[^>]*>.*?<\/script>/i, '')
-        .replace('</head>', `<script id="structured-data" type="application/ld+json">${siteSchema}</script></head>`);
-
-      const homepageNoscript = `<noscript><section id="homepage-crawl-summary" style="padding:16px;max-width:720px;margin:0 auto;">
-        <h1>DemoStoke — Demo & Rent Action Sports Gear</h1>
-        <p>DemoStoke is the go-to marketplace to demo, rent, and try surfboards, snowboards, skis, and mountain bikes from local shops and riders. Try before you buy.</p>
-        <h2>How It Works</h2>
-        <p>Browse available gear by sport and location. Connect with the shop or owner. Try the gear in real conditions. Buy what you love.</p>
-        <h2>Gear Categories</h2>
-        <ul>
-          <li><a href="/gear/surfboards">Surfboards</a> — shortboards, longboards, fish, mid-lengths</li>
-          <li><a href="/gear/used-skis">Skis</a> — all-mountain, powder, park, touring</li>
-          <li><a href="/explore?category=snowboards">Snowboards</a> — all-mountain, freestyle, powder</li>
-          <li><a href="/explore?category=bikes">Mountain Bikes</a> — trail, enduro, downhill</li>
-        </ul>
-        <h2>For Shops</h2>
-        <p><a href="/list-your-gear">List your shop on DemoStoke</a> — free to start, commission-based.</p>
-      </section></noscript>`;
-      html = html.replace('<div id="root">', `${homepageNoscript}<div id="root">`);
+      headMeta = {
+        ...headMeta,
+        image: DEFAULT_SOCIAL_IMAGE,
+        schema: HOMEPAGE_SCHEMA,
+      };
+      prependMarkup = HOMEPAGE_SUMMARY;
     }
 
-    // Inject Open Graph and structured metadata for blog posts
-    if (req.path.startsWith('/blog/')) {
-      const slug = req.path.split('/blog/')[1];
-      console.log('Processing blog post with slug:', slug);
+    if (blogDetailMatch) {
+      const meta = await getBlogPostMeta(blogDetailMatch[1]);
 
-      const meta = await getBlogPostMeta(slug);
-      if (meta) {
-        console.log('Found blog meta:', {
-          title: meta.title,
+      if (!meta) {
+        responseStatus = notFoundSeo.status;
+        headMeta = {
+          ...NOT_FOUND_HEAD,
+          url: buildRequestUrl(req),
+          robots: notFoundSeo.robots,
+        };
+      } else {
+        const canonicalPathname = new URL(meta.canonicalUrl).pathname;
+        if (req.path !== canonicalPathname) {
+          return res.redirect(
+            301,
+            appendOriginalSearch(meta.canonicalUrl.replace(PUBLIC_SITE_URL, requestOrigin), req.originalUrl),
+          );
+        }
+
+        headMeta = {
+          title: buildBlogPostTitle(meta.title),
+          description: meta.description,
           author: meta.author,
           image: meta.image,
-          description: meta.description?.substring(0, 100) + '...'
-        });
-
-        const escapedTitle = escapeContent(meta.title);
-        const fullTitle = buildBlogPostTitle(meta.title);
-        const escapedFullTitle = escapeContent(fullTitle);
-        const escapedDescription = escapeContent(meta.description);
-        const escapedAuthor = escapeContent(meta.author);
-        const escapedImage = escapeContent(meta.image);
-
-        console.log('Image being used for meta tags:', escapedImage);
-
-        const schema = [
-          {
-            '@context': 'https://schema.org',
-            '@type': 'BlogPosting',
-            headline: meta.title,
-            description: meta.description,
-            image: meta.image,
-            datePublished: meta.publishedAt,
-            author: { '@type': 'Person', name: meta.author },
-            publisher: {
-              '@type': 'Organization',
-              name: 'DemoStoke',
-              logo: { '@type': 'ImageObject', url: 'https://www.demostoke.com/img/demostoke-square-transparent.webp' }
+          type: 'article',
+          url: meta.canonicalUrl,
+          canonicalUrl: meta.canonicalUrl,
+          schema: [
+            {
+              '@context': 'https://schema.org',
+              '@type': 'BlogPosting',
+              headline: meta.title,
+              description: meta.description,
+              image: meta.image,
+              datePublished: meta.publishedAt,
+              author: { '@type': 'Person', name: meta.author },
+              publisher: {
+                '@type': 'Organization',
+                name: 'DemoStoke',
+                logo: { '@type': 'ImageObject', url: DEFAULT_SOCIAL_IMAGE },
+              },
+              url: meta.canonicalUrl,
             },
-            url: ogUrl
-          },
-          {
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            itemListElement: [
-              { '@type': 'ListItem', position: 1, name: 'Home', item: `${protocol}://${host}/` },
-              { '@type': 'ListItem', position: 2, name: 'Blog', item: `${protocol}://${host}/blog` },
-              { '@type': 'ListItem', position: 3, name: meta.title, item: ogUrl },
-            ]
-          }
-        ];
+            {
+              '@context': 'https://schema.org',
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'Home', item: buildPublicUrl('/') },
+                { '@type': 'ListItem', position: 2, name: 'Blog', item: buildPublicUrl('/blog') },
+                { '@type': 'ListItem', position: 3, name: meta.title, item: meta.canonicalUrl },
+              ],
+            },
+          ],
+        };
+      }
+    }
 
-        console.log('Using author for replacements:', meta.author);
+    if (demoEventMatch) {
+      const meta = await getDemoEventPageMeta(demoEventMatch[1]);
+      ssrPageData.demoEventResolved = true;
+      ssrPageData.demoEvent = meta?.event || null;
 
-        // More robust replacement with better regex patterns
-        html = html
-          .replace(/<title>[^<]*<\/title>/i, `<title>${escapedFullTitle}</title>`)
-          .replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i, `<meta name="description" content="${escapedDescription}" />`)
-          .replace(/<meta\s+name="author"\s+content="[^"]*"\s*\/?>/i, `<meta name="author" content="${escapedAuthor}" />`)
-          .replace(/<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:title" content="${escapedFullTitle}" />`)
-          .replace(/<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:description" content="${escapedDescription}" />`)
-          .replace(/<meta\s+property="og:type"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:type" content="article" />`)
-          .replace(/<meta\s+property="og:image"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:image" content="${escapedImage}" />`)
-          .replace(/<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:url" content="${ogUrl}" />`)
-          .replace(/<meta\s+(?:name|property)="twitter:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:title" content="${escapedFullTitle}" />`)
-          .replace(/<meta\s+(?:name|property)="twitter:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:description" content="${escapedDescription}" />`)
-          .replace(/<meta\s+(?:name|property)="twitter:image"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:image" content="${escapedImage}" />`)
-          .replace(/<script\s+id="structured-data"[^>]*>.*?<\/script>/i, '') // Remove existing structured data
-          .replace('</head>', `<script id="structured-data" type="application/ld+json">${JSON.stringify(schema)}</script></head>`);
-        html = upsertCanonical(html, ogUrl);
-
-        console.log('Replaced meta tags for blog post. Author used:', escapedAuthor);
-
-        // Verify the replacement worked by checking if the author is in the HTML
-        if (html.includes(`content="${escapedAuthor}"`)) {
-          console.log('✅ Author replacement successful');
-        } else {
-          console.log('❌ Author replacement failed');
-        }
+      if (!meta) {
+        responseStatus = notFoundSeo.status;
+        headMeta = {
+          ...NOT_FOUND_HEAD,
+          url: buildRequestUrl(req),
+          robots: notFoundSeo.robots,
+        };
       } else {
-        console.log('No meta found for slug:', slug);
-      }
-    }
-
-    if (req.path.startsWith('/demo-events/')) {
-      const eventSlug = req.path.split('/demo-events/')[1];
-      const meta = await getDemoEventPageMeta(eventSlug, protocol, host);
-
-      if (meta) {
         const canonicalPathname = new URL(meta.canonicalUrl).pathname;
         if (req.path !== canonicalPathname) {
-          return res.redirect(301, meta.canonicalUrl);
+          return res.redirect(
+            301,
+            appendOriginalSearch(meta.canonicalUrl.replace(PUBLIC_SITE_URL, requestOrigin), req.originalUrl),
+          );
         }
 
-        const escapedTitle = escapeContent(meta.title);
-        const escapedDescription = escapeContent(meta.description);
-        const escapedImage = escapeContent(meta.image);
-
-        html = html
-          .replace(/<title>[^<]*<\/title>/i, `<title>${escapedTitle}</title>`)
-          .replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i, `<meta name="description" content="${escapedDescription}" />`)
-          .replace(/<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:title" content="${escapedTitle}" />`)
-          .replace(/<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:description" content="${escapedDescription}" />`)
-          .replace(/<meta\s+property="og:type"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:type" content="website" />`)
-          .replace(/<meta\s+property="og:image"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:image" content="${escapedImage}" />`)
-          .replace(/<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:url" content="${escapeContent(meta.canonicalUrl)}" />`)
-          .replace(/<meta\s+(?:name|property)="twitter:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:title" content="${escapedTitle}" />`)
-          .replace(/<meta\s+(?:name|property)="twitter:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:description" content="${escapedDescription}" />`)
-          .replace(/<meta\s+(?:name|property)="twitter:image"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:image" content="${escapedImage}" />`)
-          .replace(/<script\s+id="structured-data"[^>]*>.*?<\/script>/i, '')
-          .replace('</head>', `<script id="structured-data" type="application/ld+json">${JSON.stringify(meta.schema)}</script></head>`)
-          .replace('<div id="root">', `${meta.noscriptSummary}<div id="root">`);
-
-        html = upsertCanonical(html, meta.canonicalUrl);
+        headMeta = {
+          title: meta.title,
+          description: meta.description,
+          image: meta.image,
+          type: 'website',
+          url: meta.canonicalUrl,
+          canonicalUrl: meta.canonicalUrl,
+          robots: meta.robots,
+          schema: meta.schema,
+        };
       }
     }
 
-    if (req.path.startsWith('/user-profile/')) {
-      const profileSlug = req.path.split('/user-profile/')[1];
-      const meta = await getUserProfileMeta(profileSlug, protocol, host);
+    if (userProfileMatch) {
+      const meta = await getUserProfileMeta(userProfileMatch[1]);
 
-      if (meta) {
-        const escapedTitle = escapeContent(meta.title);
-        const escapedDescription = escapeContent(meta.description);
-
-        html = html
-          .replace(/<title>[^<]*<\/title>/i, `<title>${escapedTitle}</title>`)
-          .replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i, `<meta name="description" content="${escapedDescription}" />`)
-          .replace(/<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:title" content="${escapedTitle}" />`)
-          .replace(/<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:description" content="${escapedDescription}" />`)
-          .replace(/<meta\s+property="og:type"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:type" content="profile" />`)
-          .replace(/<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:url" content="${escapeContent(meta.canonicalUrl)}" />`)
-          .replace(/<meta\s+(?:name|property)="twitter:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:title" content="${escapedTitle}" />`)
-          .replace(/<meta\s+(?:name|property)="twitter:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:description" content="${escapedDescription}" />`);
-
-        html = upsertCanonical(html, meta.canonicalUrl);
+      if (!meta) {
+        responseStatus = notFoundSeo.status;
+        headMeta = {
+          ...NOT_FOUND_HEAD,
+          url: buildRequestUrl(req),
+          robots: notFoundSeo.robots,
+        };
+      } else {
+        headMeta = {
+          title: meta.title,
+          description: meta.description,
+          type: 'profile',
+          url: meta.canonicalUrl,
+          canonicalUrl: meta.canonicalUrl,
+        };
       }
     }
 
-    if (req.path.startsWith('/gear/')) {
-      const gearSlug = req.path.split('/gear/')[1];
-      const meta = await getGearPageMeta(gearSlug, protocol, host);
+    if (gearDetailMatch) {
+      const meta = await getGearPageMeta(gearDetailMatch[1]);
 
-      if (meta) {
+      if (!meta) {
+        responseStatus = notFoundSeo.status;
+        headMeta = {
+          ...NOT_FOUND_HEAD,
+          url: buildRequestUrl(req),
+          robots: notFoundSeo.robots,
+        };
+      } else {
         const canonicalPathname = new URL(meta.canonicalUrl).pathname;
         if (req.path !== canonicalPathname) {
-          return res.redirect(301, appendOriginalSearch(meta.canonicalUrl, req.originalUrl));
+          return res.redirect(
+            301,
+            appendOriginalSearch(meta.canonicalUrl.replace(PUBLIC_SITE_URL, requestOrigin), req.originalUrl),
+          );
         }
 
-        const escapedTitle = escapeContent(meta.title);
-        const escapedDescription = escapeContent(meta.description);
-        const escapedImage = escapeContent(meta.image);
-
-        html = html
-          .replace(/<title>[^<]*<\/title>/i, `<title>${escapedTitle}</title>`)
-          .replace(/<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i, `<meta name="description" content="${escapedDescription}" />`)
-          .replace(/<meta\s+property="og:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:title" content="${escapedTitle}" />`)
-          .replace(/<meta\s+property="og:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:description" content="${escapedDescription}" />`)
-          .replace(/<meta\s+property="og:type"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:type" content="product" />`)
-          .replace(/<meta\s+property="og:image"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:image" content="${escapedImage}" />`)
-          .replace(/<meta\s+property="og:url"\s+content="[^"]*"\s*\/?>/i, `<meta property="og:url" content="${escapeContent(meta.canonicalUrl)}" />`)
-          .replace(/<meta\s+property="twitter:title"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:title" content="${escapedTitle}" />`)
-          .replace(/<meta\s+property="twitter:description"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:description" content="${escapedDescription}" />`)
-          .replace(/<meta\s+property="twitter:image"\s+content="[^"]*"\s*\/?>/i, `<meta property="twitter:image" content="${escapedImage}" />`)
-          .replace(/<script\s+id="structured-data"[^>]*>.*?<\/script>/i, '')
-          .replace('</head>', `<script id="structured-data" type="application/ld+json">${JSON.stringify(meta.schema)}</script></head>`)
-          .replace('<div id="root">', `${meta.noscriptSummary}<div id="root">`);
-
-        html = upsertCanonical(html, meta.canonicalUrl);
+        headMeta = {
+          title: meta.title,
+          description: meta.description,
+          image: meta.image,
+          type: 'product',
+          url: meta.canonicalUrl,
+          canonicalUrl: meta.canonicalUrl,
+          schema: meta.schema,
+        };
+        prependMarkup = meta.noscriptSummary;
       }
     }
 
-    res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
+    if (responseStatus !== SEO_STATUS_NOT_FOUND && !headMeta && !isKnownAppRoute(req.path)) {
+      responseStatus = notFoundSeo.status;
+      headMeta = {
+        ...NOT_FOUND_HEAD,
+        url: buildRequestUrl(req),
+        robots: notFoundSeo.robots,
+      };
+    }
+
+    const appHtml = await render(req.url, ssrPageData);
+    let html = template.replace('<!--app-html-->', appHtml);
+
+    if (headMeta) {
+      html = applyHeadMetadata(html, headMeta);
+    }
+
+    if (prependMarkup) {
+      html = prependBeforeRoot(html, prependMarkup);
+    }
+
+    if (Object.keys(ssrPageData).length > 0) {
+      html = injectSsrPageData(html, ssrPageData);
+    }
+
+    res.status(responseStatus).set({ 'Content-Type': 'text/html' }).end(html);
   } catch (err) {
     console.error(err);
     res.status(500).end('Internal Server Error');
   }
 });
 
-const port = process.env.PORT || 8080;
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+export { app };
+
+if (process.env.NODE_ENV !== 'test') {
+  const port = process.env.PORT || 8080;
+  app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
+  });
+}

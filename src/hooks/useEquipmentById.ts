@@ -4,6 +4,7 @@ import { Equipment } from "@/types";
 import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 import { getEquipmentData } from "@/services/equipment/equipmentDataService";
+import { isPublicEquipmentRecord } from "@/lib/seo/policy.js";
 
 export const useEquipmentById = (id: string) => {
   return useQuery({
@@ -29,7 +30,8 @@ export const useEquipmentById = (id: string) => {
           *,
           profiles!equipment_user_id_fkey (
             name,
-            avatar_url
+            avatar_url,
+            is_hidden
           )
         `,
         )
@@ -42,6 +44,16 @@ export const useEquipmentById = (id: string) => {
       }
 
       if (!data) {
+        return null;
+      }
+
+      if (
+        !isPublicEquipmentRecord({
+          status: data.status,
+          visibleOnMap: data.visible_on_map,
+          ownerIsHidden: data.profiles?.is_hidden === true,
+        })
+      ) {
         return null;
       }
 

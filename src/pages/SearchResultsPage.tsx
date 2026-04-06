@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { searchEquipmentWithNLP, getEquipmentData } from "@/services/searchService";
 import { AISearchResult } from "@/services/equipment/aiSearchService";
 import EquipmentCard from "@/components/EquipmentCard";
@@ -25,11 +25,17 @@ import useScrollToTop from "@/hooks/useScrollToTop";
 import { useScrollToTopButton } from "@/hooks/useScrollToTopButton";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
+import { resolveStaticRouteSeo } from "@/lib/seo/policy.js";
 
 const SearchResultsPage = () => {
-  usePageMetadata(PUBLIC_ROUTE_META["/search"]);
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
+  const routeSeo = resolveStaticRouteSeo("/search", location.search);
+  usePageMetadata({
+    ...PUBLIC_ROUTE_META["/search"],
+    ...routeSeo,
+  });
   const [results, setResults] = useState<AISearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [viewMode, setViewMode] = useState<"map" | "list" | "hybrid">("hybrid");
@@ -366,6 +372,24 @@ const SearchResultsPage = () => {
                   : `Found ${baseFilteredResults.length} ${baseFilteredResults.length === 1 ? "item" : "items"}`}
               </p>
             </div>
+          )}
+
+          {!query && (
+            <section className="mt-6 rounded-2xl border bg-background p-6 shadow-sm">
+              <h2 className="text-2xl font-semibold">Search Surfboards, Snowboards, Skis, and Bikes</h2>
+              <p className="mt-3 text-muted-foreground">
+                Search DemoStoke by model name, sport, city, or riding style to find gear that is actually available from local shops and riders.
+              </p>
+              <p className="mt-3 text-muted-foreground">
+                Popular starting points:
+                {" "}
+                <a className="underline hover:text-primary" href="/gear/surfboards">surfboard demos</a>,
+                {" "}
+                <a className="underline hover:text-primary" href="/gear/used-skis">used skis</a>,
+                {" "}
+                <a className="underline hover:text-primary" href="/explore">browse all gear</a>.
+              </p>
+            </section>
           )}
         </div>
       </div>

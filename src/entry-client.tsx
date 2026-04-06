@@ -5,8 +5,10 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './index.css';
 
+const initialSsrPageData = window.__SSR_PAGE_DATA__ || {};
+
 hydrateRoot(document.getElementById('root')!,
   <BrowserRouter>
-    <App />
+    <App initialSsrPageData={initialSsrPageData} />
   </BrowserRouter>
 );

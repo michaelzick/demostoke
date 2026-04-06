@@ -4,11 +4,13 @@ import usePageMetadata from "@/hooks/usePageMetadata";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
+import { ROBOTS_NOINDEX_FOLLOW } from "@/lib/seo/policy.js";
 
 const NotFound = () => {
   usePageMetadata({
     title: 'Page Not Found | DemoStoke',
-    description: 'The page you are looking for does not exist.'
+    description: 'The page you are looking for does not exist.',
+    robots: ROBOTS_NOINDEX_FOLLOW,
   });
   const location = useLocation();
 

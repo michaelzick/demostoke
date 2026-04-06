@@ -1,11 +1,12 @@
 import usePageMetadata from "@/hooks/usePageMetadata";
+import { ROBOTS_NOINDEX_FOLLOW } from "@/lib/seo/policy.js";
 
 const ApiGearSearchPage = () => {
   usePageMetadata({
     title: "API: Gear Search | DemoStoke",
     description:
       "Documentation for DemoStoke gear search query patterns and indexable entry points.",
-    canonicalUrl: "https://www.demostoke.com/api/gear/search",
+    robots: ROBOTS_NOINDEX_FOLLOW,
   });
 
   return (
