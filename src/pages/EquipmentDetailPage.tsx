@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState, useRef } from "react";
 import { useEquipmentBySlug } from "@/hooks/useEquipmentBySlug";
 import { useEquipmentById } from "@/hooks/useEquipmentById";
 import { useSimilarEquipment } from "@/hooks/useSimilarEquipment";
+import { usePublicGearReviews } from "@/hooks/usePublicGearReviews";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
 import { trackEquipmentView } from "@/services/viewTrackingService";
@@ -166,6 +167,8 @@ const EquipmentDetailPage = () => {
   // Use real similar equipment data, fallback to empty array
   const similarEquipment = similarEquipmentFromDb || [];
 
+  const { data: publicGearReviewsData } = usePublicGearReviews(currentEquipment?.id || '');
+
   const equipmentName = currentEquipment?.name;
   const gearDisplayName = currentEquipment
     ? buildGearDisplayName(
@@ -239,6 +242,7 @@ const EquipmentDetailPage = () => {
       pricePerWeek: currentEquipment.price_per_week,
       rating: currentEquipment.rating,
       reviewCount: currentEquipment.review_count,
+      reviews: publicGearReviewsData ?? [],
       summaryText,
     });
   }, [
@@ -246,6 +250,7 @@ const EquipmentDetailPage = () => {
     currentEquipment,
     gearDisplayName,
     lastVerifiedDate,
+    publicGearReviewsData,
     summaryText,
   ]);
 
