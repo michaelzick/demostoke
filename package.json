@@ -15,6 +15,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "test": "npm run lint",
+    "test:unit": "vitest run",
     "type-check": "tsc --noEmit",
     "preview": "vite preview",
     "start": "node server/index.js",
