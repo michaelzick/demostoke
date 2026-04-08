@@ -7,6 +7,7 @@ import { useGeolocation } from "../hooks/useGeolocation";
 import { useDynamicDistance } from "../hooks/useDynamicDistance";
 import { calculateDistance } from "../utils/distanceCalculation";
 import DistanceDisplay from "../components/DistanceDisplay";
+import { GeolocationProvider } from "../contexts/GeolocationContext";
 
 // Mock useGeolocation so Property 9 can control its return value via vi.mocked().
 // Properties 1, 5, and 6 restore the real implementation in their beforeEach.
@@ -72,7 +73,7 @@ describe("Property 1: No auto-request on mount without cache", () => {
         localStorage.clear();
         getCurrentPositionMock.mockClear();
 
-        const { unmount } = renderHook(() => useGeolocation());
+        const { unmount } = renderHook(() => useGeolocation(), { wrapper: GeolocationProvider });
 
         expect(getCurrentPositionMock).not.toHaveBeenCalled();
 
@@ -96,7 +97,7 @@ describe("Property 1: No auto-request on mount without cache", () => {
           seedStaleCache(staleAgeMs);
           getCurrentPositionMock.mockClear();
 
-          const { unmount } = renderHook(() => useGeolocation());
+          const { unmount } = renderHook(() => useGeolocation(), { wrapper: GeolocationProvider });
 
           expect(getCurrentPositionMock).not.toHaveBeenCalled();
 
@@ -160,7 +161,7 @@ describe("Property 6: Fresh cache skips permission prompt", () => {
             JSON.stringify({ latitude: lat, longitude: lng, timestamp: freshTimestamp })
           );
 
-          const { result, unmount } = renderHook(() => useGeolocation());
+          const { result, unmount } = renderHook(() => useGeolocation(), { wrapper: GeolocationProvider });
 
           expect(getCurrentPositionMock).not.toHaveBeenCalled();
           expect(result.current.permissionState).toBe("granted");
@@ -233,7 +234,7 @@ describe("Property 5: Location cached after grant", () => {
             writable: true,
           });
 
-          const { result, unmount } = renderHook(() => useGeolocation());
+          const { result, unmount } = renderHook(() => useGeolocation(), { wrapper: GeolocationProvider });
 
           act(() => {
             result.current.requestLocation();
