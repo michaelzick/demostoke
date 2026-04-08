@@ -412,7 +412,7 @@ describe("Property 2: CTA rendered in idle state", () => {
 
           const equipment = { location: { lat: coords.lat, lng: coords.lng } };
           const { unmount } = render(
-            // @ts-ignore — JSX in .ts file
+
             <DistanceDisplay equipment={equipment} />
           );
 
@@ -463,7 +463,7 @@ describe("Property 3: Click triggers geolocation request", () => {
 
         const equipment = { location: { lat: 37.7749, lng: -122.4194 } };
         const { unmount } = render(
-          // @ts-ignore
+    
           <DistanceDisplay equipment={equipment} />
         );
 
@@ -519,7 +519,7 @@ describe("Property 4: Distance format after permission granted", () => {
 
           const equipment = { location: { lat: 37.7749, lng: -122.4194 } };
           const { unmount } = render(
-            // @ts-ignore
+      
             <DistanceDisplay equipment={equipment} />
           );
 
@@ -570,7 +570,7 @@ describe("Property 7: Denial hides CTA and shows fallback text", () => {
 
         const equipment = { location: { lat: 37.7749, lng: -122.4194 } };
         const { unmount } = render(
-          // @ts-ignore
+    
           <DistanceDisplay equipment={equipment} />
         );
 
@@ -612,7 +612,7 @@ describe("DistanceDisplay unit tests", () => {
     });
 
     render(
-      // @ts-ignore
+
       <DistanceDisplay equipment={{ location: { lat: 37.7749, lng: -122.4194 } }} />
     );
 
@@ -632,7 +632,7 @@ describe("DistanceDisplay unit tests", () => {
     });
 
     render(
-      // @ts-ignore
+
       <DistanceDisplay equipment={{ location: { lat: 37.7749, lng: -122.4194 } }} />
     );
 
@@ -653,7 +653,7 @@ describe("DistanceDisplay unit tests", () => {
     });
 
     render(
-      // @ts-ignore
+
       <DistanceDisplay equipment={{ location: { lat: 37.7749, lng: -122.4194 } }} />
     );
 
@@ -673,7 +673,7 @@ describe("DistanceDisplay unit tests", () => {
     });
 
     render(
-      // @ts-ignore
+
       <DistanceDisplay equipment={{ location: { lat: 37.7749, lng: -122.4194 } }} />
     );
 
@@ -767,7 +767,7 @@ function makeEquipment(overrides: Partial<Equipment> = {}): Equipment {
     specifications: { size: "M", weight: "2kg", material: "foam", suitable: "beginner" },
     availability: { available: true },
     ...overrides,
-  };
+  } as Equipment;
 }
 
 import type { Equipment } from "../types";
