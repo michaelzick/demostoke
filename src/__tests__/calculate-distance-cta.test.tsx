@@ -7,6 +7,7 @@ import { useGeolocation } from "../hooks/useGeolocation";
 import { useDynamicDistance } from "../hooks/useDynamicDistance";
 import { calculateDistance } from "../utils/distanceCalculation";
 import DistanceDisplay from "../components/DistanceDisplay";
+import { GeolocationProvider } from "../contexts/GeolocationContext";
 
 // Mock useGeolocation so Property 9 can control its return value via vi.mocked().
 // Properties 1, 5, and 6 restore the real implementation in their beforeEach.
@@ -72,7 +73,7 @@ describe("Property 1: No auto-request on mount without cache", () => {
         localStorage.clear();
         getCurrentPositionMock.mockClear();
 
-        const { unmount } = renderHook(() => useGeolocation());
+        const { unmount } = renderHook(() => useGeolocation(), { wrapper: GeolocationProvider });
 
         expect(getCurrentPositionMock).not.toHaveBeenCalled();
 
@@ -96,7 +97,7 @@ describe("Property 1: No auto-request on mount without cache", () => {
           seedStaleCache(staleAgeMs);
           getCurrentPositionMock.mockClear();
 
-          const { unmount } = renderHook(() => useGeolocation());
+          const { unmount } = renderHook(() => useGeolocation(), { wrapper: GeolocationProvider });
 
           expect(getCurrentPositionMock).not.toHaveBeenCalled();
 
@@ -160,7 +161,7 @@ describe("Property 6: Fresh cache skips permission prompt", () => {
             JSON.stringify({ latitude: lat, longitude: lng, timestamp: freshTimestamp })
           );
 
-          const { result, unmount } = renderHook(() => useGeolocation());
+          const { result, unmount } = renderHook(() => useGeolocation(), { wrapper: GeolocationProvider });
 
           expect(getCurrentPositionMock).not.toHaveBeenCalled();
           expect(result.current.permissionState).toBe("granted");
@@ -233,7 +234,7 @@ describe("Property 5: Location cached after grant", () => {
             writable: true,
           });
 
-          const { result, unmount } = renderHook(() => useGeolocation());
+          const { result, unmount } = renderHook(() => useGeolocation(), { wrapper: GeolocationProvider });
 
           act(() => {
             result.current.requestLocation();
@@ -411,7 +412,7 @@ describe("Property 2: CTA rendered in idle state", () => {
 
           const equipment = { location: { lat: coords.lat, lng: coords.lng } };
           const { unmount } = render(
-            // @ts-ignore — JSX in .ts file
+
             <DistanceDisplay equipment={equipment} />
           );
 
@@ -462,7 +463,7 @@ describe("Property 3: Click triggers geolocation request", () => {
 
         const equipment = { location: { lat: 37.7749, lng: -122.4194 } };
         const { unmount } = render(
-          // @ts-ignore
+    
           <DistanceDisplay equipment={equipment} />
         );
 
@@ -518,7 +519,7 @@ describe("Property 4: Distance format after permission granted", () => {
 
           const equipment = { location: { lat: 37.7749, lng: -122.4194 } };
           const { unmount } = render(
-            // @ts-ignore
+      
             <DistanceDisplay equipment={equipment} />
           );
 
@@ -569,7 +570,7 @@ describe("Property 7: Denial hides CTA and shows fallback text", () => {
 
         const equipment = { location: { lat: 37.7749, lng: -122.4194 } };
         const { unmount } = render(
-          // @ts-ignore
+    
           <DistanceDisplay equipment={equipment} />
         );
 
@@ -611,7 +612,7 @@ describe("DistanceDisplay unit tests", () => {
     });
 
     render(
-      // @ts-ignore
+
       <DistanceDisplay equipment={{ location: { lat: 37.7749, lng: -122.4194 } }} />
     );
 
@@ -631,7 +632,7 @@ describe("DistanceDisplay unit tests", () => {
     });
 
     render(
-      // @ts-ignore
+
       <DistanceDisplay equipment={{ location: { lat: 37.7749, lng: -122.4194 } }} />
     );
 
@@ -652,7 +653,7 @@ describe("DistanceDisplay unit tests", () => {
     });
 
     render(
-      // @ts-ignore
+
       <DistanceDisplay equipment={{ location: { lat: 37.7749, lng: -122.4194 } }} />
     );
 
@@ -672,7 +673,7 @@ describe("DistanceDisplay unit tests", () => {
     });
 
     render(
-      // @ts-ignore
+
       <DistanceDisplay equipment={{ location: { lat: 37.7749, lng: -122.4194 } }} />
     );
 
@@ -766,7 +767,7 @@ function makeEquipment(overrides: Partial<Equipment> = {}): Equipment {
     specifications: { size: "M", weight: "2kg", material: "foam", suitable: "beginner" },
     availability: { available: true },
     ...overrides,
-  };
+  } as Equipment;
 }
 
 import type { Equipment } from "../types";
