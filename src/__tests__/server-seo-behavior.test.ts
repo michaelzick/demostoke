@@ -102,6 +102,14 @@ describe("SEO server behavior", () => {
     );
   });
 
+  it("renders crawlable base copy on the search page even with a query", async () => {
+    const response = await get("/search?q=snowboard");
+
+    expect(response.text).toContain(
+      "Search DemoStoke by model name, sport, city, or riding style to find gear that is actually available from local shops and riders.",
+    );
+  });
+
   it("renders canonical demo event 404s without the loading skeleton shell", async () => {
     const response = await get("/demo-calendar/event/non-existent-demo-event");
 

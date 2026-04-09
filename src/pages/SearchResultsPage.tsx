@@ -506,6 +506,15 @@ const SearchResultsPage = () => {
         </div>
       )}
 
+      <section className="container px-4 md:px-6 pb-8">
+        <div className="mt-6 rounded-2xl border bg-background p-6 shadow-sm">
+          <h2 className="text-2xl font-semibold">Search Surfboards, Snowboards, Skis, and Bikes</h2>
+          <p className="mt-3 text-muted-foreground">
+            Search DemoStoke by model name, sport, city, or riding style to find gear that is actually available from local shops and riders.
+          </p>
+        </div>
+      </section>
+
       {/* Scroll to top button - only show in list view */}
       {viewMode === "list" && (
         <ScrollToTopButton show={showScrollButton} onClick={scrollListToTop} />
