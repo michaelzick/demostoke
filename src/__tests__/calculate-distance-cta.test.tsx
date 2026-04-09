@@ -52,7 +52,7 @@ describe("Property 1: No auto-request on mount without cache", () => {
     localStorage.clear();
 
     getCurrentPositionMock = vi.fn();
-    Object.defineProperty(global.navigator, "geolocation", {
+    Object.defineProperty(globalThis.navigator, "geolocation", {
       value: { getCurrentPosition: getCurrentPositionMock },
       configurable: true,
       writable: true,
@@ -133,7 +133,7 @@ describe("Property 6: Fresh cache skips permission prompt", () => {
     localStorage.clear();
 
     getCurrentPositionMock = vi.fn();
-    Object.defineProperty(global.navigator, "geolocation", {
+    Object.defineProperty(globalThis.navigator, "geolocation", {
       value: { getCurrentPosition: getCurrentPositionMock },
       configurable: true,
       writable: true,
@@ -228,7 +228,7 @@ describe("Property 5: Location cached after grant", () => {
             } as GeolocationPosition);
           });
 
-          Object.defineProperty(global.navigator, "geolocation", {
+          Object.defineProperty(globalThis.navigator, "geolocation", {
             value: { getCurrentPosition: getCurrentPositionMock },
             configurable: true,
             writable: true,
@@ -386,7 +386,7 @@ function mockDynamicDistance(overrides: Partial<ReturnType<typeof useDynamicDist
 describe("Property 2: CTA rendered in idle state", () => {
   beforeEach(() => {
     // Ensure geolocation is defined so the unsupported branch doesn't fire
-    Object.defineProperty(global.navigator, "geolocation", {
+    Object.defineProperty(globalThis.navigator, "geolocation", {
       value: { getCurrentPosition: vi.fn() },
       configurable: true,
       writable: true,
@@ -441,7 +441,7 @@ describe("Property 2: CTA rendered in idle state", () => {
  */
 describe("Property 3: Click triggers geolocation request", () => {
   beforeEach(() => {
-    Object.defineProperty(global.navigator, "geolocation", {
+    Object.defineProperty(globalThis.navigator, "geolocation", {
       value: { getCurrentPosition: vi.fn() },
       configurable: true,
       writable: true,
@@ -494,7 +494,7 @@ describe("Property 3: Click triggers geolocation request", () => {
  */
 describe("Property 4: Distance format after permission granted", () => {
   beforeEach(() => {
-    Object.defineProperty(global.navigator, "geolocation", {
+    Object.defineProperty(globalThis.navigator, "geolocation", {
       value: { getCurrentPosition: vi.fn() },
       configurable: true,
       writable: true,
@@ -549,7 +549,7 @@ describe("Property 4: Distance format after permission granted", () => {
  */
 describe("Property 7: Denial hides CTA and shows fallback text", () => {
   beforeEach(() => {
-    Object.defineProperty(global.navigator, "geolocation", {
+    Object.defineProperty(globalThis.navigator, "geolocation", {
       value: { getCurrentPosition: vi.fn() },
       configurable: true,
       writable: true,
@@ -592,7 +592,7 @@ describe("DistanceDisplay unit tests", () => {
   afterEach(() => {
     vi.restoreAllMocks();
     // Restore geolocation to a defined value after each test
-    Object.defineProperty(global.navigator, "geolocation", {
+    Object.defineProperty(globalThis.navigator, "geolocation", {
       value: { getCurrentPosition: vi.fn() },
       configurable: true,
       writable: true,
@@ -605,7 +605,7 @@ describe("DistanceDisplay unit tests", () => {
      */
     mockDynamicDistance({ permissionState: "idle" });
 
-    Object.defineProperty(global.navigator, "geolocation", {
+    Object.defineProperty(globalThis.navigator, "geolocation", {
       value: { getCurrentPosition: vi.fn() },
       configurable: true,
       writable: true,
@@ -625,7 +625,7 @@ describe("DistanceDisplay unit tests", () => {
      */
     mockDynamicDistance({ permissionState: "idle" });
 
-    Object.defineProperty(global.navigator, "geolocation", {
+    Object.defineProperty(globalThis.navigator, "geolocation", {
       value: undefined,
       configurable: true,
       writable: true,
@@ -646,7 +646,7 @@ describe("DistanceDisplay unit tests", () => {
      */
     mockDynamicDistance({ permissionState: "granted", distance: 0.05 });
 
-    Object.defineProperty(global.navigator, "geolocation", {
+    Object.defineProperty(globalThis.navigator, "geolocation", {
       value: { getCurrentPosition: vi.fn() },
       configurable: true,
       writable: true,
@@ -666,7 +666,7 @@ describe("DistanceDisplay unit tests", () => {
      */
     mockDynamicDistance({ permissionState: "idle" });
 
-    Object.defineProperty(global.navigator, "geolocation", {
+    Object.defineProperty(globalThis.navigator, "geolocation", {
       value: { getCurrentPosition: vi.fn() },
       configurable: true,
       writable: true,
@@ -775,7 +775,7 @@ import type { Equipment } from "../types";
 describe("Task 5.1: EquipmentCard renders DistanceDisplay", () => {
   beforeEach(() => {
     mockDynamicDistance({ permissionState: "idle" });
-    Object.defineProperty(global.navigator, "geolocation", {
+    Object.defineProperty(globalThis.navigator, "geolocation", {
       value: { getCurrentPosition: vi.fn() },
       configurable: true,
       writable: true,
@@ -802,7 +802,7 @@ describe("Task 5.1: EquipmentCard renders DistanceDisplay", () => {
 describe("Task 5.1: CompactEquipmentCard renders DistanceDisplay", () => {
   beforeEach(() => {
     mockDynamicDistance({ permissionState: "idle" });
-    Object.defineProperty(global.navigator, "geolocation", {
+    Object.defineProperty(globalThis.navigator, "geolocation", {
       value: { getCurrentPosition: vi.fn() },
       configurable: true,
       writable: true,

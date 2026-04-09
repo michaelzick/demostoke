@@ -250,6 +250,7 @@ const createEquipment = (
   availability: {
     available: true,
   },
+  pricing_options: [],
 });
 
 const createUserLocation = (

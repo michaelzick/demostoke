@@ -43,6 +43,7 @@ const createEquipment = (
   availability: {
     available: true,
   },
+  pricing_options: [],
 });
 
 describe("filterEquipmentByViewportBounds", () => {

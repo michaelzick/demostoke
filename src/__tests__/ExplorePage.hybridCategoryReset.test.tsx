@@ -169,6 +169,7 @@ const sampleEquipment: Equipment[] = [
     availability: {
       available: true,
     },
+    pricing_options: [],
   },
   {
     id: "gear-2",
@@ -203,6 +204,7 @@ const sampleEquipment: Equipment[] = [
     availability: {
       available: true,
     },
+    pricing_options: [],
   },
 ];
 

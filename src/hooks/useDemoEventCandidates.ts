@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { Json } from "@/integrations/supabase/types";
+import type { Json, Database } from "@/integrations/supabase/types";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
 import type {
@@ -150,7 +150,7 @@ export const useDemoEventCandidates = (statusFilter: DemoEventCandidateFilter = 
 
       const { data, error } = await supabase
         .from("demo_event_candidates")
-        .update(payload)
+        .update(payload as Database['public']['Tables']['demo_event_candidates']['Update'])
         .eq("id", id)
         .select("*")
         .single();
@@ -184,7 +184,7 @@ export const useDemoEventCandidates = (statusFilter: DemoEventCandidateFilter = 
         throw new Error(getErrorMessage(error, "Unable to ingest JSON payload."));
       }
 
-      const result = data as DemoEventJsonIngestResult | null;
+      const result = data as unknown as DemoEventJsonIngestResult | null;
       if (!result?.success) {
         throw new Error("JSON ingest did not complete successfully.");
       }

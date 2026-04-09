@@ -246,7 +246,7 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
                 </p>
               </div>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <DistanceDisplay equipment={equipment} showUnit={false} />
+                <DistanceDisplay equipment={equipment} />
               </div>
             </div>
 

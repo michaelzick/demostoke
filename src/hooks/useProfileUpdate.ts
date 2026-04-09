@@ -6,7 +6,7 @@ import { useAuth } from "@/helpers";
 import { useEmailChange } from "@/hooks/useEmailChange";
 import { useQueryClient } from "@tanstack/react-query";
 import { geocodeAddress } from "@/utils/geocoding";
-import type { UserProfile } from "@/types";
+import type { Database } from "@/integrations/supabase/types";
 
 export const useProfileUpdate = () => {
   const { user } = useAuth();
@@ -57,7 +57,7 @@ export const useProfileUpdate = () => {
       console.log('🏠 New address:', profileData.address);
 
       // Prepare update data
-      const updateData: Partial<UserProfile> = {
+      const updateData: Database['public']['Tables']['profiles']['Update'] = {
         name: profileData.name,
         phone: profileData.phone,
         address: profileData.address,

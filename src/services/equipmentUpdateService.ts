@@ -1,5 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { UserEquipment } from "@/types/equipment";
 
 export const updateEquipmentInDatabase = async (
@@ -42,7 +43,7 @@ export const updateEquipmentInDatabase = async (
   // Admin users can update any equipment, regular users can only update their own
   const { data, error } = await supabase
     .from('equipment')
-    .update(equipmentData)
+    .update(equipmentData as Database['public']['Tables']['equipment']['Update'])
     .eq('id', equipment.id)
     .select()
     .single();

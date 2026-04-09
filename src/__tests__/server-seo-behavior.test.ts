@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { beforeAll, describe, expect, it } from "vitest";
 import { EventEmitter } from "node:events";
 import httpMocks from "node-mocks-http";

@@ -15,8 +15,6 @@ export const ingestLightspeedInventory = async (items: LightspeedItem[], userId:
       category: item.category,
       description: item.manufacturer || '',
       price_per_day: item.price,
-      image_url: item.image,
-      location_zip: '00000',
       status: 'available',
       visible_on_map: true,
     });
