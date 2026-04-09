@@ -357,6 +357,15 @@ const ExplorePage = () => {
         </div>
       )}
 
+      <section className="container px-4 md:px-6 pb-8">
+        <div className="mt-6 rounded-2xl border bg-background p-6 shadow-sm">
+          <h2 className="text-2xl font-semibold">Explore Surfboards, Snowboards, Skis, and Bikes</h2>
+          <p className="mt-3 text-muted-foreground">
+            Browse surfboards, snowboards, skis, and mountain bikes that are available for demo or rental on DemoStoke.
+          </p>
+        </div>
+      </section>
+
       {/* Scroll to top button - only show in list view */}
       {viewMode === "list" && (
         <ScrollToTopButton show={showScrollButton} onClick={scrollListToTop} />
