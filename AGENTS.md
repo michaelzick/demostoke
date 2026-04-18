@@ -40,11 +40,12 @@
 
 ## Top-Level Architecture
 - `src/main.tsx` is the plain Vite mount entry.
-- `src/entry-client.tsx` hydrates the SSR shell.
+- `src/entry-client.tsx` hydrates the SSR shell when server markup exists and falls back to a plain client mount when Vite serves a non-SSR HTML shell.
 - `src/entry-server.tsx` renders the React tree to string.
 - `src/App.tsx` wires providers: query client, SSR page data, theme, auth, favorites, geolocation, tooltip, analytics/toaster.
 - `src/components/AppRoutes.tsx` is the authoritative route map.
 - `server/index.js` serves `dist/client`, loads the server bundle, and injects canonical/meta/schema/robots/404 behavior using `src/lib/seo/*`.
+- `server/index.js` also owns the live security headers, including the production `Content-Security-Policy` allowlists for analytics, Supabase, Mapbox, hCaptcha, and similar third-party origins.
 - `index.html` contains the pre-hydration theme resolver plus GTM, GA4, Amplitude, and GPT Engineer script tags. If you touch head behavior, inspect this file.
 
 ## High-Value Route Areas

@@ -111,6 +111,16 @@ describe("SEO server behavior", () => {
     );
   });
 
+  it("allows GA4 collection endpoints in the SSR CSP header", async () => {
+    const response = await get("/explore");
+    const csp = String(response.headers["content-security-policy"] ?? "");
+
+    expect(csp).toContain("connect-src");
+    expect(csp).toContain("https://www.google.com");
+    expect(csp).toContain("https://www.google-analytics.com");
+    expect(csp).toContain("https://*.google-analytics.com");
+  });
+
   it("renders canonical demo event 404s without the loading skeleton shell", async () => {
     const response = await get("/demo-calendar/event/non-existent-demo-event");
 
