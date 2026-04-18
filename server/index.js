@@ -83,6 +83,25 @@ if (SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY) {
   );
 }
 
+const SERVER_METADATA_TIMEOUT_MS = process.env.NODE_ENV === 'test' ? 100 : 3000;
+
+const withTimeout = async (promise, timeoutMs, label) => {
+  let timeoutId;
+
+  try {
+    return await Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error(`${label} timed out after ${timeoutMs}ms`));
+        }, timeoutMs);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+};
+
 const escapeContent = (str) =>
   str
     ? String(str)
@@ -769,24 +788,28 @@ async function getDemoEventPageMeta(eventSlug) {
   }
 
   try {
-    const { data: events, error } = await supabase
-      .from('demo_calendar')
-      .select(
-        `
-        id,
-        title,
-        gear_category,
-        event_date,
-        event_time,
-        location,
-        equipment_available,
-        thumbnail_url,
-        company,
-        source_primary_url,
-        updated_at
-      `,
-      )
-      .order('event_date', { ascending: true, nullsFirst: false });
+    const { data: events, error } = await withTimeout(
+      supabase
+        .from('demo_calendar')
+        .select(
+          `
+          id,
+          title,
+          gear_category,
+          event_date,
+          event_time,
+          location,
+          equipment_available,
+          thumbnail_url,
+          company,
+          source_primary_url,
+          updated_at
+        `,
+        )
+        .order('event_date', { ascending: true, nullsFirst: false }),
+      SERVER_METADATA_TIMEOUT_MS,
+      'Demo event metadata query',
+    );
 
     if (error || !events) {
       return null;

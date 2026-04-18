@@ -8,14 +8,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Moon, Sun, Laptop } from "lucide-react";
 import useTheme from "@/contexts/useTheme";
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
+
+const useIsomorphicLayoutEffect =
+  typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 const ThemeSwitcher = () => {
   const { theme, setTheme } = useTheme();
 
   const [visualTheme, setVisualTheme] = useState<'light' | 'dark' | 'system' | null>(null);
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     try {
       const de = document.documentElement;
       if (de.classList.contains('system')) setVisualTheme('system');
@@ -26,7 +29,6 @@ const ThemeSwitcher = () => {
       setVisualTheme(theme);
     }
     // run once to capture pre-hydration classes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const displayTheme = visualTheme ?? theme;

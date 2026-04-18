@@ -58,6 +58,10 @@ const SearchDialog = ({ isOpen, onClose }: SearchDialogProps) => {
     }
   };
 
+  if (!isOpen) {
+    return null;
+  }
+
   return (
     <CommandDialog open={isOpen} onOpenChange={onClose}>
       <div className="flex items-center border-b px-3 w-full">

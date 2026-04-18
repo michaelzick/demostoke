@@ -27,7 +27,14 @@ function readCache(): CachedLocation | null {
     const raw = localStorage.getItem(CACHE_KEY);
     if (!raw) return null;
     const parsed: CachedLocation = JSON.parse(raw);
-    if (Date.now() - parsed.timestamp < CACHE_TTL_MS) return parsed;
+    if (
+      Number.isFinite(parsed.latitude) &&
+      Number.isFinite(parsed.longitude) &&
+      Number.isFinite(parsed.timestamp) &&
+      Date.now() - parsed.timestamp <= CACHE_TTL_MS
+    ) {
+      return parsed;
+    }
     return null;
   } catch {
     return null;
