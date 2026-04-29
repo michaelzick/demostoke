@@ -2,8 +2,8 @@ import { isValidCoordinate } from '@/utils/distanceCalculation';
 
 export const LAKE_TAHOE_COORDINATES = { lat: 39.0968, lng: -120.0324 } as const;
 
-export const DEFAULT_EXPLORE_ZOOM = 10;
-export const USER_LOCATION_EXPLORE_ZOOM = 11;
+export const DEFAULT_EXPLORE_ZOOM = 9;
+export const USER_LOCATION_EXPLORE_ZOOM = 10;
 
 export type ExplorePermissionState = 'idle' | 'loading' | 'granted' | 'denied';
 
