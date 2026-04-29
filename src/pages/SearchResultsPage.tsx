@@ -374,23 +374,6 @@ const SearchResultsPage = () => {
             </div>
           )}
 
-          {!query && (
-            <section className="mt-6 rounded-2xl border bg-background p-6 shadow-sm">
-              <h2 className="text-2xl font-semibold">Search Surfboards, Snowboards, Skis, and Bikes</h2>
-              <p className="mt-3 text-muted-foreground">
-                Search DemoStoke by model name, sport, city, or riding style to find gear that is actually available from local shops and riders.
-              </p>
-              <p className="mt-3 text-muted-foreground">
-                Popular starting points:
-                {" "}
-                <a className="underline hover:text-primary" href="/gear/surfboards">surfboard demos</a>,
-                {" "}
-                <a className="underline hover:text-primary" href="/gear/used-skis">used skis</a>,
-                {" "}
-                <a className="underline hover:text-primary" href="/explore">browse all gear</a>.
-              </p>
-            </section>
-          )}
         </div>
       </div>
 
