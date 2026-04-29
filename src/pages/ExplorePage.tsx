@@ -25,6 +25,11 @@ import { filterGearByQuickQuery } from "@/utils/gearQuickFilter";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 import { resolveStaticRouteSeo } from "@/lib/seo/policy.js";
+import { useGeolocation } from "@/hooks/useGeolocation";
+import {
+  LAKE_TAHOE_COORDINATES,
+  resolveExploreCenter,
+} from "@/utils/locationDefaults";
 
 const ExplorePage = () => {
   const location = useLocation();
@@ -54,10 +59,29 @@ const ExplorePage = () => {
   const [quickFilter, setQuickFilter] = useState(initialQuickFilterFromUrl);
   const lastSyncedUrlQRef = useRef(initialQuickFilterFromUrl);
   const [hasShownNoEquipmentToast, setHasShownNoEquipmentToast] = useState(false);
+
+  const { latitude, longitude, permissionState, requestLocation } = useGeolocation();
+
+  useEffect(() => {
+    if (permissionState === 'idle') {
+      requestLocation();
+    }
+  }, [permissionState, requestLocation]);
+
+  const exploreCenter = useMemo(
+    () => resolveExploreCenter({ latitude, longitude, permissionState }),
+    [latitude, longitude, permissionState],
+  );
+  const hasResolvedDecision = exploreCenter !== null;
+  const distanceFallbackOrigin = exploreCenter && !exploreCenter.isUserLocation
+    ? LAKE_TAHOE_COORDINATES
+    : undefined;
+
   const { data: allEquipment = [], isLoading: isEquipmentLoading } = useQuery({
     queryKey: ['explore-equipment', feedStart, feedEnd],
     queryFn: () => getEquipmentData({ start: feedStart, end: feedEnd }),
     staleTime: 3 * 60 * 1000,
+    enabled: hasResolvedDecision,
   });
 
   const { data: userLocations = [] } = useUserLocations();
@@ -110,7 +134,8 @@ const ExplorePage = () => {
   }, [searchParams]);
 
   // Get equipment with dynamic distances
-  const { equipment: equipmentWithDynamicDistances, isLocationBased } = useEquipmentWithDynamicDistance(allEquipment);
+  const { equipment: equipmentWithDynamicDistances, isLocationBased } =
+    useEquipmentWithDynamicDistance(allEquipment, distanceFallbackOrigin);
 
   const handleCategoryChange = (category: string | null) => {
     setActiveCategory(category);
@@ -275,10 +300,10 @@ const ExplorePage = () => {
         }
       />
 
-      {isEquipmentLoading ? (
+      {!hasResolvedDecision || isEquipmentLoading ? (
         <div className="flex justify-center items-center py-20">
           <Loader2 className="h-10 w-10 animate-spin text-primary" />
-          <span className="ml-4 text-lg">Loading gear...</span>
+          <span className="ml-4 text-lg">Finding gear near you...</span>
         </div>
       ) : viewMode === "map" ? (
         <div className="h-[calc(100vh-12rem)] relative">
@@ -287,6 +312,7 @@ const ExplorePage = () => {
             searchQuery={searchParams.get("q")?.toLowerCase()}
             viewMode={viewMode}
             filteredUserLocations={filteredUserLocations}
+            initialCenter={exploreCenter}
           />
           <MapLegend activeCategory={activeCategory} viewMode={viewMode} />
         </div>
@@ -300,6 +326,7 @@ const ExplorePage = () => {
           resetSignal={resetCounter}
           sortBy={sortBy}
           onSortChange={setSortBy}
+          initialCenter={exploreCenter}
           emptyMessage={
             isQuickFilterActive
               ? "No gear matches your quick filter. Clear the filter or try different terms."

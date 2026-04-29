@@ -62,6 +62,18 @@ vi.mock("@/hooks/useEquipmentWithDynamicDistance", () => ({
   }),
 }));
 
+vi.mock("@/hooks/useGeolocation", () => ({
+  useGeolocation: () => ({
+    latitude: null,
+    longitude: null,
+    error: null,
+    loading: false,
+    permissionDenied: true,
+    permissionState: "denied" as const,
+    requestLocation: vi.fn(),
+  }),
+}));
+
 vi.mock("@/hooks/useUserRole", () => ({
   useIsAdmin: () => ({
     isAdmin: false,

@@ -143,7 +143,10 @@ export const GeolocationProvider = ({ children }: { children: ReactNode }) => {
           error: errorMessage,
           loading: false,
           permissionDenied,
-          permissionState: permissionDenied ? 'denied' : 'idle',
+          // Treat any geolocation failure (denied, position unavailable, timeout)
+          // as a resolved 'denied' decision so callers gating on it can fall
+          // back. permissionDenied stays accurate for the underlying reason.
+          permissionState: 'denied',
         });
       },
       {

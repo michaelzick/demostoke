@@ -15,6 +15,7 @@ import {
   createUserLocationPopupContent,
   resolveMarkerCategory,
 } from "@/utils/mapUtils";
+import type { ResolvedExploreCenter } from "@/utils/locationDefaults";
 
 interface MapProps {
   activeCategory?: string | null;
@@ -44,6 +45,7 @@ interface MapProps {
   focusedEquipmentId?: string | null;
   onEquipmentSelect?: (equipmentId: string) => void;
   showEquipmentPopups?: boolean;
+  initialCenter?: ResolvedExploreCenter | null;
 }
 
 const MapComponent = ({
@@ -59,6 +61,7 @@ const MapComponent = ({
   focusedEquipmentId,
   onEquipmentSelect,
   showEquipmentPopups = false,
+  initialCenter,
 }: MapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -100,7 +103,10 @@ const MapComponent = ({
     if (!mapContainer.current || !mapboxToken) return;
 
     try {
-      map.current = initializeMap(mapContainer.current, mapboxToken);
+      const initOptions = initialCenter
+        ? { center: [initialCenter.lng, initialCenter.lat] as [number, number], zoom: initialCenter.zoom }
+        : undefined;
+      map.current = initializeMap(mapContainer.current, mapboxToken, initOptions);
       map.current.on('load', () => {
         setIsLoading(false);
       });
@@ -116,6 +122,9 @@ const MapComponent = ({
         map.current = null;
       }
     };
+    // initialCenter is intentionally read once on map init; later updates come
+    // through the focusedEquipmentId flyTo path, not by re-creating the map.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapboxToken]);
 
   // Update markers based on route and data
@@ -224,11 +233,13 @@ const MapComponent = ({
           .addTo(map.current!);
       });
 
-      if (locationsToShow.length > 0) {
+      // When a resolved center was supplied, keep it as the initial view
+      // instead of refitting to the union of all shop pins.
+      if (locationsToShow.length > 0 && !initialCenter) {
         fitMapBounds(map.current, locationsToShow);
       }
     }
-  }, [isSearchRoute, isExploreRoute, isEquipmentDetailMode, initialEquipment, userLocations, activeCategory, isLoading, ownerIds, userRole, viewMode, filteredUserLocations, focusedEquipmentId, onEquipmentSelect, showEquipmentPopups]);
+  }, [isSearchRoute, isExploreRoute, isEquipmentDetailMode, initialEquipment, userLocations, activeCategory, isLoading, ownerIds, userRole, viewMode, filteredUserLocations, focusedEquipmentId, onEquipmentSelect, showEquipmentPopups, initialCenter]);
 
   useEffect(() => {
     if (!map.current || isLoading || !focusedEquipmentId || !initialEquipment) return;

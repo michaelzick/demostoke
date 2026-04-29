@@ -326,6 +326,7 @@ describe("HybridView viewport sync", () => {
     expect(mapHarness.initializeMapMock).toHaveBeenCalledWith(
       expect.any(HTMLDivElement),
       "test-token",
+      undefined,
     );
   });
 

@@ -7,6 +7,7 @@ import { useMapMarkers } from "@/hooks/useMapMarkers";
 import mapboxgl from "mapbox-gl";
 import { supabase } from "@/integrations/supabase/client";
 import { initializeMap, fitMapBounds } from "@/utils/mapUtils";
+import type { ResolvedExploreCenter } from "@/utils/locationDefaults";
 import { UserLocation } from "@/hooks/useUserLocations";
 import { getFilteredUserLocations } from "@/utils/equipmentLocationMapping";
 import SortDropdown from "./SortDropdown";
@@ -33,6 +34,7 @@ interface HybridViewProps {
   onSortChange: (value: string) => void;
   showRelevanceOption?: boolean;
   emptyMessage?: string;
+  initialCenter?: ResolvedExploreCenter | null;
 }
 
 interface MapEquipment {
@@ -57,6 +59,7 @@ interface HybridMapPanelProps {
   resetSignal?: number;
   onFocusedMapInteraction: () => void;
   onViewportBoundsChange: (bounds: MapViewportBounds | null) => void;
+  initialCenter?: ResolvedExploreCenter | null;
 }
 
 const buildShopCameraKey = (mapUserLocations: UserLocation[]): string =>
@@ -89,6 +92,7 @@ const HybridMapPanel = memo(
     resetSignal,
     onFocusedMapInteraction,
     onViewportBoundsChange,
+    initialCenter,
   }: HybridMapPanelProps) => {
     const [mapboxToken, setMapboxToken] = useState<string | null>(null);
     const [isMapLoaded, setIsMapLoaded] = useState(false);
@@ -150,7 +154,13 @@ const HybridMapPanel = memo(
       manualFocusExitPendingRef.current = false;
 
       try {
-        map.current = initializeMap(mapContainer.current, mapboxToken);
+        const initOptions = initialCenter
+          ? {
+              center: [initialCenter.lng, initialCenter.lat] as [number, number],
+              zoom: initialCenter.zoom,
+            }
+          : undefined;
+        map.current = initializeMap(mapContainer.current, mapboxToken, initOptions);
         map.current.on("load", () => {
           setIsMapLoaded(true);
         });
@@ -164,6 +174,9 @@ const HybridMapPanel = memo(
           map.current = null;
         }
       };
+      // initialCenter is read once at map creation; later position changes are
+      // handled by the focusedEquipment flyTo path, not by reinitializing.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mapboxToken]);
 
     useMapMarkers({
@@ -234,6 +247,9 @@ const HybridMapPanel = memo(
       manualFocusExitPendingRef.current = false;
 
       if (mapUserLocations.length === 0) return;
+      // When a resolved center is in effect, keep the user-centered view across
+      // filter resets instead of refitting to the union of all matching shops.
+      if (initialCenter) return;
 
       const cameraKey = `shops:${shopCameraKey}`;
       applyCameraChange(cameraKey, (mapInstance) => {
@@ -241,6 +257,7 @@ const HybridMapPanel = memo(
       });
     }, [
       applyCameraChange,
+      initialCenter,
       isMapLoaded,
       mapUserLocations,
       resetSignal,
@@ -250,6 +267,7 @@ const HybridMapPanel = memo(
     useEffect(() => {
       if (!map.current || !isMapLoaded || focusedEquipment) return;
       if (mapUserLocations.length === 0) return;
+      if (initialCenter) return;
 
       const cameraKey = `shops:${shopCameraKey}`;
 
@@ -270,6 +288,7 @@ const HybridMapPanel = memo(
     }, [
       applyCameraChange,
       focusedEquipment,
+      initialCenter,
       isMapLoaded,
       mapUserLocations,
       shopCameraKey,
@@ -312,6 +331,7 @@ const HybridView = ({
   onSortChange,
   showRelevanceOption = false,
   emptyMessage,
+  initialCenter,
 }: HybridViewProps) => {
   const isMobile = useIsMobile();
   const { user } = useAuth();
@@ -542,6 +562,7 @@ const HybridView = ({
           resetSignal={resetSignal}
           onFocusedMapInteraction={handleFocusedMapInteraction}
           onViewportBoundsChange={handleViewportBoundsChange}
+          initialCenter={initialCenter}
         />
 
         <div ref={listRef} className="p-4">
@@ -670,6 +691,7 @@ const HybridView = ({
         resetSignal={resetSignal}
         onFocusedMapInteraction={handleFocusedMapInteraction}
         onViewportBoundsChange={handleViewportBoundsChange}
+        initialCenter={initialCenter}
       />
     </div>
   );
