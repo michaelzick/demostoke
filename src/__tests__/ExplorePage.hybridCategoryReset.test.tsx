@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import ExplorePage from "@/pages/ExplorePage";
 import type { Equipment } from "@/types";
@@ -216,10 +217,13 @@ describe("ExplorePage hybrid category reset", () => {
   });
 
   it("increments hybrid resetSignal on category select and same-category reselect", async () => {
+    const queryClient = new QueryClient();
     render(
-      <MemoryRouter initialEntries={["/explore"]}>
-        <ExplorePage />
-      </MemoryRouter>,
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/explore"]}>
+          <ExplorePage />
+        </MemoryRouter>
+      </QueryClientProvider>
     );
 
     await waitFor(() => {
