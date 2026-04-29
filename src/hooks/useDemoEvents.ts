@@ -19,6 +19,8 @@ export const useDemoEvents = () => {
       if (error) throw error;
       return data as DemoEvent[];
     },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   const createEventMutation = useMutation<DemoEvent, Error, DemoEventInput>({

@@ -104,8 +104,8 @@ export const useProfileQuery = () => {
     queryKey: ['profile', user?.id],
     queryFn: fetchProfileData,
     enabled: !!user?.id,
-    staleTime: 0, // Force fresh data to avoid caching issues with role changes
-    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const invalidateProfile = () => {

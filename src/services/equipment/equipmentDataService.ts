@@ -1,7 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { Equipment } from "@/types";
 import { convertSupabaseToEquipment } from "./equipmentConverter";
-import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 import { getHiddenUserIds, filterHiddenUsers } from "./hiddenUserFilter";
 import { fetchEquipmentFromShopGearFeed } from "./shopGearFeedService";
@@ -12,7 +11,8 @@ export type EquipmentDataOptions = {
 };
 
 export const fetchEquipmentFromSupabase = async (): Promise<Equipment[]> => {
-  // Paginate to bypass PostgREST max_rows (default 1000)
+  // Paginate to bypass PostgREST max_rows (default 1000).
+  // Images are embedded via the PostgREST join so we avoid one query per item.
   const PAGE_SIZE = 1000;
   const allData: any[] = [];
   let from = 0;
@@ -27,6 +27,11 @@ export const fetchEquipmentFromSupabase = async (): Promise<Equipment[]> => {
         profiles!equipment_user_id_fkey (
           name,
           avatar_url
+        ),
+        equipment_images (
+          image_url,
+          display_order,
+          is_primary
         )
       `,
       )
@@ -54,13 +59,21 @@ export const fetchEquipmentFromSupabase = async (): Promise<Equipment[]> => {
   const hiddenUserIds = await getHiddenUserIds();
   const visibleData = filterHiddenUsers(data, hiddenUserIds);
 
-  // Convert each item and fetch additional images
+  // Images are already embedded — sort and extract URLs without extra queries
   const convertedEquipment = await Promise.all(
     visibleData.map(async (item) => {
-      // Fetch images from equipment_images table
-      const additionalImages = await fetchEquipmentImages(item.id);
+      const embeddedImages: Array<{ image_url: string; display_order: number; is_primary: boolean }> =
+        item.equipment_images ?? [];
 
-      const allImages = deduplicateImageUrls(additionalImages);
+      const sortedImageUrls = embeddedImages
+        .slice()
+        .sort((a, b) => {
+          if (b.is_primary !== a.is_primary) return b.is_primary ? 1 : -1;
+          return a.display_order - b.display_order;
+        })
+        .map((img) => img.image_url);
+
+      const allImages = deduplicateImageUrls(sortedImageUrls);
 
       const flatItem = {
         ...item,

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useLocation, useSearchParams } from "react-router-dom";
@@ -10,7 +11,6 @@ import FilterBar from "@/components/FilterBar";
 import HybridView from "@/components/HybridView";
 import SortDropdown from "@/components/SortDropdown";
 import GearQuickFilterInput from "@/components/GearQuickFilterInput";
-import { Equipment } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
 import useScrollToTop from "@/hooks/useScrollToTop";
@@ -53,9 +53,13 @@ const ExplorePage = () => {
   const [viewMode, setViewMode] = useState<"map" | "list" | "hybrid">("hybrid");
   const [quickFilter, setQuickFilter] = useState(initialQuickFilterFromUrl);
   const lastSyncedUrlQRef = useRef(initialQuickFilterFromUrl);
-  const [allEquipment, setAllEquipment] = useState<Equipment[]>([]);
-  const [isEquipmentLoading, setIsEquipmentLoading] = useState(true);
   const [hasShownNoEquipmentToast, setHasShownNoEquipmentToast] = useState(false);
+  const { data: allEquipment = [], isLoading: isEquipmentLoading } = useQuery({
+    queryKey: ['explore-equipment', feedStart, feedEnd],
+    queryFn: () => getEquipmentData({ start: feedStart, end: feedEnd }),
+    staleTime: 3 * 60 * 1000,
+  });
+
   const { data: userLocations = [] } = useUserLocations();
   const [resetCounter, setResetCounter] = useState(0);
   const { isAdmin } = useIsAdmin();
@@ -74,27 +78,6 @@ const ExplorePage = () => {
   const { showButton: showScrollButton, scrollToTop: scrollListToTop } = useScrollToTopButton({
     threshold: 300
   });
-
-  // Load equipment data using global app settings
-  useEffect(() => {
-    const loadEquipment = async () => {
-      setIsEquipmentLoading(true);
-      try {
-        const equipment = await getEquipmentData({
-          start: feedStart,
-          end: feedEnd,
-        });
-        setAllEquipment(equipment);
-      } catch (error) {
-        console.error("Failed to load equipment:", error);
-        setAllEquipment([]);
-      } finally {
-        setIsEquipmentLoading(false);
-      }
-    };
-
-    loadEquipment();
-  }, [feedStart, feedEnd]);
 
   // Update active category when URL changes
   useEffect(() => {

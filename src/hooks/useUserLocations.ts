@@ -19,88 +19,81 @@ export const useUserLocations = () => {
   return useQuery({
     queryKey: ['userLocations'],
     queryFn: async (): Promise<UserLocation[]> => {
-      console.log('🔍 Fetching user locations with visible equipment categories...');
-      
-      // First, fetch privacy-filtered profiles with locations
-      const { data, error } = await supabase
-        .from('public_profiles')
-        .select('id, name, address, location_lat, location_lng, avatar_url')
-        .not('address', 'is', null)
-        .not('address', 'eq', '')
-        .not('location_lat', 'is', null)
-        .not('location_lng', 'is', null);
+      // Query 1: equipment with embedded profiles (single join, uses FK index).
+      // Replaces the old 3-query chain: public_profiles → user_roles → equipment.
+      const { data: equipmentWithProfiles, error: eqError } = await supabase
+        .from('equipment')
+        .select(`
+          user_id,
+          category,
+          profiles!equipment_user_id_fkey (
+            id, name, address, location_lat, location_lng, avatar_url, is_hidden
+          )
+        `)
+        .eq('visible_on_map', true)
+        .eq('status', 'available');
 
-      if (error) {
-        console.error('❌ Error fetching user locations:', error);
-        throw error;
-      }
+      if (eqError) throw eqError;
 
-      console.log('📍 Raw profile data:', data);
+      // Filter to profiles with coordinates and non-hidden owners
+      const validItems = (equipmentWithProfiles ?? []).filter(
+        (eq) =>
+          eq.profiles &&
+          !eq.profiles.is_hidden &&
+          eq.profiles.location_lat &&
+          eq.profiles.location_lng &&
+          eq.profiles.address,
+      );
 
-      const userIds = data.map(profile => profile.id);
-      
-      // Fetch user roles
+      const userIds = [...new Set(validItems.map((eq) => eq.user_id))];
+      if (userIds.length === 0) return [];
+
+      // Query 2: fetch display roles for those users
       const { data: roleData, error: roleError } = await supabase
         .from('user_roles')
         .select('user_id, display_role')
         .in('user_id', userIds);
 
-      if (roleError) {
-        console.error('❌ Error fetching user roles:', roleError);
-        throw roleError;
-      }
+      if (roleError) throw roleError;
 
-      // Fetch equipment for these users
-      const { data: equipmentData, error: equipmentError } = await supabase
-        .from('equipment')
-        .select('user_id, category, visible_on_map')
-        .in('user_id', userIds)
-        .eq('visible_on_map', true);
+      const roleMap = new Map((roleData ?? []).map((r) => [r.user_id, r.display_role]));
 
-      if (equipmentError) {
-        console.error('❌ Error fetching equipment:', equipmentError);
-        throw equipmentError;
-      }
-
-      console.log('🎿 Equipment data:', equipmentData);
-
-      const roleMap = new Map(roleData.map(item => [item.user_id, item.display_role]));
-      
-      // Group equipment by user_id
+      // Group equipment categories by user_id
       const equipmentByUser = new Map<string, string[]>();
-      equipmentData?.forEach(eq => {
-        const categories = equipmentByUser.get(eq.user_id) || [];
-        if (!categories.includes(eq.category)) {
-          categories.push(eq.category);
-        }
-        equipmentByUser.set(eq.user_id, categories);
+      validItems.forEach((eq) => {
+        const cats = equipmentByUser.get(eq.user_id) ?? [];
+        if (!cats.includes(eq.category)) cats.push(eq.category);
+        equipmentByUser.set(eq.user_id, cats);
       });
 
-      const userLocations: UserLocation[] = data
-        .filter(profile => profile.location_lat && profile.location_lng)
-        .map(profile => {
-          const equipmentCategories = equipmentByUser.get(profile.id) || [];
+      // Build one UserLocation per unique user that has visible equipment
+      const seen = new Set<string>();
+      const userLocations: UserLocation[] = [];
 
-          return {
-            id: profile.id,
-            name: profile.name || 'Unknown User',
-            role: roleMap.get(profile.id) || 'retail-store',
-            address: profile.address || '',
-            location: {
-              lat: Number(profile.location_lat),
-              lng: Number(profile.location_lng)
-            },
-            avatar_url: profile.avatar_url,
-            equipment_categories: equipmentCategories
-          };
-        })
-        // Filter out users who have no visible equipment
-        .filter(user => user.equipment_categories.length > 0);
+      for (const eq of validItems) {
+        if (seen.has(eq.user_id)) continue;
+        seen.add(eq.user_id);
 
-      console.log('✅ User locations processed:', userLocations.length, 'locations with visible equipment');
-      console.log('📍 User locations with categories:', userLocations);
+        const p = eq.profiles!;
+        const equipmentCategories = equipmentByUser.get(eq.user_id) ?? [];
+        if (equipmentCategories.length === 0) continue;
+
+        userLocations.push({
+          id: p.id,
+          name: p.name || 'Unknown User',
+          role: roleMap.get(eq.user_id) || 'retail-store',
+          address: p.address || '',
+          location: {
+            lat: Number(p.location_lat),
+            lng: Number(p.location_lng),
+          },
+          avatar_url: p.avatar_url,
+          equipment_categories: equipmentCategories,
+        });
+      }
+
       return userLocations;
     },
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 };

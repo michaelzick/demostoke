@@ -1015,7 +1015,16 @@ app.use(compression({
   },
 }));
 
+// Sitemap in-memory cache — regenerated at most every 30 minutes
+let sitemapCache = { xml: null, expiresAt: 0 };
+
 app.get('/sitemap.xml', async (req, res) => {
+  if (sitemapCache.xml && Date.now() < sitemapCache.expiresAt) {
+    res.set('Content-Type', 'application/xml');
+    res.set('Cache-Control', 'public, max-age=3600');
+    return res.send(sitemapCache.xml);
+  }
+
   const baseUrl = PUBLIC_SITE_URL;
 
   // Public static routes only — no auth-gated pages
@@ -1059,8 +1068,13 @@ app.get('/sitemap.xml', async (req, res) => {
               is_hidden
             )
           `,
-          ),
-        supabase.from('demo_calendar').select('title, event_date, event_time, updated_at'),
+          )
+          .eq('status', 'available')
+          .eq('visible_on_map', true),
+        supabase
+          .from('demo_calendar')
+          .select('title, event_date, event_time, updated_at')
+          .gte('event_date', new Date().toISOString().split('T')[0]),
       ]);
 
       if (blogRes.data) {
@@ -1133,9 +1147,12 @@ app.get('/sitemap.xml', async (req, res) => {
 
   xmlLines.push('</urlset>');
 
+  const xml = xmlLines.join('\n');
+  sitemapCache = { xml, expiresAt: Date.now() + 30 * 60 * 1000 };
+
   res.set('Content-Type', 'application/xml');
-  res.set('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
-  res.send(xmlLines.join('\n'));
+  res.set('Cache-Control', 'public, max-age=3600');
+  res.send(xml);
 });
 
 app.get(['/event/:eventSlug', '/demo-events/:eventSlug'], async (req, res) => {

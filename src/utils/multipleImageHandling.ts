@@ -4,9 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 export const fetchEquipmentImages = async (
   equipmentId: string,
 ): Promise<string[]> => {
-  console.log('=== FETCHING EQUIPMENT IMAGES ===');
-  console.log('Equipment ID for image fetch:', equipmentId);
-
   try {
     const { data, error } = await supabase
       .from('equipment_images')
@@ -20,19 +17,11 @@ export const fetchEquipmentImages = async (
       return [];
     }
 
-    console.log('Raw equipment_images data:', data);
-    console.log('Number of images found:', data?.length || 0);
-
     if (!data || data.length === 0) {
-      console.log('No images found in equipment_images table');
       return [];
     }
 
-    const imageUrls = data.map((img) => img.image_url);
-    console.log('Extracted image URLs:', imageUrls);
-    console.log('=== END EQUIPMENT IMAGES FETCH ===');
-
-    return imageUrls;
+    return data.map((img) => img.image_url);
   } catch (err) {
     console.error('Exception while fetching equipment images:', err);
     return [];

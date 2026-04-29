@@ -22,7 +22,8 @@ export const useEquipmentReviews = (equipmentId: string) => {
         .from('equipment_reviews')
         .select('*')
         .eq('equipment_id', equipmentId)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(50);
 
       if (error) {
         console.error('Error fetching equipment reviews:', error);
