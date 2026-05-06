@@ -25,6 +25,7 @@
 
 ## Stack and Runtime
 - Node `>=24`
+- Vite 8 with Rolldown-backed production builds
 - React 18, React Router 6, TanStack Query 5
 - Tailwind CSS + shadcn/ui / Radix primitives
 - Supabase JS v2 for auth, database, storage, and edge functions
@@ -182,6 +183,7 @@
 - Search/explore/profile visibility behavior is tightly coupled to `equipmentDataService`, `searchService`, `useEquipmentWithDynamicDistance`, and advanced filter helpers.
 - `DemoStokeWidget` is a local-dev artifact right now. Treat it as unfinished unless you intentionally wire it to production.
 - There is a large amount of existing debug logging. Remove or preserve it intentionally, not accidentally.
+- Vite 8 uses Rolldown build options. Do not add object-form `manualChunks`; it is unsupported and breaks client builds.
 
 ## Test and Review Expectations
 - CI runs `npm run lint`, `npm run type-check`, `npm run build`, and `npm run test:unit`.

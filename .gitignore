@@ -13,7 +13,6 @@ dist-ssr
 *.local
 .env
 .env.local
-.nvmrc
 
 # Editor directories and files
 supabase/.temp
