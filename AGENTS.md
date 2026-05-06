@@ -51,7 +51,7 @@
 - `src/components/AppRoutes.tsx` is the authoritative route map.
 - `server/index.js` serves `dist/client`, loads the server bundle, and injects canonical/meta/schema/robots/404 behavior using `src/lib/seo/*`.
 - `server/index.js` also owns the live security headers, including the production `Content-Security-Policy` allowlists for analytics, Supabase, Mapbox, hCaptcha, and similar third-party origins.
-- `index.html` contains the pre-hydration theme resolver plus GTM, GA4, Amplitude, and GPT Engineer script tags. If you touch head behavior, inspect this file.
+- `index.html` contains the pre-hydration theme resolver plus GTM, GA4, and Amplitude script tags. If you touch head behavior, inspect this file.
 
 ## High-Value Route Areas
 - Marketing/public pages:
@@ -112,7 +112,7 @@
 - `supabase/migrations/` schema history
 - `src/integrations/supabase/types.ts` is the generated schema map
 - `.github/workflows/ci.yml` is the CI contract
-- `.kiro/specs/` and `.lovable/plan.md` are planning artifacts, not runtime code
+- `.kiro/specs/` contains planning artifacts, not runtime code
 
 ## Core Data Model
 - Primary tables:
@@ -170,7 +170,7 @@
   - `VITE_SHOP_GEAR_FEED_INCLUDE_HIDDEN`
   - `VITE_SHOP_GEAR_FEED_APIKEY`
 - Theme flicker fix can be disabled with `VITE_ENABLE_THEME_FLICKER_FIX=false`.
-- Edge functions rely on combinations of `SUPABASE_SERVICE_ROLE_KEY`, `MAPBOX_TOKEN`, `GOOGLE_API_KEY`, `GOOGLE_CSE_ID`, `GOOGLE_SEARCH_API_KEY`, `GOOGLE_SEARCH_ENGINE_ID`, and `HCAPTCHA_SECRET`.
+- Edge functions rely on combinations of `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `MAPBOX_TOKEN`, `GOOGLE_API_KEY`, `GOOGLE_CSE_ID`, `GOOGLE_SEARCH_API_KEY`, `GOOGLE_SEARCH_ENGINE_ID`, and `HCAPTCHA_SECRET`.
 - Do not introduce new hardcoded secrets. Keep public browser tokens and service secrets clearly separated.
 
 ## Critical Invariants and Gotchas
