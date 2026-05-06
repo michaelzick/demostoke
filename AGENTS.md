@@ -111,7 +111,7 @@
 - `supabase/functions/` edge functions
 - `supabase/migrations/` schema history
 - `src/integrations/supabase/types.ts` is the generated schema map
-- `.github/workflows/ci.yml` is the CI contract
+- `.github/workflows/ci.yml` is the CI contract; `.github/workflows/security.yml` runs secret scanning and dependency audit checks
 - `.kiro/specs/` contains planning artifacts, not runtime code
 
 ## Core Data Model
