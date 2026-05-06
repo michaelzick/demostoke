@@ -1,8 +1,9 @@
-
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+declare const Deno: {
+  env: {
+    get(key: string): string | undefined;
+  };
+  serve(handler: (req: Request) => Response | Promise<Response>): void;
+};
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,7 +15,7 @@ interface GenerateBlogTextRequest {
   category: string;
 }
 
-serve(async (req) => {
+Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -31,15 +32,24 @@ serve(async (req) => {
 
     console.log('Generating blog text for prompt:', prompt);
 
+    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openAIApiKey) {
+      console.error('OPENAI_API_KEY not found');
+      return new Response(
+        JSON.stringify({ success: false, error: 'OpenAI API key not configured' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
+    }
+
     // First, generate the main content
-    const contentResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const contentResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${lovableApiKey}`,
+        'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-3-flash-preview',
+        model: 'gpt-5-mini',
         messages: [
           {
             role: 'system',
@@ -53,7 +63,7 @@ Return ONLY the content HTML - no full page structure.`
             content: prompt
           }
         ],
-        max_tokens: 8000,
+        max_completion_tokens: 8000,
       }),
     });
 
@@ -76,20 +86,20 @@ Return ONLY the content HTML - no full page structure.`
     if (!content || content.trim().length === 0) {
       console.error('Content generation failed - empty or undefined content');
       return new Response(
-        JSON.stringify({ success: false, error: 'GPT-5 returned empty content. Please try again.' }),
+        JSON.stringify({ success: false, error: 'OpenAI returned empty content. Please try again.' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       );
     }
 
     // Generate title and excerpt based on the content and prompt
-    const metaResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const metaResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${lovableApiKey}`,
+        'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-3-flash-preview',
+        model: 'gpt-5-mini',
         messages: [
           {
             role: 'system',
@@ -109,7 +119,7 @@ ${content.substring(0, 800)}...
 Please return ONLY the JSON object with title and excerpt fields.`
           }
         ],
-        max_tokens: 1500,
+        max_completion_tokens: 1500,
       }),
     });
 
