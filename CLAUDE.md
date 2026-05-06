@@ -1,4 +1,5 @@
 @AGENTS.md
+@skills/coding-standards.md
 
 ## Claude Harness Notes
 - Claude Code project memory lives in `CLAUDE.md`; this file intentionally imports the canonical shared memory from `AGENTS.md` so Claude and Codex stay aligned.

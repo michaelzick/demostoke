@@ -1,4 +1,5 @@
 @AGENTS.md
+@skills/coding-standards.md
 
 ## Gemini Harness Notes
 - Gemini CLI project memory lives in `GEMINI.md`; this file intentionally imports the canonical shared memory from `AGENTS.md` so Gemini and Codex stay aligned.
