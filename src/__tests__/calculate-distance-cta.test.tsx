@@ -125,11 +125,14 @@ describe("Property 1: No auto-request on mount without cache", () => {
  */
 describe("Property 6: Fresh cache skips permission prompt", () => {
   let getCurrentPositionMock: ReturnType<typeof vi.fn>;
+  const fixedNow = new Date("2026-01-01T00:00:00.000Z");
 
   beforeEach(async () => {
     const real = await vi.importActual<typeof import("../hooks/useGeolocation")>("../hooks/useGeolocation");
     vi.mocked(useGeolocation).mockImplementation(real.useGeolocation);
 
+    vi.useFakeTimers();
+    vi.setSystemTime(fixedNow);
     localStorage.clear();
 
     getCurrentPositionMock = vi.fn();
@@ -142,6 +145,7 @@ describe("Property 6: Fresh cache skips permission prompt", () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.useRealTimers();
     localStorage.clear();
   });
 
