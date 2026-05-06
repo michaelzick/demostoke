@@ -61,11 +61,14 @@ const SearchResultsPage = () => {
 
   // Perform search when query changes
   useEffect(() => {
+    let isMounted = true;
+
     const fetchResults = async () => {
       if (!query) {
         // If no query, get all equipment based on global app setting
         try {
           const equipmentResults = await getEquipmentData();
+          if (!isMounted) return;
           // Convert Equipment[] to AISearchResult[] for consistency
           const aiSearchResults: AISearchResult[] = equipmentResults.map(item => ({
             ...item,
@@ -75,6 +78,7 @@ const SearchResultsPage = () => {
           setResults(aiSearchResults);
           setIsAISearch(false);
         } catch (error) {
+          if (!isMounted) return;
           console.error("Failed to load equipment:", error);
           setResults([]);
         }
@@ -107,8 +111,10 @@ const SearchResultsPage = () => {
           query,
           userLocation,
         );
+        if (!isMounted) return;
         setResults(equipmentResults);
       } catch (error) {
+        if (!isMounted) return;
         console.error("Search failed:", error);
         toast({
           title: "Search Error",
@@ -117,11 +123,17 @@ const SearchResultsPage = () => {
         });
         setResults([]);
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchResults();
+
+    return () => {
+      isMounted = false;
+    };
   }, [query, toast]);
 
   // Get equipment with dynamic distances

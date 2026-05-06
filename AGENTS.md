@@ -6,6 +6,10 @@
 - Whenever you make code changes, check whether this memory is now stale. If routes, structure, commands, environment variables, schema, integrations, or durable behavior changed, update this file in the same change. Treat stale agent memory as a bug.
 - If you add harness-specific rules later, keep this file as the shared source of truth and keep `CLAUDE.md` / `GEMINI.md` aligned.
 
+## Coding Standards
+- The canonical coding standards for this repository are defined in `skills/coding-standards.md`.
+- All agents and engineers must adhere to these standards before implementation, refactoring, or review.
+
 ## Project Summary
 - DemoStoke is a Vite + React + TypeScript marketplace for action-sports gear demos, rentals, listings, profiles, and related content.
 - Core product areas:
