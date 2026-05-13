@@ -126,6 +126,23 @@
 - Durable schema/type source for agents is `src/integrations/supabase/types.ts`. If migrations change tables or RPCs, update that type file and this memory.
 - Public marketplace reads often flow through `getEquipmentData()` in `src/services/equipment/equipmentDataService.ts`, which can switch between Supabase and an external shop feed.
 
+## Supabase Data API Grants (new tables only)
+
+Starting Oct 30, 2026, new tables in `public` are not auto-exposed to the Data API (supabase-js / PostgREST / GraphQL). Existing tables are grandfathered — no retroactive migration is needed.
+
+Any new `CREATE TABLE public.<name>` migration must include explicit grants in the same file, e.g.:
+
+```sql
+grant select, insert, update, delete on public.<name> to authenticated;
+grant select, insert, update, delete on public.<name> to service_role;
+grant select on public.<name> to anon;  -- only if anon should read it
+
+alter table public.<name> enable row level security;
+-- ... policies ...
+```
+
+If a grant is missing, PostgREST returns error code `42501` with the exact GRANT statement needed.
+
 ## Supabase Edge Function Inventory
 - Search / AI:
   - `ai-search`
