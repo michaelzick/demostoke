@@ -322,12 +322,14 @@ describe("HybridView viewport sync", () => {
 
     expect(await screen.findByText("Showing 3 of 3 gear in this map area")).toBeInTheDocument();
     expect(screen.getAllByTestId("equipment-card")).toHaveLength(3);
-    expect(mapHarness.fitMapBoundsMock).toHaveBeenCalled();
-    expect(mapHarness.initializeMapMock).toHaveBeenCalledWith(
-      expect.any(HTMLDivElement),
-      "test-token",
-      undefined,
-    );
+    await waitFor(() => {
+      expect(mapHarness.fitMapBoundsMock).toHaveBeenCalled();
+      expect(mapHarness.initializeMapMock).toHaveBeenCalledWith(
+        expect.any(HTMLDivElement),
+        "test-token",
+        undefined,
+      );
+    });
   });
 
   it("does not reinitialize or move the map on a non-map rerender", async () => {

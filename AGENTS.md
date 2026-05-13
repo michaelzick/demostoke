@@ -202,8 +202,80 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
 - There is a large amount of existing debug logging. Remove or preserve it intentionally, not accidentally.
 - Vite 8 uses Rolldown build options. Do not add object-form `manualChunks`; it is unsupported and breaks client builds.
 
+## Canonical Category Image URLs (Pexels)
+
+Use these URLs when seeding equipment_images rows. Primary = display_order 0, is_primary true. Secondary = display_order 1, is_primary false.
+
+| Category       | Role      | URL |
+|----------------|-----------|-----|
+| skis           | primary   | https://images.pexels.com/photos/848699/pexels-photo-848699.jpeg |
+| skis           | secondary | https://images.pexels.com/photos/36084973/pexels-photo-36084973.jpeg |
+| snowboards     | primary   | https://images.pexels.com/photos/7406683/pexels-photo-7406683.jpeg |
+| snowboards     | secondary | https://images.pexels.com/photos/7166118/pexels-photo-7166118.jpeg |
+| mountain-bikes | primary   | https://images.pexels.com/photos/30447388/pexels-photo-30447388.jpeg |
+| mountain-bikes | secondary | https://images.pexels.com/photos/25753440/pexels-photo-25753440.jpeg |
+| surfboards     | primary   | https://images.pexels.com/photos/36084973/pexels-photo-36084973.jpeg |
+| surfboards     | secondary | https://images.pexels.com/photos/8907535/pexels-photo-8907535.jpeg |
+
+Do not substitute other image sources for seed data. If new categories are added, append rows here before writing SQL.
+
 ## Test and Review Expectations
 - CI runs `npm run lint`, `npm run type-check`, `npm run build`, and `npm run test:unit`.
 - Unit tests live under `src/__tests__/` and focus heavily on SEO, SSR/server behavior, map/hybrid filtering, quiz resolution, and related regressions.
 - If you change routing, SEO, SSR, schema, or public discovery behavior, run the most relevant local checks and update tests when behavior changed intentionally.
 - Before finishing a code change, re-check whether this file needs an update.
+
+## Seed Data — Schema Gotchas (equipment table)
+
+- `specs` does **not exist** as a column in `public.equipment`. Never reference it in INSERT, UPDATE, or temp table definitions. Put spec details (frame material, travel, drivetrain, fork, wheelset) in the `description` field as prose.
+- `size` is plain text. It must contain **only comma-separated size names** — e.g., `Small, Medium, Large, XL`. Never put spec strings, dimensions, or wheel-size notes in this field. Normalize: `X-Large` → `XL`, `X-Small` → `XS`, `SM/MED/LG` → `Small/Medium/Large`; omit `X-Medium` and `XX-Large`.
+
+## Seed Data — Current Seeded Shops
+
+Full canonical record is in `demostoke-gear-adder/seeded_shops_registry.md`. Summary here for quick reference.
+
+| # | Shop | Region | Category | Gear | Status |
+|---|---|---|---|---|---|
+| 1 | Olympic Bike Shop | Lake Tahoe, CA | mountain-bikes | 19 | applied |
+| 2 | Hawaii Surfboard Rentals | Waikiki, HI | surfboards | 22 | applied |
+| 3 | Jans Mountain Outfitters | Park City, UT | skis | 24 | applied |
+| 4 | White Pine Touring | Park City, UT | mountain-bikes | 2 | pending |
+| 5 | Park City Sport | Park City, UT | skis + snowboards | 7 | pending |
+| 6 | Fair Wheel Bikes | Tucson, AZ | mountain-bikes | 4 | pending |
+| 7 | Bike Emporium | Scottsdale, AZ | mountain-bikes | 1 | pending |
+| 8 | Thunder Mountain Bikes | Sedona, AZ | mountain-bikes | 23 | pending |
+| 9 | McDowell Mountain Cycles | Fountain Hills, AZ | mountain-bikes | 2 | pending |
+| | **Total** | | | **104** | |
+
+Do not re-seed any shop already in this table. Do not seed Hawaii Surfboard Rentals under any Hawaii discovery task.
+
+## Seed Data — Pending Migration Files (apply in order)
+
+### park_city_utah batch
+```
+supabase db query --linked -f ".../migrations/20260511120000_seed_park_city_utah_shops.sql"
+supabase db query --linked -f ".../migrations/20260511120100_seed_park_city_utah_gear.sql"
+supabase db query --linked -f ".../migrations/20260512120000_seed_white_pine_touring_gear.sql"
+```
+
+### arizona_mountain_bikes batch
+```
+supabase db query --linked -f ".../migrations/20260512130000_seed_arizona_mountain_bikes_shops.sql"
+supabase db query --linked -f ".../migrations/20260512130100_seed_fair_wheel_bikes_gear.sql"
+supabase db query --linked -f ".../migrations/20260512130200_seed_bike_emporium_gear.sql"
+supabase db query --linked -f ".../migrations/20260512130300_seed_thunder_mountain_bikes_gear.sql"
+supabase db query --linked -f ".../migrations/20260512130400_seed_mcdowell_mountain_cycles_gear.sql"
+```
+
+Full absolute paths and apply order are in `demostoke-gear-adder/demostoke_seed_batches/arizona_mountain_bikes/remote_runbook.md`.
+
+⚠️ `migrations/20260512130100_seed_arizona_mountain_bikes_gear.sql` is a superseded stub — do not apply it.
+
+## Seed Data — Rejected / Future Candidates (Arizona batch)
+
+Documented in `demostoke-gear-adder/demostoke_seed_batches/arizona_mountain_bikes/rejected_candidates.md`. Key entries:
+- Absolute Bikes (Flagstaff + Sedona) — rental page shows policy only, no model names
+- Earlybird Bikes Tucson — "Transition mountain bikes" only, no individual models
+- Cosmic Cycles Flagstaff — page returned empty
+- Flagstaff Bicycle Revolution — JS SPA at rentals.flagbikerev.com; mark for retry with Claude in Chrome
+- Prescott, Show Low/Pinetop, Phoenix metro, Cave Creek — not yet researched
