@@ -62,6 +62,33 @@ interface HybridMapPanelProps {
   initialCenter?: ResolvedExploreCenter | null;
 }
 
+const EMPTY_EQUIPMENT: MapEquipment[] = [];
+const EMPTY_USER_LOCATIONS: UserLocation[] = [];
+
+let cachedMapboxToken: string | null = null;
+let pendingMapboxTokenRequest: Promise<string | null> | null = null;
+
+const fetchMapboxToken = async (): Promise<string | null> => {
+  if (cachedMapboxToken) return cachedMapboxToken;
+  if (pendingMapboxTokenRequest) return pendingMapboxTokenRequest;
+
+  pendingMapboxTokenRequest = (async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke("get-mapbox-token");
+      if (error) throw error;
+      cachedMapboxToken = data?.token ?? null;
+      return cachedMapboxToken;
+    } catch (err) {
+      console.error("Error fetching Mapbox token:", err);
+      return null;
+    } finally {
+      pendingMapboxTokenRequest = null;
+    }
+  })();
+
+  return pendingMapboxTokenRequest;
+};
+
 const buildShopCameraKey = (mapUserLocations: UserLocation[]): string =>
   mapUserLocations
     .map(
@@ -94,7 +121,9 @@ const HybridMapPanel = memo(
     onViewportBoundsChange,
     initialCenter,
   }: HybridMapPanelProps) => {
-    const [mapboxToken, setMapboxToken] = useState<string | null>(null);
+    const [mapboxToken, setMapboxToken] = useState<string | null>(
+      () => cachedMapboxToken,
+    );
     const [isMapLoaded, setIsMapLoaded] = useState(false);
     const mapContainer = useRef<HTMLDivElement>(null);
     const map = useRef<mapboxgl.Map | null>(null);
@@ -126,18 +155,17 @@ const HybridMapPanel = memo(
     );
 
     useEffect(() => {
-      const fetchMapboxToken = async () => {
-        try {
-          const { data, error } = await supabase.functions.invoke("get-mapbox-token");
-          if (error) throw error;
-          setMapboxToken(data.token);
-        } catch (err) {
-          console.error("Error fetching Mapbox token:", err);
-        }
-      };
+      if (mapboxToken) return;
 
-      fetchMapboxToken();
-    }, []);
+      let cancelled = false;
+      fetchMapboxToken().then((token) => {
+        if (!cancelled && token) setMapboxToken(token);
+      });
+
+      return () => {
+        cancelled = true;
+      };
+    }, [mapboxToken]);
 
     useEffect(() => {
       if (!mapContainer.current || !mapboxToken) return;
@@ -179,11 +207,17 @@ const HybridMapPanel = memo(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mapboxToken]);
 
+    const markerEquipment = useMemo(
+      () => (focusedEquipment ? [focusedEquipment] : EMPTY_EQUIPMENT),
+      [focusedEquipment],
+    );
+    const markerUserLocations = focusedEquipment ? EMPTY_USER_LOCATIONS : mapUserLocations;
+
     useMapMarkers({
       map: map.current,
       mapLoaded: isMapLoaded,
-      equipment: focusedEquipment ? [focusedEquipment] : [],
-      userLocations: focusedEquipment ? [] : mapUserLocations,
+      equipment: markerEquipment,
+      userLocations: markerUserLocations,
       isSingleView: false,
       activeCategory,
     });
@@ -421,6 +455,10 @@ const HybridView = ({
   );
 
   const visibleOwnerIds = useMemo(() => {
+    if (!viewportBounds) {
+      return null;
+    }
+
     return new Set(
       filterItemsByViewportBounds(mapUserLocations, viewportBounds).map(
         (user) => user.id,
@@ -439,6 +477,10 @@ const HybridView = ({
   const visibleHybridEquipment = useMemo(() => {
     if (focusedShopId) {
       return allHybridEquipment.filter((item) => item.owner.id === focusedShopId);
+    }
+
+    if (visibleOwnerIds === null) {
+      return [];
     }
 
     return allHybridEquipment.filter((item) => visibleOwnerIds.has(item.owner.id));
@@ -471,18 +513,24 @@ const HybridView = ({
     clearFocusedShop();
   }, [clearFocusedShop, resetSignal]);
 
+  const isAwaitingViewport = visibleOwnerIds === null && !focusedShopId;
   const resolvedEmptyMessage =
     emptyMessage || "Try changing your filters or explore a different category.";
   const mapAreaEmptyMessage = "No gear in this map area. Move the map or zoom out.";
+  const mapLoadingMessage = "Loading gear in this map area…";
   const hasVisibleResults = visibleHybridEquipment.length > 0;
   const hasAnyHybridResults = allHybridEquipment.length > 0;
   const isFocusedShopView = focusedShopId !== null;
-  const hybridEmptyMessage = hasAnyHybridResults
-    ? mapAreaEmptyMessage
-    : resolvedEmptyMessage;
+  const hybridEmptyMessage = isAwaitingViewport
+    ? mapLoadingMessage
+    : hasAnyHybridResults
+      ? mapAreaEmptyMessage
+      : resolvedEmptyMessage;
   const hybridSummaryMessage = isFocusedShopView
     ? `Showing ${visibleHybridEquipment.length} of ${focusedShopEquipmentCount} gear at this shop`
-    : `Showing ${visibleHybridEquipment.length} of ${allHybridEquipment.length} gear in this map area`;
+    : isAwaitingViewport
+      ? mapLoadingMessage
+      : `Showing ${visibleHybridEquipment.length} of ${allHybridEquipment.length} gear in this map area`;
 
   const handleEquipmentCardClick = (equipmentId: string) => {
     const clickedEquipment = allHybridEquipment.find((item) => item.id === equipmentId);
@@ -610,8 +658,14 @@ const HybridView = ({
           </div>
           {!hasVisibleResults && (
             <div className="text-center py-12">
-              <h3 className="text-xl font-medium mb-2">No equipment found</h3>
-              <p className="text-muted-foreground">{hybridEmptyMessage}</p>
+              {isAwaitingViewport ? (
+                <p className="text-muted-foreground">{mapLoadingMessage}</p>
+              ) : (
+                <>
+                  <h3 className="text-xl font-medium mb-2">No equipment found</h3>
+                  <p className="text-muted-foreground">{hybridEmptyMessage}</p>
+                </>
+              )}
             </div>
           )}
 
@@ -670,8 +724,14 @@ const HybridView = ({
           ))}
           {!hasVisibleResults && (
             <div className="text-center py-12">
-              <h3 className="text-xl font-medium mb-2">No equipment found</h3>
-              <p className="text-muted-foreground">{hybridEmptyMessage}</p>
+              {isAwaitingViewport ? (
+                <p className="text-muted-foreground">{mapLoadingMessage}</p>
+              ) : (
+                <>
+                  <h3 className="text-xl font-medium mb-2">No equipment found</h3>
+                  <p className="text-muted-foreground">{hybridEmptyMessage}</p>
+                </>
+              )}
             </div>
           )}
         </div>
