@@ -184,16 +184,6 @@ const ExplorePage = () => {
         break;
     }
 
-    console.log("Sorting by:", sortBy);
-    console.log(
-      "First 3 items after sorting:",
-      results.slice(0, 3).map(item => ({
-        name: item.name,
-        distance: item.distance,
-        category: item.category,
-      }))
-    );
-
     return results;
   }, [baseFilteredEquipment, quickFilter, sortBy]);
 

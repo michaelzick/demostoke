@@ -53,6 +53,11 @@ const mapHarness = vi.hoisted(() => {
     };
   };
 
+  let deferLoad = false;
+  const setDeferLoad = (value: boolean) => {
+    deferLoad = value;
+  };
+
   const mapMock = {
     on: vi.fn((event: string, callback: () => void) => {
       if (!listeners.has(event)) {
@@ -61,7 +66,7 @@ const mapHarness = vi.hoisted(() => {
 
       listeners.get(event)!.add(callback);
 
-      if (event === "load") {
+      if (event === "load" && !deferLoad) {
         callback();
       }
 
@@ -106,6 +111,7 @@ const mapHarness = vi.hoisted(() => {
   const reset = () => {
     currentBounds = worldBounds;
     listeners.clear();
+    deferLoad = false;
     mapMock.on.mockClear();
     mapMock.off.mockClear();
     mapMock.remove.mockClear();
@@ -124,6 +130,7 @@ const mapHarness = vi.hoisted(() => {
     mapMock,
     reset,
     setBounds,
+    setDeferLoad,
   };
 });
 
@@ -315,6 +322,26 @@ const renderHybridViewWithProps = (
 describe("HybridView viewport sync", () => {
   beforeEach(() => {
     mapHarness.reset();
+  });
+
+  it("renders no gear cards while the map viewport bounds are unknown", async () => {
+    mapHarness.setDeferLoad(true);
+
+    renderHybridView();
+
+    const loadingMatches = await screen.findAllByText(
+      "Loading gear in this map area…",
+    );
+    expect(loadingMatches.length).toBeGreaterThan(0);
+    expect(screen.queryAllByTestId("equipment-card")).toHaveLength(0);
+
+    act(() => {
+      mapHarness.emit("load");
+    });
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId("equipment-card").length).toBeGreaterThan(0);
+    });
   });
 
   it("shows the in-bounds gear after the initial fit", async () => {
