@@ -1,5 +1,9 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import {
+  buildGearImageSearchQuery,
+  filterHighResolutionGearImageResults,
+} from "../_shared/googleImageFilters.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -38,14 +42,11 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error('Google Search API configuration missing');
     }
 
-    // Build smart search query
-    let searchQuery = query;
-    if (gearType) {
-      searchQuery = `${query} ${gearType} product`;
-    }
+    const searchQuery = buildGearImageSearchQuery(query, gearType);
 
     const resultsPerPage = 10;
-    const pages = Math.ceil(count / resultsPerPage);
+    const candidateCount = Math.min(Math.max(count * 3, resultsPerPage), 30);
+    const pages = Math.ceil(candidateCount / resultsPerPage);
     const results: SearchResult[] = [];
 
     for (let page = 0; page < pages; page++) {
@@ -81,22 +82,23 @@ const handler = async (req: Request): Promise<Response> => {
         height: item.image?.height,
       }));
 
-      // Filter for HTTPS-only URLs (both main image and thumbnail)
-      const httpsResults = pageResults.filter((result: SearchResult) => 
-        result.url.startsWith('https://') && 
-        result.thumbnail.startsWith('https://')
-      );
+      results.push(...pageResults);
 
-      results.push(...httpsResults);
-
-      if (results.length >= count) {
+      if (results.length >= candidateCount) {
         break;
       }
     }
 
-    console.log(`Found ${results.length} images for query: ${searchQuery}`);
+    const filteredResults = filterHighResolutionGearImageResults(
+      results,
+      count,
+    );
 
-    return new Response(JSON.stringify({ results }), {
+    console.log(
+      `Found ${filteredResults.length} high-resolution gear images from ${results.length} candidates for query: ${searchQuery}`
+    );
+
+    return new Response(JSON.stringify({ results: filteredResults }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',

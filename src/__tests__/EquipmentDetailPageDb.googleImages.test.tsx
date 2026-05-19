@@ -175,6 +175,19 @@ const imageSources = () =>
     .map((img) => img.getAttribute("src"))
     .filter(Boolean);
 
+const googleImageResult = (
+  url: string,
+  overrides: Record<string, unknown> = {},
+) => ({
+  url,
+  thumbnail: url.replace("/gear-", "/thumbs/gear-"),
+  title: "Burton Custom snowboard product image",
+  source: "burton.example.com",
+  width: 1600,
+  height: 1000,
+  ...overrides,
+});
+
 describe("EquipmentDetailPageDb Google image swap", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -184,8 +197,12 @@ describe("EquipmentDetailPageDb Google image swap", () => {
     testHarness.invokeMock.mockResolvedValue({
       data: {
         results: [
-          { url: "https://images.example.com/burton-custom-1.jpg" },
-          { url: "https://images.example.com/burton-custom-2.jpg" },
+          googleImageResult(
+            "https://images.example.com/burton-custom-1.jpg",
+          ),
+          googleImageResult(
+            "https://images.example.com/burton-custom-2.jpg",
+          ),
         ],
       },
       error: null,
@@ -223,11 +240,13 @@ describe("EquipmentDetailPageDb Google image swap", () => {
     testHarness.invokeMock.mockResolvedValue({
       data: {
         results: [
-          { url: "http://images.example.com/insecure.jpg" },
-          { url: "https://images.example.com/gear-1.jpg" },
-          { url: "https://images.example.com/gear-1.jpg" },
+          googleImageResult("http://images.example.com/insecure.jpg"),
+          googleImageResult("https://images.example.com/gear-1.jpg"),
+          googleImageResult("https://images.example.com/gear-1.jpg"),
           ...Array.from({ length: 11 }, (_, index) => ({
-            url: `https://images.example.com/gear-${index + 2}.jpg`,
+            ...googleImageResult(
+              `https://images.example.com/gear-${index + 2}.jpg`,
+            ),
           })),
         ],
       },
@@ -250,6 +269,41 @@ describe("EquipmentDetailPageDb Google image swap", () => {
         (_, index) => `https://images.example.com/gear-${index + 1}.jpg`,
       ),
     );
+  });
+
+  it("ignores low-resolution, missing-dimension, duplicate, non-HTTPS, and blocked-media results", async () => {
+    testHarness.invokeMock.mockResolvedValue({
+      data: {
+        results: [
+          googleImageResult("http://images.example.com/insecure.jpg"),
+          googleImageResult("https://images.example.com/low-res.jpg", {
+            width: 900,
+            height: 600,
+          }),
+          googleImageResult("https://images.example.com/missing-width.jpg", {
+            width: undefined,
+          }),
+          googleImageResult("https://i.ytimg.com/vi/demo/maxresdefault.jpg", {
+            thumbnail: "https://i.ytimg.com/vi/demo/hqdefault.jpg",
+            title: "Burton Custom video review thumbnail",
+            source: "youtube.com",
+          }),
+          googleImageResult("https://images.example.com/valid.jpg"),
+          googleImageResult("https://images.example.com/valid.jpg"),
+        ],
+      },
+      error: null,
+    });
+
+    renderDetailPage();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "View Real Gear Images" }),
+    );
+
+    await waitFor(() => {
+      expect(imageSources()).toEqual(["https://images.example.com/valid.jpg"]);
+    });
   });
 
   it("keeps the original carousel images when the search returns no URLs", async () => {

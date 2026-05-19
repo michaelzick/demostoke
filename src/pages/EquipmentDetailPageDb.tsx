@@ -34,6 +34,10 @@ import { useNavigate } from "react-router-dom";
 import { buildEquipmentTrackingFrom, trackEvent } from "@/utils/tracking";
 import { buildGearPath } from "@/utils/gearUrl";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  filterHighResolutionGearImageResults,
+  type GoogleImageSearchResult,
+} from "../../supabase/functions/_shared/googleImageFilters";
 
 interface EquipmentDetailPageDbProps {
   equipment: Equipment;
@@ -48,10 +52,6 @@ interface EquipmentDetailPageDbProps {
   gearDisplayName?: string;
 }
 
-type GoogleImageSearchResult = {
-  url?: unknown;
-};
-
 type GoogleImageSearchResponse = {
   results?: GoogleImageSearchResult[];
 };
@@ -59,19 +59,9 @@ type GoogleImageSearchResponse = {
 const getSearchResultImageUrls = (
   results: GoogleImageSearchResult[] | undefined,
 ) => {
-  const uniqueUrls = new Set<string>();
-
-  for (const result of results ?? []) {
-    if (typeof result.url === "string" && result.url.startsWith("https://")) {
-      uniqueUrls.add(result.url);
-    }
-
-    if (uniqueUrls.size === 10) {
-      break;
-    }
-  }
-
-  return Array.from(uniqueUrls);
+  return filterHighResolutionGearImageResults(results, 10).map(
+    (result) => result.url,
+  );
 };
 
 const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({

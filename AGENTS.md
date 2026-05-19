@@ -65,6 +65,7 @@
   - legacy route `/:category/:ownerSlug/:slug` still resolves and is canonicalized forward
   - main files are `EquipmentDetailPage.tsx`, `EquipmentDetailPageDb.tsx`, `components/equipment-detail/*`, `utils/gearUrl.ts`, `lib/seo/*`
   - `EquipmentDetailPageDb.tsx` includes a session-only "View Real Gear Images" action that calls the `google-image-search` edge function and temporarily swaps the carousel/modal image URLs without writing to `equipment_images`
+  - Google image search results for gear must pass the shared high-resolution gear-image filter: HTTPS URLs, reported dimensions, landscape width >= 1200px or portrait height >= 1200px, and no obvious video/thumbnail/logo/banner/avatar/icon/poster metadata
 - Profiles and owner surfaces:
   - `RealUserProfilePage.tsx` handles public vs own profile, profile editing, image upload, privacy settings, and equipment filtering
   - related UI is in `components/profile/*`
