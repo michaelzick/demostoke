@@ -45,6 +45,9 @@ const get = async (pathname: string) => {
 beforeAll(async () => {
   process.env.NODE_ENV = "test";
   ({ app } = await import("../../server/index.js"));
+  // Warm up the lazy entry-server.js import so the first real test isn't
+  // charged for it and pushed past the per-test timeout.
+  await get("/");
 }, 30000);
 
 describe("SEO server behavior", () => {
