@@ -64,6 +64,7 @@
   - canonical route is `/gear/:gearSlug`
   - legacy route `/:category/:ownerSlug/:slug` still resolves and is canonicalized forward
   - main files are `EquipmentDetailPage.tsx`, `EquipmentDetailPageDb.tsx`, `components/equipment-detail/*`, `utils/gearUrl.ts`, `lib/seo/*`
+  - `EquipmentDetailPageDb.tsx` includes a session-only "View Real Gear Images" action that calls the `google-image-search` edge function and temporarily swaps the carousel/modal image URLs without writing to `equipment_images`
 - Profiles and owner surfaces:
   - `RealUserProfilePage.tsx` handles public vs own profile, profile editing, image upload, privacy settings, and equipment filtering
   - related UI is in `components/profile/*`

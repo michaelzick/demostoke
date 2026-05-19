@@ -23,16 +23,17 @@ import {
 } from "@/components/ui/carousel";
 import { getCategoryDisplayName, getCategoryActivityName } from "@/helpers";
 import { Equipment } from "@/types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/auth";
 import { useIsAdmin } from "@/hooks/useUserRole";
 import { Link } from "react-router-dom";
-import { Edit, Eye, EyeOff, Trash2 } from "lucide-react";
+import { Edit, Eye, EyeOff, Loader2, Trash2 } from "lucide-react";
 import { useDeleteEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { buildEquipmentTrackingFrom, trackEvent } from "@/utils/tracking";
 import { buildGearPath } from "@/utils/gearUrl";
+import { supabase } from "@/integrations/supabase/client";
 
 interface EquipmentDetailPageDbProps {
   equipment: Equipment;
@@ -46,6 +47,32 @@ interface EquipmentDetailPageDbProps {
   lastVerifiedDate: string;
   gearDisplayName?: string;
 }
+
+type GoogleImageSearchResult = {
+  url?: unknown;
+};
+
+type GoogleImageSearchResponse = {
+  results?: GoogleImageSearchResult[];
+};
+
+const getSearchResultImageUrls = (
+  results: GoogleImageSearchResult[] | undefined,
+) => {
+  const uniqueUrls = new Set<string>();
+
+  for (const result of results ?? []) {
+    if (typeof result.url === "string" && result.url.startsWith("https://")) {
+      uniqueUrls.add(result.url);
+    }
+
+    if (uniqueUrls.size === 10) {
+      break;
+    }
+  }
+
+  return Array.from(uniqueUrls);
+};
 
 const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
   equipment,
@@ -62,6 +89,10 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [carouselImages, setCarouselImages] = useState<string[]>(
+    equipment.images && equipment.images.length > 0 ? equipment.images : [],
+  );
+  const [isLoadingRealImages, setIsLoadingRealImages] = useState(false);
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
   const { toast } = useToast();
@@ -70,15 +101,66 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
   const updateVisibilityMutation = useUpdateEquipmentVisibility();
 
   // Use images array from equipment_images table
-  const images =
-    equipment.images && equipment.images.length > 0 ? equipment.images : [];
+  const images = carouselImages;
 
   const hasMultipleImages = images.length > 1;
   const hasImages = images.length > 0;
 
+  useEffect(() => {
+    setCarouselImages(
+      equipment.images && equipment.images.length > 0 ? equipment.images : [],
+    );
+    setSelectedImageIndex(0);
+  }, [equipment.id, equipment.images]);
+
   const handleImageClick = (index: number = 0) => {
     setSelectedImageIndex(index);
     setShowImageModal(true);
+  };
+
+  const handleViewRealGearImages = async () => {
+    setIsLoadingRealImages(true);
+
+    try {
+      const { data, error } =
+        await supabase.functions.invoke<GoogleImageSearchResponse>(
+          "google-image-search",
+          {
+            body: {
+              query: equipment.name,
+              gearType: equipment.category,
+              count: 10,
+              size: "large",
+            },
+          },
+        );
+
+      if (error) {
+        throw error;
+      }
+
+      const imageUrls = getSearchResultImageUrls(data?.results);
+
+      if (imageUrls.length === 0) {
+        toast({
+          title: "No Real Images Found",
+          description: "Try again later or keep browsing the current listing images.",
+        });
+        return;
+      }
+
+      setCarouselImages(imageUrls);
+      setSelectedImageIndex(0);
+    } catch (error) {
+      console.error("Google image search error:", error);
+      toast({
+        title: "Image Search Failed",
+        description: "We could not load real gear images right now. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingRealImages(false);
+    }
   };
 
   // Create tracking data for analytics
@@ -222,48 +304,65 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
         {/* Main Content */}
         <article className="lg:col-span-2 space-y-8">
           {/* Image Gallery */}
-          <div className="overflow-hidden rounded-lg">
-            {hasImages ? (
-              hasMultipleImages ? (
-                <Carousel className="w-full" opts={{ loop: true }}>
-                  <CarouselContent>
-                    {images.map((imageUrl, index) => (
-                      <CarouselItem key={index}>
-                        <div
-                          className="cursor-pointer hover:opacity-90 transition-opacity"
-                          onClick={() => handleImageClick(index)}
-                        >
-                          <img
-                            src={imageUrl}
-                            alt={`${resolvedGearName} - ${getCategoryActivityName(equipment.category)} Gear Image ${index + 1}`}
-                            loading="lazy"
-                            className="w-full h-96 object-cover"
-                          />
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  <CarouselPrevious className="left-2" />
-                  <CarouselNext className="right-2" />
-                </Carousel>
+          <div className="space-y-3">
+            <div className="overflow-hidden rounded-lg">
+              {hasImages ? (
+                hasMultipleImages ? (
+                  <Carousel className="w-full" opts={{ loop: true }}>
+                    <CarouselContent>
+                      {images.map((imageUrl, index) => (
+                        <CarouselItem key={`${imageUrl}-${index}`}>
+                          <div
+                            className="cursor-pointer hover:opacity-90 transition-opacity"
+                            onClick={() => handleImageClick(index)}
+                          >
+                            <img
+                              src={imageUrl}
+                              alt={`${resolvedGearName} - ${getCategoryActivityName(equipment.category)} Gear Image ${index + 1}`}
+                              loading="lazy"
+                              className="w-full h-96 object-cover"
+                            />
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="left-2" />
+                    <CarouselNext className="right-2" />
+                  </Carousel>
+                ) : (
+                  <div
+                    className="cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => handleImageClick(0)}
+                  >
+                    <img
+                      src={images[0]}
+                      alt={`${resolvedGearName} - ${getCategoryActivityName(equipment.category)} Gear`}
+                      loading="lazy"
+                      className="w-full h-96 object-cover"
+                    />
+                  </div>
+                )
               ) : (
-                <div
-                  className="cursor-pointer hover:opacity-90 transition-opacity"
-                  onClick={() => handleImageClick(0)}
-                >
-                  <img
-                    src={images[0]}
-                    alt={`${resolvedGearName} - ${getCategoryActivityName(equipment.category)} Gear`}
-                    loading="lazy"
-                    className="w-full h-96 object-cover"
-                  />
+                <div className="w-full h-96 bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-500">No image available</span>
                 </div>
-              )
-            ) : (
-              <div className="w-full h-96 bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-500">No image available</span>
-              </div>
-            )}
+              )}
+            </div>
+            <Button
+              type="button"
+              className="w-full h-12 text-base font-semibold"
+              onClick={handleViewRealGearImages}
+              disabled={isLoadingRealImages}
+            >
+              {isLoadingRealImages ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Loading Real Gear Images
+                </>
+              ) : (
+                "View Real Gear Images"
+              )}
+            </Button>
           </div>
           {/* Equipment Info */}
           <section aria-labelledby="gear-title">
