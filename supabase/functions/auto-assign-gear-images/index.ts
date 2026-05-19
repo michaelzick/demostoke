@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { filterHighResolutionGearImageResults } from "../_shared/googleImageFilters.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -148,27 +149,10 @@ Deno.serve(async (req) => {
 
     console.log(`Got ${searchResults.length} search results`);
 
-    // Filter for HTTPS and minimum dimensions (1000x1000)
-    const filteredResults = searchResults.filter((img) => {
-      // Must be HTTPS
-      if (!img.url.startsWith("https://")) {
-        return false;
-      }
-
-      // Must have dimensions reported and be at least 1000x1000
-      if (!img.width || !img.height) {
-        return false;
-      }
-
-      if (img.width < 1000 || img.height < 1000) {
-        return false;
-      }
-
-      return true;
-    });
+    const filteredResults = filterHighResolutionGearImageResults(searchResults);
 
     console.log(
-      `${filteredResults.length} images pass HTTPS and dimension filters`
+      `${filteredResults.length} images pass high-resolution gear-image filters`
     );
 
     // Validate URLs and collect up to 3 valid images
