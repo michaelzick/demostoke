@@ -49,8 +49,7 @@ export const buildLegacyGearNamePattern = (slug = '') => {
 export const buildGearSummaryText = ({
   displayName,
   locationText,
-  lastVerified,
-}) => `${displayName} is available in ${locationText || 'United States'}. Last verified ${lastVerified}.`;
+}) => `${displayName} is available in ${locationText || 'United States'}.`;
 
 export const buildGearMetaDescription = ({
   summaryText,

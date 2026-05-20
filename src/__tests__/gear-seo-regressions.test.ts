@@ -102,7 +102,7 @@ describe("Gear SEO helpers", () => {
           reviewText: "Fast paddler and easy to control in shoulder-high surf.",
         },
       ],
-      summaryText: "Test Board 5'8 is available in Encinitas, CA. Last verified 2026-03-30.",
+      summaryText: "Test Board 5'8 is available in Encinitas, CA.",
     });
 
     expect(schema.review).toEqual([
@@ -124,7 +124,7 @@ describe("Gear SEO helpers", () => {
       pricePerDay: 55,
       rating: 0,
       reviewCount: 0,
-      summaryText: "Unreviewed Board 5'6 is available in Encinitas, CA. Last verified 2026-03-30.",
+      summaryText: "Unreviewed Board 5'6 is available in Encinitas, CA.",
     });
 
     expect(schema.aggregateRating).toMatchObject({
@@ -146,7 +146,7 @@ describe("Gear SEO helpers", () => {
       pricePerDay: 55,
       rating: "bad",
       reviewCount: "bad",
-      summaryText: "Untrusted Board 5'6 is available in Encinitas, CA. Last verified 2026-03-30.",
+      summaryText: "Untrusted Board 5'6 is available in Encinitas, CA.",
     });
 
     expect(invalidSchema.aggregateRating).toBeUndefined();
@@ -161,7 +161,7 @@ describe("Gear SEO helpers", () => {
       pricePerDay: 55,
       rating: -1,
       reviewCount: 0,
-      summaryText: "Untrusted Board 5'6 is available in Encinitas, CA. Last verified 2026-03-30.",
+      summaryText: "Untrusted Board 5'6 is available in Encinitas, CA.",
     });
 
     expect(negativeRatingSchema.aggregateRating).toBeUndefined();
@@ -176,7 +176,7 @@ describe("Gear SEO helpers", () => {
       pricePerDay: 55,
       rating: 6,
       reviewCount: 1,
-      summaryText: "Untrusted Board 5'6 is available in Encinitas, CA. Last verified 2026-03-30.",
+      summaryText: "Untrusted Board 5'6 is available in Encinitas, CA.",
     });
 
     expect(aboveMaxRatingSchema.aggregateRating).toBeUndefined();
