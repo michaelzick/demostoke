@@ -49,8 +49,7 @@ export const buildLegacyGearNamePattern = (slug = '') => {
 export const buildGearSummaryText = ({
   displayName,
   locationText,
-  lastVerified,
-}) => `${displayName} is available in ${locationText || 'United States'}. Last verified ${lastVerified}.`;
+}) => `${displayName} is available in ${locationText || 'United States'}.`;
 
 export const buildGearMetaDescription = ({
   summaryText,
@@ -178,8 +177,10 @@ export const buildGearProductSchema = ({
     category,
     offers: offerSchema,
     aggregateRating:
-      normalizedReviewCount > 0 &&
-      normalizedRating > 0 &&
+      Number.isFinite(normalizedReviewCount) &&
+      Number.isFinite(normalizedRating) &&
+      normalizedRating >= 0 &&
+      normalizedReviewCount >= 0 &&
       normalizedRating <= 5
         ? {
             '@type': 'AggregateRating',

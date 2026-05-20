@@ -102,7 +102,7 @@ describe("Gear SEO helpers", () => {
           reviewText: "Fast paddler and easy to control in shoulder-high surf.",
         },
       ],
-      summaryText: "Test Board 5'8 is available in Encinitas, CA. Last verified 2026-03-30.",
+      summaryText: "Test Board 5'8 is available in Encinitas, CA.",
     });
 
     expect(schema.review).toEqual([
@@ -111,6 +111,75 @@ describe("Gear SEO helpers", () => {
         author: { "@type": "Person", name: "Taylor Rider" },
       }),
     ]);
+  });
+
+  it("emits aggregateRating for unrated gear with zero reviews", () => {
+    const schema = buildGearProductSchema({
+      canonicalUrl: "https://www.demostoke.com/gear/unreviewed-board--123e4567-e89b-12d3-a456-426614174000",
+      category: "surfboards",
+      displayName: "Unreviewed Board 5'6",
+      imageUrls: ["https://cdn.example.com/unreviewed-board.webp"],
+      isAvailable: true,
+      lastVerified: "2026-03-30",
+      pricePerDay: 55,
+      rating: 0,
+      reviewCount: 0,
+      summaryText: "Unreviewed Board 5'6 is available in Encinitas, CA.",
+    });
+
+    expect(schema.aggregateRating).toMatchObject({
+      "@type": "AggregateRating",
+      ratingValue: 0,
+      reviewCount: 0,
+    });
+    expect(schema.review).toBeUndefined();
+  });
+
+  it("does not emit aggregateRating for invalid rating/review values", () => {
+    const invalidSchema = buildGearProductSchema({
+      canonicalUrl: "https://www.demostoke.com/gear/untrusted-board--123e4567-e89b-12d3-a456-426614174000",
+      category: "surfboards",
+      displayName: "Untrusted Board 5'6",
+      imageUrls: ["https://cdn.example.com/untrusted-board.webp"],
+      isAvailable: true,
+      lastVerified: "2026-03-30",
+      pricePerDay: 55,
+      rating: "bad",
+      reviewCount: "bad",
+      summaryText: "Untrusted Board 5'6 is available in Encinitas, CA.",
+    });
+
+    expect(invalidSchema.aggregateRating).toBeUndefined();
+
+    const negativeRatingSchema = buildGearProductSchema({
+      canonicalUrl: "https://www.demostoke.com/gear/untrusted-board--123e4567-e89b-12d3-a456-426614174000",
+      category: "surfboards",
+      displayName: "Untrusted Board 5'6",
+      imageUrls: ["https://cdn.example.com/untrusted-board.webp"],
+      isAvailable: true,
+      lastVerified: "2026-03-30",
+      pricePerDay: 55,
+      rating: -1,
+      reviewCount: 0,
+      summaryText: "Untrusted Board 5'6 is available in Encinitas, CA.",
+    });
+
+    expect(negativeRatingSchema.aggregateRating).toBeUndefined();
+
+    const aboveMaxRatingSchema = buildGearProductSchema({
+      canonicalUrl: "https://www.demostoke.com/gear/untrusted-board--123e4567-e89b-12d3-a456-426614174000",
+      category: "surfboards",
+      displayName: "Untrusted Board 5'6",
+      imageUrls: ["https://cdn.example.com/untrusted-board.webp"],
+      isAvailable: true,
+      lastVerified: "2026-03-30",
+      pricePerDay: 55,
+      rating: 6,
+      reviewCount: 1,
+      summaryText: "Untrusted Board 5'6 is available in Encinitas, CA.",
+    });
+
+    expect(aboveMaxRatingSchema.aggregateRating).toBeUndefined();
   });
 });
 
