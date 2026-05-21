@@ -145,6 +145,13 @@ alter table public.<name> enable row level security;
 
 If a grant is missing, PostgREST returns error code `42501` with the exact GRANT statement needed.
 
+## Supabase Migration Reconciliation
+
+- The linked DemoStoke project is `qtlhqsqanbxgfbcjigrl`.
+- As of May 21, 2026, linked app schema/data reflect the current DemoStoke state, but linked migration metadata is stale and records only legacy `001` through `011` entries. Do not trust `supabase migration list --linked` alone as proof that local migrations need to be applied.
+- Do not run `supabase db push` while linked migration metadata is stale. Do not run `supabase migration repair --linked` unless the user explicitly approves remote metadata repair.
+- Before applying any migration or seed to the linked DB, first verify whether the intended schema/data already exists. For data-only seed work, use the rollback-first transaction pattern documented in `supabase/MIGRATION_RECONCILIATION.md`.
+
 ## Supabase Edge Function Inventory
 - Search / AI:
   - `ai-search`
