@@ -145,6 +145,13 @@ alter table public.<name> enable row level security;
 
 If a grant is missing, PostgREST returns error code `42501` with the exact GRANT statement needed.
 
+## Supabase Migration Reconciliation
+
+- The linked DemoStoke project is `qtlhqsqanbxgfbcjigrl`.
+- On May 21, 2026, linked migration metadata was repaired: legacy `001` through `011` entries were marked reverted, timestamped local migrations through `20260520010000` were marked applied, and already-applied Hermes seed migrations for Park City, Arizona, Oregon, Colorado, Ventura County, and Texas were copied into this repo and marked applied. Migration history has 240 timestamped entries and is aligned through `20260520232100`.
+- Before running migration-history-driven commands, run `supabase migration list --linked`; it should show local and remote aligned except for intentionally new local migrations.
+- If historical drift reappears, do not apply local migrations to the linked DB just because they appear local-only. First verify whether the intended schema/data already exists. For data-only seed work, use the rollback-first transaction pattern documented in `supabase/MIGRATION_RECONCILIATION.md`.
+
 ## Supabase Edge Function Inventory
 - Search / AI:
   - `ai-search`
@@ -234,44 +241,39 @@ Do not substitute other image sources for seed data. If new categories are added
 
 ## Seed Data — Current Seeded Shops
 
-Full canonical record is in `demostoke-gear-adder/seeded_shops_registry.md`. Summary here for quick reference.
+This summary reflects read-only linked DemoStoke data checks during the May 21, 2026 migration reconciliation.
 
 | # | Shop | Region | Category | Gear | Status |
 |---|---|---|---|---|---|
-| 1 | Olympic Bike Shop | Lake Tahoe, CA | mountain-bikes | 19 | applied |
-| 2 | Hawaii Surfboard Rentals | Waikiki, HI | surfboards | 22 | applied |
+| 1 | Olympic Bike Shop | Lake Tahoe, CA | mountain-bikes | 8 | applied |
+| 2 | Hawaii Surfboard Rentals | Waikiki, HI | surfboards | 18 | applied |
 | 3 | Jans Mountain Outfitters | Park City, UT | skis | 24 | applied |
-| 4 | White Pine Touring | Park City, UT | mountain-bikes | 2 | pending |
-| 5 | Park City Sport | Park City, UT | skis + snowboards | 7 | pending |
-| 6 | Fair Wheel Bikes | Tucson, AZ | mountain-bikes | 4 | pending |
-| 7 | Bike Emporium | Scottsdale, AZ | mountain-bikes | 1 | pending |
-| 8 | Thunder Mountain Bikes | Sedona, AZ | mountain-bikes | 23 | pending |
-| 9 | McDowell Mountain Cycles | Fountain Hills, AZ | mountain-bikes | 2 | pending |
-| | **Total** | | | **104** | |
+| 4 | White Pine Touring | Park City, UT | mountain-bikes | 2 | applied |
+| 5 | Park City Sport | Park City, UT | skis + snowboards | 0 | profile applied; no current gear |
+| 6 | Fair Wheel Bikes | Tucson, AZ | mountain-bikes | 4 | applied |
+| 7 | Bike Emporium | Scottsdale, AZ | mountain-bikes | 1 | applied |
+| 8 | Thunder Mountain Bikes | Sedona, AZ | mountain-bikes | 23 | applied |
+| 9 | McDowell Mountain Cycles | Fountain Hills, AZ | mountain-bikes | 2 | applied |
+| 10 | Cog Wild Bend | Bend, OR | mountain-bikes | 2 | applied |
+| 11 | Cog Wild Oakridge | Oakridge, OR | mountain-bikes | 5 | applied |
+| 12 | Sunnyside Sports | Bend, OR | mountain-bikes | 7 | applied |
+| 13 | Venture Sports Avon | Avon, CO | skis + snowboards + mountain-bikes | 18 | applied |
+| 14 | Bentgate Mountaineering | Golden, CO | skis | 15 | applied |
+| 15 | Cripple Creek Bike and Backcountry Aspen | Aspen, CO | mountain-bikes | 2 | applied |
+| 16 | Walden Surfboards | Ventura, CA | surfboards | 4 | applied |
+| 17 | Spider Mountain Bike Park | Burnet, TX | mountain-bikes | 6 | applied |
+| | **Total** | | | **141** | |
 
 Do not re-seed any shop already in this table. Do not seed Hawaii Surfboard Rentals under any Hawaii discovery task.
 
-## Seed Data — Pending Migration Files (apply in order)
+## Seed Data — Historical Hermes Migration Notes
 
-### park_city_utah batch
-```
-supabase db query --linked -f ".../migrations/20260511120000_seed_park_city_utah_shops.sql"
-supabase db query --linked -f ".../migrations/20260511120100_seed_park_city_utah_gear.sql"
-supabase db query --linked -f ".../migrations/20260512120000_seed_white_pine_touring_gear.sql"
-```
+The final-state Hermes seed migrations for Park City/Jans/White Pine, Arizona, Oregon, Colorado, Ventura County, and Texas are now tracked under `supabase/migrations/` and marked applied in linked migration metadata. Do not apply them again to linked data.
 
-### arizona_mountain_bikes batch
-```
-supabase db query --linked -f ".../migrations/20260512130000_seed_arizona_mountain_bikes_shops.sql"
-supabase db query --linked -f ".../migrations/20260512130100_seed_fair_wheel_bikes_gear.sql"
-supabase db query --linked -f ".../migrations/20260512130200_seed_bike_emporium_gear.sql"
-supabase db query --linked -f ".../migrations/20260512130300_seed_thunder_mountain_bikes_gear.sql"
-supabase db query --linked -f ".../migrations/20260512130400_seed_mcdowell_mountain_cycles_gear.sql"
-```
-
-Full absolute paths and apply order are in `demostoke-gear-adder/demostoke_seed_batches/arizona_mountain_bikes/remote_runbook.md`.
-
-⚠️ `migrations/20260512130100_seed_arizona_mountain_bikes_gear.sql` is a superseded stub — do not apply it.
+These Hermes-only files were intentionally not imported:
+- `20260511120100_seed_park_city_utah_gear.sql` — old package/Park City Sport gear state that is not present in linked data.
+- `20260512100100_seed_jans_mountain_outfitters_gear.sql` — old 5-row Jans package seed replaced by `20260512110000_replace_jans_gear_granular.sql`.
+- `20260512130100_seed_arizona_mountain_bikes_gear.sql` — superseded stub with the same timestamp as the real Fair Wheel Bikes gear migration.
 
 ## Seed Data — Rejected / Future Candidates (Arizona batch)
 
