@@ -241,7 +241,7 @@ Do not substitute other image sources for seed data. If new categories are added
 
 ## Seed Data — Current Seeded Shops
 
-This summary reflects read-only linked DemoStoke data checks during the May 21, 2026 migration reconciliation.
+This summary reflects read-only linked DemoStoke data checks after the May 24, 2026 Canada seed apply. The Wax Bench row is an existing live profile retargeted by the Canada batch; its gear count is the current profile count after 17 inserts and 11 updates, not a newly created shop.
 
 | # | Shop | Region | Category | Gear | Status |
 |---|---|---|---|---|---|
@@ -262,7 +262,20 @@ This summary reflects read-only linked DemoStoke data checks during the May 21, 
 | 15 | Cripple Creek Bike and Backcountry Aspen | Aspen, CO | mountain-bikes | 2 | applied |
 | 16 | Walden Surfboards | Ventura, CA | surfboards | 4 | applied |
 | 17 | Spider Mountain Bike Park | Burnet, TX | mountain-bikes | 6 | applied |
-| | **Total** | | | **141** | |
+| 18 | GearHub Sports | Fernie, BC | mountain-bikes + snowboards | 8 | applied |
+| 19 | Coastal Culture Sports | Whistler, BC | mountain-bikes | 3 | applied |
+| 20 | Whistler Sports Rentals | Whistler, BC | mountain-bikes | 5 | applied |
+| 21 | Cross Country Connection | Whistler, BC | mountain-bikes + skis | 9 | applied |
+| 22 | Big White Bike Park | Big White, BC | mountain-bikes | 2 | applied |
+| 23 | Dialed In Cycling | Squamish, BC | mountain-bikes | 6 | applied |
+| 24 | Essential Cycles | North Vancouver, BC | mountain-bikes | 4 | applied |
+| 25 | Lynn Valley Bikes | North Vancouver, BC | mountain-bikes | 2 | applied |
+| 26 | Cycle BC Vancouver | Vancouver, BC | mountain-bikes | 2 | applied |
+| 27 | Trail Bicycles | Courtenay, BC | mountain-bikes | 5 | applied |
+| 28 | Mont-Sainte-Anne Sports Alpins | Beaupre, QC | mountain-bikes | 6 | applied |
+| 29 | Vallee Bras-du-Nord Shannahan | Saint-Raymond, QC | mountain-bikes | 3 | applied |
+| 30 | The Wax Bench | Revelstoke, BC | skis + snowboards | 48 | existing profile retargeted; applied |
+| | **Total** | | | **244** | |
 
 Do not re-seed any shop already in this table. Do not seed Hawaii Surfboard Rentals under any Hawaii discovery task.
 
