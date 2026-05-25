@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/contexts/auth";
 import { blogService } from "@/services/blogService";
@@ -59,6 +59,10 @@ function BlogEditPageInner() {
   });
   
   const [tagsString, setTagsString] = useState("");
+  const draftData = useMemo(() => ({
+    ...formData,
+    tags: tagsString.split(",").map(t => t.trim()).filter(Boolean),
+  }), [formData, tagsString]);
 
   const loadDraft = useCallback(async () => {
     if (!id) {
@@ -121,15 +125,14 @@ function BlogEditPageInner() {
     loadDraft();
   }, [isAuthenticated, loadDraft, navigate]);
 
-  const handleSaveDraft = async () => {
+  const handleSaveDraft = useCallback(async (nextData: typeof draftData = draftData) => {
     if (!user?.id || !id) return;
 
     try {
       const result = await blogService.saveDraft({
         id,
         userId: user.id,
-        ...formData,
-        tags: tagsString.split(",").map(t => t.trim()).filter(Boolean),
+        ...nextData,
         authorId: user.id,
         createdFromPostId: createdFromPostId || undefined
       });
@@ -145,7 +148,7 @@ function BlogEditPageInner() {
       toast.error(error instanceof Error ? error.message : "Failed to save draft");
       throw error;
     }
-  };
+  }, [createdFromPostId, draftData, id, user?.id]);
   
   const handleSaveAsNewDraft = async () => {
     if (!user?.id || !id) return;
@@ -304,7 +307,7 @@ function BlogEditPageInner() {
   };
 
   const { isSaving, lastSaved, error: autoSaveError } = useAutoSave({
-    data: formData,
+    data: draftData,
     onSave: handleSaveDraft,
     delay: 30000,
     enabled: !!user?.id && !!id && !loading

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDebounce } from './useDebounce';
 
 interface UseAutoSaveOptions<T> {
@@ -14,6 +14,14 @@ interface UseAutoSaveReturn {
   error: string | null;
 }
 
+function serializeAutoSaveData<T>(data: T): string {
+  try {
+    return JSON.stringify(data) ?? "";
+  } catch (_error) {
+    return String(data);
+  }
+}
+
 export function useAutoSave<T>({
   data,
   onSave,
@@ -23,34 +31,78 @@ export function useAutoSave<T>({
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const debouncedData = useDebounce(data, delay);
-  const initialRender = useRef(true);
+  const dataKey = useMemo(() => serializeAutoSaveData(data), [data]);
+  const debouncedDataKey = useDebounce(dataKey, delay);
+  const initialized = useRef(false);
+  const lastSavedDataKey = useRef<string | null>(null);
+  const savingDataKey = useRef<string | null>(null);
+  const latestData = useRef(data);
+  const latestDataKey = useRef(dataKey);
+  const latestOnSave = useRef(onSave);
+  const mounted = useRef(true);
 
   useEffect(() => {
-    // Skip first render
-    if (initialRender.current) {
-      initialRender.current = false;
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    latestData.current = data;
+    latestDataKey.current = dataKey;
+    latestOnSave.current = onSave;
+  }, [data, dataKey, onSave]);
+
+  useEffect(() => {
+    if (!enabled) return;
+
+    // Treat the first enabled value as already persisted. This prevents edit
+    // screens from auto-saving their empty pre-load state over the real draft.
+    if (!initialized.current) {
+      initialized.current = true;
+      lastSavedDataKey.current = dataKey;
       return;
     }
 
-    if (!enabled) return;
+    if (dataKey !== debouncedDataKey) return;
+    if (lastSavedDataKey.current === debouncedDataKey) return;
+    if (savingDataKey.current === debouncedDataKey) return;
+
+    const keyToSave = debouncedDataKey;
+    const dataToSave = latestData.current;
+    savingDataKey.current = keyToSave;
 
     const save = async () => {
       try {
-        setIsSaving(true);
-        setError(null);
-        await onSave(debouncedData);
-        setLastSaved(new Date());
+        if (mounted.current) {
+          setIsSaving(true);
+          setError(null);
+        }
+        await latestOnSave.current(dataToSave);
+        if (latestDataKey.current === keyToSave) {
+          lastSavedDataKey.current = keyToSave;
+        }
+        if (mounted.current) {
+          setLastSaved(new Date());
+        }
       } catch (err) {
         console.error('Auto-save failed:', err);
-        setError(err instanceof Error ? err.message : 'Failed to auto-save');
+        if (mounted.current) {
+          setError(err instanceof Error ? err.message : 'Failed to auto-save');
+        }
       } finally {
-        setIsSaving(false);
+        if (savingDataKey.current === keyToSave) {
+          savingDataKey.current = null;
+        }
+        if (mounted.current) {
+          setIsSaving(false);
+        }
       }
     };
 
     save();
-  }, [debouncedData, enabled, onSave]);
+  }, [dataKey, debouncedDataKey, enabled]);
 
   return { isSaving, lastSaved, error };
 }
