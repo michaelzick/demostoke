@@ -1,12 +1,16 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildGeneratedReviewSystemPrompt,
+  buildGeneratedReviewUserPrompt,
   buildUniqueSlug,
   chooseRandomCategory,
   getAlreadyReviewedReason,
   getPublicCopyViolation,
   hasEnoughGearDetail,
   isEligibleGearCategory,
+  MIN_GENERATED_REVIEW_BODY_WORDS,
+  normalizeGeneratedDraft,
   normalizeGeneratedTags,
   selectBlogImages,
   type GearReviewCandidate,
@@ -36,6 +40,9 @@ const image = (
   height: 1000,
   ...overrides,
 });
+
+const longContent = (wordCount = MIN_GENERATED_REVIEW_BODY_WORDS): string =>
+  `<p>${Array.from({ length: wordCount }, (_, index) => `word${index}`).join(" ")}</p>`;
 
 describe("gear review blog generation helpers", () => {
   it("limits automatic generation to the four gear categories", () => {
@@ -134,6 +141,68 @@ describe("gear review blog generation helpers", () => {
     ).toBe("public_copy_claims_first_hand_testing");
   });
 
+  it("catches cron draft editorial rule violations in public copy", () => {
+    expect(
+      getPublicCopyViolation({
+        title: "Burton Custom Review: $150/day Demo Notes",
+        excerpt: "A useful quick take.",
+        content: longContent(),
+        tags: ["gear reviews"],
+      }),
+    ).toBe("title_or_subtitle_mentions_rental_price");
+
+    expect(
+      getPublicCopyViolation({
+        title: "A clean review",
+        excerpt: "A useful quick take — with shape notes.",
+        content: longContent(),
+        tags: ["gear reviews"],
+      }),
+    ).toBe("public_copy_contains_em_dash");
+
+    expect(
+      getPublicCopyViolation({
+        title: "A clean review",
+        excerpt: "A useful quick take.",
+        content: "<p>Too short.</p>",
+        tags: ["gear reviews"],
+      }),
+    ).toBe("content_under_2000_words");
+
+    expect(
+      getPublicCopyViolation({
+        title: "A clean review",
+        excerpt: "A useful quick take.",
+        content: longContent(),
+        tags: ["gear reviews"],
+      }),
+    ).toBeNull();
+  });
+
+  it("includes cron draft editorial rules in generation prompts", () => {
+    const combinedPrompt = [
+      buildGeneratedReviewSystemPrompt(),
+      buildGeneratedReviewUserPrompt(gear(), []),
+    ].join("\n");
+
+    expect(combinedPrompt).toContain("Do not use em dashes");
+    expect(combinedPrompt).toContain("Do not include rental/demo prices");
+    expect(combinedPrompt).toContain("at least 2000 words");
+  });
+
+  it("normalizes em dashes out of generated public copy and claim notes", () => {
+    const normalized = normalizeGeneratedDraft(gear(), {
+      title: "Firewire Seaside — Review",
+      excerpt: "Fast — loose — useful.",
+      content: "<p>Trim speed — paddle comfort.</p>",
+      tags: ["gear reviews", "surfboards — alternative"],
+      claimCheckSummary: ["Used listing — and source snippets."],
+    });
+
+    expect([normalized.title, normalized.excerpt, normalized.content, ...normalized.tags].join(" ")).not.toContain("—");
+    expect(normalized.claimCheckSummary?.join(" ")).not.toContain("—");
+  });
+
   it("selects a large hero image and a separate thumbnail candidate when available", () => {
     const selected = selectBlogImages([
       image({
@@ -151,6 +220,6 @@ describe("gear review blog generation helpers", () => {
     ]);
 
     expect(selected?.heroImage).toBe("https://images.example.com/landscape.jpg");
-    expect(selected?.thumbnail).toBe("https://images.example.com/portrait-thumb.jpg");
+    expect(selected?.thumbnail).toBe("https://images.example.com/portrait.jpg");
   });
 });
