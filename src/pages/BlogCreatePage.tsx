@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -68,22 +68,7 @@ function BlogCreatePageInner() {
   const [createdSlug, setCreatedSlug] = useState<string | null>(null);
   const [draftId, setDraftId] = useState<string | null>(null);
 
-  // Auto-save functionality
-  const handleAutoSave = async (data: typeof formData) => {
-    if (!user?.id) return;
-    const result = await blogService.saveDraft({
-      id: draftId || undefined,
-      userId: user.id,
-      ...data
-    });
-    
-    // Capture draft ID if this was a new draft
-    if (result.success && result.post && !draftId) {
-      setDraftId(result.post.id);
-    }
-  };
-
-  const formData = {
+  const formData = useMemo(() => ({
     title,
     excerpt,
     content,
@@ -93,7 +78,22 @@ function BlogCreatePageInner() {
     heroImage: imageUrl,
     thumbnail: thumbnailUrl,
     videoEmbed: youtubeUrl
-  };
+  }), [author, category, content, excerpt, imageUrl, tags, thumbnailUrl, title, youtubeUrl]);
+
+  // Auto-save functionality
+  const handleAutoSave = useCallback(async (data: typeof formData) => {
+    if (!user?.id) return;
+    const result = await blogService.saveDraft({
+      id: draftId || undefined,
+      userId: user.id,
+      ...data
+    });
+
+    // Capture draft ID if this was a new draft
+    if (result.success && result.post && !draftId) {
+      setDraftId(result.post.id);
+    }
+  }, [draftId, user?.id]);
 
   const { isSaving: isAutoSaving, lastSaved, error: autoSaveError } = useAutoSave({
     data: formData,
