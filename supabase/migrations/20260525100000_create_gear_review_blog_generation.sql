@@ -4,7 +4,7 @@ CREATE EXTENSION IF NOT EXISTS pg_net;
 CREATE TABLE IF NOT EXISTS public.gear_review_blog_generation_config (
   id boolean PRIMARY KEY DEFAULT true CHECK (id = true),
   enabled boolean NOT NULL DEFAULT true,
-  cron_secret text NOT NULL DEFAULT encode(gen_random_bytes(32), 'hex'),
+  cron_secret text NOT NULL DEFAULT encode(extensions.gen_random_bytes(32), 'hex'),
   draft_owner_user_id uuid REFERENCES auth.users(id) ON DELETE SET NULL,
   last_cron_attempt_at timestamp with time zone,
   last_success_at timestamp with time zone,
@@ -174,7 +174,8 @@ BEGIN
       'Content-Type', 'application/json',
       'x-cron-secret', v_config.cron_secret
     ),
-    body := jsonb_build_object('source', 'cron')
+    body := jsonb_build_object('source', 'cron'),
+    timeout_milliseconds := 120000
   )
   INTO v_request_id;
 
