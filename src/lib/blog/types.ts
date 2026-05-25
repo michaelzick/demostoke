@@ -19,4 +19,7 @@ export interface BlogPost {
   scheduledFor?: string;
   lastAutoSavedAt?: string;
   createdFromPostId?: string;
+  isGeneratedGearReview?: boolean;
+  sourceEquipmentId?: string;
+  sourceGearCategory?: string;
 }

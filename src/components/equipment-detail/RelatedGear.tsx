@@ -15,9 +15,10 @@ import { buildEquipmentTrackingFrom } from "@/utils/tracking";
 
 interface RelatedGearProps {
   relatedGear: Equipment[];
+  onViewClick?: (item: Equipment) => void;
 }
 
-const RelatedGear = ({ relatedGear }: RelatedGearProps) => {
+const RelatedGear = ({ relatedGear, onViewClick }: RelatedGearProps) => {
   const location = useLocation();
   
   // Hide the section if no related gear is found
@@ -91,6 +92,7 @@ const RelatedGear = ({ relatedGear }: RelatedGearProps) => {
                           name: item.name,
                           size: item.specifications?.size,
                         })}
+                        onClick={() => onViewClick?.(item)}
                         data-tracking={trackingData}
                         id={`${item.name} - View Button - ${location.pathname}`}
                         className="view-gear-button"

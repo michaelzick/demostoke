@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.discover-demo-events]
 verify_jwt = false
+
+[functions.generate-gear-review-blog-draft]
+verify_jwt = false
