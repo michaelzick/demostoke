@@ -4,7 +4,58 @@ import { BlogPost } from "@/lib/blog/types";
 import { blogPosts as staticBlogPosts } from "@/lib/blog";
 import { slugify } from "@/utils/slugify";
 
+type GeneratedGearReviewMetadata = {
+  blogPostId: string;
+  equipmentId: string;
+  gearCategory: string;
+};
+
 export const blogService = {
+  async getGeneratedGearReviewMetadataMap(postIds: string[]): Promise<Map<string, GeneratedGearReviewMetadata>> {
+    const uniquePostIds = Array.from(new Set(postIds.filter(Boolean)));
+    if (uniquePostIds.length === 0) {
+      return new Map();
+    }
+
+    try {
+      const { data, error } = await supabase.rpc("get_public_generated_gear_review_metadata", {
+        p_blog_post_ids: uniquePostIds,
+      });
+
+      if (error) {
+        console.error('Error fetching generated gear review metadata:', error);
+        return new Map();
+      }
+
+      return new Map(
+        (data || []).map((row) => [
+          row.blog_post_id,
+          {
+            blogPostId: row.blog_post_id,
+            equipmentId: row.equipment_id,
+            gearCategory: row.gear_category,
+          },
+        ]),
+      );
+    } catch (error) {
+      console.error('Error in getGeneratedGearReviewMetadataMap:', error);
+      return new Map();
+    }
+  },
+
+  withGeneratedGearReviewMetadata(post: BlogPost, metadata?: GeneratedGearReviewMetadata): BlogPost {
+    if (!metadata) {
+      return post;
+    }
+
+    return {
+      ...post,
+      isGeneratedGearReview: true,
+      sourceEquipmentId: metadata.equipmentId,
+      sourceGearCategory: metadata.gearCategory,
+    };
+  },
+
   // Get all published blog posts (database + static)
   async getAllPosts(): Promise<BlogPost[]> {
     try {
@@ -20,17 +71,22 @@ export const blogService = {
         return staticBlogPosts;
       }
 
+      const generatedMetadataByPostId = await this.getGeneratedGearReviewMetadataMap(
+        (dbPosts || []).map((post) => post.id),
+      );
+
       // Convert database posts to BlogPost format with slug as id
       const formattedDbPosts: BlogPost[] = (dbPosts || []).map(post => {
         console.log('Processing DB post:', { id: post.id, slug: post.slug, author: post.author });
-        return {
+        const formattedPost = {
           id: post.slug || post.id, // Use slug as id for routing
+          databaseId: post.id,
           title: post.title,
-          excerpt: post.excerpt,
-          content: post.content,
-          category: post.category,
-          author: post.author,
-          authorId: post.author_id,
+          excerpt: post.excerpt || '',
+          content: post.content || '',
+          category: post.category || '',
+          author: post.author || '',
+          authorId: post.author_id || '',
           publishedAt: post.published_at,
           readTime: post.read_time,
           heroImage: post.hero_image || '',
@@ -38,6 +94,11 @@ export const blogService = {
           videoEmbed: post.video_embed || undefined,
           tags: post.tags || []
         };
+
+        return this.withGeneratedGearReviewMetadata(
+          formattedPost,
+          generatedMetadataByPostId.get(post.id),
+        );
       });
 
       // Combine and sort by publishedAt
@@ -227,7 +288,16 @@ export const blogService = {
         return [];
       }
 
-      return (data || []).map(post => this.formatDbPost(post));
+      const generatedMetadataByPostId = await this.getGeneratedGearReviewMetadataMap(
+        (data || []).map((post) => post.id),
+      );
+
+      return (data || []).map(post =>
+        this.withGeneratedGearReviewMetadata(
+          this.formatDbPost(post),
+          generatedMetadataByPostId.get(post.id),
+        ),
+      );
     } catch (error) {
       console.error('Error in getDrafts:', error);
       return [];
@@ -248,7 +318,16 @@ export const blogService = {
         return null;
       }
 
-      return data ? this.formatDbPost(data) : null;
+      if (!data) {
+        return null;
+      }
+
+      const generatedMetadataByPostId = await this.getGeneratedGearReviewMetadataMap([data.id]);
+
+      return this.withGeneratedGearReviewMetadata(
+        this.formatDbPost(data),
+        generatedMetadataByPostId.get(data.id),
+      );
     } catch (error) {
       console.error('Error in getDraftById:', error);
       return null;

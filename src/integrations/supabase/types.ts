@@ -975,6 +975,96 @@ export type Database = {
           },
         ]
       }
+      gear_review_blog_generation_config: {
+        Row: {
+          created_at: string
+          cron_secret: string
+          draft_owner_user_id: string | null
+          enabled: boolean
+          id: boolean
+          last_cron_attempt_at: string | null
+          last_success_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          cron_secret?: string
+          draft_owner_user_id?: string | null
+          enabled?: boolean
+          id?: boolean
+          last_cron_attempt_at?: string | null
+          last_success_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          cron_secret?: string
+          draft_owner_user_id?: string | null
+          enabled?: boolean
+          id?: boolean
+          last_cron_attempt_at?: string | null
+          last_success_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      gear_review_blog_generation_runs: {
+        Row: {
+          blog_post_id: string | null
+          created_at: string
+          equipment_id: string | null
+          error_message: string | null
+          gear_category: string | null
+          hidden_evidence: Json
+          id: string
+          reason: string | null
+          source: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          blog_post_id?: string | null
+          created_at?: string
+          equipment_id?: string | null
+          error_message?: string | null
+          gear_category?: string | null
+          hidden_evidence?: Json
+          id?: string
+          reason?: string | null
+          source: string
+          status: string
+          updated_at?: string
+        }
+        Update: {
+          blog_post_id?: string | null
+          created_at?: string
+          equipment_id?: string | null
+          error_message?: string | null
+          gear_category?: string | null
+          hidden_evidence?: Json
+          id?: string
+          reason?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gear_review_blog_generation_runs_blog_post_id_fkey"
+            columns: ["blog_post_id"]
+            isOneToOne: false
+            referencedRelation: "blog_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gear_review_blog_generation_runs_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       figma_components: {
         Row: {
           component_data: Json | null
@@ -1487,6 +1577,14 @@ export type Database = {
           view_count: number
         }[]
       }
+      get_public_generated_gear_review_metadata: {
+        Args: { p_blog_post_ids: string[] }
+        Returns: {
+          blog_post_id: string
+          equipment_id: string
+          gear_category: string
+        }[]
+      }
       get_user_role: {
         Args: { user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -1525,6 +1623,7 @@ export type Database = {
         Returns: string
       }
       trigger_demo_event_discovery_cron: { Args: never; Returns: Json }
+      trigger_gear_review_blog_generation_cron: { Args: never; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "user"

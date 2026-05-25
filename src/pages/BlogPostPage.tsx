@@ -6,7 +6,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { User, Calendar, Share2, ArrowUp, Edit, ArrowLeft, FileText } from "lucide-react";
 import { blogService } from "@/services/blogService";
 import { slugify } from "@/utils/slugify";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRelatedGear } from "@/hooks/useRelatedGear";
 import RelatedGear from "@/components/equipment-detail/RelatedGear";
 import ContentRenderer from "@/components/blog/ContentRenderer";
@@ -19,6 +19,10 @@ import {
   humanizeSlug,
 } from "@/lib/seo/publicMetadata";
 import { ROBOTS_NOINDEX_FOLLOW } from "@/lib/seo/policy.js";
+import {
+  trackGeneratedGearReviewRelatedGearClick,
+  trackGeneratedGearReviewView,
+} from "@/utils/blogAnalytics";
 
 const BlogPostPage = () => {
   const { slug, id } = useParams<{ slug?: string; id?: string; }>();
@@ -28,6 +32,7 @@ const BlogPostPage = () => {
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [databaseId, setDatabaseId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const generatedReviewViewTrackedRef = useRef<string | null>(null);
   const { isAdmin } = useIsAdmin();
   const isPreviewMode = location.pathname.startsWith('/blog/preview/');
   const currentDocumentTitle =
@@ -57,7 +62,7 @@ const BlogPostPage = () => {
 
           // Fetch database ID for admin edit functionality
           if (foundPost && !isPreviewMode) {
-            const dbId = await blogService.getPublishedPostBySlug(slug);
+            const dbId = foundPost.databaseId || await blogService.getPublishedPostBySlug(slug);
             setDatabaseId(dbId);
           }
         }
@@ -80,6 +85,21 @@ const BlogPostPage = () => {
       });
     }
   }, [post]);
+
+  useEffect(() => {
+    if (!post?.isGeneratedGearReview) {
+      return;
+    }
+
+    const mode = isPreviewMode ? "draft_preview" : "published";
+    const trackingKey = `${mode}:${post.databaseId || post.id}`;
+    if (generatedReviewViewTrackedRef.current === trackingKey) {
+      return;
+    }
+
+    generatedReviewViewTrackedRef.current = trackingKey;
+    trackGeneratedGearReviewView(post, mode);
+  }, [isPreviewMode, post]);
 
   usePageMetadata({
     title: post
@@ -381,7 +401,19 @@ const BlogPostPage = () => {
 
             {/* Related Gear Section */}
             {!isLoadingRelatedGear && relatedGear && relatedGear.length > 0 && (
-              <RelatedGear relatedGear={relatedGear} />
+              <RelatedGear
+                relatedGear={relatedGear}
+                onViewClick={
+                  post.isGeneratedGearReview
+                    ? (gear) =>
+                        trackGeneratedGearReviewRelatedGearClick(
+                          post,
+                          isPreviewMode ? "draft_preview" : "published",
+                          gear,
+                        )
+                    : undefined
+                }
+              />
             )}
           </article>
         </div>
