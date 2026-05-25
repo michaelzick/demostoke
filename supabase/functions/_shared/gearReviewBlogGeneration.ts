@@ -125,7 +125,14 @@ const FIRST_HAND_CLAIM_PATTERNS = [
   /\bafter\s+(testing|riding|demoing|paddling|carving)\b/i,
 ];
 
+const TITLE_OR_SUBTITLE_PRICE_PATTERNS = [
+  /\$\s*\d+(?:[,.]\d{2})?(?:\s*(?:\/|per|a)\s*(?:day|hour|week|night|month|hr|wk|mo))?/i,
+  /\b\d+(?:[,.]\d{2})?\s*\/\s*(?:day|hour|week|night|month|hr|wk|mo)\b/i,
+];
+
 const STOP_TAGS = new Set(["the", "and", "with", "for", "mens", "women", "womens"]);
+
+export const MIN_GENERATED_REVIEW_BODY_WORDS = 1500;
 
 export const isEligibleGearCategory = (category: string): category is EligibleGearCategory =>
   (ELIGIBLE_GEAR_CATEGORIES as readonly string[]).includes(category);
@@ -333,6 +340,21 @@ export const getPublicCopyViolation = (draft: GeneratedReviewDraft): string | nu
     }
   }
 
+  if (/[—]|&mdash;/i.test(publicText)) {
+    return "public_copy_contains_em_dash";
+  }
+
+  const titleAndSubtitle = [draft.title, draft.excerpt].join(" ");
+  for (const pattern of TITLE_OR_SUBTITLE_PRICE_PATTERNS) {
+    if (pattern.test(titleAndSubtitle)) {
+      return "title_or_subtitle_mentions_rental_price";
+    }
+  }
+
+  if (countContentWords(draft.content) < MIN_GENERATED_REVIEW_BODY_WORDS) {
+    return "content_under_1500_words";
+  }
+
   return null;
 };
 
@@ -344,11 +366,11 @@ export const selectBlogImages = (
     return null;
   }
 
-  const thumbnail = images.find((image) => image.thumbnail && image.url !== hero.url) ?? hero;
+  const thumbnail = images.find((image) => image.url !== hero.url) ?? hero;
 
   return {
     heroImage: hero.url,
-    thumbnail: thumbnail.thumbnail || thumbnail.url,
+    thumbnail: thumbnail.url,
     evidence: {
       hero,
       thumbnail,
@@ -391,6 +413,9 @@ export const buildGeneratedReviewSystemPrompt = (): string =>
     "Use only facts from the supplied listing and source snippets.",
     "Do not claim first-hand testing, personal ownership, direct demo time, or measured performance unless those facts are supplied.",
     "Do not mention evidence, verification, guardrails, QA, source audits, internal process, or claim checks in public copy.",
+    "Do not use em dashes anywhere in public copy.",
+    "Do not put rental/demo prices or dollar amounts in the title or excerpt.",
+    "Write at least 1500 words in the HTML content body.",
     "Return valid JSON only, with no markdown code fence.",
   ].join("\n");
 
@@ -418,6 +443,11 @@ export const buildGeneratedReviewUserPrompt = (
     "- Tradeoffs",
     "- Final call",
     "",
+    "Required editorial rules:",
+    "- The excerpt is the subtitle. Do not include rental/demo prices or dollar amounts in the title or excerpt.",
+    "- Do not use em dashes anywhere. Use commas, colons, parentheses, or short sentences instead.",
+    "- The content field must be at least 1500 words after HTML tags are removed.",
+    "",
     "Gear facts:",
     formatGearFacts(gear),
     "",
@@ -428,21 +458,29 @@ export const buildGeneratedReviewUserPrompt = (
 export const normalizeGeneratedDraft = (
   gear: GearReviewCandidate,
   draft: GeneratedReviewDraft,
-): GeneratedReviewDraft => ({
-  title: draft.title.trim(),
-  excerpt: draft.excerpt.trim(),
-  content: draft.content.trim(),
-  tags: normalizeGeneratedTags(gear, draft.tags),
-  claimCheckSummary: Array.isArray(draft.claimCheckSummary)
-    ? draft.claimCheckSummary.filter((item) => typeof item === "string" && item.trim()).slice(0, 10)
-    : [],
-});
+): GeneratedReviewDraft => {
+  const replaceEmDashes = (value: string): string =>
+    value.replace(/&mdash;/gi, " - ").replace(/—/g, " - ").replace(/\s+/g, " ").trim();
 
-export const calculateReadTime = (content: string): number => {
-  const words = content
+  return {
+    title: replaceEmDashes(draft.title),
+    excerpt: replaceEmDashes(draft.excerpt),
+    content: replaceEmDashes(draft.content),
+    tags: normalizeGeneratedTags(gear, draft.tags.map((tag) => replaceEmDashes(tag))),
+    claimCheckSummary: Array.isArray(draft.claimCheckSummary)
+      ? draft.claimCheckSummary
+          .filter((item) => typeof item === "string" && item.trim())
+          .map((item) => replaceEmDashes(item))
+          .slice(0, 10)
+      : [],
+  };
+};
+
+export const countContentWords = (content: string): number =>
+  content
     .replace(/<[^>]*>/g, " ")
     .split(/\s+/)
     .filter(Boolean).length;
 
-  return Math.max(1, Math.ceil(words / 200));
-};
+export const calculateReadTime = (content: string): number =>
+  Math.max(1, Math.ceil(countContentWords(content) / 200));

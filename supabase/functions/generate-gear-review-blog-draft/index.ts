@@ -452,7 +452,7 @@ const buildHiddenEvidence = (values: {
   selectedImages: ReturnType<typeof selectBlogImages>;
   draft: GeneratedReviewDraft;
 }) => ({
-  prompt_version: "gear-review-blog-draft-v1",
+  prompt_version: "gear-review-blog-draft-v2",
   model: OPENAI_MODEL,
   generated_at: new Date().toISOString(),
   equipment_snapshot: values.gear,
