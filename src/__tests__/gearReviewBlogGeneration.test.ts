@@ -167,7 +167,7 @@ describe("gear review blog generation helpers", () => {
         content: "<p>Too short.</p>",
         tags: ["gear reviews"],
       }),
-    ).toBe("content_under_2000_words");
+    ).toBe("content_under_1500_words");
 
     expect(
       getPublicCopyViolation({
@@ -187,7 +187,7 @@ describe("gear review blog generation helpers", () => {
 
     expect(combinedPrompt).toContain("Do not use em dashes");
     expect(combinedPrompt).toContain("Do not include rental/demo prices");
-    expect(combinedPrompt).toContain("at least 2000 words");
+    expect(combinedPrompt).toContain("at least 1500 words");
   });
 
   it("normalizes em dashes out of generated public copy and claim notes", () => {

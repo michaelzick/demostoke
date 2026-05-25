@@ -132,7 +132,7 @@ const TITLE_OR_SUBTITLE_PRICE_PATTERNS = [
 
 const STOP_TAGS = new Set(["the", "and", "with", "for", "mens", "women", "womens"]);
 
-export const MIN_GENERATED_REVIEW_BODY_WORDS = 2000;
+export const MIN_GENERATED_REVIEW_BODY_WORDS = 1500;
 
 export const isEligibleGearCategory = (category: string): category is EligibleGearCategory =>
   (ELIGIBLE_GEAR_CATEGORIES as readonly string[]).includes(category);
@@ -352,7 +352,7 @@ export const getPublicCopyViolation = (draft: GeneratedReviewDraft): string | nu
   }
 
   if (countContentWords(draft.content) < MIN_GENERATED_REVIEW_BODY_WORDS) {
-    return "content_under_2000_words";
+    return "content_under_1500_words";
   }
 
   return null;
@@ -415,7 +415,7 @@ export const buildGeneratedReviewSystemPrompt = (): string =>
     "Do not mention evidence, verification, guardrails, QA, source audits, internal process, or claim checks in public copy.",
     "Do not use em dashes anywhere in public copy.",
     "Do not put rental/demo prices or dollar amounts in the title or excerpt.",
-    "Write at least 2000 words in the HTML content body.",
+    "Write at least 1500 words in the HTML content body.",
     "Return valid JSON only, with no markdown code fence.",
   ].join("\n");
 
@@ -446,7 +446,7 @@ export const buildGeneratedReviewUserPrompt = (
     "Required editorial rules:",
     "- The excerpt is the subtitle. Do not include rental/demo prices or dollar amounts in the title or excerpt.",
     "- Do not use em dashes anywhere. Use commas, colons, parentheses, or short sentences instead.",
-    "- The content field must be at least 2000 words after HTML tags are removed.",
+    "- The content field must be at least 1500 words after HTML tags are removed.",
     "",
     "Gear facts:",
     formatGearFacts(gear),
