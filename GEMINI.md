@@ -230,7 +230,7 @@ Use these URLs when seeding equipment_images rows. Primary = display_order 0, is
 | snowboards     | secondary | https://images.pexels.com/photos/7166118/pexels-photo-7166118.jpeg |
 | mountain-bikes | primary   | https://images.pexels.com/photos/30447388/pexels-photo-30447388.jpeg |
 | mountain-bikes | secondary | https://images.pexels.com/photos/25753440/pexels-photo-25753440.jpeg |
-| surfboards     | primary   | https://images.pexels.com/photos/36084973/pexels-photo-36084973.jpeg |
+| surfboards     | primary   | https://images.pexels.com/photos/2370006/pexels-photo-2370006.jpeg |
 | surfboards     | secondary | https://images.pexels.com/photos/8907535/pexels-photo-8907535.jpeg |
 
 Do not substitute other image sources for seed data. If new categories are added, append rows here before writing SQL.
