@@ -123,6 +123,7 @@
   - `profiles`, `public_profiles`, `user_roles`
   - `blog_posts`
   - `gear_review_blog_generation_config`, `gear_review_blog_generation_runs`
+  - `fleetops_pos_inventory_seed_config`
   - `demo_calendar`, `demo_event_candidates`, `demo_event_discovery_config`
   - `app_settings`, `app_privacy_settings`
   - `shop_gear_feed_mappings`, `scraped_retailers`, `downloaded_images`
@@ -201,6 +202,7 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
 - Theme flicker fix can be disabled with `VITE_ENABLE_THEME_FLICKER_FIX=false`.
 - Edge functions rely on combinations of `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `MAPBOX_TOKEN`, `GOOGLE_API_KEY`, `GOOGLE_CSE_ID`, `GOOGLE_SEARCH_API_KEY`, `GOOGLE_SEARCH_ENGINE_ID`, and `HCAPTCHA_SECRET`.
 - `generate-gear-review-blog-draft` also relies on `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, and the Google Custom Search image/web keys. It is protected by the `gear_review_blog_generation_config.cron_secret` value passed as `x-cron-secret`.
+- The FleetOps POS demo inventory cron runs from the main DemoStoke DB via `trigger_fleetops_pos_inventory_seed_cron()` and posts to `https://imdhbnfgrrckwoboodox.supabase.co/functions/v1/seed-pos-inventory`; keep `fleetops_pos_inventory_seed_config.cron_secret` synchronized with the FleetOps `POS_INVENTORY_SEED_CRON_SECRET` function secret.
 - Do not introduce new hardcoded secrets. Keep public browser tokens and service secrets clearly separated.
 
 ## Critical Invariants and Gotchas
@@ -213,6 +215,7 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
 - Search/explore/profile visibility behavior is tightly coupled to `equipmentDataService`, `searchService`, `useEquipmentWithDynamicDistance`, and advanced filter helpers.
 - Automated gear-review drafts must not create `equipment_reviews` rows or mutate `equipment.rating` / `equipment.review_count`. Hidden factual evidence belongs in `gear_review_blog_generation_runs.hidden_evidence`, not in public blog copy, tags, excerpts, or analytics payloads.
 - Cron-generated gear-review drafts must not put rental/demo prices or dollar amounts in the title or excerpt, must not use em dashes in public copy, must contain at least 1500 body words after stripping HTML tags, and must store a selected gear image URL for the blog thumbnail instead of a small Google `thumbnailLink`.
+- FleetOps POS inventory seeding is queued by `pg_net` from the main DemoStoke project at the daily 9/10 UTC schedule, gated to 2 AM Pacific and a 2-day cadence. The FleetOps `seed-pos-inventory` function performs the actual inserts and read-back verification in the FleetOps DB; use `trigger_fleetops_pos_inventory_seed_cron(true)` for a live forced validation run.
 - Generated gear-review analytics must use safe metadata only: post id/slug, category, source equipment id, gear category, author, generated flag, and preview/published mode. Never send hidden evidence, source snippets, credentials, or raw prompts to Amplitude or Google Analytics.
 - `DemoStokeWidget` is a local-dev artifact right now. Treat it as unfinished unless you intentionally wire it to production.
 - There is a large amount of existing debug logging. Remove or preserve it intentionally, not accidentally.
