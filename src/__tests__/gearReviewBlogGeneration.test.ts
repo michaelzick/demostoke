@@ -149,7 +149,16 @@ describe("gear review blog generation helpers", () => {
         content: longContent(),
         tags: ["gear reviews"],
       }),
-    ).toBe("title_or_subtitle_mentions_rental_price");
+    ).toBe("public_copy_mentions_rental_price");
+
+    expect(
+      getPublicCopyViolation({
+        title: "Burton Custom Review",
+        excerpt: "A useful quick take.",
+        content: `${longContent()}<p>Available from a rental shop with weekly booking options.</p>`,
+        tags: ["gear reviews"],
+      }),
+    ).toBe("public_copy_mentions_shop_or_rental_info");
 
     expect(
       getPublicCopyViolation({
@@ -179,15 +188,28 @@ describe("gear review blog generation helpers", () => {
     ).toBeNull();
   });
 
-  it("includes cron draft editorial rules in generation prompts", () => {
+  it("includes general-publication cron draft editorial rules in generation prompts", () => {
     const combinedPrompt = [
       buildGeneratedReviewSystemPrompt(),
-      buildGeneratedReviewUserPrompt(gear(), []),
+      buildGeneratedReviewUserPrompt(
+        gear({
+          price_per_day: 95,
+          price_per_hour: 30,
+          price_per_week: 420,
+          location_address: "123 Rental Shop Way",
+        }),
+        [],
+      ),
     ].join("\n");
 
     expect(combinedPrompt).toContain("Do not use em dashes");
-    expect(combinedPrompt).toContain("Do not include rental/demo prices");
+    expect(combinedPrompt).toContain("Do not include shop-specific analysis");
+    expect(combinedPrompt).toContain("Pretend you are reviewing the gear for a general outdoor/action-sports publication");
     expect(combinedPrompt).toContain("at least 1500 words");
+    expect(combinedPrompt).not.toContain("$95");
+    expect(combinedPrompt).not.toContain("$30");
+    expect(combinedPrompt).not.toContain("$420");
+    expect(combinedPrompt).not.toContain("123 Rental Shop Way");
   });
 
   it("normalizes em dashes out of generated public copy and claim notes", () => {

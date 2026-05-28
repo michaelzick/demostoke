@@ -125,9 +125,18 @@ const FIRST_HAND_CLAIM_PATTERNS = [
   /\bafter\s+(testing|riding|demoing|paddling|carving)\b/i,
 ];
 
-const TITLE_OR_SUBTITLE_PRICE_PATTERNS = [
+const RENTAL_PRICE_PATTERNS = [
   /\$\s*\d+(?:[,.]\d{2})?(?:\s*(?:\/|per|a)\s*(?:day|hour|week|night|month|hr|wk|mo))?/i,
   /\b\d+(?:[,.]\d{2})?\s*\/\s*(?:day|hour|week|night|month|hr|wk|mo)\b/i,
+  /\b(?:per|a)\s+(?:day|hour|week|night|month|hr|wk|mo)\b/i,
+];
+
+const SHOP_OR_RENTAL_PUBLIC_COPY_PATTERNS = [
+  /\brent(?:al|als|ed|ing)?\b/i,
+  /\bdemo\s+(?:price|prices|rate|rates|fee|fees|rental|rentals|program|fleet)\b/i,
+  /\bshop(?:s)?\b/i,
+  /\bavailable\s+(?:at|from|through)\b/i,
+  /\bbook(?:ing)?\s+(?:this|the)\b/i,
 ];
 
 const STOP_TAGS = new Set(["the", "and", "with", "for", "mens", "women", "womens"]);
@@ -344,10 +353,15 @@ export const getPublicCopyViolation = (draft: GeneratedReviewDraft): string | nu
     return "public_copy_contains_em_dash";
   }
 
-  const titleAndSubtitle = [draft.title, draft.excerpt].join(" ");
-  for (const pattern of TITLE_OR_SUBTITLE_PRICE_PATTERNS) {
-    if (pattern.test(titleAndSubtitle)) {
-      return "title_or_subtitle_mentions_rental_price";
+  for (const pattern of RENTAL_PRICE_PATTERNS) {
+    if (pattern.test(publicText)) {
+      return "public_copy_mentions_rental_price";
+    }
+  }
+
+  for (const pattern of SHOP_OR_RENTAL_PUBLIC_COPY_PATTERNS) {
+    if (pattern.test(publicText)) {
+      return "public_copy_mentions_shop_or_rental_info";
     }
   }
 
@@ -388,9 +402,6 @@ const formatGearFacts = (gear: GearReviewCandidate): string =>
     gear.weight ? `Weight: ${gear.weight}` : null,
     gear.material ? `Material: ${gear.material}` : null,
     gear.suitable_skill_level ? `Suitable skill level: ${gear.suitable_skill_level}` : null,
-    gear.price_per_day ? `Demo price per day: $${gear.price_per_day}` : null,
-    gear.price_per_week ? `Demo price per week: $${gear.price_per_week}` : null,
-    gear.location_address ? `Listed location: ${gear.location_address}` : null,
   ]
     .filter(Boolean)
     .join("\n");
@@ -410,11 +421,14 @@ export const buildGeneratedReviewSystemPrompt = (): string =>
     "You write DemoStoke gear review drafts for action-sports riders.",
     "The voice is natural, loose, fun, and knowledgeable: a strong outdoor writer with some surfer-bro energy.",
     "Keep it smart, specific, and useful. Avoid cringe, fake stoke, corporate polish, and dumbed-down explanations.",
-    "Use only facts from the supplied listing and source snippets.",
+    "Use only model-level gear facts from the supplied listing and source snippets.",
+    "Write like a general gear publication reviewing the product, not like a marketplace, rental listing, or shop profile.",
+    "Do not include shop-specific analysis, shop names, store names, rental availability, rental terms, booking details, or rental/demo pricing anywhere in public copy.",
+    "Do not mention prices, dollar amounts, per-day rates, per-hour rates, per-week rates, rental rates, or demo rates anywhere in public copy.",
+    "Use source snippets only for model specifications, design intent, and general third-party review context. Ignore shop-specific source details.",
     "Do not claim first-hand testing, personal ownership, direct demo time, or measured performance unless those facts are supplied.",
     "Do not mention evidence, verification, guardrails, QA, source audits, internal process, or claim checks in public copy.",
     "Do not use em dashes anywhere in public copy.",
-    "Do not put rental/demo prices or dollar amounts in the title or excerpt.",
     "Write at least 1500 words in the HTML content body.",
     "Return valid JSON only, with no markdown code fence.",
   ].join("\n");
@@ -444,7 +458,10 @@ export const buildGeneratedReviewUserPrompt = (
     "- Final call",
     "",
     "Required editorial rules:",
-    "- The excerpt is the subtitle. Do not include rental/demo prices or dollar amounts in the title or excerpt.",
+    "- The excerpt is the subtitle. Keep it focused on general gear-review value, not marketplace availability.",
+    "- Do not include shop-specific analysis, shop names, store names, rental availability, rental terms, booking details, rental/demo pricing, dollar amounts, per-day rates, per-hour rates, or per-week rates anywhere in title, excerpt, content, or tags.",
+    "- Talk about the gear in a general way that is not tied to a specific shop, location, rental program, or DemoStoke listing.",
+    "- Pretend you are reviewing the gear for a general outdoor/action-sports publication.",
     "- Do not use em dashes anywhere. Use commas, colons, parentheses, or short sentences instead.",
     "- The content field must be at least 1500 words after HTML tags are removed.",
     "",
