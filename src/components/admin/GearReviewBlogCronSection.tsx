@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { trackEvent } from "@/utils/tracking";
 
 type GenerationConfig = {
   cron_secret: string;
@@ -79,6 +80,19 @@ const getDraftPostId = (data: GearReviewDraftResponse) => data.blogPostId ?? dat
 const getDraftTitle = (data: GearReviewDraftResponse) => data.title ?? data.draft?.title;
 const getDraftSlug = (data: GearReviewDraftResponse) => data.slug ?? data.draft?.slug;
 
+const trackGearReviewDraftCreateResult = (payload: {
+  result_status: "created" | "skipped" | "error";
+  result_reason: string;
+  category?: string;
+}) => {
+  trackEvent("admin_gear_review_draft_create_result", {
+    result_status: payload.result_status,
+    result_reason: payload.result_reason,
+    has_category: Boolean(payload.category),
+    category: payload.category ?? "unknown",
+  });
+};
+
 const GearReviewBlogCronSection = () => {
   const { toast } = useToast();
   const [config, setConfig] = useState<GenerationConfig | null>(null);
@@ -124,8 +138,14 @@ const GearReviewBlogCronSection = () => {
   }, [loadConfig]);
 
   const handleCreateDraft = async () => {
+    trackEvent("admin_gear_review_draft_create_clicked");
+
     if (!config?.cron_secret) {
       setResult({ status: "error", message: "The gear review generation cron secret is unavailable." });
+      trackGearReviewDraftCreateResult({
+        result_status: "error",
+        result_reason: "missing_cron_secret",
+      });
       return;
     }
 
@@ -155,6 +175,11 @@ const GearReviewBlogCronSection = () => {
           category: data.category,
         };
         setResult(createdResult);
+        trackGearReviewDraftCreateResult({
+          result_status: "created",
+          result_reason: "created",
+          category: createdResult.category,
+        });
         toast({
           title: "Gear review draft created",
           description: createdResult.title ?? createdResult.slug ?? "A new draft is ready to review.",
@@ -169,6 +194,11 @@ const GearReviewBlogCronSection = () => {
           category: data.category,
         };
         setResult(skippedResult);
+        trackGearReviewDraftCreateResult({
+          result_status: "skipped",
+          result_reason: data.reason ?? "unknown",
+          category: skippedResult.category,
+        });
         toast({
           title: "Gear review generation skipped",
           description: skippedResult.reason,
@@ -178,6 +208,11 @@ const GearReviewBlogCronSection = () => {
 
       const message = formatReason(data?.reason ?? data?.error ?? response.error?.message);
       setResult({ status: "error", message });
+      trackGearReviewDraftCreateResult({
+        result_status: "error",
+        result_reason: data?.reason ?? "unknown",
+        category: data?.category,
+      });
       toast({
         title: "Gear review generation failed",
         description: message,
@@ -186,6 +221,10 @@ const GearReviewBlogCronSection = () => {
     } catch (error) {
       const message = getErrorMessage(error);
       setResult({ status: "error", message });
+      trackGearReviewDraftCreateResult({
+        result_status: "error",
+        result_reason: "client_exception",
+      });
       toast({
         title: "Gear review generation failed",
         description: message,
