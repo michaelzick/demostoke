@@ -91,7 +91,7 @@
 - Admin:
   - `AdminPage.tsx`
   - major tools live in `src/components/admin/*`
-  - includes user creation/directory, image/media upload, demo event management, retailer discovery, broken image scanning, blog generation, and geocoding recovery
+  - includes user creation/directory, image/media upload, demo event management, retailer discovery, broken image scanning, manual gear-review blog draft generation, blog generation, and geocoding recovery
 - Widget and external feeds:
   - `src/components/DemoStokeWidget.tsx` currently hardcodes a localhost iframe and is not production-ready
   - external shop feed ingestion centers on `shopGearFeedService.ts`, `shopGearSyncService.ts`, `shopGearFeedMappingService.ts`, and `shop_gear_feed_mappings`

@@ -489,14 +489,14 @@ const createDraftPost = async (values: {
       read_time: calculateReadTime(values.draft.content),
       is_featured: false,
     })
-    .select("id, slug")
+    .select("id, slug, title")
     .single();
 
   if (error) {
     throw new Error(`Failed to create blog draft: ${error.message}`);
   }
 
-  return data as { id: string; slug: string };
+  return data as { id: string; slug: string; title: string };
 };
 
 const loadExistingSlugs = async (): Promise<Set<string>> => {
@@ -647,6 +647,7 @@ serve(async (req) => {
         category: gear.category,
         equipmentId: gear.id,
         blogPostId: blogPost.id,
+        title: blogPost.title,
         slug: blogPost.slug,
       });
     }
