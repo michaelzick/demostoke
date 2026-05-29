@@ -69,7 +69,7 @@ export type SelectedBlogImages = {
   };
 };
 
-export const GEAR_REVIEW_DRAFT_PROMPT_VERSION = "gear-review-blog-draft-v3";
+export const GEAR_REVIEW_DRAFT_PROMPT_VERSION = "gear-review-blog-draft-v4";
 
 export const CATEGORY_TAGS: Record<EligibleGearCategory, string> = {
   skis: "skis",
@@ -186,7 +186,9 @@ const LOCATION_COMPONENT_STOPWORDS = new Set([
   "west",
 ]);
 
-export const MIN_GENERATED_REVIEW_BODY_CHARACTERS = 2000;
+export const TARGET_GENERATED_REVIEW_BODY_WORDS = 1200;
+export const MIN_GENERATED_REVIEW_BODY_WORDS = 1000;
+export const MAX_GENERATED_REVIEW_BODY_WORDS = 1400;
 
 export const isEligibleGearCategory = (category: string): category is EligibleGearCategory =>
   (ELIGIBLE_GEAR_CATEGORIES as readonly string[]).includes(category);
@@ -203,6 +205,42 @@ export const normalizeTextForMatch = (value: string | null | undefined): string 
 
 export const slugifyReviewTitle = (value: string): string =>
   normalizeTextForMatch(value).replace(/\s+/g, "-").replace(/^-+|-+$/g, "");
+
+const slugifyGearPathToken = (value: string): string =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+const normalizeToken = (value: string): string =>
+  value.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+const hasSizeInName = (name: string, size: string): boolean => {
+  const normalizedName = normalizeToken(name);
+  const normalizedSize = normalizeToken(size);
+  return normalizedSize.length > 0 && normalizedName.includes(normalizedSize);
+};
+
+const buildGearDisplayName = (name: string, size?: string | null): string => {
+  const trimmedName = name.trim();
+  const trimmedSize = size?.trim();
+
+  if (!trimmedSize || hasSizeInName(trimmedName, trimmedSize)) {
+    return trimmedName;
+  }
+
+  return `${trimmedName} ${trimmedSize}`;
+};
+
+export const buildGearDetailPath = (gear: Pick<GearReviewCandidate, "id" | "name" | "size">): string => {
+  const displayName = buildGearDisplayName(gear.name, gear.size);
+  return `/gear/${slugifyGearPathToken(displayName)}--${gear.id}`;
+};
+
+export const buildGearDetailUrl = (
+  gear: Pick<GearReviewCandidate, "id" | "name" | "size">,
+  baseUrl = "https://www.demostoke.com",
+): string => `${baseUrl}${buildGearDetailPath(gear)}`;
 
 export const buildUniqueSlug = (baseSlug: string, existingSlugs: Set<string>): string => {
   const cleanBase = baseSlug || "gear-review";
@@ -425,6 +463,43 @@ const publicCopyMentionsListingLocation = (
   );
 };
 
+const FINAL_CALL_HEADING_PATTERN = /<h[23][^>]*>\s*Final Call\s*<\/h[23]>/i;
+
+const getFinalCallHtml = (content: string): string | null => {
+  const headingMatch = content.match(FINAL_CALL_HEADING_PATTERN);
+  if (!headingMatch || headingMatch.index === undefined) {
+    return null;
+  }
+
+  const finalCallStart = headingMatch.index + headingMatch[0].length;
+  const afterFinalCall = content.slice(finalCallStart);
+  const nextHeadingIndex = afterFinalCall.search(/<h[23][^>]*>/i);
+  return nextHeadingIndex === -1 ? afterFinalCall : afterFinalCall.slice(0, nextHeadingIndex);
+};
+
+const normalizeGearHref = (href: string): string =>
+  href.trim().replace(/^https?:\/\/(?:www\.)?demostoke\.com/i, "");
+
+const finalCallHasGearDetailLink = (
+  draft: GeneratedReviewDraft,
+  gear: GearReviewCandidate | null | undefined,
+): boolean => {
+  if (!gear) {
+    return true;
+  }
+
+  const finalCallHtml = getFinalCallHtml(draft.content);
+  if (!finalCallHtml) {
+    return false;
+  }
+
+  const gearPath = buildGearDetailPath(gear);
+  const hrefs = Array.from(finalCallHtml.matchAll(/href\s*=\s*["']([^"']+)["']/gi))
+    .map((match) => normalizeGearHref(match[1]));
+
+  return hrefs.some((href) => href === gearPath);
+};
+
 export const getPublicCopyViolation = (
   draft: GeneratedReviewDraft,
   gear?: GearReviewCandidate,
@@ -463,8 +538,17 @@ export const getPublicCopyViolation = (
     return "public_copy_mentions_listing_location";
   }
 
-  if (countContentCharacters(draft.content) < MIN_GENERATED_REVIEW_BODY_CHARACTERS) {
-    return "content_under_2000_characters";
+  if (!finalCallHasGearDetailLink(draft, gear)) {
+    return "public_copy_missing_final_call_gear_detail_link";
+  }
+
+  const contentWords = countContentWords(draft.content);
+  if (contentWords < MIN_GENERATED_REVIEW_BODY_WORDS) {
+    return "content_under_1000_words";
+  }
+
+  if (contentWords > MAX_GENERATED_REVIEW_BODY_WORDS) {
+    return "content_over_1400_words";
   }
 
   return null;
@@ -498,12 +582,12 @@ export const buildGeneratedReviewSystemPrompt = (): string =>
     "Return valid JSON only, with no markdown code fence.",
     "Required JSON fields: title, excerpt, content, tags, claimCheckSummary.",
     "The content field must be HTML only. Use h2, h3, p, ul, and li. Do not use h1.",
-    "The content field must contain at least 2000 visible characters after HTML tags are removed.",
-    "Use a standalone review structure: overview, who it is for, design and construction, ride or use profile, ideal conditions, setup guidance, strengths, tradeoffs, care or tuning tips, and verdict.",
+    `The content field should be around ${TARGET_GENERATED_REVIEW_BODY_WORDS} visible words after HTML tags are removed. Stay between ${MIN_GENERATED_REVIEW_BODY_WORDS} and ${MAX_GENERATED_REVIEW_BODY_WORDS} visible words.`,
+    "Use a standalone review structure: overview, who it is for, design and construction, ride or use profile, ideal conditions, setup guidance, strengths, tradeoffs, care or tuning tips, and Final Call.",
     "For snowboards, cover profile options, camber or rocker, flex, ideal conditions, boots, bindings, size guidance, and tuning where relevant.",
-    "For surfboards, cover outline, rocker, rails, tail, fin setup, paddling, wave range, sizing, skill fit, strengths, tradeoffs, and verdict. Do not mention specific beaches or surf towns.",
-    "For skis, cover rocker and camber profile, flex, construction, turn shape, terrain fit, boot or binding pairing if useful, sizing, tuning, strengths, tradeoffs, and verdict.",
-    "For mountain bikes, cover frame platform, suspension, geometry, drivetrain, brakes, wheels or tires if known, climbing, descending, sizing, setup, maintenance, strengths, tradeoffs, and verdict.",
+    "For surfboards, cover outline, rocker, rails, tail, fin setup, paddling, wave range, sizing, skill fit, strengths, tradeoffs, and Final Call. Do not mention specific beaches or surf towns.",
+    "For skis, cover rocker and camber profile, flex, construction, turn shape, terrain fit, boot or binding pairing if useful, sizing, tuning, strengths, tradeoffs, and Final Call.",
+    "For mountain bikes, cover frame platform, suspension, geometry, drivetrain, brakes, wheels or tires if known, climbing, descending, sizing, setup, maintenance, strengths, tradeoffs, and Final Call.",
     "If exact tech details vary by model year or trim, say they vary instead of inventing a single exact spec.",
     "Do not use listing metadata as article material. Ignore owner, shop, pickup, booking, availability, address, city, state, region, daily rates, weekly rates, rental details, and demo-program details.",
     "Do not claim first-hand testing, personal ownership, direct demo time, or measured performance unless those facts are supplied.",
@@ -520,7 +604,8 @@ export const buildGeneratedReviewUserPrompt = (gear: GearReviewCandidate): strin
   return [
     `Write a comprehensive evergreen product review of the ${gear.name} ${category}.`,
     "Make it read like a standalone model review, not a shop listing, rental page, local guide, or marketplace availability page.",
-    "Focus on design, ride feel, ideal user, setup guidance, strengths, tradeoffs, care or tuning, and verdict.",
+    "Focus on design, ride feel, ideal user, setup guidance, strengths, tradeoffs, care or tuning, and Final Call.",
+    `The final section must be exactly <h2>Final Call</h2> and must include one natural HTML link to the reviewed gear detail page: <a href="${buildGearDetailUrl(gear)}">${gear.name} gear detail page</a>.`,
   ].join("\n");
 };
 

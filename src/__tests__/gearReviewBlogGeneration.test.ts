@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildGearDetailPath,
+  buildGearDetailUrl,
   buildGeneratedReviewSystemPrompt,
   buildGeneratedReviewUserPrompt,
   buildUniqueSlug,
@@ -10,10 +12,12 @@ import {
   getPublicCopyViolation,
   hasEnoughGearDetail,
   isEligibleGearCategory,
-  MIN_GENERATED_REVIEW_BODY_CHARACTERS,
+  MAX_GENERATED_REVIEW_BODY_WORDS,
+  MIN_GENERATED_REVIEW_BODY_WORDS,
   normalizeGeneratedDraft,
   normalizeGeneratedTags,
   selectBlogImages,
+  TARGET_GENERATED_REVIEW_BODY_WORDS,
   type GearReviewCandidate,
 } from "../../supabase/functions/_shared/gearReviewBlogGeneration";
 import type { ValidGoogleImageSearchResult } from "../../supabase/functions/_shared/googleImageFilters";
@@ -42,8 +46,17 @@ const image = (
   ...overrides,
 });
 
-const longContent = (characterCount = MIN_GENERATED_REVIEW_BODY_CHARACTERS): string =>
-  `<p>${"a".repeat(characterCount)}</p>`;
+const wordContent = (
+  wordCount = TARGET_GENERATED_REVIEW_BODY_WORDS,
+  detailGear: GearReviewCandidate | null = null,
+): string => {
+  const words = Array.from({ length: wordCount }, (_, index) => `word${index}`).join(" ");
+  const finalCall = detailGear
+    ? `<h2>Final Call</h2><p>Read the <a href="${buildGearDetailUrl(detailGear)}">${detailGear.name} gear detail page</a>.</p>`
+    : "";
+
+  return `<p>${words}</p>${finalCall}`;
+};
 
 describe("gear review blog generation helpers", () => {
   it("limits automatic generation to the four gear categories", () => {
@@ -147,7 +160,7 @@ describe("gear review blog generation helpers", () => {
       getPublicCopyViolation({
         title: "Burton Custom Review: $150/day Demo Notes",
         excerpt: "A useful quick take.",
-        content: longContent(),
+        content: wordContent(),
         tags: ["gear reviews"],
       }),
     ).toBe("public_copy_mentions_rental_price");
@@ -156,7 +169,7 @@ describe("gear review blog generation helpers", () => {
       getPublicCopyViolation({
         title: "Burton Custom Review",
         excerpt: "A useful quick take.",
-        content: `${longContent()}<p>Available from a rental shop with weekly booking options.</p>`,
+        content: `${wordContent()}<p>Available from a rental shop with weekly booking options.</p>`,
         tags: ["gear reviews"],
       }),
     ).toBe("public_copy_mentions_shop_or_rental_info");
@@ -165,7 +178,7 @@ describe("gear review blog generation helpers", () => {
       getPublicCopyViolation({
         title: "Surf Prescriptions Pro Fish Review: Performance shortboard for Waikiki",
         excerpt: "A useful quick take.",
-        content: longContent(),
+        content: wordContent(),
         tags: ["gear reviews"],
       }, gear({ location_address: "Waikiki, Honolulu, HI" })),
     ).toBe("public_copy_mentions_listing_location");
@@ -174,7 +187,7 @@ describe("gear review blog generation helpers", () => {
       getPublicCopyViolation({
         title: "A clean review",
         excerpt: "A white-knuckle ride feel without local place copy.",
-        content: longContent(),
+        content: wordContent(TARGET_GENERATED_REVIEW_BODY_WORDS, gear({ location_address: "Big White, BC" })),
         tags: ["gear reviews"],
       }, gear({ location_address: "Big White, BC" })),
     ).toBeNull();
@@ -183,7 +196,7 @@ describe("gear review blog generation helpers", () => {
       getPublicCopyViolation({
         title: "A clean review",
         excerpt: "A useful quick take — with shape notes.",
-        content: longContent(),
+        content: wordContent(),
         tags: ["gear reviews"],
       }),
     ).toBe("public_copy_contains_em_dash");
@@ -192,18 +205,57 @@ describe("gear review blog generation helpers", () => {
       getPublicCopyViolation({
         title: "A clean review",
         excerpt: "A useful quick take.",
-        content: "<p>Too short.</p>",
+        content: wordContent(MIN_GENERATED_REVIEW_BODY_WORDS - 1),
         tags: ["gear reviews"],
       }),
-    ).toBe("content_under_2000_characters");
+    ).toBe("content_under_1000_words");
 
     expect(
       getPublicCopyViolation({
         title: "A clean review",
         excerpt: "A useful quick take.",
-        content: longContent(),
+        content: wordContent(MAX_GENERATED_REVIEW_BODY_WORDS + 1),
         tags: ["gear reviews"],
       }),
+    ).toBe("content_over_1400_words");
+
+    expect(
+      getPublicCopyViolation({
+        title: "A clean review",
+        excerpt: "A useful quick take.",
+        content: wordContent(),
+        tags: ["gear reviews"],
+      }),
+    ).toBeNull();
+  });
+
+  it("requires the Final Call section to link to the reviewed gear detail page", () => {
+    const reviewedGear = gear({
+      id: "123e4567-e89b-12d3-a456-426614174000",
+      name: "Lost RNF 96",
+      size: "5'8",
+    });
+
+    expect(buildGearDetailPath(reviewedGear)).toBe(
+      "/gear/lost-rnf-96-5-8--123e4567-e89b-12d3-a456-426614174000",
+    );
+
+    expect(
+      getPublicCopyViolation({
+        title: "A clean review",
+        excerpt: "A useful quick take.",
+        content: `${wordContent()}<h2>Final Call</h2><p>A useful closing note without the link.</p>`,
+        tags: ["gear reviews"],
+      }, reviewedGear),
+    ).toBe("public_copy_missing_final_call_gear_detail_link");
+
+    expect(
+      getPublicCopyViolation({
+        title: "A clean review",
+        excerpt: "A useful quick take.",
+        content: wordContent(TARGET_GENERATED_REVIEW_BODY_WORDS, reviewedGear),
+        tags: ["gear reviews"],
+      }, reviewedGear),
     ).toBeNull();
   });
 
@@ -219,13 +271,15 @@ describe("gear review blog generation helpers", () => {
 
     expect(prompt).toContain("comprehensive evergreen product review of the Firewire Seaside surfboard");
     expect(prompt).toContain("standalone model review");
+    expect(prompt).toContain(`<h2>Final Call</h2>`);
+    expect(prompt).toContain(buildGearDetailUrl(gear()));
     expect(prompt).not.toContain("$95");
     expect(prompt).not.toContain("$30");
     expect(prompt).not.toContain("$420");
     expect(prompt).not.toContain("123 Rental Shop Way");
   });
 
-  it("uses product-review structure and prompt version v3", () => {
+  it("uses product-review structure and prompt version v4", () => {
     const systemPrompt = buildGeneratedReviewSystemPrompt();
 
     expect(systemPrompt).toContain("evergreen product-review");
@@ -233,8 +287,9 @@ describe("gear review blog generation helpers", () => {
     expect(systemPrompt).toContain("camber or rocker");
     expect(systemPrompt).toContain("outline, rocker, rails, tail, fin setup");
     expect(systemPrompt).toContain("Do not mention availability, booking details, listing locations");
-    expect(systemPrompt).toContain("at least 2000 visible characters");
-    expect(GEAR_REVIEW_DRAFT_PROMPT_VERSION).toBe("gear-review-blog-draft-v3");
+    expect(systemPrompt).toContain("around 1200 visible words");
+    expect(systemPrompt).toContain("between 1000 and 1400 visible words");
+    expect(GEAR_REVIEW_DRAFT_PROMPT_VERSION).toBe("gear-review-blog-draft-v4");
   });
 
   it("normalizes em dashes out of generated public copy and claim notes", () => {
