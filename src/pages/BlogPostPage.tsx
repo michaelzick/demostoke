@@ -23,6 +23,7 @@ import {
   trackGeneratedGearReviewRelatedGearClick,
   trackGeneratedGearReviewView,
 } from "@/utils/blogAnalytics";
+import { trackEvent } from "@/utils/tracking";
 
 const BlogPostPage = () => {
   const { slug, id } = useParams<{ slug?: string; id?: string; }>();
@@ -33,6 +34,8 @@ const BlogPostPage = () => {
   const [databaseId, setDatabaseId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const generatedReviewViewTrackedRef = useRef<string | null>(null);
+  const notFoundTrackedRef = useRef<string | null>(null);
+  const relatedGearUnavailableTrackedRef = useRef<string | null>(null);
   const { isAdmin } = useIsAdmin();
   const isPreviewMode = location.pathname.startsWith('/blog/preview/');
   const currentDocumentTitle =
@@ -100,6 +103,50 @@ const BlogPostPage = () => {
     generatedReviewViewTrackedRef.current = trackingKey;
     trackGeneratedGearReviewView(post, mode);
   }, [isPreviewMode, post]);
+
+  useEffect(() => {
+    if (isLoading || post) {
+      return;
+    }
+
+    const trackingKey = `${isPreviewMode ? "draft_preview" : "published"}:${slug || id || "unknown"}`;
+    if (notFoundTrackedRef.current === trackingKey) {
+      return;
+    }
+
+    notFoundTrackedRef.current = trackingKey;
+    trackEvent("generated_review_view_failed_not_found", {
+      post_slug: slug || null,
+      post_id: id || null,
+      post_mode: isPreviewMode ? "draft_preview" : "published",
+      failure_reason: "post_not_found",
+    });
+  }, [id, isLoading, isPreviewMode, post, slug]);
+
+  useEffect(() => {
+    if (
+      isLoading ||
+      isLoadingRelatedGear ||
+      !post?.isGeneratedGearReview ||
+      !post ||
+      (relatedGear && relatedGear.length > 0)
+    ) {
+      return;
+    }
+
+    const trackingKey = `${isPreviewMode ? "draft_preview" : "published"}:${post.databaseId || post.id}`;
+    if (relatedGearUnavailableTrackedRef.current === trackingKey) {
+      return;
+    }
+
+    relatedGearUnavailableTrackedRef.current = trackingKey;
+    trackEvent("generated_review_related_gear_unavailable", {
+      post_id: post.databaseId || post.id,
+      post_slug: post.id,
+      post_mode: isPreviewMode ? "draft_preview" : "published",
+      failure_reason: "no_related_gear_candidates",
+    });
+  }, [isLoading, isLoadingRelatedGear, isPreviewMode, post, relatedGear]);
 
   usePageMetadata({
     title: post

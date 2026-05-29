@@ -22,6 +22,7 @@ import BlogFooter from "@/components/BlogFooter";
 import { cn } from "@/lib/utils";
 import { slugify } from "@/utils/slugify";
 import { useAutoSave } from "@/hooks/useAutoSave";
+import { trackEvent } from "@/utils/tracking";
 
 const categories = [
   "snowboards",
@@ -144,7 +145,16 @@ function BlogCreatePageInner() {
   };
 
   const handleCreatePost = async () => {
+    trackEvent("blog_publish_started", {
+      category: category || null,
+      has_existing_draft: Boolean(draftId),
+    });
+
     if (!isFormValid()) {
+      trackEvent("blog_publish_failed_validation", {
+        category: category || null,
+        failure_reason: "missing_required_fields",
+      });
       toast.error("Please fill in all required fields.");
       return;
     }
@@ -227,6 +237,10 @@ function BlogCreatePageInner() {
       }
 
       setCreatedSlug(slug);
+      trackEvent("blog_publish_succeeded", {
+        post_slug: slug,
+        category: formattedCategory,
+      });
       toast.success("Blog post published successfully!");
 
       // Reset form
@@ -246,6 +260,10 @@ function BlogCreatePageInner() {
       setDraftId(null);
     } catch (error) {
       console.error("Error creating blog post:", error);
+      trackEvent("blog_publish_failed", {
+        category: category || null,
+        failure_reason: error instanceof Error ? error.message : "publish_request_failed",
+      });
       toast.error("Failed to create blog post. Please try again.");
     } finally {
       setIsCreating(false);

@@ -23,6 +23,7 @@ import { AdvancedFilters } from "@/types/advancedFilters";
 import { applyAdvancedFilters } from "@/utils/advancedFiltering";
 import { filterGearByQuickQuery } from "@/utils/gearQuickFilter";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { trackEvent } from "@/utils/tracking";
 import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 import { resolveStaticRouteSeo } from "@/lib/seo/policy.js";
 import { useGeolocation } from "@/hooks/useGeolocation";
@@ -58,6 +59,8 @@ const ExplorePage = () => {
   const [viewMode, setViewMode] = useState<"map" | "list" | "hybrid">("hybrid");
   const [quickFilter, setQuickFilter] = useState(initialQuickFilterFromUrl);
   const lastSyncedUrlQRef = useRef(initialQuickFilterFromUrl);
+  const lastExploreSuccessSignatureRef = useRef("");
+  const lastExploreNoResultsSignatureRef = useRef("");
   const [hasShownNoEquipmentToast, setHasShownNoEquipmentToast] = useState(false);
 
   const { latitude, longitude, permissionState, requestLocation } = useGeolocation();
@@ -138,6 +141,11 @@ const ExplorePage = () => {
     useEquipmentWithDynamicDistance(allEquipment, distanceFallbackOrigin);
 
   const handleCategoryChange = (category: string | null) => {
+    trackEvent("explore_filter_started", {
+      filter_type: "category",
+      selected_category: category ?? "all",
+    });
+
     setActiveCategory(category);
     setHasShownNoEquipmentToast(false);
 
@@ -195,6 +203,9 @@ const ExplorePage = () => {
   // Show toast when no equipment is found after filtering
   useEffect(() => {
     if (!isEquipmentLoading && filteredEquipment.length === 0 && activeCategory && !hasShownNoEquipmentToast) {
+      trackEvent("explore_filter_no_equipment_toast", {
+        selected_category: activeCategory,
+      });
       toast({
         title: "No equipment found",
         description: `No ${activeCategory.toLowerCase()} available in this area. Try expanding your search or browse other categories.`,
@@ -202,6 +213,41 @@ const ExplorePage = () => {
       setHasShownNoEquipmentToast(true);
     }
   }, [filteredEquipment.length, activeCategory, isEquipmentLoading, hasShownNoEquipmentToast, toast]);
+
+  useEffect(() => {
+    if (isEquipmentLoading || !activeCategory) {
+      return;
+    }
+
+    const signature = `${activeCategory}:${filteredEquipment.length}:${quickFilter}:${advancedFilters.priceRanges.join(",")}:${advancedFilters.ratingRanges.join(",")}:${advancedFilters.featured}:${advancedFilters.myFavorites}`;
+
+    if (filteredEquipment.length > 0 && signature !== lastExploreSuccessSignatureRef.current) {
+      trackEvent("explore_filter_results_loaded", {
+        selected_category: activeCategory,
+        result_count: filteredEquipment.length,
+        quick_filter_active: quickFilter.trim().length > 0,
+      });
+      lastExploreSuccessSignatureRef.current = signature;
+      return;
+    }
+
+    if (filteredEquipment.length === 0 && signature !== lastExploreNoResultsSignatureRef.current) {
+      trackEvent("explore_filter_no_results", {
+        selected_category: activeCategory,
+        quick_filter_active: quickFilter.trim().length > 0,
+      });
+      lastExploreNoResultsSignatureRef.current = signature;
+    }
+  }, [
+    activeCategory,
+    advancedFilters.featured,
+    advancedFilters.myFavorites,
+    advancedFilters.priceRanges,
+    advancedFilters.ratingRanges,
+    filteredEquipment.length,
+    isEquipmentLoading,
+    quickFilter,
+  ]);
 
   // Handle reset
   const handleReset = () => {
@@ -224,6 +270,15 @@ const ExplorePage = () => {
 
   // Handle advanced filter changes
   const handleAdvancedFiltersChange = (filters: AdvancedFilters) => {
+    trackEvent("explore_filter_started", {
+      filter_type: "advanced",
+      selected_category: activeCategory ?? "all",
+      has_price_filter: filters.priceRanges.length > 0,
+      has_rating_filter: filters.ratingRanges.length > 0,
+      featured_only: filters.featured,
+      favorites_only: filters.myFavorites,
+    });
+
     setAdvancedFilters(filters);
     setHasShownNoEquipmentToast(false);
   };

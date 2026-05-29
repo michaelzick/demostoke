@@ -7,6 +7,7 @@ import { Session } from "@supabase/supabase-js";
 import { AuthContextType } from "./types";
 import { AuthService } from "./AuthService";
 import { getLocalFavorites, mergeFavoritesArrays } from "@/services/localStorageFavoritesService";
+import { trackEvent } from "@/utils/tracking";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -216,6 +217,18 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
       });
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Invalid email or password";
+      const normalizedMessage = message.toLowerCase();
+      const failureReason = normalizedMessage.includes("captcha")
+        ? "captcha_rejected"
+        : normalizedMessage.includes("invalid") || normalizedMessage.includes("credential")
+          ? "invalid_credentials"
+          : "auth_service_error";
+
+      trackEvent("auth_signin_failed_service_error", {
+        signin_method: "email_password",
+        failure_reason: failureReason,
+      });
+
       toast({
         title: "Login failed",
         description: message,

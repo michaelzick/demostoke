@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { DemoEvent, DemoEventInput } from "@/types/demo-calendar";
 import { useToast } from "@/hooks/use-toast";
+import { trackEvent } from "@/utils/tracking";
 
 export const useDemoEvents = () => {
   const { toast } = useToast();
@@ -36,6 +37,9 @@ export const useDemoEvents = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['demo-events'] });
+      trackEvent("demo_event_create_succeeded", {
+        surface: "demo_calendar",
+      });
       toast({
         title: "Event created",
         description: "Your demo event has been successfully created.",
@@ -43,6 +47,9 @@ export const useDemoEvents = () => {
     },
     onError: (error) => {
       console.error('Error creating event:', error);
+      trackEvent("demo_event_create_failed", {
+        failure_reason: error.message,
+      });
       toast({
         title: "Error creating event",
         description: "There was a problem creating your event. Please try again.",
@@ -76,6 +83,9 @@ export const useDemoEvents = () => {
     },
     onError: (error) => {
       console.error('Error updating event:', error);
+      trackEvent("demo_event_update_failed", {
+        failure_reason: error.message,
+      });
       toast({
         title: "Error updating event",
         description: "There was a problem updating your event. Please try again.",
@@ -102,6 +112,9 @@ export const useDemoEvents = () => {
     },
     onError: (error) => {
       console.error('Error deleting event:', error);
+      trackEvent("demo_event_delete_failed", {
+        failure_reason: error.message,
+      });
       toast({
         title: "Error deleting event",
         description: "There was a problem deleting your event. Please try again.",

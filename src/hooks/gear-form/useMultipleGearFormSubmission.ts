@@ -8,6 +8,7 @@ import { geocodeAddress } from "@/utils/geocoding";
 import { uploadMultipleGearImages, saveEquipmentImages } from "@/utils/multipleImageHandling";
 import { prepareEquipmentData } from "@/utils/equipmentDataPreparation";
 import { createEquipmentInDatabase } from "@/utils/gearDatabaseOperations";
+import { trackEvent } from "@/utils/tracking";
 import type { FormData } from "./types";
 
 interface UseMultipleGearFormSubmissionProps {
@@ -56,6 +57,11 @@ export const useMultipleGearFormSubmission = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    trackEvent("owner_listing_submission_started", {
+      gear_type: gearType,
+      has_uploaded_images: images.length > 0 || imageUrls.some((url) => url.trim().length > 0),
+    });
+
     if (!user) {
       toast({
         title: "Authentication Error",
@@ -98,6 +104,10 @@ export const useMultipleGearFormSubmission = ({
     };
 
     if (!validateForm(formData)) {
+      trackEvent("owner_listing_submission_failed_validation", {
+        gear_type: gearType,
+        failure_reason: "form_validation_failed",
+      });
       return;
     }
 
@@ -168,6 +178,11 @@ export const useMultipleGearFormSubmission = ({
       // Save all images to equipment_images table
       await saveEquipmentImages(equipmentResult.id, finalImageUrls);
 
+      trackEvent("owner_listing_submission_succeeded", {
+        gear_id: equipmentResult.id,
+        gear_type: gearType,
+      });
+
       toast({
         title: "Equipment Added",
         description: `${gearName} has been successfully added to your inventory.`,
@@ -178,6 +193,10 @@ export const useMultipleGearFormSubmission = ({
 
     } catch (error) {
       console.error('Error creating equipment:', error);
+      trackEvent("owner_listing_submission_failed_create", {
+        gear_type: gearType,
+        failure_reason: error instanceof Error ? error.message : "create_equipment_failed",
+      });
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to add equipment. Please try again.",

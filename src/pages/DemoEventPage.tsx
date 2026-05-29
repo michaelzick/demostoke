@@ -26,6 +26,7 @@ import {
   buildDemoEventTitle,
 } from "@/lib/seo/publicMetadata";
 import { ROBOTS_NOINDEX_FOLLOW, isPastDemoEvent } from "@/lib/seo/policy.js";
+import { trackEvent } from "@/utils/tracking";
 
 const buildEventStartDate = (event: DemoEvent) => {
   if (!event.event_date) return undefined;
@@ -130,12 +131,21 @@ const DemoEventPage = () => {
   const handleDelete = async () => {
     if (!event || !isAdmin) return;
 
+    trackEvent("demo_event_manage_started", {
+      action: "delete",
+      event_id: event.id,
+    });
+
     if (!window.confirm("Are you sure you want to delete this event?")) {
       return;
     }
 
     try {
       await deleteEventAsync(event.id);
+      trackEvent("demo_event_manage_succeeded", {
+        action: "delete",
+        event_id: event.id,
+      });
       navigate("/demo-calendar");
     } catch {
       // Toast handled in hook.
@@ -145,8 +155,17 @@ const DemoEventPage = () => {
   const handleSubmitEvent = async (eventData: DemoEventInput) => {
     if (!editingEvent) return;
 
+    trackEvent("demo_event_manage_started", {
+      action: "update",
+      event_id: editingEvent.id,
+    });
+
     try {
       const updatedEvent = await updateEventAsync({ id: editingEvent.id, eventData });
+      trackEvent("demo_event_manage_succeeded", {
+        action: "update",
+        event_id: updatedEvent.id,
+      });
       setEditingEvent(null);
       navigate(buildDemoEventPath(updatedEvent), { replace: true });
     } catch {

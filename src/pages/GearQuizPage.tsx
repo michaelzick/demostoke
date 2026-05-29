@@ -19,6 +19,7 @@ import { useEstimatedProgress } from "@/hooks/useEstimatedProgress";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 import { GearCandidate } from "@/types/quiz";
+import { trackEvent } from "@/utils/tracking";
 
 // Task 3.1: Fetch lightweight DB candidates for a given category
 async function fetchDbCandidates(category: string): Promise<GearCandidate[]> {
@@ -120,11 +121,20 @@ const GearQuizPage = () => {
   };
 
   const submitQuiz = async () => {
+    trackEvent("gear_quiz_submission_started", {
+      category: quizData.category || null,
+      step: currentStep,
+    });
+
     setIsLoading(true);
     try {
       // Validate and sanitize data before submission
       const validation = validateQuizData(quizData);
       if (!validation.isValid) {
+        trackEvent("gear_quiz_submission_failed_validation", {
+          category: quizData.category || null,
+          failure_reason: validation.error || "validation_failed",
+        });
         toast({
           title: "Validation Error",
           description: validation.error || "Please check your input and try again.",
@@ -142,6 +152,10 @@ const GearQuizPage = () => {
         candidates = await fetchDbCandidates(quizData.category);
       } catch (dbError) {
         console.error('Error fetching DB candidates:', dbError);
+        trackEvent("gear_quiz_submission_failed_db", {
+          category: quizData.category || null,
+          failure_reason: dbError instanceof Error ? dbError.message : "candidate_fetch_failed",
+        });
         toast({
           title: "Error",
           description: "Failed to analyze your quiz. Please try again.",
@@ -158,9 +172,17 @@ const GearQuizPage = () => {
       if (error) throw error;
 
       setResults(data);
+      trackEvent("gear_quiz_submission_succeeded", {
+        category: quizData.category || null,
+        candidate_count: candidates.length,
+      });
       setCurrentStep(7); // Move to results step
     } catch (error) {
       console.error('Error submitting quiz:', error);
+      trackEvent("gear_quiz_submission_failed_analysis", {
+        category: quizData.category || null,
+        failure_reason: error instanceof Error ? error.message : "analysis_request_failed",
+      });
       toast({
         title: "Error",
         description: "Failed to analyze your quiz. Please try again.",

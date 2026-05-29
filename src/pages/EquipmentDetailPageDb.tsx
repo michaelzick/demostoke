@@ -109,6 +109,11 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
   };
 
   const handleViewRealGearImages = async () => {
+    trackEvent("real_gear_image_lookup_started", {
+      gear_id: equipment.id,
+      gear_category: equipment.category,
+    });
+
     setIsLoadingRealImages(true);
 
     try {
@@ -132,6 +137,11 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
       const imageUrls = getSearchResultImageUrls(data?.results);
 
       if (imageUrls.length === 0) {
+        trackEvent("real_gear_image_lookup_failed_no_images", {
+          gear_id: equipment.id,
+          gear_category: equipment.category,
+          failure_reason: "no_high_resolution_images",
+        });
         toast({
           title: "No Real Images Found",
           description: "Try again later or keep browsing the current listing images.",
@@ -141,8 +151,18 @@ const EquipmentDetailPageDb: React.FC<EquipmentDetailPageDbProps> = ({
 
       setCarouselImages(imageUrls);
       setSelectedImageIndex(0);
+      trackEvent("real_gear_image_lookup_succeeded", {
+        gear_id: equipment.id,
+        gear_category: equipment.category,
+        image_count: imageUrls.length,
+      });
     } catch (error) {
       console.error("Google image search error:", error);
+      trackEvent("real_gear_image_lookup_failed_request", {
+        gear_id: equipment.id,
+        gear_category: equipment.category,
+        failure_reason: error instanceof Error ? error.message : "request_failed",
+      });
       toast({
         title: "Image Search Failed",
         description: "We could not load real gear images right now. Please try again.",

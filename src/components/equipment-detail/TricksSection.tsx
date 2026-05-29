@@ -51,6 +51,28 @@ export function TricksSection({ equipmentId, category, subcategory, equipmentNam
     }
   }, [equipmentId, setTricks]);
 
+  useEffect(() => {
+    if (!error) {
+      return;
+    }
+
+    const normalizedError = error.toLowerCase();
+    if (normalizedError.includes("no tricks returned")) {
+      trackEvent("tricks_generation_failed_empty", {
+        gear_id: equipmentId,
+        gear_category: category,
+        failure_reason: "no_tricks_returned",
+      });
+      return;
+    }
+
+    trackEvent("tricks_generation_failed", {
+      gear_id: equipmentId,
+      gear_category: category,
+      failure_reason: error,
+    });
+  }, [category, equipmentId, error]);
+
   const handleGenerateTricks = async (forceRefresh = false) => {
     if (forceRefresh) {
       clearCachedTricks(equipmentId);
