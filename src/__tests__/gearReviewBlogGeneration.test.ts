@@ -9,7 +9,7 @@ import {
   getPublicCopyViolation,
   hasEnoughGearDetail,
   isEligibleGearCategory,
-  MIN_GENERATED_REVIEW_BODY_WORDS,
+  MIN_GENERATED_REVIEW_BODY_CHARACTERS,
   normalizeGeneratedDraft,
   normalizeGeneratedTags,
   selectBlogImages,
@@ -41,8 +41,8 @@ const image = (
   ...overrides,
 });
 
-const longContent = (wordCount = MIN_GENERATED_REVIEW_BODY_WORDS): string =>
-  `<p>${Array.from({ length: wordCount }, (_, index) => `word${index}`).join(" ")}</p>`;
+const longContent = (characterCount = MIN_GENERATED_REVIEW_BODY_CHARACTERS): string =>
+  `<p>${"a".repeat(characterCount)}</p>`;
 
 describe("gear review blog generation helpers", () => {
   it("limits automatic generation to the four gear categories", () => {
@@ -176,7 +176,7 @@ describe("gear review blog generation helpers", () => {
         content: "<p>Too short.</p>",
         tags: ["gear reviews"],
       }),
-    ).toBe("content_under_1500_words");
+    ).toBe("content_under_2000_characters");
 
     expect(
       getPublicCopyViolation({
@@ -188,28 +188,25 @@ describe("gear review blog generation helpers", () => {
     ).toBeNull();
   });
 
-  it("includes general-publication cron draft editorial rules in generation prompts", () => {
-    const combinedPrompt = [
-      buildGeneratedReviewSystemPrompt(),
-      buildGeneratedReviewUserPrompt(
-        gear({
-          price_per_day: 95,
-          price_per_hour: 30,
-          price_per_week: 420,
-          location_address: "123 Rental Shop Way",
-        }),
-        [],
-      ),
-    ].join("\n");
+  it("keeps the generated review user prompt simple and free of listing details", () => {
+    const prompt = buildGeneratedReviewUserPrompt(
+      gear({
+        price_per_day: 95,
+        price_per_hour: 30,
+        price_per_week: 420,
+        location_address: "123 Rental Shop Way",
+      }),
+    );
 
-    expect(combinedPrompt).toContain("Do not use em dashes");
-    expect(combinedPrompt).toContain("Do not include shop-specific analysis");
-    expect(combinedPrompt).toContain("Pretend you are reviewing the gear for a general outdoor/action-sports publication");
-    expect(combinedPrompt).toContain("at least 1500 words");
-    expect(combinedPrompt).not.toContain("$95");
-    expect(combinedPrompt).not.toContain("$30");
-    expect(combinedPrompt).not.toContain("$420");
-    expect(combinedPrompt).not.toContain("123 Rental Shop Way");
+    expect(prompt).toBe("write a comprehensive review of the Firewire Seaside");
+    expect(prompt).not.toContain("$95");
+    expect(prompt).not.toContain("$30");
+    expect(prompt).not.toContain("$420");
+    expect(prompt).not.toContain("123 Rental Shop Way");
+  });
+
+  it("uses a 2000-character generated review length requirement", () => {
+    expect(buildGeneratedReviewSystemPrompt()).toContain("at least 2000 visible characters");
   });
 
   it("normalizes em dashes out of generated public copy and claim notes", () => {

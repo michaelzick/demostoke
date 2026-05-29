@@ -386,10 +386,7 @@ const googleImageSearch = async (
   return filterHighResolutionGearImageResults(results, 10);
 };
 
-const generateDraft = async (
-  gear: GearReviewCandidate,
-  sources: SourceSnippet[],
-): Promise<GeneratedReviewDraft> => {
+const generateDraft = async (gear: GearReviewCandidate): Promise<GeneratedReviewDraft> => {
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -400,7 +397,7 @@ const generateDraft = async (
       model: OPENAI_MODEL,
       messages: [
         { role: "system", content: buildGeneratedReviewSystemPrompt() },
-        { role: "user", content: buildGeneratedReviewUserPrompt(gear, sources) },
+        { role: "user", content: buildGeneratedReviewUserPrompt(gear) },
       ],
       max_completion_tokens: 6500,
     }),
@@ -585,7 +582,7 @@ serve(async (req) => {
         continue;
       }
 
-      const draft = await generateDraft(gear, sources);
+      const draft = await generateDraft(gear);
       const publicCopyViolation = getPublicCopyViolation(draft);
 
       if (publicCopyViolation) {

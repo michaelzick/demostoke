@@ -141,7 +141,7 @@ const SHOP_OR_RENTAL_PUBLIC_COPY_PATTERNS = [
 
 const STOP_TAGS = new Set(["the", "and", "with", "for", "mens", "women", "womens"]);
 
-export const MIN_GENERATED_REVIEW_BODY_WORDS = 1500;
+export const MIN_GENERATED_REVIEW_BODY_CHARACTERS = 2000;
 
 export const isEligibleGearCategory = (category: string): category is EligibleGearCategory =>
   (ELIGIBLE_GEAR_CATEGORIES as readonly string[]).includes(category);
@@ -365,8 +365,8 @@ export const getPublicCopyViolation = (draft: GeneratedReviewDraft): string | nu
     }
   }
 
-  if (countContentWords(draft.content) < MIN_GENERATED_REVIEW_BODY_WORDS) {
-    return "content_under_1500_words";
+  if (countContentCharacters(draft.content) < MIN_GENERATED_REVIEW_BODY_CHARACTERS) {
+    return "content_under_2000_characters";
   }
 
   return null;
@@ -392,85 +392,22 @@ export const selectBlogImages = (
   };
 };
 
-const formatGearFacts = (gear: GearReviewCandidate): string =>
-  [
-    `Name: ${gear.name}`,
-    `Category: ${isEligibleGearCategory(gear.category) ? CATEGORY_TAGS[gear.category] : gear.category}`,
-    gear.subcategory ? `Subcategory: ${gear.subcategory}` : null,
-    gear.description ? `Listing description: ${gear.description}` : null,
-    gear.size ? `Listed sizes: ${gear.size}` : null,
-    gear.weight ? `Weight: ${gear.weight}` : null,
-    gear.material ? `Material: ${gear.material}` : null,
-    gear.suitable_skill_level ? `Suitable skill level: ${gear.suitable_skill_level}` : null,
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-const formatSources = (sources: SourceSnippet[]): string =>
-  sources.length > 0
-    ? sources
-        .slice(0, 5)
-        .map((source, index) =>
-          `${index + 1}. ${source.title}\nURL: ${source.link}\nSnippet: ${source.snippet ?? ""}`,
-        )
-        .join("\n\n")
-    : "No external source snippets were available. Use only the listing facts above.";
-
 export const buildGeneratedReviewSystemPrompt = (): string =>
   [
-    "You write DemoStoke gear review drafts for action-sports riders.",
-    "The voice is natural, loose, fun, and knowledgeable: a strong outdoor writer with some surfer-bro energy.",
-    "Keep it smart, specific, and useful. Avoid cringe, fake stoke, corporate polish, and dumbed-down explanations.",
-    "Use only model-level gear facts from the supplied listing and source snippets.",
-    "Write like a general gear publication reviewing the product, not like a marketplace, rental listing, or shop profile.",
-    "Do not include shop-specific analysis, shop names, store names, rental availability, rental terms, booking details, or rental/demo pricing anywhere in public copy.",
-    "Do not mention prices, dollar amounts, per-day rates, per-hour rates, per-week rates, rental rates, or demo rates anywhere in public copy.",
-    "Use source snippets only for model specifications, design intent, and general third-party review context. Ignore shop-specific source details.",
+    "You write gear review drafts for action-sports riders.",
+    "The voice is natural, loose, fun, knowledgeable, specific, and useful.",
+    "Return valid JSON only, with no markdown code fence.",
+    "Required JSON fields: title, excerpt, content, tags, claimCheckSummary.",
+    "The content field must be HTML only. Use h2, h3, p, ul, and li. Do not use h1.",
+    "The content field must contain at least 2000 visible characters after HTML tags are removed.",
     "Do not claim first-hand testing, personal ownership, direct demo time, or measured performance unless those facts are supplied.",
     "Do not mention evidence, verification, guardrails, QA, source audits, internal process, or claim checks in public copy.",
+    "Do not mention availability, booking details, locations, prices, dollar amounts, or rate structures in public copy.",
     "Do not use em dashes anywhere in public copy.",
-    "Write at least 1500 words in the HTML content body.",
-    "Return valid JSON only, with no markdown code fence.",
   ].join("\n");
 
-export const buildGeneratedReviewUserPrompt = (
-  gear: GearReviewCandidate,
-  sources: SourceSnippet[],
-): string =>
-  [
-    "Create one gear-review blog draft for this DemoStoke listing.",
-    "",
-    "Required JSON shape:",
-    "{",
-    '  "title": "Specific gear model first, clear review intent, 50-80 characters",',
-    '  "excerpt": "Concise answer-oriented summary, 120-170 characters",',
-    '  "content": "HTML only. Use h2, h3, p, ul, li. No h1.",',
-    '  "tags": ["gear reviews", "category", "brand/model", "intent"],',
-    '  "claimCheckSummary": ["Internal note about what facts were used"]',
-    "}",
-    "",
-    "Content structure:",
-    "- Quick take",
-    "- Who it is for",
-    "- Ride/use profile",
-    "- Strengths",
-    "- Tradeoffs",
-    "- Final call",
-    "",
-    "Required editorial rules:",
-    "- The excerpt is the subtitle. Keep it focused on general gear-review value, not marketplace availability.",
-    "- Do not include shop-specific analysis, shop names, store names, rental availability, rental terms, booking details, rental/demo pricing, dollar amounts, per-day rates, per-hour rates, or per-week rates anywhere in title, excerpt, content, or tags.",
-    "- Talk about the gear in a general way that is not tied to a specific shop, location, rental program, or DemoStoke listing.",
-    "- Pretend you are reviewing the gear for a general outdoor/action-sports publication.",
-    "- Do not use em dashes anywhere. Use commas, colons, parentheses, or short sentences instead.",
-    "- The content field must be at least 1500 words after HTML tags are removed.",
-    "",
-    "Gear facts:",
-    formatGearFacts(gear),
-    "",
-    "Source snippets for factual grounding:",
-    formatSources(sources),
-  ].join("\n");
+export const buildGeneratedReviewUserPrompt = (gear: GearReviewCandidate): string =>
+  `write a comprehensive review of the ${gear.name}`;
 
 export const normalizeGeneratedDraft = (
   gear: GearReviewCandidate,
@@ -493,11 +430,14 @@ export const normalizeGeneratedDraft = (
   };
 };
 
+const getVisibleContentText = (content: string): string =>
+  content.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+
+export const countContentCharacters = (content: string): number =>
+  getVisibleContentText(content).length;
+
 export const countContentWords = (content: string): number =>
-  content
-    .replace(/<[^>]*>/g, " ")
-    .split(/\s+/)
-    .filter(Boolean).length;
+  getVisibleContentText(content).split(/\s+/).filter(Boolean).length;
 
 export const calculateReadTime = (content: string): number =>
   Math.max(1, Math.ceil(countContentWords(content) / 200));
