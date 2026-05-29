@@ -7,6 +7,7 @@ import {
   buildGeneratedReviewUserPrompt,
   buildUniqueSlug,
   chooseRandomCategory,
+  ensureFinalCallGearDetailLink,
   GEAR_REVIEW_DRAFT_PROMPT_VERSION,
   getAlreadyReviewedReason,
   getPublicCopyViolation,
@@ -52,7 +53,7 @@ const wordContent = (
 ): string => {
   const words = Array.from({ length: wordCount }, (_, index) => `word${index}`).join(" ");
   const finalCall = detailGear
-    ? `<h2>Final Call</h2><p>Read the <a href="${buildGearDetailUrl(detailGear)}">${detailGear.name} gear detail page</a>.</p>`
+    ? `<h2>Final Call</h2><p>Read the <a href="${buildGearDetailPath(detailGear)}">${detailGear.name} gear detail page</a>.</p>`
     : "";
 
   return `<p>${words}</p>${finalCall}`;
@@ -249,6 +250,19 @@ describe("gear review blog generation helpers", () => {
       }, reviewedGear),
     ).toBe("public_copy_missing_final_call_gear_detail_link");
 
+    const normalizedFinalThoughts = normalizeGeneratedDraft(reviewedGear, {
+      title: "A clean review",
+      excerpt: "A useful quick take.",
+      content: `${wordContent()}<h2>Final Thoughts</h2><p>A useful closing note without the link.</p>`,
+      tags: ["gear reviews"],
+    });
+
+    expect(normalizedFinalThoughts.content).toContain("<h2>Final Call</h2>");
+    expect(normalizedFinalThoughts.content).toContain(
+      `<a href="${buildGearDetailPath(reviewedGear)}">${reviewedGear.name} gear detail page</a>`,
+    );
+    expect(getPublicCopyViolation(normalizedFinalThoughts, reviewedGear)).toBeNull();
+
     expect(
       getPublicCopyViolation({
         title: "A clean review",
@@ -257,6 +271,32 @@ describe("gear review blog generation helpers", () => {
         tags: ["gear reviews"],
       }, reviewedGear),
     ).toBeNull();
+
+    expect(
+      getPublicCopyViolation({
+        title: "A clean review",
+        excerpt: "A useful quick take.",
+        content: `<p>${Array.from({ length: TARGET_GENERATED_REVIEW_BODY_WORDS }, (_, index) => `word${index}`).join(" ")}</p><h2>Final Call</h2><p>Read the <a href="${buildGearDetailUrl(reviewedGear)}">${reviewedGear.name} gear detail page</a>.</p>`,
+        tags: ["gear reviews"],
+      }, reviewedGear),
+    ).toBeNull();
+  });
+
+  it("adds a Final Call gear detail link when the generated content omits one", () => {
+    const reviewedGear = gear({
+      id: "gear-2",
+      name: "Burton Custom",
+      category: "snowboards",
+      size: "158",
+    });
+    const content = ensureFinalCallGearDetailLink(
+      reviewedGear,
+      "<h2>Overview</h2><p>Specific board review copy.</p><h2>Verdict</h2><p>A useful closing note.</p>",
+    );
+
+    expect(content).toContain("<h2>Final Call</h2>");
+    expect(content).toContain('<a href="/gear/burton-custom-158--gear-2">Burton Custom gear detail page</a>');
+    expect(content).not.toContain("<h2>Verdict</h2>");
   });
 
   it("frames generated review prompts as evergreen model reviews instead of listings", () => {
@@ -272,14 +312,14 @@ describe("gear review blog generation helpers", () => {
     expect(prompt).toContain("comprehensive evergreen product review of the Firewire Seaside surfboard");
     expect(prompt).toContain("standalone model review");
     expect(prompt).toContain(`<h2>Final Call</h2>`);
-    expect(prompt).toContain(buildGearDetailUrl(gear()));
+    expect(prompt).toContain(buildGearDetailPath(gear()));
     expect(prompt).not.toContain("$95");
     expect(prompt).not.toContain("$30");
     expect(prompt).not.toContain("$420");
     expect(prompt).not.toContain("123 Rental Shop Way");
   });
 
-  it("uses product-review structure and prompt version v4", () => {
+  it("uses product-review structure and prompt version v5", () => {
     const systemPrompt = buildGeneratedReviewSystemPrompt();
 
     expect(systemPrompt).toContain("evergreen product-review");
@@ -289,7 +329,7 @@ describe("gear review blog generation helpers", () => {
     expect(systemPrompt).toContain("Do not mention availability, booking details, listing locations");
     expect(systemPrompt).toContain("around 1200 visible words");
     expect(systemPrompt).toContain("between 1000 and 1400 visible words");
-    expect(GEAR_REVIEW_DRAFT_PROMPT_VERSION).toBe("gear-review-blog-draft-v4");
+    expect(GEAR_REVIEW_DRAFT_PROMPT_VERSION).toBe("gear-review-blog-draft-v5");
   });
 
   it("normalizes em dashes out of generated public copy and claim notes", () => {

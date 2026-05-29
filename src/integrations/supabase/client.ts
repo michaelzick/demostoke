@@ -4,8 +4,13 @@ import type { Database } from './types';
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from './config.js';
 
 const isBrowser = typeof window !== "undefined";
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || SUPABASE_URL;
+const supabasePublishableKey =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  import.meta.env.VITE_SUPABASE_ANON_KEY ||
+  SUPABASE_PUBLISHABLE_KEY;
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+export const supabase = createClient<Database>(supabaseUrl, supabasePublishableKey, {
   auth: {
     persistSession: isBrowser,
     autoRefreshToken: isBrowser,

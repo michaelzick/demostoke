@@ -69,7 +69,7 @@ export type SelectedBlogImages = {
   };
 };
 
-export const GEAR_REVIEW_DRAFT_PROMPT_VERSION = "gear-review-blog-draft-v4";
+export const GEAR_REVIEW_DRAFT_PROMPT_VERSION = "gear-review-blog-draft-v5";
 
 export const CATEGORY_TAGS: Record<EligibleGearCategory, string> = {
   skis: "skis",
@@ -463,10 +463,27 @@ const publicCopyMentionsListingLocation = (
   );
 };
 
-const FINAL_CALL_HEADING_PATTERN = /<h[23][^>]*>\s*Final Call\s*<\/h[23]>/i;
+const FINAL_SECTION_HEADING_PATTERN = /<h[23][^>]*>\s*(?:Final Call|Final Thoughts|Verdict)\s*<\/h[23]>/i;
+const FINAL_CALL_HEADING_HTML = "<h2>Final Call</h2>";
+
+const escapeHtmlText = (value: string): string =>
+  value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+const escapeHtmlAttribute = (value: string): string =>
+  escapeHtmlText(value).replace(/"/g, "&quot;");
+
+const buildGearDetailLinkHtml = (gear: Pick<GearReviewCandidate, "id" | "name" | "size">): string =>
+  `<a href="${escapeHtmlAttribute(buildGearDetailPath(gear))}">${escapeHtmlText(gear.name)} gear detail page</a>`;
+
+const buildFinalCallGearDetailParagraph = (
+  gear: Pick<GearReviewCandidate, "id" | "name" | "size">,
+): string => `<p>View the ${buildGearDetailLinkHtml(gear)} on DemoStoke.</p>`;
 
 const getFinalCallHtml = (content: string): string | null => {
-  const headingMatch = content.match(FINAL_CALL_HEADING_PATTERN);
+  const headingMatch = content.match(FINAL_SECTION_HEADING_PATTERN);
   if (!headingMatch || headingMatch.index === undefined) {
     return null;
   }
@@ -482,7 +499,7 @@ const normalizeGearHref = (href: string): string =>
 
 const finalCallHasGearDetailLink = (
   draft: GeneratedReviewDraft,
-  gear: GearReviewCandidate | null | undefined,
+  gear: Pick<GearReviewCandidate, "id" | "name" | "size"> | null | undefined,
 ): boolean => {
   if (!gear) {
     return true;
@@ -498,6 +515,57 @@ const finalCallHasGearDetailLink = (
     .map((match) => normalizeGearHref(match[1]));
 
   return hrefs.some((href) => href === gearPath);
+};
+
+export const ensureFinalCallGearDetailLink = (
+  gear: Pick<GearReviewCandidate, "id" | "name" | "size">,
+  content: string,
+): string => {
+  const trimmedContent = content.trim();
+  const linkParagraph = buildFinalCallGearDetailParagraph(gear);
+  const headingMatch = trimmedContent.match(FINAL_SECTION_HEADING_PATTERN);
+
+  if (!headingMatch || headingMatch.index === undefined) {
+    return `${trimmedContent}\n${FINAL_CALL_HEADING_HTML}\n${linkParagraph}`;
+  }
+
+  const normalizedContent = [
+    trimmedContent.slice(0, headingMatch.index),
+    FINAL_CALL_HEADING_HTML,
+    trimmedContent.slice(headingMatch.index + headingMatch[0].length),
+  ].join("");
+
+  const finalCallHtml = getFinalCallHtml(normalizedContent);
+  if (finalCallHtml && finalCallHasGearDetailLink(
+    {
+      title: "",
+      excerpt: "",
+      content: normalizedContent,
+      tags: [],
+    },
+    gear,
+  )) {
+    return normalizedContent;
+  }
+
+  const normalizedHeadingMatch = normalizedContent.match(FINAL_SECTION_HEADING_PATTERN);
+  if (!normalizedHeadingMatch || normalizedHeadingMatch.index === undefined) {
+    return `${normalizedContent}\n${FINAL_CALL_HEADING_HTML}\n${linkParagraph}`;
+  }
+
+  const finalCallStart = normalizedHeadingMatch.index + normalizedHeadingMatch[0].length;
+  const afterFinalCall = normalizedContent.slice(finalCallStart);
+  const nextHeadingIndex = afterFinalCall.search(/<h[23][^>]*>/i);
+  const insertIndex = nextHeadingIndex === -1
+    ? normalizedContent.length
+    : finalCallStart + nextHeadingIndex;
+
+  return [
+    normalizedContent.slice(0, insertIndex).trimEnd(),
+    "\n",
+    linkParagraph,
+    normalizedContent.slice(insertIndex),
+  ].join("");
 };
 
 export const getPublicCopyViolation = (
@@ -605,7 +673,7 @@ export const buildGeneratedReviewUserPrompt = (gear: GearReviewCandidate): strin
     `Write a comprehensive evergreen product review of the ${gear.name} ${category}.`,
     "Make it read like a standalone model review, not a shop listing, rental page, local guide, or marketplace availability page.",
     "Focus on design, ride feel, ideal user, setup guidance, strengths, tradeoffs, care or tuning, and Final Call.",
-    `The final section must be exactly <h2>Final Call</h2> and must include one natural HTML link to the reviewed gear detail page: <a href="${buildGearDetailUrl(gear)}">${gear.name} gear detail page</a>.`,
+    `The final section must be exactly <h2>Final Call</h2> and must include one natural HTML link to the reviewed DemoStoke gear detail page: <a href="${buildGearDetailPath(gear)}">${gear.name} gear detail page</a>.`,
   ].join("\n");
 };
 
@@ -619,7 +687,7 @@ export const normalizeGeneratedDraft = (
   return {
     title: replaceEmDashes(draft.title),
     excerpt: replaceEmDashes(draft.excerpt),
-    content: replaceEmDashes(draft.content),
+    content: ensureFinalCallGearDetailLink(gear, replaceEmDashes(draft.content)),
     tags: normalizeGeneratedTags(gear, draft.tags.map((tag) => replaceEmDashes(tag))),
     claimCheckSummary: Array.isArray(draft.claimCheckSummary)
       ? draft.claimCheckSummary
