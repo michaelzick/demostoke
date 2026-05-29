@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -46,7 +46,7 @@ import {
 } from "@/hooks/useUserEquipment";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useAuth } from "@/helpers";
-import { buildEquipmentTrackingFrom } from "@/utils/tracking";
+import { buildEquipmentTrackingFrom, trackEvent } from "@/utils/tracking";
 import { useScrollToTopButton } from "@/hooks/useScrollToTopButton";
 import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import { supabase } from "@/integrations/supabase/client";
@@ -65,6 +65,7 @@ const MyEquipmentPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [visibilityFilter, setVisibilityFilter] = useState("all");
   const [widgetEndpointUrl, setWidgetEndpointUrl] = useState("");
+  const unauthVisibilityGateTrackedRef = useRef(false);
 
   // Scroll to top button - must be called before any conditional returns
   const { showButton: showScrollButton, scrollToTop } = useScrollToTopButton({
@@ -104,10 +105,20 @@ const MyEquipmentPage = () => {
     currentVisibility: boolean,
     equipmentName: string,
   ) => {
+    trackEvent("owner_visibility_toggle_started", {
+      gear_id: equipmentId,
+      target_visibility: currentVisibility ? "hidden" : "visible",
+    });
+
     try {
       await updateVisibilityMutation.mutateAsync({
         equipmentId,
         visible: !currentVisibility,
+      });
+
+      trackEvent("owner_visibility_toggle_succeeded", {
+        gear_id: equipmentId,
+        new_visibility: currentVisibility ? "hidden" : "visible",
       });
 
       toast({
@@ -116,6 +127,10 @@ const MyEquipmentPage = () => {
       });
     } catch (error) {
       console.error("Visibility toggle error:", error);
+      trackEvent("owner_visibility_toggle_failed", {
+        gear_id: equipmentId,
+        failure_reason: error instanceof Error ? error.message : "visibility_update_failed",
+      });
       toast({
         title: "Error",
         description: "Failed to update visibility. Please try again.",
@@ -125,8 +140,15 @@ const MyEquipmentPage = () => {
   };
 
   const handleSyncShopGear = async () => {
+    trackEvent("owner_widget_sync_started", {
+      has_endpoint_input: Boolean(widgetEndpointUrl.trim()),
+    });
+
     const endpointInput = widgetEndpointUrl.trim();
     if (!endpointInput) {
+      trackEvent("owner_widget_sync_failed_missing_endpoint", {
+        failure_reason: "missing_endpoint_url",
+      });
       toast({
         title: "Endpoint URL required",
         description:
@@ -138,6 +160,11 @@ const MyEquipmentPage = () => {
 
     try {
       const result = await syncShopGearMutation.mutateAsync(endpointInput);
+      trackEvent("owner_widget_sync_succeeded", {
+        shop_slug: result.shopSlug,
+        synced_count: result.syncedCount,
+        removed_count: result.removedCount,
+      });
       setWidgetEndpointUrl(result.endpointUrl);
       toast({
         title: "Sync complete",
@@ -148,6 +175,9 @@ const MyEquipmentPage = () => {
         } from ${result.shopSlug}. My Gear, the profile page, and the map now reflect the synced database rows.`,
       });
     } catch (error) {
+      trackEvent("owner_widget_sync_failed", {
+        failure_reason: error instanceof Error ? error.message : "sync_failed",
+      });
       toast({
         title: "Sync failed",
         description:
@@ -186,6 +216,20 @@ const MyEquipmentPage = () => {
       cancelled = true;
     };
   }, [user?.id]);
+
+  useEffect(() => {
+    if (!user && !unauthVisibilityGateTrackedRef.current) {
+      trackEvent("owner_visibility_toggle_failed_unauthenticated", {
+        failure_reason: "unauthenticated_redirect_gate",
+      });
+      unauthVisibilityGateTrackedRef.current = true;
+      return;
+    }
+
+    if (user) {
+      unauthVisibilityGateTrackedRef.current = false;
+    }
+  }, [user]);
 
   if (!user) {
     return (

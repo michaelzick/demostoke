@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AdvancedFilters } from "@/types/advancedFilters";
 import { applyAdvancedFilters } from "@/utils/advancedFiltering";
 import { filterGearByQuickQuery } from "@/utils/gearQuickFilter";
+import { trackEvent } from "@/utils/tracking";
 
 import { useEquipmentWithDynamicDistance } from "@/hooks/useEquipmentWithDynamicDistance";
 import { useUserLocations } from "@/hooks/useUserLocations";
@@ -80,6 +81,9 @@ const SearchResultsPage = () => {
         } catch (error) {
           if (!isMounted) return;
           console.error("Failed to load equipment:", error);
+          trackEvent("search_fallback_load_failed", {
+            failure_reason: error instanceof Error ? error.message : "equipment_load_failed",
+          });
           setResults([]);
         }
         return;
@@ -113,9 +117,18 @@ const SearchResultsPage = () => {
         );
         if (!isMounted) return;
         setResults(equipmentResults);
+        trackEvent("search_query_results_loaded", {
+          query,
+          result_count: equipmentResults.length,
+          used_geolocation: Boolean(userLocation),
+        });
       } catch (error) {
         if (!isMounted) return;
         console.error("Search failed:", error);
+        trackEvent("search_query_failed", {
+          query,
+          failure_reason: error instanceof Error ? error.message : "search_failed",
+        });
         toast({
           title: "Search Error",
           description: "Failed to process your search. Please try again.",
@@ -221,9 +234,17 @@ const SearchResultsPage = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const trimmedQuery = searchInput.trim();
+    if (trimmedQuery) {
+      trackEvent("search_query_started", {
+        query: trimmedQuery,
+        entry_surface: "search_results_page",
+      });
+    }
+
     const nextParams = new URLSearchParams(searchParams);
-    if (searchInput.trim()) {
-      nextParams.set("q", searchInput.trim());
+    if (trimmedQuery) {
+      nextParams.set("q", trimmedQuery);
     } else {
       nextParams.delete("q");
     }

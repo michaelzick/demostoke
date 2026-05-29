@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/auth";
 import { MapPin } from "lucide-react";
 import HCaptcha from "@/components/HCaptcha";
+import { trackEvent } from "@/utils/tracking";
 
 const SignInPage = () => {
   usePageMetadata({
@@ -36,13 +37,25 @@ const SignInPage = () => {
     setError("");
     setIsLoading(true);
 
+    trackEvent("auth_signin_started", {
+      signin_method: "email_password",
+      has_captcha_token: Boolean(captchaToken),
+    });
+
     try {
       await login(email, password, captchaToken);
+      trackEvent("auth_signin_succeeded", {
+        signin_method: "email_password",
+      });
       setIsLoading(false);
       navigate("/");
     } catch (err: unknown) {
       console.error("Login error:", err);
       const message = err instanceof Error ? err.message : "Invalid email or password";
+      trackEvent("auth_signin_failed_invalid_credentials", {
+        signin_method: "email_password",
+        failure_reason: captchaToken ? "invalid_credentials" : "captcha_missing_or_invalid",
+      });
       setError(message);
       setIsLoading(false);
     }

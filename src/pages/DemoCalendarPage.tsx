@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { buildDemoEventPath } from "@/utils/eventSlug";
 import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 import { DEMO_EVENT_CATEGORY_FILTERS } from "@/utils/demoEventPresentation";
+import { trackEvent } from "@/utils/tracking";
 
 const DemoCalendarPage = () => {
   useScrollToTop();
@@ -58,7 +59,16 @@ const DemoCalendarPage = () => {
   };
 
   const handleAddEvent = () => {
+    trackEvent("demo_event_create_started", {
+      surface: "demo_calendar",
+      is_authenticated: isAuthenticated,
+      is_admin: isAdmin,
+    });
+
     if (!isAuthenticated) {
+      trackEvent("demo_event_create_failed_unauthenticated", {
+        failure_reason: "redirect_to_signin",
+      });
       navigate("/auth/signin");
       return;
     }

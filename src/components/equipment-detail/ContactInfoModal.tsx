@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MapPinIcon, PhoneIcon, GlobeIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { slugify } from "@/utils/slugify";
 import { GearOwner } from "@/types";
@@ -28,14 +29,48 @@ const ContactInfoModal = ({
   const displayName = profile?.name || owner.name;
   const hasContactInfo = profile?.address || profile?.phone || profile?.website;
   const profileLinkPath = `/user-profile/${slugify(owner.name)}`;
+  const outboundActionTakenRef = useRef(false);
+  const noContactInfoTrackedRef = useRef(false);
   const baseLeadEvent = {
     owner_id: owner.id,
     owner_name: displayName,
     ...leadContext,
   };
 
+  useEffect(() => {
+    if (isOpen) {
+      outboundActionTakenRef.current = false;
+      noContactInfoTrackedRef.current = false;
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen && !hasContactInfo && !noContactInfoTrackedRef.current) {
+      trackEvent("lead_contact_info_unavailable", {
+        ...baseLeadEvent,
+        failure_reason: "no_public_contact_info",
+      });
+      noContactInfoTrackedRef.current = true;
+    }
+  }, [baseLeadEvent, hasContactInfo, isOpen]);
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open && !outboundActionTakenRef.current) {
+      trackEvent("lead_contact_abandoned", {
+        ...baseLeadEvent,
+        failure_reason: "modal_closed_without_outbound_contact",
+      });
+    }
+
+    if (!open) {
+      outboundActionTakenRef.current = false;
+    }
+
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="space-y-3">
           {showBookingComingSoonMessage && (
@@ -68,14 +103,15 @@ const ContactInfoModal = ({
                       rel="noopener noreferrer"
                       className="text-sm text-muted-foreground hover:text-primary underline profile-address"
                       data-tracking={trackingData}
-                      id={`${owner.name} - ${profile?.address} - Contact Info Modal`}
-                      onClick={() =>
-                        trackEvent("click_directions", {
-                          ...baseLeadEvent,
-                          destination: profile.address,
-                        })
-                      }
-                    >
+                       id={`${owner.name} - ${profile?.address} - Contact Info Modal`}
+                       onClick={() => {
+                         outboundActionTakenRef.current = true;
+                         trackEvent("click_directions", {
+                           ...baseLeadEvent,
+                           destination: profile.address,
+                         });
+                       }}
+                     >
                       {profile.address}
                     </a>
                   </div>
@@ -90,14 +126,15 @@ const ContactInfoModal = ({
                       href={`tel:${profile.phone}`}
                       className="text-sm text-muted-foreground hover:text-primary underline profile-phone"
                       data-tracking={trackingData}
-                      id={`${owner.name} - ${profile?.phone} - Contact Info Modal`}
-                      onClick={() =>
-                        trackEvent("click_call", {
-                          ...baseLeadEvent,
-                          phone: profile.phone,
-                        })
-                      }
-                    >
+                       id={`${owner.name} - ${profile?.phone} - Contact Info Modal`}
+                       onClick={() => {
+                         outboundActionTakenRef.current = true;
+                         trackEvent("click_call", {
+                           ...baseLeadEvent,
+                           phone: profile.phone,
+                         });
+                       }}
+                     >
                       {profile.phone}
                     </a>
                   </div>
@@ -114,14 +151,15 @@ const ContactInfoModal = ({
                       rel="noopener noreferrer"
                       className="text-sm text-muted-foreground hover:text-primary underline profile-website"
                       data-tracking={trackingData}
-                      id={`${owner.name} - ${profile?.website} - Contact Info Modal`}
-                      onClick={() =>
-                        trackEvent("click_shop_site", {
-                          ...baseLeadEvent,
-                          website: profile.website,
-                        })
-                      }
-                    >
+                       id={`${owner.name} - ${profile?.website} - Contact Info Modal`}
+                       onClick={() => {
+                         outboundActionTakenRef.current = true;
+                         trackEvent("click_shop_site", {
+                           ...baseLeadEvent,
+                           website: profile.website,
+                         });
+                       }}
+                     >
                       {profile.website}
                     </a>
                   </div>
