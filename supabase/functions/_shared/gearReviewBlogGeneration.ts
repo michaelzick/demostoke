@@ -69,11 +69,20 @@ export type SelectedBlogImages = {
   };
 };
 
+export const GEAR_REVIEW_DRAFT_PROMPT_VERSION = "gear-review-blog-draft-v3";
+
 export const CATEGORY_TAGS: Record<EligibleGearCategory, string> = {
   skis: "skis",
   snowboards: "snowboards",
   surfboards: "surfboards",
   "mountain-bikes": "mountain bikes",
+};
+
+const CATEGORY_REVIEW_LABELS: Record<EligibleGearCategory, string> = {
+  skis: "ski",
+  snowboards: "snowboard",
+  surfboards: "surfboard",
+  "mountain-bikes": "mountain bike",
 };
 
 export const KNOWN_STATIC_REVIEWED_GEAR_TERMS = [
@@ -133,13 +142,49 @@ const RENTAL_PRICE_PATTERNS = [
 
 const SHOP_OR_RENTAL_PUBLIC_COPY_PATTERNS = [
   /\brent(?:al|als|ed|ing)?\b/i,
+  /\brenter(?:s)?\b/i,
+  /\blisting(?:s)?\b/i,
+  /\blisted\s+(?:as|at|by|for|on)\b/i,
   /\bdemo\s+(?:price|prices|rate|rates|fee|fees|rental|rentals|program|fleet)\b/i,
   /\bshop(?:s)?\b/i,
+  /\bretailer(?:s)?\b/i,
+  /\bowner(?:s)?\b/i,
   /\bavailable\s+(?:at|from|through)\b/i,
+  /\bavailable\s+to\s+(?:rent|demo|book)\b/i,
   /\bbook(?:ing)?\s+(?:this|the)\b/i,
+  /\bpick\s*(?:up|it\s+up)\b/i,
+  /\brental\s+(?:page|copy|rack|fleet|listing|option|program)\b/i,
 ];
 
 const STOP_TAGS = new Set(["the", "and", "with", "for", "mens", "women", "womens"]);
+
+const LOCATION_COMPONENT_STOPWORDS = new Set([
+  "address",
+  "avenue",
+  "blvd",
+  "boulevard",
+  "center",
+  "centre",
+  "circle",
+  "city",
+  "court",
+  "drive",
+  "highway",
+  "lane",
+  "north",
+  "place",
+  "plaza",
+  "road",
+  "route",
+  "south",
+  "state",
+  "states",
+  "street",
+  "suite",
+  "trail",
+  "united",
+  "west",
+]);
 
 export const MIN_GENERATED_REVIEW_BODY_CHARACTERS = 2000;
 
@@ -334,7 +379,56 @@ export const normalizeGeneratedTags = (
   return Array.from(tags).slice(0, 8);
 };
 
-export const getPublicCopyViolation = (draft: GeneratedReviewDraft): string | null => {
+const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const getListingLocationTerms = (gear: GearReviewCandidate): string[] => {
+  const locationAddress = gear.location_address?.trim();
+  if (!locationAddress) {
+    return [];
+  }
+
+  const terms = new Set<string>();
+  for (const rawComponent of locationAddress.split(/[,;\n]+/)) {
+    const component = rawComponent.replace(/\b\d+\b/g, " ").replace(/\s+/g, " ").trim();
+    const normalizedComponent = normalizeTextForMatch(component);
+    const tokens = normalizedComponent.split(" ").filter(Boolean);
+    const meaningfulTokens = tokens.filter((token) => !LOCATION_COMPONENT_STOPWORDS.has(token));
+
+    if (
+      normalizedComponent.length >= 5 &&
+      meaningfulTokens.length > 0 &&
+      !LOCATION_COMPONENT_STOPWORDS.has(normalizedComponent)
+    ) {
+      terms.add(component);
+    }
+
+    const singleToken = tokens.length === 1 ? meaningfulTokens[0] : null;
+    if (singleToken && singleToken.length >= 5) {
+      terms.add(singleToken);
+    }
+  }
+
+  return Array.from(terms);
+};
+
+const publicCopyMentionsListingLocation = (
+  draft: GeneratedReviewDraft,
+  gear: GearReviewCandidate | null | undefined,
+): boolean => {
+  if (!gear) {
+    return false;
+  }
+
+  const publicText = [draft.title, draft.excerpt, draft.content, draft.tags.join(" ")].join(" ");
+  return getListingLocationTerms(gear).some((term) =>
+    new RegExp(`\\b${escapeRegExp(term)}\\b`, "i").test(publicText),
+  );
+};
+
+export const getPublicCopyViolation = (
+  draft: GeneratedReviewDraft,
+  gear?: GearReviewCandidate,
+): string | null => {
   const publicText = [draft.title, draft.excerpt, draft.content, draft.tags.join(" ")].join(" ");
 
   for (const pattern of PUBLIC_COPY_BLOCKLIST) {
@@ -363,6 +457,10 @@ export const getPublicCopyViolation = (draft: GeneratedReviewDraft): string | nu
     if (pattern.test(publicText)) {
       return "public_copy_mentions_shop_or_rental_info";
     }
+  }
+
+  if (publicCopyMentionsListingLocation(draft, gear)) {
+    return "public_copy_mentions_listing_location";
   }
 
   if (countContentCharacters(draft.content) < MIN_GENERATED_REVIEW_BODY_CHARACTERS) {
@@ -394,20 +492,37 @@ export const selectBlogImages = (
 
 export const buildGeneratedReviewSystemPrompt = (): string =>
   [
-    "You write gear review drafts for action-sports riders.",
-    "The voice is natural, loose, fun, knowledgeable, specific, and useful.",
+    "You write evergreen product-review blog drafts for action-sports riders.",
+    "The voice is natural, no-nonsense, knowledgeable, specific, and useful, like an expert buying guide.",
+    "Write about the gear model itself, not a marketplace listing, rental page, shop page, local demo, travel guide, or availability page.",
     "Return valid JSON only, with no markdown code fence.",
     "Required JSON fields: title, excerpt, content, tags, claimCheckSummary.",
     "The content field must be HTML only. Use h2, h3, p, ul, and li. Do not use h1.",
     "The content field must contain at least 2000 visible characters after HTML tags are removed.",
+    "Use a standalone review structure: overview, who it is for, design and construction, ride or use profile, ideal conditions, setup guidance, strengths, tradeoffs, care or tuning tips, and verdict.",
+    "For snowboards, cover profile options, camber or rocker, flex, ideal conditions, boots, bindings, size guidance, and tuning where relevant.",
+    "For surfboards, cover outline, rocker, rails, tail, fin setup, paddling, wave range, sizing, skill fit, strengths, tradeoffs, and verdict. Do not mention specific beaches or surf towns.",
+    "For skis, cover rocker and camber profile, flex, construction, turn shape, terrain fit, boot or binding pairing if useful, sizing, tuning, strengths, tradeoffs, and verdict.",
+    "For mountain bikes, cover frame platform, suspension, geometry, drivetrain, brakes, wheels or tires if known, climbing, descending, sizing, setup, maintenance, strengths, tradeoffs, and verdict.",
+    "If exact tech details vary by model year or trim, say they vary instead of inventing a single exact spec.",
+    "Do not use listing metadata as article material. Ignore owner, shop, pickup, booking, availability, address, city, state, region, daily rates, weekly rates, rental details, and demo-program details.",
     "Do not claim first-hand testing, personal ownership, direct demo time, or measured performance unless those facts are supplied.",
     "Do not mention evidence, verification, guardrails, QA, source audits, internal process, or claim checks in public copy.",
-    "Do not mention availability, booking details, locations, prices, dollar amounts, or rate structures in public copy.",
+    "Do not mention availability, booking details, listing locations, shops, rental prices, dollar amounts, or rate structures in public copy.",
     "Do not use em dashes anywhere in public copy.",
   ].join("\n");
 
-export const buildGeneratedReviewUserPrompt = (gear: GearReviewCandidate): string =>
-  `write a comprehensive review of the ${gear.name}`;
+export const buildGeneratedReviewUserPrompt = (gear: GearReviewCandidate): string => {
+  const category = isEligibleGearCategory(gear.category)
+    ? CATEGORY_REVIEW_LABELS[gear.category]
+    : "action-sports gear";
+
+  return [
+    `Write a comprehensive evergreen product review of the ${gear.name} ${category}.`,
+    "Make it read like a standalone model review, not a shop listing, rental page, local guide, or marketplace availability page.",
+    "Focus on design, ride feel, ideal user, setup guidance, strengths, tradeoffs, care or tuning, and verdict.",
+  ].join("\n");
+};
 
 export const normalizeGeneratedDraft = (
   gear: GearReviewCandidate,

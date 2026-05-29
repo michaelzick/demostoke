@@ -9,6 +9,7 @@ import {
 import {
   calculateReadTime,
   chooseRandomCategory,
+  GEAR_REVIEW_DRAFT_PROMPT_VERSION,
   getAlreadyReviewedReason,
   getPublicCopyViolation,
   buildGeneratedReviewSystemPrompt,
@@ -449,7 +450,7 @@ const buildHiddenEvidence = (values: {
   selectedImages: ReturnType<typeof selectBlogImages>;
   draft: GeneratedReviewDraft;
 }) => ({
-  prompt_version: "gear-review-blog-draft-v2",
+  prompt_version: GEAR_REVIEW_DRAFT_PROMPT_VERSION,
   model: OPENAI_MODEL,
   generated_at: new Date().toISOString(),
   equipment_snapshot: values.gear,
@@ -583,7 +584,7 @@ serve(async (req) => {
       }
 
       const draft = await generateDraft(gear);
-      const publicCopyViolation = getPublicCopyViolation(draft);
+      const publicCopyViolation = getPublicCopyViolation(draft, gear);
 
       if (publicCopyViolation) {
         lastFailure = publicCopyViolation;

@@ -5,6 +5,7 @@ import {
   buildGeneratedReviewUserPrompt,
   buildUniqueSlug,
   chooseRandomCategory,
+  GEAR_REVIEW_DRAFT_PROMPT_VERSION,
   getAlreadyReviewedReason,
   getPublicCopyViolation,
   hasEnoughGearDetail,
@@ -162,6 +163,24 @@ describe("gear review blog generation helpers", () => {
 
     expect(
       getPublicCopyViolation({
+        title: "Surf Prescriptions Pro Fish Review: Performance shortboard for Waikiki",
+        excerpt: "A useful quick take.",
+        content: longContent(),
+        tags: ["gear reviews"],
+      }, gear({ location_address: "Waikiki, Honolulu, HI" })),
+    ).toBe("public_copy_mentions_listing_location");
+
+    expect(
+      getPublicCopyViolation({
+        title: "A clean review",
+        excerpt: "A white-knuckle ride feel without local place copy.",
+        content: longContent(),
+        tags: ["gear reviews"],
+      }, gear({ location_address: "Big White, BC" })),
+    ).toBeNull();
+
+    expect(
+      getPublicCopyViolation({
         title: "A clean review",
         excerpt: "A useful quick take — with shape notes.",
         content: longContent(),
@@ -188,7 +207,7 @@ describe("gear review blog generation helpers", () => {
     ).toBeNull();
   });
 
-  it("keeps the generated review user prompt simple and free of listing details", () => {
+  it("frames generated review prompts as evergreen model reviews instead of listings", () => {
     const prompt = buildGeneratedReviewUserPrompt(
       gear({
         price_per_day: 95,
@@ -198,15 +217,24 @@ describe("gear review blog generation helpers", () => {
       }),
     );
 
-    expect(prompt).toBe("write a comprehensive review of the Firewire Seaside");
+    expect(prompt).toContain("comprehensive evergreen product review of the Firewire Seaside surfboard");
+    expect(prompt).toContain("standalone model review");
     expect(prompt).not.toContain("$95");
     expect(prompt).not.toContain("$30");
     expect(prompt).not.toContain("$420");
     expect(prompt).not.toContain("123 Rental Shop Way");
   });
 
-  it("uses a 2000-character generated review length requirement", () => {
-    expect(buildGeneratedReviewSystemPrompt()).toContain("at least 2000 visible characters");
+  it("uses product-review structure and prompt version v3", () => {
+    const systemPrompt = buildGeneratedReviewSystemPrompt();
+
+    expect(systemPrompt).toContain("evergreen product-review");
+    expect(systemPrompt).toContain("not a marketplace listing");
+    expect(systemPrompt).toContain("camber or rocker");
+    expect(systemPrompt).toContain("outline, rocker, rails, tail, fin setup");
+    expect(systemPrompt).toContain("Do not mention availability, booking details, listing locations");
+    expect(systemPrompt).toContain("at least 2000 visible characters");
+    expect(GEAR_REVIEW_DRAFT_PROMPT_VERSION).toBe("gear-review-blog-draft-v3");
   });
 
   it("normalizes em dashes out of generated public copy and claim notes", () => {
