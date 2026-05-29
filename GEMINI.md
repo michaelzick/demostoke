@@ -91,7 +91,7 @@
 - Admin:
   - `AdminPage.tsx`
   - major tools live in `src/components/admin/*`
-  - includes user creation/directory, image/media upload, demo event management, retailer discovery, broken image scanning, blog generation, and geocoding recovery
+  - includes user creation/directory, image/media upload, demo event management, retailer discovery, broken image scanning, manual gear-review blog draft generation, blog generation, and geocoding recovery
 - Widget and external feeds:
   - `src/components/DemoStokeWidget.tsx` currently hardcodes a localhost iframe and is not production-ready
   - external shop feed ingestion centers on `shopGearFeedService.ts`, `shopGearSyncService.ts`, `shopGearFeedMappingService.ts`, and `shop_gear_feed_mappings`
@@ -154,6 +154,7 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
 - On May 21, 2026, linked migration metadata was repaired: legacy `001` through `011` entries were marked reverted, timestamped local migrations through `20260520010000` were marked applied, and already-applied Hermes seed migrations for Park City, Arizona, Oregon, Colorado, Ventura County, and Texas were copied into this repo and marked applied. Migration history has 240 timestamped entries and is aligned through `20260520232100`.
 - Before running migration-history-driven commands, run `supabase migration list --linked`; it should show local and remote aligned except for intentionally new local migrations.
 - If historical drift reappears, do not apply local migrations to the linked DB just because they appear local-only. First verify whether the intended schema/data already exists. For data-only seed work, use the rollback-first transaction pattern documented in `supabase/MIGRATION_RECONCILIATION.md`.
+- After changing any file under `supabase/migrations/` or `supabase/functions/`, you MUST explicitly tell the user that those migration or Edge Function changes have not been pushed/deployed to the linked Supabase project, unless you actually pushed or deployed them in the same turn. Do not let local Supabase changes sound live.
 
 ## Supabase Edge Function Inventory
 - Search / AI:
@@ -189,7 +190,7 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
   - `insert-equipment-from-sql`
 
 ## Env and Integration Surface
-- Browser/public runtime falls back to checked-in values in `src/integrations/supabase/config.js` for the Supabase URL and publishable key.
+- Browser/public runtime uses `VITE_SUPABASE_URL` plus `VITE_SUPABASE_PUBLISHABLE_KEY` or `VITE_SUPABASE_ANON_KEY` when provided, and otherwise falls back to checked-in values in `src/integrations/supabase/config.js` for the Supabase URL and publishable key.
 - Server SSR metadata enrichment uses `VITE_SUPABASE_URL` plus `VITE_SUPABASE_PUBLISHABLE_KEY` or `VITE_SUPABASE_ANON_KEY`.
 - Shop feed flags live in:
   - `VITE_USE_SHOP_GEAR_FEED`
@@ -214,7 +215,7 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
 - The theme system is split between `index.html` and `src/theme/*`; if you change theme startup behavior, keep both in sync.
 - Search/explore/profile visibility behavior is tightly coupled to `equipmentDataService`, `searchService`, `useEquipmentWithDynamicDistance`, and advanced filter helpers.
 - Automated gear-review drafts must not create `equipment_reviews` rows or mutate `equipment.rating` / `equipment.review_count`. Hidden factual evidence belongs in `gear_review_blog_generation_runs.hidden_evidence`, not in public blog copy, tags, excerpts, or analytics payloads.
-- Cron-generated gear-review drafts must read like general outdoor/action-sports publication reviews, not shop profiles, marketplace listings, or rental listings. They must not include shop-specific analysis, shop names, store names, rental availability, rental terms, booking details, rental/demo prices, dollar amounts, per-day rates, per-hour rates, or per-week rates anywhere in public copy. They must not use em dashes in public copy, must contain at least 1500 body words after stripping HTML tags, and must store a selected gear image URL for the blog thumbnail instead of a small Google `thumbnailLink`.
+- Cron-generated gear-review drafts use the evergreen model-review prompt `Write a comprehensive evergreen product review of the [gear brand/model] [category]`. Drafts should read like standalone product reviews, not listing, rental, shop, travel, or local availability pages. They must not use listing metadata such as owner/shop details, pickup or booking details, listing locations, city/state/region copy, daily or weekly rates, rental prices, dollar amounts, or rate structures in public copy. They must include category-specific review structure such as design/construction, ride/use profile, natural language headings like `Who it's for` instead of `Who it is for`, setup guidance, strengths, tradeoffs, care/tuning, and a final `<h2>Final Call</h2>` section with a natural relative `/gear/...` link to the reviewed DemoStoke gear detail page. Draft tags must be exactly the post category, gear category, and brand, for example `gear reviews`, `skis`, `stockli`. The generator must deterministically normalize Final Thoughts/Verdict style headings to Final Call, normalize formal `Who it is for` phrasing to `Who it's for`, and insert that gear-detail link before saving if the model omits it. They must not use em dashes in public copy, must target about 1200 visible body words after stripping HTML tags with a 1000-1400 word guardrail, and must store a selected gear image URL for the blog thumbnail instead of a small Google `thumbnailLink`.
 - FleetOps POS inventory seeding is queued by `pg_net` from the main DemoStoke project at the daily 9/10 UTC schedule, gated to 2 AM Pacific and a 2-day cadence. The FleetOps `seed-pos-inventory` function performs the actual inserts and read-back verification in the FleetOps DB; use `trigger_fleetops_pos_inventory_seed_cron(true)` for a live forced validation run.
 - Generated gear-review analytics must use safe metadata only: post id/slug, category, source equipment id, gear category, author, generated flag, and preview/published mode. Never send hidden evidence, source snippets, credentials, or raw prompts to Amplitude or Google Analytics.
 - `DemoStokeWidget` is a local-dev artifact right now. Treat it as unfinished unless you intentionally wire it to production.

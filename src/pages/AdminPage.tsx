@@ -6,6 +6,7 @@ import UserDirectorySection from "@/components/admin/UserDirectorySection";
 import ImageUploadSection from "@/components/admin/ImageUploadSection";
 import VideoUploadSection from "@/components/admin/VideoUploadSection";
 import DemoEventsSection from "@/components/admin/DemoEventsSection";
+import GearReviewBlogCronSection from "@/components/admin/GearReviewBlogCronSection";
 
 import GlobalSearchSettings from "@/components/admin/GlobalSearchSettings";
 import GeocodingRecoverySection from "@/components/admin/GeocodingRecoverySection";
@@ -57,6 +58,7 @@ const AdminPage = () => {
         </TabsContent>
 
         <TabsContent value="content" className="space-y-6">
+          <GearReviewBlogCronSection />
           <ImageUploadSection />
           <VideoUploadSection />
           <DemoEventsSection />

@@ -9,6 +9,7 @@ import {
 import {
   calculateReadTime,
   chooseRandomCategory,
+  GEAR_REVIEW_DRAFT_PROMPT_VERSION,
   getAlreadyReviewedReason,
   getPublicCopyViolation,
   buildGeneratedReviewSystemPrompt,
@@ -386,10 +387,7 @@ const googleImageSearch = async (
   return filterHighResolutionGearImageResults(results, 10);
 };
 
-const generateDraft = async (
-  gear: GearReviewCandidate,
-  sources: SourceSnippet[],
-): Promise<GeneratedReviewDraft> => {
+const generateDraft = async (gear: GearReviewCandidate): Promise<GeneratedReviewDraft> => {
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -400,7 +398,7 @@ const generateDraft = async (
       model: OPENAI_MODEL,
       messages: [
         { role: "system", content: buildGeneratedReviewSystemPrompt() },
-        { role: "user", content: buildGeneratedReviewUserPrompt(gear, sources) },
+        { role: "user", content: buildGeneratedReviewUserPrompt(gear) },
       ],
       max_completion_tokens: 6500,
     }),
@@ -452,7 +450,7 @@ const buildHiddenEvidence = (values: {
   selectedImages: ReturnType<typeof selectBlogImages>;
   draft: GeneratedReviewDraft;
 }) => ({
-  prompt_version: "gear-review-blog-draft-v2",
+  prompt_version: GEAR_REVIEW_DRAFT_PROMPT_VERSION,
   model: OPENAI_MODEL,
   generated_at: new Date().toISOString(),
   equipment_snapshot: values.gear,
@@ -489,14 +487,14 @@ const createDraftPost = async (values: {
       read_time: calculateReadTime(values.draft.content),
       is_featured: false,
     })
-    .select("id, slug")
+    .select("id, slug, title")
     .single();
 
   if (error) {
     throw new Error(`Failed to create blog draft: ${error.message}`);
   }
 
-  return data as { id: string; slug: string };
+  return data as { id: string; slug: string; title: string };
 };
 
 const loadExistingSlugs = async (): Promise<Set<string>> => {
@@ -585,8 +583,8 @@ serve(async (req) => {
         continue;
       }
 
-      const draft = await generateDraft(gear, sources);
-      const publicCopyViolation = getPublicCopyViolation(draft);
+      const draft = await generateDraft(gear);
+      const publicCopyViolation = getPublicCopyViolation(draft, gear);
 
       if (publicCopyViolation) {
         lastFailure = publicCopyViolation;
@@ -647,6 +645,7 @@ serve(async (req) => {
         category: gear.category,
         equipmentId: gear.id,
         blogPostId: blogPost.id,
+        title: blogPost.title,
         slug: blogPost.slug,
       });
     }
