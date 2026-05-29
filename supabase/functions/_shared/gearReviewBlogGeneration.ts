@@ -69,7 +69,7 @@ export type SelectedBlogImages = {
   };
 };
 
-export const GEAR_REVIEW_DRAFT_PROMPT_VERSION = "gear-review-blog-draft-v5";
+export const GEAR_REVIEW_DRAFT_PROMPT_VERSION = "gear-review-blog-draft-v6";
 
 export const CATEGORY_TAGS: Record<EligibleGearCategory, string> = {
   skis: "skis",
@@ -345,25 +345,6 @@ export const isAlreadyReviewedGear = (
   context: AlreadyReviewedContext,
 ): boolean => getAlreadyReviewedReason(gear, context).alreadyReviewed;
 
-const categoryIntentTag = (gear: GearReviewCandidate): string | null => {
-  const text = normalizeTextForMatch([gear.subcategory, gear.description].filter(Boolean).join(" "));
-  const intents = [
-    "all mountain",
-    "freeride",
-    "freestyle",
-    "powder",
-    "park",
-    "longboard",
-    "shortboard",
-    "trail",
-    "enduro",
-    "cross country",
-    "hardtail",
-  ];
-
-  return intents.find((intent) => text.includes(normalizeTextForMatch(intent))) ?? null;
-};
-
 const extractBrandTag = (gearName: string): string | null => {
   const firstToken = significantTokens(gearName)[0];
   if (!firstToken || STOP_TAGS.has(firstToken)) {
@@ -380,41 +361,21 @@ const normalizeTag = (tag: string): string =>
 
 export const normalizeGeneratedTags = (
   gear: GearReviewCandidate,
-  generatedTags: string[] | null | undefined,
+  _generatedTags: string[] | null | undefined,
 ): string[] => {
-  const tags = new Set<string>();
-  tags.add("gear reviews");
+  const tags = ["gear reviews"];
 
-  if (isEligibleGearCategory(gear.category)) {
-    tags.add(CATEGORY_TAGS[gear.category]);
+  const categoryTag = isEligibleGearCategory(gear.category) ? CATEGORY_TAGS[gear.category] : normalizeTag(gear.category);
+  if (categoryTag) {
+    tags.push(categoryTag);
   }
 
   const brand = extractBrandTag(gear.name);
   if (brand) {
-    tags.add(brand);
+    tags.push(brand);
   }
 
-  const modelTag = normalizeTag(gear.name);
-  if (modelTag && modelTag.length <= 40) {
-    tags.add(modelTag);
-  }
-
-  const intentTag = categoryIntentTag(gear);
-  if (intentTag) {
-    tags.add(intentTag);
-  }
-
-  for (const tag of generatedTags ?? []) {
-    const normalized = normalizeTag(tag);
-    if (normalized && normalized.length <= 32) {
-      tags.add(normalized);
-    }
-    if (tags.size >= 8) {
-      break;
-    }
-  }
-
-  return Array.from(tags).slice(0, 8);
+  return Array.from(new Set(tags)).slice(0, 3);
 };
 
 const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -465,6 +426,9 @@ const publicCopyMentionsListingLocation = (
 
 const FINAL_SECTION_HEADING_PATTERN = /<h[23][^>]*>\s*(?:Final Call|Final Thoughts|Verdict)\s*<\/h[23]>/i;
 const FINAL_CALL_HEADING_HTML = "<h2>Final Call</h2>";
+
+export const normalizeNaturalReviewLanguage = (content: string): string =>
+  content.replace(/\bWho it is for\b/g, "Who it's for").replace(/\bwho it is for\b/g, "who it's for");
 
 const escapeHtmlText = (value: string): string =>
   value
@@ -651,7 +615,9 @@ export const buildGeneratedReviewSystemPrompt = (): string =>
     "Required JSON fields: title, excerpt, content, tags, claimCheckSummary.",
     "The content field must be HTML only. Use h2, h3, p, ul, and li. Do not use h1.",
     `The content field should be around ${TARGET_GENERATED_REVIEW_BODY_WORDS} visible words after HTML tags are removed. Stay between ${MIN_GENERATED_REVIEW_BODY_WORDS} and ${MAX_GENERATED_REVIEW_BODY_WORDS} visible words.`,
-    "Use a standalone review structure: overview, who it is for, design and construction, ride or use profile, ideal conditions, setup guidance, strengths, tradeoffs, care or tuning tips, and Final Call.",
+    "Use a standalone review structure: overview, who it's for, design and construction, ride or use profile, ideal conditions, setup guidance, strengths, tradeoffs, care or tuning tips, and Final Call.",
+    "Use natural, conversational headings and phrasing, for example <h2>Who it's for</h2>, not formal labels like <h2>Who it is for</h2>.",
+    "Return exactly these tags, in this order: gear reviews, the gear category, and the gear brand. Example: gear reviews, skis, stockli.",
     "For snowboards, cover profile options, camber or rocker, flex, ideal conditions, boots, bindings, size guidance, and tuning where relevant.",
     "For surfboards, cover outline, rocker, rails, tail, fin setup, paddling, wave range, sizing, skill fit, strengths, tradeoffs, and Final Call. Do not mention specific beaches or surf towns.",
     "For skis, cover rocker and camber profile, flex, construction, turn shape, terrain fit, boot or binding pairing if useful, sizing, tuning, strengths, tradeoffs, and Final Call.",
@@ -672,7 +638,7 @@ export const buildGeneratedReviewUserPrompt = (gear: GearReviewCandidate): strin
   return [
     `Write a comprehensive evergreen product review of the ${gear.name} ${category}.`,
     "Make it read like a standalone model review, not a shop listing, rental page, local guide, or marketplace availability page.",
-    "Focus on design, ride feel, ideal user, setup guidance, strengths, tradeoffs, care or tuning, and Final Call.",
+    "Focus on design, ride feel, who it's for, setup guidance, strengths, tradeoffs, care or tuning, and Final Call.",
     `The final section must be exactly <h2>Final Call</h2> and must include one natural HTML link to the reviewed DemoStoke gear detail page: <a href="${buildGearDetailPath(gear)}">${gear.name} gear detail page</a>.`,
   ].join("\n");
 };
@@ -687,7 +653,7 @@ export const normalizeGeneratedDraft = (
   return {
     title: replaceEmDashes(draft.title),
     excerpt: replaceEmDashes(draft.excerpt),
-    content: ensureFinalCallGearDetailLink(gear, replaceEmDashes(draft.content)),
+    content: ensureFinalCallGearDetailLink(gear, normalizeNaturalReviewLanguage(replaceEmDashes(draft.content))),
     tags: normalizeGeneratedTags(gear, draft.tags.map((tag) => replaceEmDashes(tag))),
     claimCheckSummary: Array.isArray(draft.claimCheckSummary)
       ? draft.claimCheckSummary

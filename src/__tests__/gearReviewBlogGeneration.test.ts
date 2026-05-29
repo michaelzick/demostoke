@@ -118,22 +118,17 @@ describe("gear review blog generation helpers", () => {
     ).toBe("firewire-seaside-review-3");
   });
 
-  it("normalizes SEO tags around review intent, category, brand/model, and use case", () => {
+  it("normalizes SEO tags to post category, gear category, and brand", () => {
     const tags = normalizeGeneratedTags(
       gear({
-        name: "Norco Sight C",
-        category: "mountain-bikes",
-        subcategory: "trail",
+        name: "Stockli Stormrider 95",
+        category: "skis",
+        subcategory: "all mountain",
       }),
-      ["bike review", "trail", "mountain bikes"],
+      ["ski review", "all mountain", "stockli stormrider 95"],
     );
 
-    expect(tags).toContain("gear reviews");
-    expect(tags).toContain("mountain bikes");
-    expect(tags).toContain("norco");
-    expect(tags).toContain("norco sight c");
-    expect(tags).toContain("trail");
-    expect(tags.length).toBeLessThanOrEqual(8);
+    expect(tags).toEqual(["gear reviews", "skis", "stockli"]);
   });
 
   it("catches internal-process language and unsupported first-hand claims in public copy", () => {
@@ -324,12 +319,29 @@ describe("gear review blog generation helpers", () => {
 
     expect(systemPrompt).toContain("evergreen product-review");
     expect(systemPrompt).toContain("not a marketplace listing");
+    expect(systemPrompt).toContain("Who it's for");
+    expect(systemPrompt).toContain("not formal labels like <h2>Who it is for</h2>");
+    expect(systemPrompt).toContain("Example: gear reviews, skis, stockli");
     expect(systemPrompt).toContain("camber or rocker");
     expect(systemPrompt).toContain("outline, rocker, rails, tail, fin setup");
     expect(systemPrompt).toContain("Do not mention availability, booking details, listing locations");
     expect(systemPrompt).toContain("around 1200 visible words");
     expect(systemPrompt).toContain("between 1000 and 1400 visible words");
-    expect(GEAR_REVIEW_DRAFT_PROMPT_VERSION).toBe("gear-review-blog-draft-v5");
+    expect(GEAR_REVIEW_DRAFT_PROMPT_VERSION).toBe("gear-review-blog-draft-v6");
+  });
+
+  it("normalizes formal section wording into natural language", () => {
+    const normalized = normalizeGeneratedDraft(gear(), {
+      title: "Firewire Seaside Review",
+      excerpt: "A useful quick take.",
+      content: "<h2>Who it is for</h2><p>This section explains who it is for.</p>",
+      tags: ["gear reviews"],
+      claimCheckSummary: [],
+    });
+
+    expect(normalized.content).toContain("<h2>Who it's for</h2>");
+    expect(normalized.content).toContain("who it's for");
+    expect(normalized.content).not.toContain("Who it is for");
   });
 
   it("normalizes em dashes out of generated public copy and claim notes", () => {
