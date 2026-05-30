@@ -22,7 +22,7 @@ import {
 
 export default function MyDraftsPage() {
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [drafts, setDrafts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -39,13 +39,15 @@ export default function MyDraftsPage() {
   }, [user?.id]);
 
   useEffect(() => {
+    if (isLoading) return;
+
     if (!isAuthenticated) {
-      navigate("/sign-in");
+      navigate("/auth/signin");
       return;
     }
 
     loadDrafts();
-  }, [isAuthenticated, loadDrafts, navigate]);
+  }, [isAuthenticated, isLoading, loadDrafts, navigate]);
 
   const handleDelete = async () => {
     if (!selectedDraftId) return;

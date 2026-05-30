@@ -30,7 +30,7 @@ const categories = [
 function BlogEditPageInner() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [publishing, setPublishing] = useState(false);
   const [lastManualSaved, setLastManualSaved] = useState<Date | null>(null);
@@ -117,13 +117,15 @@ function BlogEditPageInner() {
   }, [id, navigate]);
 
   useEffect(() => {
+    if (isLoading) return;
+
     if (!isAuthenticated) {
-      navigate("/sign-in");
+      navigate("/auth/signin");
       return;
     }
 
     loadDraft();
-  }, [isAuthenticated, loadDraft, navigate]);
+  }, [isAuthenticated, isLoading, loadDraft, navigate]);
 
   const handleSaveDraft = useCallback(async (nextData: typeof draftData = draftData) => {
     if (!user?.id || !id) return;
