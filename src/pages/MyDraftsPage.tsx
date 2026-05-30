@@ -19,10 +19,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { trackEvent } from "@/utils/tracking";
 
 export default function MyDraftsPage() {
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [drafts, setDrafts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -35,17 +36,26 @@ export default function MyDraftsPage() {
     setLoading(true);
     const userDrafts = await blogService.getDrafts(user.id);
     setDrafts(userDrafts);
+    trackEvent("blog_editor_access_succeeded", {
+      source_page: "my_drafts",
+      draft_count: userDrafts.length,
+    });
     setLoading(false);
   }, [user?.id]);
 
   useEffect(() => {
+    if (isLoading) return;
+
     if (!isAuthenticated) {
-      navigate("/sign-in");
+      trackEvent("blog_editor_access_failed_unauthenticated", {
+        source_page: "my_drafts",
+      });
+      navigate("/auth/signin");
       return;
     }
 
     loadDrafts();
-  }, [isAuthenticated, loadDrafts, navigate]);
+  }, [isAuthenticated, isLoading, loadDrafts, navigate]);
 
   const handleDelete = async () => {
     if (!selectedDraftId) return;

@@ -16,6 +16,7 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { slugify } from "@/utils/slugify";
 import { Checkbox } from "@/components/ui/checkbox";
+import { trackEvent } from "@/utils/tracking";
 
 const categories = [
   "snowboards",
@@ -30,7 +31,7 @@ const categories = [
 function BlogEditPageInner() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [publishing, setPublishing] = useState(false);
   const [lastManualSaved, setLastManualSaved] = useState<Date | null>(null);
@@ -77,6 +78,12 @@ function BlogEditPageInner() {
       return;
     }
 
+    trackEvent("blog_editor_access_succeeded", {
+      source_page: "blog_edit",
+      draft_status: draft.status || "unknown",
+      originated_from_existing_post: Boolean(draft.createdFromPostId),
+    });
+
     setDatabaseId(draft.databaseId || id);
     setFormData({
       title: draft.title,
@@ -117,13 +124,18 @@ function BlogEditPageInner() {
   }, [id, navigate]);
 
   useEffect(() => {
+    if (isLoading) return;
+
     if (!isAuthenticated) {
-      navigate("/sign-in");
+      trackEvent("blog_editor_access_failed_unauthenticated", {
+        source_page: "blog_edit",
+      });
+      navigate("/auth/signin");
       return;
     }
 
     loadDraft();
-  }, [isAuthenticated, loadDraft, navigate]);
+  }, [isAuthenticated, isLoading, loadDraft, navigate]);
 
   const handleSaveDraft = useCallback(async (nextData: typeof draftData = draftData) => {
     if (!user?.id || !id) return;
