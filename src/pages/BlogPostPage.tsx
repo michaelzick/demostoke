@@ -123,6 +123,12 @@ const BlogPostPage = () => {
     });
   }, [id, isLoading, isPreviewMode, post, slug]);
 
+  // Fetch related gear based on post tags with a category fallback
+  const {
+    data: relatedGear,
+    isLoading: isLoadingRelatedGear,
+  } = useRelatedGear(post?.tags || [], post?.category);
+
   useEffect(() => {
     if (
       isLoading ||
@@ -174,12 +180,6 @@ const BlogPostPage = () => {
       }
       : undefined
   });
-
-  // Fetch related gear based on post tags with a category fallback
-  const {
-    data: relatedGear,
-    isLoading: isLoadingRelatedGear,
-  } = useRelatedGear(post?.tags || [], post?.category);
 
   console.log("Post ID:", slug);
 
