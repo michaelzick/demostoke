@@ -1,7 +1,7 @@
 -- Seed migration: North America coverage fill shops
 -- Batch: north_america_coverage_fill
 -- Created: 2026-06-01
--- Remote status: files only; not pushed, applied, or deployed.
+-- Remote status: applied to linked Supabase project on 2026-06-01.
 -- Apply to remote only after explicit human approval.
 -- Do NOT use supabase db push or supabase migration up.
 

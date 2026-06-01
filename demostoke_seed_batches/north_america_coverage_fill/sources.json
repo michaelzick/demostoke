@@ -1,7 +1,7 @@
 {
   "batch": "north_america_coverage_fill",
   "created": "2026-06-01",
-  "remote_status": "local-only, not pushed, applied, or deployed",
+  "remote_status": "applied to linked Supabase project on 2026-06-01",
   "accepted": [
     {
       "shop": "Surf Mexico",

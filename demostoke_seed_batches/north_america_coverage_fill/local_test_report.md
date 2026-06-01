@@ -1,6 +1,6 @@
 # Local Test Report - North America Coverage Fill
 
-Status: local preparation only. No linked DB writes were run.
+Status: applied to the linked DemoStoke Supabase project on 2026-06-01 after linked rollback dry runs succeeded.
 
 ## Completed Before File Generation
 
@@ -26,4 +26,4 @@ Results:
 - No disallowed skill-level strings starting with `Intermediate` or `Advanced`.
 - `sources.json` parsed successfully.
 - `git diff --check` returned no whitespace errors.
-- `supabase migration list --linked` shows these five migrations as local-only until the user approves remote application.
+- `supabase migration list --linked` showed these five migrations as local-only before apply; after apply and migration repair, local and remote history aligned.

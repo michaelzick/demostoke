@@ -252,7 +252,7 @@ Do not substitute other image sources for seed data. If new categories are added
 
 ## Seed Data — Current Seeded Shops
 
-This summary reflects read-only linked DemoStoke data checks after the June 1, 2026 U.S. Eastern, Hawaii, Mountain, and Central seed applies. The Wax Bench row is an existing live profile retargeted by the Canada batch; its gear count is the current profile count after 17 inserts and 11 updates, not a newly created shop.
+This summary reflects read-only linked DemoStoke data checks after the June 1, 2026 U.S. Eastern, Hawaii, Mountain, Central, and North America coverage fill seed applies. The Wax Bench row is an existing live profile retargeted by the Canada batch; its gear count is the current profile count after 17 inserts and 11 updates, not a newly created shop.
 
 | # | Shop | Region | Category | Gear | Status |
 |---|---|---|---|---|---|
@@ -309,7 +309,13 @@ This summary reflects read-only linked DemoStoke data checks after the June 1, 2
 | 51 | Arizona Snowbowl Agassiz Pro Shop | Flagstaff, AZ | skis + snowboards | 20 | applied |
 | 52 | Deer Valley Resort Ski Rentals | Park City, UT | skis | 6 | applied |
 | 53 | Hi Tempo | White Bear Lake, MN | skis | 22 | applied |
-| | **Total** | | | **609** | |
+| 54 | Surf Mexico | Bucerias, Nayarit | surfboards | 8 | applied |
+| 55 | BikeFlow Oaxaca | Oaxaca, Oaxaca | mountain-bikes | 5 | applied |
+| 56 | Bike Denali | Denali Park, AK | mountain-bikes | 1 | applied |
+| 57 | Dismount Bike Shop | Toronto, ON | mountain-bikes | 3 | applied |
+| 58 | Willi's Ski and Board Seven Springs | Champion, PA | skis | 10 | applied |
+| 59 | Tactics Bend | Bend, OR | snowboards | 10 | applied |
+| | **Total** | | | **646** | |
 
 Do not re-seed any shop already in this table. Do not seed Hawaii Surfboard Rentals under any Hawaii discovery task.
 
@@ -323,14 +329,6 @@ These files exist locally but have **not** been pushed/applied to the linked Dem
   - audit folder: `demostoke_seed_batches/eastern_time_zone_all_categories/`
   - shops: Belleayre Mountain; Highland Mountain Bike Park; Thunder Mountain Bike Park; Ride Kanuga; REAL Watersports; Warm Winds Surf Shop; Cinnamon Rainbows Surf Co.
   - planned gear counts: surfboards 14, skis 5, snowboards 2, mountain-bikes 19
-
-- North America coverage fill batch, status `local pending`, created June 1, 2026:
-  - shops migration: `supabase/migrations/20260601120000_seed_north_america_coverage_fill_shops.sql`
-  - gear migrations: `20260601120100_seed_north_america_coverage_fill_surfboards_gear.sql`, `20260601120200_seed_north_america_coverage_fill_skis_gear.sql`, `20260601120300_seed_north_america_coverage_fill_snowboards_gear.sql`, `20260601120400_seed_north_america_coverage_fill_mountain_bikes_gear.sql`
-  - audit folder: `demostoke_seed_batches/north_america_coverage_fill/`
-  - shops: Surf Mexico; BikeFlow Oaxaca; Bike Denali; Dismount Bike Shop; Willi's Ski and Board Seven Springs; Tactics Bend
-  - planned gear counts: surfboards 8, skis 10, snowboards 10, mountain-bikes 9
-  - covers Mexico surfboards and mountain-bikes, Alaska mountain-bikes, Canada mountain-bikes, and mainland U.S. skis and snowboards; do not describe these shops as live until these migrations are explicitly applied.
 
 ## Seed Data — Historical Hermes Migration Notes
 

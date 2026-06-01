@@ -1,6 +1,6 @@
 # North America Coverage Fill Discovery Audit
 
-Status: local preparation only. These migrations have not been pushed, applied, or deployed to the linked DemoStoke Supabase project.
+Status: applied to the linked DemoStoke Supabase project on 2026-06-01 after a rollback dry run succeeded.
 
 Created: 2026-06-01
 

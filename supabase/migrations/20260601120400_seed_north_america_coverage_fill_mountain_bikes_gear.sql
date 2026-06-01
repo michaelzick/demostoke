@@ -2,7 +2,7 @@
 -- Batch: north_america_coverage_fill
 -- Created: 2026-06-01
 -- Depends on: 20260601120000_seed_north_america_coverage_fill_shops.sql
--- Remote status: files only; not pushed, applied, or deployed.
+-- Remote status: applied to linked Supabase project on 2026-06-01.
 -- Image URLs (mountain-bikes): https://images.pexels.com/photos/30447388/pexels-photo-30447388.jpeg and https://images.pexels.com/photos/25753440/pexels-photo-25753440.jpeg
 
 DO $seed_migration$

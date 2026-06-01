@@ -1,6 +1,6 @@
 # Remote Runbook - North America Coverage Fill
 
-Status: local preparation only. Do not run these commands until the user explicitly approves remote execution.
+Status: applied to the linked DemoStoke Supabase project on 2026-06-01 after rollback dry runs succeeded. Keep this runbook as the historical apply sequence.
 
 ## Migration Files
 
