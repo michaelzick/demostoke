@@ -290,6 +290,17 @@ This summary reflects read-only linked DemoStoke data checks after the May 24, 2
 
 Do not re-seed any shop already in this table. Do not seed Hawaii Surfboard Rentals under any Hawaii discovery task.
 
+## Seed Data — Pending Local Seed Batches
+
+These files exist locally but have **not** been pushed/applied to the linked DemoStoke Supabase project. Do not describe these shops as live until the migrations are explicitly applied.
+
+- Eastern Time Zone all-category batch, status `local pending`, created May 30, 2026:
+  - shops migration: `supabase/migrations/20260530120000_seed_eastern_time_zone_all_categories_shops.sql`
+  - gear migrations: `20260530120100_seed_eastern_time_zone_surfboards_gear.sql`, `20260530120200_seed_eastern_time_zone_skis_gear.sql`, `20260530120300_seed_eastern_time_zone_snowboards_gear.sql`, `20260530120400_seed_eastern_time_zone_mountain_bikes_gear.sql`
+  - audit folder: `demostoke_seed_batches/eastern_time_zone_all_categories/`
+  - shops: Belleayre Mountain; Highland Mountain Bike Park; Thunder Mountain Bike Park; Ride Kanuga; REAL Watersports; Warm Winds Surf Shop; Cinnamon Rainbows Surf Co.
+  - planned gear counts: surfboards 14, skis 5, snowboards 2, mountain-bikes 19
+
 ## Seed Data — Historical Hermes Migration Notes
 
 The final-state Hermes seed migrations for Park City/Jans/White Pine, Arizona, Oregon, Colorado, Ventura County, and Texas are now tracked under `supabase/migrations/` and marked applied in linked migration metadata. Do not apply them again to linked data.
