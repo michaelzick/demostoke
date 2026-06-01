@@ -252,7 +252,7 @@ Do not substitute other image sources for seed data. If new categories are added
 
 ## Seed Data — Current Seeded Shops
 
-This summary reflects read-only linked DemoStoke data checks after the May 24, 2026 Canada seed apply. The Wax Bench row is an existing live profile retargeted by the Canada batch; its gear count is the current profile count after 17 inserts and 11 updates, not a newly created shop.
+This summary reflects read-only linked DemoStoke data checks after the June 1, 2026 U.S. Eastern, Hawaii, Mountain, and Central seed applies. The Wax Bench row is an existing live profile retargeted by the Canada batch; its gear count is the current profile count after 17 inserts and 11 updates, not a newly created shop.
 
 | # | Shop | Region | Category | Gear | Status |
 |---|---|---|---|---|---|
@@ -286,7 +286,30 @@ This summary reflects read-only linked DemoStoke data checks after the May 24, 2
 | 28 | Mont-Sainte-Anne Sports Alpins | Beaupre, QC | mountain-bikes | 6 | applied |
 | 29 | Vallee Bras-du-Nord Shannahan | Saint-Raymond, QC | mountain-bikes | 3 | applied |
 | 30 | The Wax Bench | Revelstoke, BC | skis + snowboards | 48 | existing profile retargeted; applied |
-| | **Total** | | | **244** | |
+| 31 | Belleayre Mountain | Highmount, NY | skis + snowboards | 7 | applied |
+| 32 | Highland Mountain Bike Park | Northfield, NH | mountain-bikes | 8 | applied |
+| 33 | Thunder Mountain Bike Park | Charlemont, MA | mountain-bikes | 8 | applied |
+| 34 | Ride Kanuga | Hendersonville, NC | mountain-bikes | 3 | applied |
+| 35 | REAL Watersports | Waves, NC | surfboards | 5 | applied |
+| 36 | Warm Winds Surf Shop | Narragansett, RI | surfboards | 3 | applied |
+| 37 | Cinnamon Rainbows Surf Co. | North Hampton, NH | surfboards | 6 | applied |
+| 38 | Hawaiian South Shore | Honolulu, HI | surfboards | 15 | applied |
+| 39 | Clips Hawaii | Honolulu, HI | surfboards | 39 | applied |
+| 40 | Haleiwa Surf Shop | Haleiwa, HI | surfboards | 29 | applied |
+| 41 | Kauai Surfboard Rentals | Hanalei, HI | surfboards | 121 | applied |
+| 42 | Hanalei Surfboard Rentals | Hanalei, HI | surfboards | 31 | applied |
+| 43 | Maui Sunriders Kihei Bike Shop | Kihei, HI | mountain-bikes | 2 | applied |
+| 44 | Maui Sunriders Kapalua Bike Shop | Lahaina, HI | mountain-bikes | 4 | applied |
+| 45 | Bike Maui | Haiku, HI | mountain-bikes | 3 | applied |
+| 46 | Big Island Bike Tours | Waimea, HI | mountain-bikes | 3 | applied |
+| 47 | Dan Bailey's Outdoor Co. | Livingston, MT | mountain-bikes | 2 | applied |
+| 48 | proVelo Bicycles | Fort Collins, CO | mountain-bikes | 6 | applied |
+| 49 | Habitat Dirt + Snow Grand Targhee | Alta, WY | mountain-bikes | 2 | applied |
+| 50 | Village Ski Shop | Angel Fire, NM | skis + snowboards | 20 | applied |
+| 51 | Arizona Snowbowl Agassiz Pro Shop | Flagstaff, AZ | skis + snowboards | 20 | applied |
+| 52 | Deer Valley Resort Ski Rentals | Park City, UT | skis | 6 | applied |
+| 53 | Hi Tempo | White Bear Lake, MN | skis | 22 | applied |
+| | **Total** | | | **609** | |
 
 Do not re-seed any shop already in this table. Do not seed Hawaii Surfboard Rentals under any Hawaii discovery task.
 
