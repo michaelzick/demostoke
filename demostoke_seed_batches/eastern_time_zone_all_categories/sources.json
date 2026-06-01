@@ -1,0 +1,172 @@
+[
+  {
+    "shop_name": "Belleayre Mountain",
+    "source_url": "https://www.belleayre.com/tickets/high-performance-demos/",
+    "source_type": "official_demo_page",
+    "evidence_found": ["prices", "model_names", "sizes", "descriptions"],
+    "fields_extracted": {
+      "address": "181 Galli Curci Road, Highmount, NY 12441",
+      "phone": "(845) 254-5600",
+      "gear": [
+        "Rossignol Hero Elite MT TI C.A.M",
+        "Rossignol Forza 70 V-Ti",
+        "Rossignol Forza 60 Ti",
+        "Rossignol Sender Soul 102",
+        "Rossignol Arcade 84",
+        "Burton Custom",
+        "Burton Feelgood"
+      ]
+    },
+    "confidence": "high"
+  },
+  {
+    "shop_name": "Belleayre Mountain",
+    "source_url": "https://www.belleayre.com/plan-your-visit/directions/",
+    "source_type": "official_address_page",
+    "evidence_found": ["address"],
+    "fields_extracted": {
+      "address": "181 Galli Curci Road, Highmount, NY 12441"
+    },
+    "confidence": "high"
+  },
+  {
+    "shop_name": "Highland Mountain Bike Park",
+    "source_url": "https://highlandmountain.com/explore-highland/rentals-demos/rentals/",
+    "source_type": "official_rental_page",
+    "evidence_found": ["prices", "model_names", "categories"],
+    "fields_extracted": {
+      "address": "75 Ski Hill Drive, Northfield, NH 03276",
+      "phone": "(603) 286-7677",
+      "gear": [
+        "Santa Cruz V10",
+        "Specialized Status 2 170 DH",
+        "Santa Cruz Bronson",
+        "Santa Cruz Megatower",
+        "Santa Cruz Nomad",
+        "Giant Reign",
+        "Norco Fluid",
+        "Norco Sight"
+      ]
+    },
+    "confidence": "high"
+  },
+  {
+    "shop_name": "Thunder Mountain Bike Park",
+    "source_url": "https://berkshireeast.com/summer/thunder-mountain-bike-park/bike-rentals?id=37",
+    "source_type": "official_rental_page",
+    "evidence_found": ["prices", "model_names", "address", "phone"],
+    "fields_extracted": {
+      "address": "66 Thunder Mountain Road, Charlemont, MA 01339",
+      "phone": "413-339-6618",
+      "gear": [
+        "Scott Gambler 920",
+        "Santa Cruz V10 29",
+        "Transition TR11",
+        "Yeti SB160",
+        "Yeti SB165",
+        "Transition Patrol",
+        "Rocky Mountain Instinct",
+        "Rocky Mountain Reaper"
+      ]
+    },
+    "confidence": "high"
+  },
+  {
+    "shop_name": "Ride Kanuga",
+    "source_url": "https://ridekanuga.com/rentals/",
+    "source_type": "official_rental_page",
+    "evidence_found": ["prices", "model_names", "sizes", "address", "phone"],
+    "fields_extracted": {
+      "address": "1249 Kanuga Lake Road, Hendersonville, NC 28739",
+      "phone": "(828)436.2002",
+      "gear": [
+        "Specialized Turbo Levo Gen 4 Premium",
+        "Specialized Turbo Levo",
+        "Specialized Turbo Levo SL Kids"
+      ]
+    },
+    "confidence": "high"
+  },
+  {
+    "shop_name": "REAL Watersports",
+    "source_url": "https://www.realwatersports.com/blogs/news/firewire-fleets-at-real",
+    "source_type": "official_rental_page",
+    "evidence_found": ["prices", "model_names", "sizes", "volumes", "descriptions"],
+    "fields_extracted": {
+      "address": "25706 North Carolina Hwy 12, Waves, NC 27982",
+      "phone": "(252) 987-6000",
+      "gear": [
+        "Firewire Seaside",
+        "Firewire Groove",
+        "Firewire TJ Twinzer",
+        "Firewire Sunday",
+        "Firewire The Gem"
+      ]
+    },
+    "confidence": "high"
+  },
+  {
+    "shop_name": "REAL Watersports",
+    "source_url": "https://www.firewiresurfboards.com/pages/prestige-firewire-fleets",
+    "source_type": "brand_fleet_locator",
+    "evidence_found": ["address", "phone", "model_names", "sizes"],
+    "fields_extracted": {
+      "address": "25706 North Carolina Hwy 12, Waves, NC 27982",
+      "phone": "(252) 987-6000",
+      "gear": [
+        "Seaside",
+        "Sunday",
+        "TJ Twinzer",
+        "The Gem",
+        "Groove"
+      ]
+    },
+    "confidence": "high"
+  },
+  {
+    "shop_name": "Warm Winds Surf Shop",
+    "source_url": "https://www.warmwinds.com/surfboard-rentals",
+    "source_type": "official_rental_page",
+    "evidence_found": ["prices", "model_names", "address", "phone"],
+    "fields_extracted": {
+      "address": "26 Kingstown Road, Narragansett, RI 02882",
+      "phone": "(401) 789-9040",
+      "gear": [
+        "Firewire Seaside",
+        "Firewire Sweet Potato",
+        "Firewire Dominator 2"
+      ]
+    },
+    "confidence": "high"
+  },
+  {
+    "shop_name": "Cinnamon Rainbows Surf Co.",
+    "source_url": "https://www.cinnamonrainbows.com/demos",
+    "source_type": "official_demo_page",
+    "evidence_found": ["prices", "model_names", "address", "phone"],
+    "fields_extracted": {
+      "address": "62 Lafayette Road, North Hampton, NH 03862",
+      "phone": "(603)-929-7467",
+      "gear": [
+        "Firewire Sweet Potato",
+        "Firewire Mashup",
+        "Firewire S Boss",
+        "Firewire Seaside",
+        "Channel Islands G-Skate",
+        "Pyzel White Tiger"
+      ]
+    },
+    "confidence": "high"
+  },
+  {
+    "shop_name": "Cinnamon Rainbows Surf Co.",
+    "source_url": "https://www.firewiresurfboards.com/pages/prestige-firewire-fleets",
+    "source_type": "brand_fleet_locator",
+    "evidence_found": ["address", "phone"],
+    "fields_extracted": {
+      "address": "62 Lafayette Road, North Hampton, NH 03862",
+      "phone": "(603) 929-7467"
+    },
+    "confidence": "high"
+  }
+]
