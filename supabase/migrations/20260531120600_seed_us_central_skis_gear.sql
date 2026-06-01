@@ -5,7 +5,7 @@
 -- Remote status: files only; not pushed, applied, or deployed.
 -- Image URLs (skis): https://images.pexels.com/photos/848699/pexels-photo-848699.jpeg and https://images.pexels.com/photos/36084973/pexels-photo-36084973.jpeg
 
-DO $$
+DO $seed_migration$
 DECLARE
   v_equipment_inserted int := 0;
   v_primary_images_added int := 0;
@@ -103,4 +103,4 @@ BEGIN
 
   RAISE NOTICE 'U.S. Central ski gear inserted=%, primary_images_added=%, secondary_images_added=%',
     v_equipment_inserted, v_primary_images_added, v_secondary_images_added;
-END $$;
+END $seed_migration$;

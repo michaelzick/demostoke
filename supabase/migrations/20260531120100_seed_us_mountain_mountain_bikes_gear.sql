@@ -5,7 +5,7 @@
 -- Remote status: files only; not pushed, applied, or deployed.
 -- Image URLs (mountain-bikes): https://images.pexels.com/photos/30447388/pexels-photo-30447388.jpeg and https://images.pexels.com/photos/25753440/pexels-photo-25753440.jpeg
 
-DO $$
+DO $seed_migration$
 DECLARE
   v_equipment_inserted int := 0;
   v_primary_images_added int := 0;
@@ -92,4 +92,4 @@ BEGIN
 
   RAISE NOTICE 'U.S. Mountain mountain-bike gear inserted=%, primary_images_added=%, secondary_images_added=%',
     v_equipment_inserted, v_primary_images_added, v_secondary_images_added;
-END $$;
+END $seed_migration$;
