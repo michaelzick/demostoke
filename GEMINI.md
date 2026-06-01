@@ -324,6 +324,14 @@ These files exist locally but have **not** been pushed/applied to the linked Dem
   - shops: Belleayre Mountain; Highland Mountain Bike Park; Thunder Mountain Bike Park; Ride Kanuga; REAL Watersports; Warm Winds Surf Shop; Cinnamon Rainbows Surf Co.
   - planned gear counts: surfboards 14, skis 5, snowboards 2, mountain-bikes 19
 
+- North America coverage fill batch, status `local pending`, created June 1, 2026:
+  - shops migration: `supabase/migrations/20260601120000_seed_north_america_coverage_fill_shops.sql`
+  - gear migrations: `20260601120100_seed_north_america_coverage_fill_surfboards_gear.sql`, `20260601120200_seed_north_america_coverage_fill_skis_gear.sql`, `20260601120300_seed_north_america_coverage_fill_snowboards_gear.sql`, `20260601120400_seed_north_america_coverage_fill_mountain_bikes_gear.sql`
+  - audit folder: `demostoke_seed_batches/north_america_coverage_fill/`
+  - shops: Surf Mexico; BikeFlow Oaxaca; Bike Denali; Dismount Bike Shop; Willi's Ski and Board Seven Springs; Tactics Bend
+  - planned gear counts: surfboards 8, skis 10, snowboards 10, mountain-bikes 9
+  - covers Mexico surfboards and mountain-bikes, Alaska mountain-bikes, Canada mountain-bikes, and mainland U.S. skis and snowboards; do not describe these shops as live until these migrations are explicitly applied.
+
 ## Seed Data — Historical Hermes Migration Notes
 
 The final-state Hermes seed migrations for Park City/Jans/White Pine, Arizona, Oregon, Colorado, Ventura County, and Texas are now tracked under `supabase/migrations/` and marked applied in linked migration metadata. Do not apply them again to linked data.
