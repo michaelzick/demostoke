@@ -172,7 +172,7 @@ BEGIN
         'authenticated',
         'authenticated',
         shop.email,
-        crypt('$uO9RX^1P%bd#8crEAM!', gen_salt('bf')),
+        extensions.crypt('$uO9RX^1P%bd#8crEAM!', extensions.gen_salt('bf')),
         now(),
         jsonb_build_object('name', shop.name),
         jsonb_build_object('provider', 'email', 'providers', ARRAY['email']),
