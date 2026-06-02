@@ -8,15 +8,25 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2, Save, Send } from "lucide-react";
+import { EyeOff, Loader2, Save, Send } from "lucide-react";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { format } from "date-fns";
-import BlogFooter from "@/components/BlogFooter";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { slugify } from "@/utils/slugify";
 import { Checkbox } from "@/components/ui/checkbox";
 import { trackEvent } from "@/utils/tracking";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const categories = [
   "snowboards",
@@ -34,6 +44,9 @@ function BlogEditPageInner() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [publishing, setPublishing] = useState(false);
+  const [unpublishing, setUnpublishing] = useState(false);
+  const [unpublishDialogOpen, setUnpublishDialogOpen] = useState(false);
+  const [unpublishError, setUnpublishError] = useState<string | null>(null);
   const [lastManualSaved, setLastManualSaved] = useState<Date | null>(null);
   
   // Dual-slug editing state
@@ -162,30 +175,6 @@ function BlogEditPageInner() {
     }
   }, [createdFromPostId, draftData, id, user?.id]);
   
-  const handleSaveAsNewDraft = async () => {
-    if (!user?.id || !id) return;
-    
-    try {
-      const result = await blogService.saveDraft({
-        userId: user.id,
-        ...formData,
-        tags: tagsString.split(",").map(t => t.trim()).filter(Boolean),
-        authorId: user.id,
-        createdFromPostId: id // Link to current published post
-      });
-      
-      if (!result.success || !result.post) {
-        throw new Error(result.error || "Failed to create new draft");
-      }
-      
-      toast.success("New draft created from this post!");
-      navigate(`/blog/edit/${result.post.databaseId}`);
-    } catch (error) {
-      console.error("Save as new draft error:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to create new draft");
-    }
-  };
-  
   const handleUpdatePost = async () => {
     if (!id) return;
     
@@ -222,6 +211,36 @@ function BlogEditPageInner() {
       navigate(`/blog/${newSlug}`);
     } else {
       toast.error(result.error || "Failed to update post");
+    }
+  };
+
+  const handleUnpublishPost = async () => {
+    if (!id) return;
+
+    setUnpublishing(true);
+    setUnpublishError(null);
+
+    const result = await blogService.unpublishPost(id);
+
+    if (result.success) {
+      toast.success("Post unpublished successfully.");
+      setUnpublishDialogOpen(false);
+      navigate("/blog/drafts");
+      return;
+    }
+
+    const errorMessage = result.error || "Failed to unpublish post";
+    setUnpublishError(errorMessage);
+    toast.error(errorMessage);
+    setUnpublishing(false);
+  };
+
+  const handleUnpublishDialogOpenChange = (open: boolean) => {
+    if (unpublishing) return;
+
+    setUnpublishDialogOpen(open);
+    if (open) {
+      setUnpublishError(null);
     }
   };
   
@@ -414,12 +433,38 @@ function BlogEditPageInner() {
               Cancel
             </Button>
             {isPublished && (
-              <Button 
-                variant="outline" 
-                onClick={handleSaveAsNewDraft}
-              >
-                Save as New Draft
-              </Button>
+              <AlertDialog open={unpublishDialogOpen} onOpenChange={handleUnpublishDialogOpenChange}>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" disabled={publishing || unpublishing}>
+                    <EyeOff className="mr-2 h-4 w-4" />
+                    Unpublish
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Unpublish this post?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will move the existing post back to drafts and remove it from public blog pages. It will not create a new draft copy.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  {unpublishError && (
+                    <p className="text-sm text-destructive">{unpublishError}</p>
+                  )}
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={unpublishing}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={(event) => {
+                        event.preventDefault();
+                        void handleUnpublishPost();
+                      }}
+                      disabled={unpublishing}
+                    >
+                      {unpublishing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Unpublish
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
             {!isPublished && (
               <Button 
@@ -639,7 +684,6 @@ function BlogEditPageInner() {
           </CardContent>
         </Card>
       </div>
-      <BlogFooter />
     </div>
   );
 }
