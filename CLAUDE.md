@@ -252,7 +252,7 @@ Do not substitute other image sources for seed data. If new categories are added
 
 ## Seed Data — Current Seeded Shops
 
-This summary reflects read-only linked DemoStoke data checks after the June 1, 2026 U.S. Eastern, Hawaii, Mountain, and Central seed applies. The Wax Bench row is an existing live profile retargeted by the Canada batch; its gear count is the current profile count after 17 inserts and 11 updates, not a newly created shop.
+This summary reflects read-only linked DemoStoke data checks after the June 1, 2026 U.S. Eastern, Hawaii, Mountain, Central, and North America coverage fill seed applies. The Wax Bench row is an existing live profile retargeted by the Canada batch; its gear count is the current profile count after 17 inserts and 11 updates, not a newly created shop.
 
 | # | Shop | Region | Category | Gear | Status |
 |---|---|---|---|---|---|
@@ -309,7 +309,13 @@ This summary reflects read-only linked DemoStoke data checks after the June 1, 2
 | 51 | Arizona Snowbowl Agassiz Pro Shop | Flagstaff, AZ | skis + snowboards | 20 | applied |
 | 52 | Deer Valley Resort Ski Rentals | Park City, UT | skis | 6 | applied |
 | 53 | Hi Tempo | White Bear Lake, MN | skis | 22 | applied |
-| | **Total** | | | **609** | |
+| 54 | Surf Mexico | Bucerias, Nayarit | surfboards | 8 | applied |
+| 55 | BikeFlow Oaxaca | Oaxaca, Oaxaca | mountain-bikes | 5 | applied |
+| 56 | Bike Denali | Denali Park, AK | mountain-bikes | 1 | applied |
+| 57 | Dismount Bike Shop | Toronto, ON | mountain-bikes | 3 | applied |
+| 58 | Willi's Ski and Board Seven Springs | Champion, PA | skis | 10 | applied |
+| 59 | Tactics Bend | Bend, OR | snowboards | 10 | applied |
+| | **Total** | | | **646** | |
 
 Do not re-seed any shop already in this table. Do not seed Hawaii Surfboard Rentals under any Hawaii discovery task.
 

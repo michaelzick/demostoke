@@ -1,0 +1,74 @@
+{
+  "batch": "north_america_coverage_fill",
+  "created": "2026-06-01",
+  "remote_status": "applied to linked Supabase project on 2026-06-01",
+  "accepted": [
+    {
+      "shop": "Surf Mexico",
+      "category": "surfboards",
+      "urls": [
+        "https://www.surfmexico.com/surfboards-rentals/",
+        "https://goo.gl/maps/os8ZFhsc77aby6Vh7"
+      ],
+      "gear_count": 8,
+      "notes": "Official page lists rental prices, pickup/contact details, and standard/high-performance surfboard model rows."
+    },
+    {
+      "shop": "BikeFlow Oaxaca",
+      "category": "mountain-bikes",
+      "urls": [
+        "https://bikeflow.com.mx/bike-rental/",
+        "https://bikeflow.com.mx/about-us/quienes-somos/"
+      ],
+      "gear_count": 5,
+      "notes": "Official page lists five model-level mountain-bike rentals at 600 MXN for 24 hours."
+    },
+    {
+      "shop": "Bike Denali",
+      "category": "mountain-bikes",
+      "urls": [
+        "https://bikedenali.com/mountain-bikes/",
+        "https://bikedenali.com/contact/",
+        "https://www.alaska.org/detail/bike-denali"
+      ],
+      "gear_count": 1,
+      "notes": "Official page lists Trek Marlin 5 MTB rentals and address; Alaska.org confirms the 85 USD one-day package rate."
+    },
+    {
+      "shop": "Dismount Bike Shop",
+      "category": "mountain-bikes",
+      "urls": [
+        "https://dismount-bike-shop.booqableshop.com/",
+        "https://dismount-bike-shop.booqableshop.com/pages/pricing"
+      ],
+      "gear_count": 3,
+      "notes": "Official Booqable pages list Norco and Salsa rental bikes plus 80 CAD daily bike pricing."
+    },
+    {
+      "shop": "Willi's Ski and Board Seven Springs",
+      "category": "skis",
+      "urls": [
+        "https://www.willisskiandboard.com/pages/seven-springs-demo-skis",
+        "https://www.willisskiandboard.com/pages/locations-and-hours",
+        "https://www.mapquest.com/us/pennsylvania/champion/15622-4007/777-water-wheel-dr-40.02228%2C-79.29623"
+      ],
+      "gear_count": 10,
+      "notes": "Official pages list the Seven Springs shop, 75 USD demo fee, and model-level demo ski fleet."
+    },
+    {
+      "shop": "Tactics Bend",
+      "category": "snowboards",
+      "urls": [
+        "https://www.tactics.com/info/bend-snowboard-rentals-services",
+        "https://www.mapquest.com/us/oregon/tactics-bend-371161058"
+      ],
+      "gear_count": 10,
+      "notes": "Official page lists demo rental rates and model-level demo snowboard fleet; MapQuest confirms the current Bend address."
+    }
+  ],
+  "duplicate_check_result": {
+    "linked_db_rows": 0,
+    "checked_at": "2026-06-01",
+    "query_file": "demostoke_seed_batches/north_america_coverage_fill/validation.sql"
+  }
+}
