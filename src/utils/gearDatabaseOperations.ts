@@ -1,15 +1,27 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { PricingOption } from "@/hooks/gear-form/types";
+import {
+  isMissingCurrencyCodeColumnError,
+  omitCurrencyCode,
+} from "@/utils/supabaseCurrencyCompat";
 
 export const createEquipmentInDatabase = async (equipmentData: any) => {
   console.log('Submitting equipment data:', equipmentData);
 
-  const { data: equipmentResult, error: equipmentError } = await supabase
+  let { data: equipmentResult, error: equipmentError } = await supabase
     .from('equipment')
     .insert(equipmentData)
     .select()
     .single();
+
+  if (isMissingCurrencyCodeColumnError(equipmentError)) {
+    ({ data: equipmentResult, error: equipmentError } = await supabase
+      .from('equipment')
+      .insert(omitCurrencyCode(equipmentData))
+      .select()
+      .single());
+  }
 
   if (equipmentError) {
     console.error('Database error:', equipmentError);

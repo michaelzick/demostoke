@@ -83,6 +83,19 @@ if (SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY) {
   );
 }
 
+const isMissingCurrencyCodeColumnError = (error) => {
+  if (!error || typeof error !== 'object') return false;
+
+  const message = String(error.message || '').toLowerCase();
+  return (
+    message.includes('currency_code') &&
+    (error.code === '42703' ||
+      error.code === 'PGRST204' ||
+      message.includes('schema cache') ||
+      message.includes('column'))
+  );
+};
+
 const SERVER_METADATA_TIMEOUT_MS = process.env.NODE_ENV === 'test' ? 100 : 3000;
 
 const withTimeout = async (promise, timeoutMs, label) => {
@@ -608,10 +621,12 @@ async function getGearPageMeta(gearSlug) {
   }
 
   try {
-    const { data: gear, error: gearError } = await supabase
-      .from('equipment')
-      .select(
-        `
+    const buildGearQuery = (includeCurrencyCode) => {
+      const currencyCodeSelect = includeCurrencyCode ? 'currency_code,' : '';
+      return supabase
+        .from('equipment')
+        .select(
+          `
         id,
         name,
         category,
@@ -619,7 +634,7 @@ async function getGearPageMeta(gearSlug) {
         size,
         status,
         visible_on_map,
-        currency_code,
+        ${currencyCodeSelect}
         price_per_day,
         price_per_hour,
         price_per_week,
@@ -634,9 +649,16 @@ async function getGearPageMeta(gearSlug) {
           is_hidden
         )
       `,
-      )
-      .eq('id', gearId)
-      .single();
+        )
+        .eq('id', gearId)
+        .single();
+    };
+
+    let { data: gear, error: gearError } = await buildGearQuery(true);
+
+    if (isMissingCurrencyCodeColumnError(gearError)) {
+      ({ data: gear, error: gearError } = await buildGearQuery(false));
+    }
 
     if (gearError || !gear) {
       return null;

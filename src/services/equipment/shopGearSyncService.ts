@@ -2,6 +2,10 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { fetchEquipmentFromShopGearFeed } from "./shopGearFeedService";
 import { normalizeCurrencyCode } from "@/utils/currency";
+import {
+  isMissingCurrencyCodeColumnError,
+  omitCurrencyCode,
+} from "@/utils/supabaseCurrencyCompat";
 
 const SOURCE_PROVIDER = "demostoke_widget";
 const IMAGE_BUCKET = "gear-images";
@@ -371,12 +375,21 @@ export const syncShopGearFromEndpoint = async ({
     updated_at: syncedAt,
   }));
 
-  const { data: syncedRows, error: equipmentError } = await supabase
+  let { data: syncedRows, error: equipmentError } = await supabase
     .from("equipment")
     .upsert(equipmentPayload, {
       onConflict: "user_id,external_source_provider,external_source_item_id",
     })
     .select("id, external_source_item_id");
+
+  if (isMissingCurrencyCodeColumnError(equipmentError)) {
+    ({ data: syncedRows, error: equipmentError } = await supabase
+      .from("equipment")
+      .upsert(equipmentPayload.map((item) => omitCurrencyCode(item)) as EquipmentInsert[], {
+        onConflict: "user_id,external_source_provider,external_source_item_id",
+      })
+      .select("id, external_source_item_id"));
+  }
 
   if (equipmentError) {
     throw new Error(`Unable to sync equipment records: ${equipmentError.message}`);

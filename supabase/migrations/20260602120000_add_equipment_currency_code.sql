@@ -1,5 +1,5 @@
 -- Add native currency support for equipment rental prices.
--- Remote status: local only; not applied to the linked Supabase project.
+-- Remote status: applied to the linked Supabase project on 2026-06-02.
 
 ALTER TABLE public.equipment
   ADD COLUMN IF NOT EXISTS currency_code text NOT NULL DEFAULT 'USD';
