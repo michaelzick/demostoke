@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Equipment } from "@/types";
 import { AddOn } from "@/lib/addOns";
+import { formatCurrencyPerDuration } from "@/utils/currency";
 
 interface AddOnSelectionProps {
   equipment: Equipment;
@@ -18,10 +19,6 @@ const AddOnSelection = ({
   selectedAddOns,
   onAddOnToggle,
 }: AddOnSelectionProps) => {
-  const formatCurrency = (amount: number): string => {
-    return parseFloat(amount.toFixed(2)).toFixed(2);
-  };
-
   if (addOns.length === 0) return null;
 
   return (
@@ -81,7 +78,7 @@ const AddOnSelection = ({
                 {addOn.name}
               </span>
               <span className="text-xs text-muted-foreground">
-                ${formatCurrency(addOn.price_per_day)}/day
+                {formatCurrencyPerDuration(addOn.price_per_day, equipment.currency_code)}
               </span>
             </div>
           );

@@ -25,6 +25,7 @@ interface UseEditGearFormSubmissionProps {
   pricePerDay: string;
   pricePerHour: string;
   pricePerWeek: string;
+  currencyCode: string;
   damageDeposit: string;
   imageUrl: string;
   useImageUrl: boolean;
@@ -43,6 +44,7 @@ export const useEditGearFormSubmission = ({
   pricePerDay,
   pricePerHour,
   pricePerWeek,
+  currencyCode,
   damageDeposit,
   imageUrl,
   useImageUrl,
@@ -126,6 +128,7 @@ export const useEditGearFormSubmission = ({
         pricePerDay,
         pricePerHour: pricePerHour, // Don't filter empty - let prepareEquipmentData handle it
         pricePerWeek: pricePerWeek, // Don't filter empty - let prepareEquipmentData handle it
+        currencyCode,
         damageDeposit,
         finalImageUrl
       });

@@ -24,6 +24,7 @@ interface UseMultipleEditGearFormSubmissionProps {
   pricePerDay: string;
   pricePerHour: string;
   pricePerWeek: string;
+  currencyCode: string;
   damageDeposit: string;
   imageUrls: string[];
   useImageUrls: boolean;
@@ -44,6 +45,7 @@ export const useMultipleEditGearFormSubmission = ({
   pricePerDay,
   pricePerHour,
   pricePerWeek,
+  currencyCode,
   damageDeposit,
   imageUrls,
   useImageUrls,
@@ -160,6 +162,7 @@ export const useMultipleEditGearFormSubmission = ({
         pricePerDay,
         pricePerHour: pricePerHour, // Don't filter empty - let prepareEquipmentData handle it
         pricePerWeek: pricePerWeek, // Don't filter empty - let prepareEquipmentData handle it
+        currencyCode,
         damageDeposit,
         finalImageUrl: finalImageUrls[0] || equipment!.image_url
       });

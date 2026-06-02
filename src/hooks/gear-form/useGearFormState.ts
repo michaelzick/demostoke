@@ -15,6 +15,7 @@ export const useGearFormState = () => {
   const [pricePerDay, setPricePerDay] = useState("");
   const [pricePerHour, setPricePerHour] = useState("");
   const [pricePerWeek, setPricePerWeek] = useState("");
+  const [currencyCode, setCurrencyCode] = useState("USD");
   const [damageDeposit, setDamageDeposit] = useState("");
   const [role, setRole] = useState("");
 
@@ -45,6 +46,8 @@ export const useGearFormState = () => {
     setPricePerHour,
     pricePerWeek,
     setPricePerWeek,
+    currencyCode,
+    setCurrencyCode,
     damageDeposit,
     setDamageDeposit,
     role,

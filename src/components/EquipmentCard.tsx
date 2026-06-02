@@ -26,6 +26,7 @@ import { useFavorites } from "@/contexts/FavoritesContext";
 import { useDeleteEquipment, useUpdateEquipmentVisibility } from "@/hooks/useUserEquipment";
 import { Separator } from "@/components/ui/separator";
 import { useQueryClient } from "@tanstack/react-query";
+import { formatCurrencyPerDuration } from "@/utils/currency";
 import {
   Tooltip,
   TooltipTrigger,
@@ -239,7 +240,7 @@ const EquipmentCard = ({ equipment, showAdminControls = false }: EquipmentCardPr
             <div className="flex items-center justify-between mb-2">
               <div>
                 <p className="text-sm font-medium">
-                  ${equipment.price_per_day}/day
+                  {formatCurrencyPerDuration(equipment.price_per_day, equipment.currency_code)}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {equipment.location.address}

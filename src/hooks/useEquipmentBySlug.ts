@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 import { isPublicEquipmentRecord } from "@/lib/seo/policy.js";
+import { normalizeCurrencyCode } from "@/utils/currency";
 
 export const useEquipmentBySlug = (
   category: string,
@@ -105,6 +106,7 @@ export const useEquipmentBySlug = (
           row.price_per_week !== null && row.price_per_week !== undefined
             ? Number(row.price_per_week)
             : undefined,
+        currency_code: normalizeCurrencyCode(row.currency_code),
         rating: Number(row.rating || 0),
         review_count: row.review_count || 0,
         damage_deposit: row.damage_deposit ? Number(row.damage_deposit) : undefined,

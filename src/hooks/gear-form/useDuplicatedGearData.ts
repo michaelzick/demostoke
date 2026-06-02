@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { UserEquipment } from "@/types/equipment";
 import { mapCategoryToGearType, mapSkillLevel } from "@/utils/gearDataMapping";
+import { normalizeCurrencyCode } from "@/utils/currency";
 
 interface UseDuplicatedGearDataProps {
   setGearName: (value: string) => void;
@@ -16,6 +17,7 @@ interface UseDuplicatedGearDataProps {
   setPricePerDay: (value: string) => void;
   setPricePerHour: (value: string) => void;
   setPricePerWeek: (value: string) => void;
+  setCurrencyCode: (value: string) => void;
   setDamageDeposit: (value: string) => void;
   setImageUrls?: (urls: string[]) => void;
   setUseImageUrls?: (value: boolean) => void;
@@ -33,6 +35,7 @@ export const useDuplicatedGearData = ({
   setPricePerDay,
   setPricePerHour,
   setPricePerWeek,
+  setCurrencyCode,
   setDamageDeposit,
   setImageUrls,
   setUseImageUrls,
@@ -102,6 +105,7 @@ export const useDuplicatedGearData = ({
         const weeklyPrice = duplicatedEquipment.price_per_week;
         console.log('Weekly price from duplicated equipment:', weeklyPrice);
         setPricePerWeek(weeklyPrice !== undefined && weeklyPrice !== null ? weeklyPrice.toString() : "");
+        setCurrencyCode(normalizeCurrencyCode(duplicatedEquipment.currency_code));
 
         // Set damage deposit - leave empty if null, undefined, or 0
         const damageDepositValue = duplicatedEquipment.damage_deposit;
@@ -158,7 +162,7 @@ export const useDuplicatedGearData = ({
         });
       }
     }
-  }, [toast, setGearName, setGearType, setDescription, setAddress, setMeasurementUnit, setSize, setRole, setSkillLevel, setPricePerDay, setPricePerHour, setPricePerWeek, setDamageDeposit, setImageUrls, setUseImageUrls]);
+  }, [toast, setGearName, setGearType, setDescription, setAddress, setMeasurementUnit, setSize, setRole, setSkillLevel, setPricePerDay, setPricePerHour, setPricePerWeek, setCurrencyCode, setDamageDeposit, setImageUrls, setUseImageUrls]);
 
   // Return the duplicated equipment data so it can be used by the form
   const getDuplicatedGearData = () => {

@@ -1,5 +1,6 @@
 
 import { mapGearTypeToCategory } from "@/utils/gearTypeMapping";
+import { normalizeCurrencyCode } from "@/utils/currency";
 
 interface PrepareEquipmentDataParams {
   userId?: string;
@@ -13,6 +14,7 @@ interface PrepareEquipmentDataParams {
   pricePerDay: string;
   pricePerHour?: string;
   pricePerWeek?: string;
+  currencyCode?: string;
   finalImageUrl: string;
   damageDeposit: string;
 }
@@ -29,6 +31,7 @@ export const prepareEquipmentData = ({
   pricePerDay,
   pricePerHour,
   pricePerWeek,
+  currencyCode,
   finalImageUrl: _finalImageUrl,
   damageDeposit,
 }: PrepareEquipmentDataParams) => {
@@ -48,6 +51,7 @@ export const prepareEquipmentData = ({
     price_per_day: parsedPricePerDay,
     price_per_hour: parsedPricePerHour,
     price_per_week: parsedPricePerWeek,
+    currency_code: normalizeCurrencyCode(currencyCode),
     damage_deposit: parsedDamageDeposit,
     status: 'available',
     visible_on_map: true,

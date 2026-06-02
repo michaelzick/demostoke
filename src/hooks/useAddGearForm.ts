@@ -45,6 +45,7 @@ export const useAddGearForm = () => {
     setPricePerDay: formState.setPricePerDay,
     setPricePerHour: formState.setPricePerHour,
     setPricePerWeek: formState.setPricePerWeek,
+    setCurrencyCode: formState.setCurrencyCode,
     setDamageDeposit: formState.setDamageDeposit,
   });
 
@@ -69,6 +70,7 @@ export const useAddGearForm = () => {
     pricePerDay: formState.pricePerDay,
     pricePerHour: formState.pricePerHour,
     pricePerWeek: formState.pricePerWeek,
+    currencyCode: formState.currencyCode,
     damageDeposit: formState.damageDeposit,
     role: formState.role,
     duplicatedImageUrl,

@@ -18,6 +18,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { fetchMockLightspeedInventory, ingestLightspeedInventory } from "@/services/lightspeed/lightspeedService";
 import { buildGearPath } from "@/utils/gearUrl";
+import { formatCurrencyPerDuration } from "@/utils/currency";
 
 const LightspeedPOSPage = () => {
   usePageMetadata({
@@ -378,7 +379,7 @@ const LightspeedPOSPage = () => {
                             onClick={() => handleViewDetails(item.id, item.name, item.specifications?.size)}
                           >
                             <CardTitle className="text-base line-clamp-1">{item.name}</CardTitle>
-                            <CardDescription>${item.price_per_day}/day</CardDescription>
+                            <CardDescription>{formatCurrencyPerDuration(item.price_per_day, item.currency_code)}</CardDescription>
                           </CardHeader>
                           <CardContent className="border-t p-4">
                             <div className="flex items-center space-x-2">

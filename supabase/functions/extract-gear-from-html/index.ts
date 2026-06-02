@@ -49,7 +49,8 @@ Extract a single gear item from the provided HTML and return STRICT JSON with th
   "damage_deposit": number|null,
   "price_per_day": number|null,
   "price_per_hour": number|null,
-  "price_per_week": number|null
+  "price_per_week": number|null,
+  "currency_code": string|null
 }
 
 IMPORTANT FOR SIZES:
@@ -60,7 +61,8 @@ IMPORTANT FOR SIZES:
 - If only one size is available, return it as a single-element array
 
 - Infer fields conservatively from HTML.
-- If a numeric value is present, return it as a number (no currency symbols).
+- If a numeric price is present, return it as a number with no currency symbols.
+- Return currency_code as the source-native ISO 4217 code when visible or clearly implied by the shop country, e.g. USD for U.S. shops, CAD for Canada, MXN for Mexico. Do not convert prices between currencies.
 - If unknown or missing, return null for single values or empty array for sizes.
 - Do NOT include any extra keys.
 - Respond with JSON only.`;
@@ -115,6 +117,11 @@ function formatSizes(sizes: string[] | null): string {
   return escapeSQL(joined);
 }
 
+function normalizeCurrencyCode(value: string | null | undefined): string {
+  const normalized = (value || "USD").trim().toUpperCase();
+  return /^[A-Z]{3}$/.test(normalized) ? normalized : "USD";
+}
+
 function generateSQL(data: {
   name: string;
   category: string;
@@ -128,9 +135,10 @@ function generateSQL(data: {
   price_per_day: number | null;
   price_per_hour: number | null;
   price_per_week: number | null;
+  currency_code: string | null;
 }): string {
   const sql = `INSERT INTO public.equipment (
-    id, user_id, name, category, description, price_per_day, price_per_hour, price_per_week,
+    id, user_id, name, category, description, price_per_day, price_per_hour, price_per_week, currency_code,
     size, weight, material, suitable_skill_level, status,
     location_lat, location_lng, location_address, subcategory, damage_deposit, visible_on_map
 ) VALUES
@@ -141,6 +149,7 @@ function generateSQL(data: {
     ${escapeSQL(data.category)},
     ${escapeSQL(data.description)},
     ${data.price_per_day ?? "NULL"}, ${data.price_per_hour ?? "NULL"}, ${data.price_per_week ?? "NULL"},
+    ${escapeSQL(normalizeCurrencyCode(data.currency_code))},
     ${formatSizes(data.sizes)},
     ${escapeSQL(data.weight)},
     ${escapeSQL(data.material)},
@@ -194,6 +203,7 @@ serve(async (req) => {
       price_per_day: raw?.price_per_day ?? null,
       price_per_hour: raw?.price_per_hour ?? null,
       price_per_week: raw?.price_per_week ?? null,
+      currency_code: normalizeCurrencyCode(raw?.currency_code),
     };
 
     const sql = generateSQL(normalized);

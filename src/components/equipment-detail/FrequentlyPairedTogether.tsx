@@ -11,6 +11,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { formatCurrencyAmount, formatCurrencyPerDuration } from "@/utils/currency";
 
 interface FrequentlyBoughtTogetherProps {
   equipment: Equipment;
@@ -104,7 +105,7 @@ const FrequentlyPairedTogether = ({
                   {addOn.name}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  ${addOn.price_per_day}/day
+                  {formatCurrencyPerDuration(addOn.price_per_day, equipment.currency_code)}
                 </span>
               </div>
             );
@@ -117,17 +118,17 @@ const FrequentlyPairedTogether = ({
           <div className="text-sm space-y-1 mt-2">
             <div className="flex justify-between">
               <span>{equipment.name}</span>
-              <span>${equipment.price_per_day}/day</span>
+              <span>{formatCurrencyPerDuration(equipment.price_per_day, equipment.currency_code)}</span>
             </div>
             {selectedAddOns.map((addOn) => (
               <div key={addOn.name} className="flex justify-between">
                 <span>{addOn.name}</span>
-                <span>${addOn.price_per_day}/day</span>
+                <span>{formatCurrencyPerDuration(addOn.price_per_day, equipment.currency_code)}</span>
               </div>
             ))}
             <div className="border-t pt-2 mt-2 font-medium flex justify-between">
               <span>Total Price:</span>
-              <span>${totalPrice.toFixed(2)}/day</span>
+              <span>{formatCurrencyAmount(totalPrice, equipment.currency_code)}/day</span>
             </div>
           </div>
         </div>

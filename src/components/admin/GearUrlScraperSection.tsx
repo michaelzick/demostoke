@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert } from "@/components/ui/alert";
 import { supabase } from "@/integrations/supabase/client";
 import { geocodeAddress } from "@/utils/geocoding";
+import { normalizeCurrencyCode } from "@/utils/currency";
 
 const escapeSqlString = (value: string) => `'${value.replace(/'/g, "''")}'`;
 
@@ -25,6 +26,7 @@ export default function GearUrlScraperSection() {
     const material = data.material ?? null;
     const suitable = data.suitable_skill_level ?? null;
     const subcategory = data.subcategory ?? null;
+    const currencyCode = normalizeCurrencyCode(data.currency_code);
 
     const damage_deposit =
       data.damage_deposit !== undefined && data.damage_deposit !== null
@@ -62,7 +64,7 @@ export default function GearUrlScraperSection() {
     }
 
     const sqlStr = `INSERT INTO public.equipment (
-    id, user_id, name, category, description, price_per_day, price_per_hour, price_per_week,
+    id, user_id, name, category, description, price_per_day, price_per_hour, price_per_week, currency_code,
     size, weight, material, suitable_skill_level, status,
     location_lat, location_lng, location_address, subcategory, damage_deposit, visible_on_map
 ) VALUES (
@@ -74,6 +76,7 @@ export default function GearUrlScraperSection() {
     ${price_per_day},
     ${price_per_hour === null ? "NULL" : price_per_hour},
     ${price_per_week === null ? "NULL" : price_per_week},
+    ${escapeSqlString(currencyCode)},
     ${size === null ? "NULL" : escapeSqlString(String(size))},
     ${weight === null ? "NULL" : escapeSqlString(String(weight))},
     ${material === null ? "NULL" : escapeSqlString(String(material))},

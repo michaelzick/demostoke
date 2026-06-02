@@ -2,6 +2,7 @@
 import { useEffect, useRef } from "react";
 import { UserEquipment } from "@/types/equipment";
 import { mapCategoryToGearType } from "@/utils/gearDataMapping";
+import { normalizeCurrencyCode } from "@/utils/currency";
 
 interface UseEquipmentDataLoaderProps {
   equipment: UserEquipment | null | undefined;
@@ -14,6 +15,7 @@ interface UseEquipmentDataLoaderProps {
   setPricePerDay: (value: string) => void;
   setPricePerHour?: (value: string) => void;
   setPricePerWeek?: (value: string) => void;
+  setCurrencyCode?: (value: string) => void;
   setDamageDeposit?: (value: string) => void;
   setImageUrl?: (value: string) => void;
   setMeasurementUnit?: (value: string) => void;
@@ -32,6 +34,7 @@ export const useEquipmentDataLoader = ({
   setPricePerDay,
   setPricePerHour,
   setPricePerWeek,
+  setCurrencyCode,
   setDamageDeposit,
   setImageUrl,
   setMeasurementUnit,
@@ -71,6 +74,9 @@ export const useEquipmentDataLoader = ({
       }
       if (setPricePerWeek) {
         setPricePerWeek(equipment.price_per_week?.toString() || "");
+      }
+      if (setCurrencyCode) {
+        setCurrencyCode(normalizeCurrencyCode(equipment.currency_code));
       }
 
       // Set image URL if available and setter provided
@@ -125,5 +131,5 @@ export const useEquipmentDataLoader = ({
       equipmentDataLoadedRef.current = true;
       console.log('Equipment basic data loaded successfully for editing - form is now editable');
     }
-  }, [equipment, setAddress, setDamageDeposit, setDescription, setGearName, setGearType, setImageUrl, setMeasurementUnit, setPricePerDay, setPricePerHour, setPricePerWeek, setSelectedSizes, setSelectedSkillLevels, setSize, setSkillLevel]); // Depend on the entire equipment object to catch any changes
+  }, [equipment, setAddress, setCurrencyCode, setDamageDeposit, setDescription, setGearName, setGearType, setImageUrl, setMeasurementUnit, setPricePerDay, setPricePerHour, setPricePerWeek, setSelectedSizes, setSelectedSkillLevels, setSize, setSkillLevel]); // Depend on the entire equipment object to catch any changes
 };

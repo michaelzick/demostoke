@@ -4,6 +4,7 @@ import { useAuth } from "@/helpers";
 import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 import { syncShopGearFromEndpoint } from "@/services/equipment/shopGearSyncService";
+import { normalizeCurrencyCode } from "@/utils/currency";
 
 interface UserEquipment {
   id: string;
@@ -14,6 +15,7 @@ interface UserEquipment {
   price_per_day: number;
   price_per_hour?: number;
   price_per_week?: number;
+  currency_code?: string;
   damage_deposit?: number;
   images: string[]; // Images array from equipment_images table
   rating: number;
@@ -64,6 +66,7 @@ export const useUserEquipment = (
           price_per_day,
           price_per_hour,
           price_per_week,
+          currency_code,
            damage_deposit,
            rating,
           review_count,
@@ -122,6 +125,7 @@ export const useUserEquipment = (
             price_per_day: item.price_per_day,
             price_per_hour: item.price_per_hour,
             price_per_week: item.price_per_week,
+            currency_code: normalizeCurrencyCode(item.currency_code),
             damage_deposit: item.damage_deposit,
             images: allImages, // Include all images
             rating: item.rating || 0,

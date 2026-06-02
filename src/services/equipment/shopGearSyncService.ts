@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { fetchEquipmentFromShopGearFeed } from "./shopGearFeedService";
+import { normalizeCurrencyCode } from "@/utils/currency";
 
 const SOURCE_PROVIDER = "demostoke_widget";
 const IMAGE_BUCKET = "gear-images";
@@ -347,6 +348,7 @@ export const syncShopGearFromEndpoint = async ({
     price_per_day: Number(item.price_per_day || 0),
     price_per_hour: toNullableNumber(item.price_per_hour),
     price_per_week: toNullableNumber(item.price_per_week),
+    currency_code: normalizeCurrencyCode(item.currency_code),
     damage_deposit: toNullableNumber(item.damage_deposit),
     rating: toNullableNumber(item.rating) ?? 0,
     review_count: item.review_count ?? 0,

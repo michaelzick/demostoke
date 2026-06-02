@@ -1,5 +1,6 @@
 
 import { Equipment } from "@/types";
+import { formatCurrencyAmount } from "@/utils/currency";
 
 interface PriceDisplayProps {
   equipment: Equipment;
@@ -66,12 +67,12 @@ const PriceDisplay = ({ equipment, equipmentHeader }: PriceDisplayProps) => {
                   ? "text-2xl font-bold text-primary"
                   : "text-m text-white"
               }>
-                ${option.price} <span className="text-sm font-normal">/ {formatDuration(option.duration)}</span>
+                {formatCurrencyAmount(option.price, equipment.currency_code)} <span className="text-sm font-normal">/ {formatDuration(option.duration)}</span>
               </p>
             ))}
           </div>
         ) : (
-          <p className="text-2xl font-bold text-primary">${equipment.price_per_day} <span className="text-sm font-normal">/ day</span></p>
+          <p className="text-2xl font-bold text-primary">{formatCurrencyAmount(equipment.price_per_day, equipment.currency_code)} <span className="text-sm font-normal">/ day</span></p>
         )}
         {!equipmentHeader && (
           <div className="flex items-center mt-1">

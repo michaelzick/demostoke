@@ -16,6 +16,7 @@ interface DatabaseUpdateParams {
   pricePerDay: string;
   pricePerHour?: string;
   pricePerWeek?: string;
+  currencyCode?: string;
   damageDeposit: string;
   finalImageUrl: string;
 }
@@ -35,6 +36,7 @@ export const useEditGearDatabaseUpdate = () => {
       pricePerDay,
       pricePerHour,
       pricePerWeek,
+      currencyCode,
       damageDeposit,
       finalImageUrl
     } = params;
@@ -58,6 +60,7 @@ export const useEditGearDatabaseUpdate = () => {
       pricePerDay,
       pricePerHour,
       pricePerWeek,
+      currencyCode,
       finalImageUrl,
       damageDeposit,
     });

@@ -24,6 +24,7 @@ interface MapProps {
     name: string;
     category: string;
     price_per_day: number;
+    currency_code?: string;
     location: { lat: number; lng: number };
     ownerId: string;
     ownerName: string;

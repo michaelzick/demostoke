@@ -172,6 +172,7 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate, isOwnProfi
               name: profile.name,
               category: 'user',
               price_per_day: 0,
+              currency_code: 'USD',
               location: { lat: profile.location_lat, lng: profile.location_lng },
               ownerId: profile.name,
               ownerName: profile.name,

@@ -208,7 +208,7 @@ async function parserAgent(scrapedData: any[], _shopUserId: string) {
       
       try {
         // Call GPT-5-mini to extract equipment data
-        const prompt = `Extract ski, snowboard, surfboard, and mountain bike rental equipment from this content. Return a JSON array of equipment objects with these fields: name, category (skis/snowboards/surfboards/mountain-bikes), description, price_per_day, price_per_hour, price_per_week, size, material, suitable_skill_level (beginner/intermediate/advanced), subcategory, damage_deposit. Valid subcategories: skis (all-mountain, powder, carving, racing, touring), snowboards (all-mountain, freestyle, freeride, powder, splitboard), surfboards (shortboard, longboard, funboard, fish, hybrid, foam), mountain-bikes (trail, enduro, downhill, cross-country, hardtail, full-suspension). If pricing is bundled (e.g., "$100 for 2 days"), calculate daily rate. Return empty array if no rental equipment found.`;
+        const prompt = `Extract ski, snowboard, surfboard, and mountain bike rental equipment from this content. Return a JSON array of equipment objects with these fields: name, category (skis/snowboards/surfboards/mountain-bikes), description, price_per_day, price_per_hour, price_per_week, currency_code, size, material, suitable_skill_level (beginner/intermediate/advanced), subcategory, damage_deposit. Valid subcategories: skis (all-mountain, powder, carving, racing, touring), snowboards (all-mountain, freestyle, freeride, powder, splitboard), surfboards (shortboard, longboard, funboard, fish, hybrid, foam), mountain-bikes (trail, enduro, downhill, cross-country, hardtail, full-suspension). If pricing is bundled (e.g., "$100 for 2 days"), calculate daily rate in the source-native currency. Return currency_code as the source-native ISO 4217 code such as USD, CAD, or MXN; do not convert between currencies. Return empty array if no rental equipment found.`;
         
         // Use markdown if available, fallback to HTML
         const content = page.markdown || page.html?.substring(0, 8000);
@@ -292,8 +292,12 @@ async function storageAgent(parsedShops: any[], shopUserId: string, supabaseClie
       // Generate SQL statements for all equipment
       const sqlStatements: string[] = [];
       for (const item of equipment) {
+        const currencyCode =
+          typeof item.currency_code === "string" && /^[A-Za-z]{3}$/.test(item.currency_code)
+            ? item.currency_code.toUpperCase()
+            : "USD";
         const sql = `INSERT INTO public.equipment (
-    id, user_id, name, category, description, price_per_day, price_per_hour, price_per_week,
+    id, user_id, name, category, description, price_per_day, price_per_hour, price_per_week, currency_code,
     size, weight, material, suitable_skill_level, status,
     location_lat, location_lng, location_address, subcategory, damage_deposit, visible_on_map
 ) VALUES (
@@ -305,6 +309,7 @@ async function storageAgent(parsedShops: any[], shopUserId: string, supabaseClie
     ${item.price_per_day || "NULL"},
     ${item.price_per_hour || "NULL"},
     ${item.price_per_week || "NULL"},
+    '${currencyCode}',
     ${item.size ? `'${escapeSql(item.size)}'` : "NULL"},
     ${item.weight ? `'${escapeSql(item.weight)}'` : "NULL"},
     ${item.material ? `'${escapeSql(item.material)}'` : "NULL"},

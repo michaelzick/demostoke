@@ -12,6 +12,7 @@ import {
 import { Equipment } from "@/types";
 import { buildGearPath } from "@/utils/gearUrl";
 import { buildEquipmentTrackingFrom } from "@/utils/tracking";
+import { formatCurrencyPerDuration } from "@/utils/currency";
 
 interface RelatedGearProps {
   relatedGear: Equipment[];
@@ -83,7 +84,7 @@ const RelatedGear = ({ relatedGear, onViewClick }: RelatedGearProps) => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-xs text-muted-foreground">
-                      ${item.price_per_day}/day
+                      {formatCurrencyPerDuration(item.price_per_day, item.currency_code)}
                     </span>
                     <Button size="sm" asChild className="text-xs h-6">
                       <Link

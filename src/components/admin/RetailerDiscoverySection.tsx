@@ -166,7 +166,7 @@ export default function RetailerDiscoverySection() {
     '${name}',
     '${cat}',
     '${desc}',
-    NULL, NULL, NULL,
+    NULL, NULL, NULL, 'USD',
     NULL, NULL, NULL, NULL,
     'available',
     ${lat},
@@ -179,7 +179,7 @@ export default function RetailerDiscoverySection() {
       })
       .join(",\n");
 
-    const sql = `-- Template INSERTs for equipment (adjust values before running)\n-- Set user_id, prices, and refine fields as needed.\nINSERT INTO public.equipment (\n    id, user_id, name, category, description, price_per_day, price_per_hour, price_per_week,\n    size, weight, material, suitable_skill_level, status,\n    location_lat, location_lng, location_address, subcategory, damage_deposit, visible_on_map\n) VALUES\n${values};`;
+    const sql = `-- Template INSERTs for equipment (adjust values before running)\n-- Set user_id, native currency code, prices, and refine fields as needed.\nINSERT INTO public.equipment (\n    id, user_id, name, category, description, price_per_day, price_per_hour, price_per_week, currency_code,\n    size, weight, material, suitable_skill_level, status,\n    location_lat, location_lng, location_address, subcategory, damage_deposit, visible_on_map\n) VALUES\n${values};`;
 
     navigator.clipboard.writeText(sql).then(() =>
       toast({ title: "SQL copied", description: "Insert statements copied to clipboard." })

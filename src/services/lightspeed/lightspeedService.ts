@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { normalizeCurrencyCode } from '@/utils/currency';
 import { mockLightspeedItems, LightspeedItem } from './mockLightspeedData';
 
 export const fetchMockLightspeedInventory = async (): Promise<LightspeedItem[]> => {
@@ -15,6 +16,7 @@ export const ingestLightspeedInventory = async (items: LightspeedItem[], userId:
       category: item.category,
       description: item.manufacturer || '',
       price_per_day: item.price,
+      currency_code: normalizeCurrencyCode(item.currency_code),
       status: 'available',
       visible_on_map: true,
     });

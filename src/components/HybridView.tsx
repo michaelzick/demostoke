@@ -42,6 +42,7 @@ interface MapEquipment {
   name: string;
   category: string;
   price_per_day: number;
+  currency_code?: string;
   location: {
     lat: number;
     lng: number;
@@ -423,6 +424,7 @@ const HybridView = ({
           name: item.name,
           category: item.category,
           price_per_day: item.price_per_day,
+          currency_code: item.currency_code,
           location: {
             lat: item.location.lat,
             lng: item.location.lng,
