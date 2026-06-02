@@ -22,6 +22,7 @@ interface UseGearFormSubmissionProps {
   pricePerDay: string;
   pricePerHour: string;
   pricePerWeek: string;
+  currencyCode: string;
   damageDeposit: string;
   role: string;
   duplicatedImageUrl?: string;
@@ -41,6 +42,7 @@ export const useGearFormSubmission = ({
   pricePerDay,
   pricePerHour,
   pricePerWeek,
+  currencyCode,
   damageDeposit,
   role,
   duplicatedImageUrl,
@@ -137,6 +139,7 @@ export const useGearFormSubmission = ({
         pricePerDay: pricePerDay,
         pricePerHour: pricePerHour.trim() || undefined,
         pricePerWeek: pricePerWeek.trim() || undefined,
+        currencyCode,
         finalImageUrl,
         damageDeposit,
       });

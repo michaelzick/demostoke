@@ -68,6 +68,61 @@ describe("Gear SEO helpers", () => {
     });
   });
 
+  it("uses source-native offer currency when building Product schema", () => {
+    const schema = buildGearProductSchema({
+      canonicalUrl:
+        "https://www.demostoke.com/gear/mexico-surfboard--123e4567-e89b-12d3-a456-426614174000",
+      category: "surfboards",
+      displayName: "Mexico Surfboard 6'0",
+      imageUrls: ["https://cdn.example.com/board.webp"],
+      isAvailable: true,
+      lastVerified: "2026-06-02",
+      priceCurrency: "MXN",
+      pricePerHour: 250,
+      pricePerDay: 700,
+      pricePerWeek: 3200,
+      summaryText: "Mexico Surfboard 6'0 is available in Bucerias, Nayarit.",
+    });
+
+    expect(schema.offers).toMatchObject({
+      "@type": "AggregateOffer",
+      priceCurrency: "MXN",
+      lowPrice: "250",
+      highPrice: "3200",
+      offerCount: "3",
+    });
+    expect(schema.offers.offers).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: "Daily rental",
+          price: "700",
+          priceCurrency: "MXN",
+        }),
+      ]),
+    );
+  });
+
+  it("defaults invalid Product schema currency to USD", () => {
+    const schema = buildGearProductSchema({
+      canonicalUrl:
+        "https://www.demostoke.com/gear/default-currency-board--123e4567-e89b-12d3-a456-426614174000",
+      category: "surfboards",
+      displayName: "Default Currency Board 6'0",
+      imageUrls: ["https://cdn.example.com/board.webp"],
+      isAvailable: true,
+      lastVerified: "2026-06-02",
+      priceCurrency: "bad-code",
+      pricePerDay: 55,
+      summaryText: "Default Currency Board 6'0 is available in Encinitas, CA.",
+    });
+
+    expect(schema.offers).toMatchObject({
+      "@type": "Offer",
+      price: "55",
+      priceCurrency: "USD",
+    });
+  });
+
   it("builds a consistent meta description from the shared summary text", () => {
     const summaryText = buildGearSummaryText({
       displayName: "Burton Custom 156",

@@ -63,10 +63,14 @@ export const buildGearOfferSchema = ({
   pricePerHour,
   pricePerDay,
   pricePerWeek,
+  priceCurrency = 'USD',
 }) => {
+  const normalizedCurrency = /^[A-Z]{3}$/.test(String(priceCurrency || '').toUpperCase())
+    ? String(priceCurrency).toUpperCase()
+    : 'USD';
   const baseOffer = {
     '@type': 'Offer',
-    priceCurrency: 'USD',
+    priceCurrency: normalizedCurrency,
     availability: isAvailable
       ? 'https://schema.org/InStock'
       : 'https://schema.org/OutOfStock',
@@ -117,6 +121,7 @@ export const buildGearProductSchema = ({
   pricePerHour,
   pricePerDay,
   pricePerWeek,
+  priceCurrency,
   rating,
   reviewCount,
   reviews,
@@ -129,6 +134,7 @@ export const buildGearProductSchema = ({
     pricePerHour,
     pricePerDay,
     pricePerWeek,
+    priceCurrency,
   });
 
   const offerPrices = offers
@@ -139,7 +145,7 @@ export const buildGearProductSchema = ({
     offers.length > 1
       ? {
           '@type': 'AggregateOffer',
-          priceCurrency: 'USD',
+          priceCurrency: offers[0]?.priceCurrency || 'USD',
           lowPrice: String(Math.min(...offerPrices)),
           highPrice: String(Math.max(...offerPrices)),
           offerCount: String(offers.length),

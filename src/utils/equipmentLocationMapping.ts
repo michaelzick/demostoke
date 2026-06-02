@@ -27,6 +27,7 @@ export function equipmentToMapFormat(equipment: Equipment[]) {
       name: item.name,
       category: item.category,
       price_per_day: item.price_per_day,
+      currency_code: item.currency_code,
       location: {
         lat: item.location.lat,
         lng: item.location.lng,

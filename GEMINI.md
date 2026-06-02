@@ -250,6 +250,12 @@ Do not substitute other image sources for seed data. If new categories are added
 - `specs` does **not exist** as a column in `public.equipment`. Never reference it in INSERT, UPDATE, or temp table definitions. Put spec details (frame material, travel, drivetrain, fork, wheelset) in the `description` field as prose.
 - `size` is plain text. It must contain **only comma-separated size names** — e.g., `Small, Medium, Large, XL`. Never put spec strings, dimensions, or wheel-size notes in this field. Normalize: `X-Large` → `XL`, `X-Small` → `XS`, `SM/MED/LG` → `Small/Medium/Large`; omit `X-Medium` and `XX-Large`.
 
+## Seed Data — Currency
+
+- Store foreign-shop rental prices in the shop country's source currency, never silently converted or assumed as U.S. dollars. `equipment.price_per_day`, `price_per_hour`, and `price_per_week` remain numeric source-native amounts, and `equipment.currency_code` must be the uppercase ISO 4217 code used for display and SEO. Examples: Mexico shops use `MXN`, Canada shops use `CAD`, and U.S. shops use `USD`.
+- Seed SQL, extraction output, and POS/shop-feed imports must include `currency_code` for every gear row. Default to `USD` only when the source shop is in the United States or the source currency is genuinely absent after review; do not leave foreign rows as implicit USD.
+- Batch audit files must document the source currency and price basis. If a foreign shop publishes prices without an explicit currency symbol/code, infer from the shop country only when that is defensible and record the inference.
+
 ## Seed Data — Current Seeded Shops
 
 This summary reflects read-only linked DemoStoke data checks after the June 1, 2026 U.S. Eastern, Hawaii, Mountain, Central, and North America coverage fill seed applies. The Wax Bench row is an existing live profile retargeted by the Canada batch; its gear count is the current profile count after 17 inserts and 11 updates, not a newly created shop.

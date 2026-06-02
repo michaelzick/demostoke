@@ -2,6 +2,10 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { UserEquipment } from "@/types/equipment";
+import {
+  isMissingCurrencyCodeColumnError,
+  omitCurrencyCode,
+} from "@/utils/supabaseCurrencyCompat";
 
 export const updateEquipmentInDatabase = async (
   equipment: UserEquipment,
@@ -41,12 +45,21 @@ export const updateEquipmentInDatabase = async (
 
   // For updates, we only filter by equipment ID since RLS policies will handle access control
   // Admin users can update any equipment, regular users can only update their own
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('equipment')
     .update(equipmentData as Database['public']['Tables']['equipment']['Update'])
     .eq('id', equipment.id)
     .select()
     .single();
+
+  if (isMissingCurrencyCodeColumnError(error)) {
+    ({ data, error } = await supabase
+      .from('equipment')
+      .update(omitCurrencyCode(equipmentData) as Database['public']['Tables']['equipment']['Update'])
+      .eq('id', equipment.id)
+      .select()
+      .single());
+  }
 
   if (error) {
     console.error('=== DATABASE UPDATE ERROR ===');

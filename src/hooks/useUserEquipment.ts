@@ -4,6 +4,8 @@ import { useAuth } from "@/helpers";
 import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 import { syncShopGearFromEndpoint } from "@/services/equipment/shopGearSyncService";
+import { normalizeCurrencyCode } from "@/utils/currency";
+import { isMissingCurrencyCodeColumnError } from "@/utils/supabaseCurrencyCompat";
 
 interface UserEquipment {
   id: string;
@@ -14,6 +16,7 @@ interface UserEquipment {
   price_per_day: number;
   price_per_hour?: number;
   price_per_week?: number;
+  currency_code?: string;
   damage_deposit?: number;
   images: string[]; // Images array from equipment_images table
   rating: number;
@@ -45,17 +48,12 @@ export const useUserEquipment = (
   const { user } = useAuth();
   const effectiveUserId = userId || user?.id;
 
-  return useQuery({
-    queryKey: ["userEquipment", effectiveUserId, visibleOnly],
-    queryFn: async (): Promise<UserEquipment[]> => {
-      if (!effectiveUserId) {
-        throw new Error("User ID is required");
-      }
-
-      let query = supabase
-        .from("equipment")
-        .select(
-          `
+  const buildEquipmentQuery = (includeCurrencyCode: boolean) => {
+    const currencyCodeSelect = includeCurrencyCode ? "currency_code," : "";
+    let query = supabase
+      .from("equipment")
+      .select(
+        `
           id,
           user_id,
           name,
@@ -64,8 +62,9 @@ export const useUserEquipment = (
           price_per_day,
           price_per_hour,
           price_per_week,
-           damage_deposit,
-           rating,
+          ${currencyCodeSelect}
+          damage_deposit,
+          rating,
           review_count,
           status,
           created_at,
@@ -79,17 +78,30 @@ export const useUserEquipment = (
           material,
           suitable_skill_level
         `,
-        )
-        .eq("user_id", effectiveUserId);
+      )
+      .eq("user_id", effectiveUserId);
 
-      // If visibleOnly is true, only return equipment that's visible on map
-      if (visibleOnly) {
-        query = query.eq("visible_on_map", true);
+    if (visibleOnly) {
+      query = query.eq("visible_on_map", true);
+    }
+
+    return query.order("created_at", {
+      ascending: false,
+    });
+  };
+
+  return useQuery({
+    queryKey: ["userEquipment", effectiveUserId, visibleOnly],
+    queryFn: async (): Promise<UserEquipment[]> => {
+      if (!effectiveUserId) {
+        throw new Error("User ID is required");
       }
 
-      const { data, error } = await query.order("created_at", {
-        ascending: false,
-      });
+      let { data, error } = await buildEquipmentQuery(true);
+
+      if (isMissingCurrencyCodeColumnError(error)) {
+        ({ data, error } = await buildEquipmentQuery(false));
+      }
 
       if (error) {
         console.error("Error fetching user equipment:", error);
@@ -122,6 +134,7 @@ export const useUserEquipment = (
             price_per_day: item.price_per_day,
             price_per_hour: item.price_per_hour,
             price_per_week: item.price_per_week,
+            currency_code: normalizeCurrencyCode(item.currency_code),
             damage_deposit: item.damage_deposit,
             images: allImages, // Include all images
             rating: item.rating || 0,

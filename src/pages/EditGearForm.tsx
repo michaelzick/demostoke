@@ -49,6 +49,7 @@ const EditGearForm = () => {
     setPricePerDay: formState.setPricePerDay,
     setPricePerHour: formState.setPricePerHour,
     setPricePerWeek: formState.setPricePerWeek,
+    setCurrencyCode: formState.setCurrencyCode,
     setDamageDeposit: formState.setDamageDeposit,
     setImageUrl: formState.setImageUrl,
     setMeasurementUnit: formState.setMeasurementUnit,
@@ -94,6 +95,7 @@ const EditGearForm = () => {
     pricePerDay: formState.pricePerDay,
     pricePerHour: formState.pricePerHour,
     pricePerWeek: formState.pricePerWeek,
+    currencyCode: formState.currencyCode,
     damageDeposit: formState.damageDeposit,
     imageUrls: formState.imageUrls,
     useImageUrls: formState.useImageUrls,
@@ -180,6 +182,8 @@ const EditGearForm = () => {
           setPricePerHour={formState.setPricePerHour}
           pricePerWeek={formState.pricePerWeek}
           setPricePerWeek={formState.setPricePerWeek}
+          currencyCode={formState.currencyCode}
+          setCurrencyCode={formState.setCurrencyCode}
           damageDeposit={formState.damageDeposit}
           setDamageDeposit={formState.setDamageDeposit}
         />

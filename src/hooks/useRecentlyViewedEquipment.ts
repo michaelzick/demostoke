@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Equipment } from "@/types";
 import { getLocalRVI } from "@/services/localStorageRVIService";
+import { normalizeCurrencyCode } from "@/utils/currency";
 
 interface RecentlyViewedItem {
   equipment_id: string;
@@ -48,6 +49,7 @@ const fetchEquipmentDetailsByIds = async (equipmentIds: string[]): Promise<Equip
       price_per_day: item.price_per_day,
       price_per_hour: item.price_per_hour,
       price_per_week: item.price_per_week,
+      currency_code: normalizeCurrencyCode(item.currency_code),
       damage_deposit: item.damage_deposit,
       image_url: primaryImage?.image_url || '',
       images: primaryImage ? [primaryImage.image_url] : [],

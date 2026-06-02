@@ -17,6 +17,7 @@ export const useEditGearFormState = () => {
   const [pricePerDay, setPricePerDay] = useState("");
   const [pricePerHour, setPricePerHour] = useState("");
   const [pricePerWeek, setPricePerWeek] = useState("");
+  const [currencyCode, setCurrencyCode] = useState("USD");
   const [damageDeposit, setDamageDeposit] = useState("0");
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedSkillLevels, setSelectedSkillLevels] = useState<string[]>([]);
@@ -64,6 +65,8 @@ export const useEditGearFormState = () => {
     setPricePerHour,
     pricePerWeek,
     setPricePerWeek,
+    currencyCode,
+    setCurrencyCode,
     damageDeposit,
     setDamageDeposit,
     selectedSizes,

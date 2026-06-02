@@ -14,6 +14,7 @@ export interface Database {
           location_zip: string;
           material: string;
           name: string;
+          currency_code: string;
           price_per_day: number;
           rating: number;
           size: string;
@@ -33,6 +34,7 @@ export interface Database {
           location_zip?: string;
           material?: string;
           name: string;
+          currency_code?: string;
           price_per_day: number;
           rating?: number;
           size?: string;
@@ -52,6 +54,7 @@ export interface Database {
           location_zip?: string;
           material?: string;
           name?: string;
+          currency_code?: string;
           price_per_day?: number;
           rating?: number;
           size?: string;

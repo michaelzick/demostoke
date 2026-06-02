@@ -15,6 +15,7 @@ export const useMultipleGearFormState = () => {
   const [pricePerDay, setPricePerDay] = useState("");
   const [pricePerHour, setPricePerHour] = useState("");
   const [pricePerWeek, setPricePerWeek] = useState("");
+  const [currencyCode, setCurrencyCode] = useState("USD");
   const [damageDeposit, setDamageDeposit] = useState("0");
   const [role, setRole] = useState("");
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
@@ -53,6 +54,8 @@ export const useMultipleGearFormState = () => {
     setPricePerHour,
     pricePerWeek,
     setPricePerWeek,
+    currencyCode,
+    setCurrencyCode,
     damageDeposit,
     setDamageDeposit,
     role,

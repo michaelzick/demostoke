@@ -126,6 +126,7 @@ const EquipmentDetailPage = () => {
         price_per_day: Number(equipment.price_per_day),
         price_per_hour: Number(equipment.price_per_hour),
         price_per_week: Number(equipment.price_per_week),
+        currency_code: equipment.currency_code,
         image_url: equipment.images?.[0] || "",
         images: equipment.images || [], // Make sure images array is passed through
         rating: Number(equipment.rating || 0),
@@ -240,6 +241,7 @@ const EquipmentDetailPage = () => {
       pricePerHour: currentEquipment.price_per_hour,
       pricePerDay: currentEquipment.price_per_day,
       pricePerWeek: currentEquipment.price_per_week,
+      priceCurrency: currentEquipment.currency_code,
       rating: currentEquipment.rating,
       reviewCount: currentEquipment.review_count,
       reviews: publicGearReviewsData ?? [],

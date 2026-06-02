@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Separator } from "@/components/ui/separator";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { formatCurrencyPerDuration } from "@/utils/currency";
 
 interface CompactEquipmentCardProps {
   equipment: Equipment;
@@ -133,7 +134,9 @@ const CompactEquipmentCard = ({
           <h3 className="font-medium dark:text-white line-clamp-2">
             {equipment.name}
           </h3>
-          <span className="font-medium text-primary">${equipment.price_per_day}/day</span>
+          <span className="font-medium text-primary">
+            {formatCurrencyPerDuration(equipment.price_per_day, equipment.currency_code)}
+          </span>
         </div>
         {formatSizes(equipment.specifications?.size) && (
           <div className="flex items-center text-xs text-muted-foreground mb-2">

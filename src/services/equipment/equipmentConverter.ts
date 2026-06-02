@@ -1,4 +1,5 @@
 import type { Equipment } from "@/types";
+import { normalizeCurrencyCode } from "@/utils/currency";
 
 export const convertDbEquipmentToFrontend = (
   dbEquipment: Record<string, unknown>,
@@ -31,6 +32,7 @@ export const convertDbEquipmentToFrontend = (
     price_per_week: dbEquipment.price_per_week
       ? Number(dbEquipment.price_per_week as number)
       : undefined,
+    currency_code: normalizeCurrencyCode(dbEquipment.currency_code as string | null | undefined),
     rating: Number((dbEquipment.rating as number) || 0),
     review_count: (dbEquipment.review_count as number) || 0,
     damage_deposit: dbEquipment.damage_deposit

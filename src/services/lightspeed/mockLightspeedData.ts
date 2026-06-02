@@ -2,6 +2,7 @@ export interface LightspeedItem {
   itemID: string;
   description: string;
   price: number;
+  currency_code?: string | null;
   image: string;
   category: string;
   manufacturer?: string;

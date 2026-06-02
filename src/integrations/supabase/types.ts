@@ -751,6 +751,7 @@ export type Database = {
         Row: {
           category: string
           created_at: string
+          currency_code: string
           damage_deposit: number | null
           description: string | null
           external_source_endpoint_url: string | null
@@ -784,6 +785,7 @@ export type Database = {
         Insert: {
           category: string
           created_at?: string
+          currency_code?: string
           damage_deposit?: number | null
           description?: string | null
           external_source_endpoint_url?: string | null
@@ -817,6 +819,7 @@ export type Database = {
         Update: {
           category?: string
           created_at?: string
+          currency_code?: string
           damage_deposit?: number | null
           description?: string | null
           external_source_endpoint_url?: string | null

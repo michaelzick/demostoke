@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import CategorySelect from "@/components/CategorySelect";
 import { buildGearPath } from "@/utils/gearUrl";
+import { formatCurrencyPerDuration } from "@/utils/currency";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -24,7 +25,6 @@ import {
   MapPin,
   CalendarDays,
   Star,
-  DollarSign,
   BarChart3,
   Loader2,
   RefreshCw,
@@ -515,9 +515,8 @@ const MyEquipmentPage = () => {
                       <div className="space-y-3">
                         {/* Price */}
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1 text-lg font-semibold">
-                            <DollarSign className="h-4 w-4" />
-                            {item.price_per_day}/day
+                          <div className="text-lg font-semibold">
+                            {formatCurrencyPerDuration(item.price_per_day, item.currency_code)}
                           </div>
                         </div>
 

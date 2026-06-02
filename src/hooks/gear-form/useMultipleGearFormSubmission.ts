@@ -24,6 +24,7 @@ interface UseMultipleGearFormSubmissionProps {
   pricePerDay: string;
   pricePerHour: string;
   pricePerWeek: string;
+  currencyCode: string;
   imageUrls: string[];
   useImageUrls: boolean;
   images: File[];
@@ -42,6 +43,7 @@ export const useMultipleGearFormSubmission = ({
   pricePerDay,
   pricePerHour,
   pricePerWeek,
+  currencyCode,
   damageDeposit,
   role,
   duplicatedImageUrls,
@@ -168,6 +170,7 @@ export const useMultipleGearFormSubmission = ({
         pricePerDay,
         pricePerHour: pricePerHour.trim() || undefined,
         pricePerWeek: pricePerWeek.trim() || undefined,
+        currencyCode,
         finalImageUrl: finalImageUrls[0], // Primary image
         damageDeposit,
       });

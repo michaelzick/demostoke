@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { getHiddenUserIds } from "./equipment/hiddenUserFilter";
+import { normalizeCurrencyCode } from "@/utils/currency";
 
 export const featuredGearService = {
   // Get count of currently featured equipment
@@ -107,6 +108,7 @@ export const featuredGearService = {
           price_per_day: Number(equipment.price_per_day),
           price_per_hour: equipment.price_per_hour ? Number(equipment.price_per_hour) : undefined,
           price_per_week: equipment.price_per_week ? Number(equipment.price_per_week) : undefined,
+          currency_code: normalizeCurrencyCode(equipment.currency_code),
           rating: Number(equipment.rating || 0),
           review_count: equipment.review_count || 0,
           damage_deposit: equipment.damage_deposit ? Number(equipment.damage_deposit) : undefined,

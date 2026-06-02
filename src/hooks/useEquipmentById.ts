@@ -5,6 +5,7 @@ import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
 import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 import { getEquipmentData } from "@/services/equipment/equipmentDataService";
 import { isPublicEquipmentRecord } from "@/lib/seo/policy.js";
+import { normalizeCurrencyCode } from "@/utils/currency";
 
 export const useEquipmentById = (id: string) => {
   return useQuery({
@@ -92,6 +93,7 @@ export const useEquipmentById = (id: string) => {
           data.price_per_week !== null && data.price_per_week !== undefined
             ? Number(data.price_per_week)
             : undefined,
+        currency_code: normalizeCurrencyCode(data.currency_code),
         rating: Number(data.rating || 0),
         review_count: data.review_count || 0,
         damage_deposit: data.damage_deposit

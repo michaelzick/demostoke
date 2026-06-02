@@ -16,6 +16,7 @@ const LocationTab = ({ equipment }: LocationTabProps) => {
             name: equipment.name,
             category: equipment.category,
             price_per_day: equipment.price_per_day,
+            currency_code: equipment.currency_code,
             location: {
               lat: equipment.location.lat,
               lng: equipment.location.lng

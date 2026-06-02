@@ -36,6 +36,7 @@ const AddGearForm = () => {
     setPricePerDay: formState.setPricePerDay,
     setPricePerHour: formState.setPricePerHour,
     setPricePerWeek: formState.setPricePerWeek,
+    setCurrencyCode: formState.setCurrencyCode,
     setDamageDeposit: formState.setDamageDeposit,
     setImageUrls: formState.setImageUrls,
     setUseImageUrls: formState.setUseImageUrls,
@@ -53,6 +54,7 @@ const AddGearForm = () => {
     pricePerDay: formState.pricePerDay,
     pricePerHour: formState.pricePerHour,
     pricePerWeek: formState.pricePerWeek,
+    currencyCode: formState.currencyCode,
     damageDeposit: formState.damageDeposit,
     role: formState.role,
     imageUrls: formState.imageUrls,
@@ -110,6 +112,8 @@ const AddGearForm = () => {
           setPricePerHour={formState.setPricePerHour}
           pricePerWeek={formState.pricePerWeek}
           setPricePerWeek={formState.setPricePerWeek}
+          currencyCode={formState.currencyCode}
+          setCurrencyCode={formState.setCurrencyCode}
           damageDeposit={formState.damageDeposit}
           setDamageDeposit={formState.setDamageDeposit}
         />

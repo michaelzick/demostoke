@@ -1,4 +1,5 @@
 import type { Equipment } from '@/types';
+import { normalizeCurrencyCode } from '@/utils/currency';
 
 type FeedAvailability = {
   available?: boolean;
@@ -48,6 +49,7 @@ export type ShopGearFeedItem = {
   price_per_day?: number | string | null;
   price_per_hour?: number | string | null;
   price_per_week?: number | string | null;
+  currency_code?: string | null;
   damage_deposit?: number | string | null;
   rating?: number | string | null;
   review_count?: number | string | null;
@@ -215,6 +217,7 @@ export const mapShopGearFeedItemToEquipment = (
       item.price_per_week === null || item.price_per_week === undefined
         ? undefined
         : toNumber(item.price_per_week, 0),
+    currency_code: normalizeCurrencyCode(item.currency_code),
     damage_deposit:
       item.damage_deposit === null || item.damage_deposit === undefined
         ? undefined

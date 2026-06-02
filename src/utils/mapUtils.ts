@@ -2,6 +2,7 @@
 import mapboxgl from 'mapbox-gl';
 import { slugify } from '@/utils/slugify';
 import { buildGearPath } from '@/utils/gearUrl';
+import { formatCurrencyPerDuration } from '@/utils/currency';
 
 const CATEGORY_COLORS: Record<string, string> = {
   snowboards: 'bg-rose-500',
@@ -142,6 +143,7 @@ export const createPopupContent = (item: {
   name: string;
   category: string;
   price_per_day: number;
+  currency_code?: string;
   ownerId: string;
   ownerName: string;
 }): string => {
@@ -162,7 +164,7 @@ export const createPopupContent = (item: {
         >${item.ownerName}</a>
       </p>
       <p class="text-sm text-gray-500">${item.category}</p>
-      <p class="text-sm mt-1">$${item.price_per_day}/day</p>
+      <p class="text-sm mt-1">${formatCurrencyPerDuration(item.price_per_day, item.currency_code)}</p>
       <a
         href="${detailPath}"
         target="_blank"

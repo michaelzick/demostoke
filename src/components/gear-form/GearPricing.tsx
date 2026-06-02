@@ -9,6 +9,8 @@ interface GearPricingProps {
   setPricePerHour: (value: string) => void;
   pricePerWeek: string;
   setPricePerWeek: (value: string) => void;
+  currencyCode: string;
+  setCurrencyCode: (value: string) => void;
   damageDeposit: string;
   setDamageDeposit: (value: string) => void;
 }
@@ -20,6 +22,8 @@ const GearPricing = ({
   setPricePerHour,
   pricePerWeek,
   setPricePerWeek,
+  currencyCode,
+  setCurrencyCode,
   damageDeposit,
   setDamageDeposit
 }: GearPricingProps) => {
@@ -70,6 +74,21 @@ const GearPricing = ({
           placeholder="Enter weekly price (optional)"
           min="0"
           step="0.01"
+        />
+      </div>
+
+      {/* Currency Code */}
+      <div>
+        <Label htmlFor="currencyCode" className="block text-lg font-medium mb-2">
+          Currency Code
+        </Label>
+        <Input
+          id="currencyCode"
+          value={currencyCode}
+          onChange={(e) => setCurrencyCode(e.target.value.toUpperCase())}
+          placeholder="USD"
+          maxLength={3}
+          pattern="[A-Z]{3}"
         />
       </div>
 
