@@ -1,0 +1,89 @@
+{
+  "batch": "central_south_america_gear",
+  "created": "2026-06-06",
+  "remote_status": "local pending; not applied to linked Supabase",
+  "accepted": [
+    {
+      "shop": "MTB Guatemala",
+      "category": "mountain-bikes",
+      "urls": [
+        "https://www.mtbguatemala.com/product-category/mountain-bike-rentals/",
+        "https://www.mtbguatemala.com/tours/tecpan-enduro-mtb-day-rides/"
+      ],
+      "gear_count": 9,
+      "notes": "Official catalog lists Commencal and Giant model-level mountain-bike rentals with USD daily pricing."
+    },
+    {
+      "shop": "Bike Arenal",
+      "category": "mountain-bikes",
+      "urls": [
+        "https://www.bikearenal.com/bike-rentals/",
+        "https://www.bikearenal.com/contact/"
+      ],
+      "gear_count": 3,
+      "notes": "Official page lists Cannondale Rush, Depro M2 Carbon Fiber, and Scott Scale model-level mountain-bike rentals at 65 USD per day."
+    },
+    {
+      "shop": "Nosara MTB",
+      "category": "mountain-bikes",
+      "urls": [
+        "https://nosaramtb.com/rentals/"
+      ],
+      "gear_count": 4,
+      "notes": "Official page lists Specialized and Rocky Mountain model-level mountain-bike rentals with day and week USD pricing."
+    },
+    {
+      "shop": "Buen Camino Bike Park",
+      "category": "mountain-bikes",
+      "urls": [
+        "https://buencaminocr.com/es/ride/"
+      ],
+      "gear_count": 1,
+      "notes": "Official page lists Specialized Turbo Levo rentals in all sizes at 130 USD and gives the shop contact and location."
+    },
+    {
+      "shop": "Line Up Surf Shop",
+      "category": "surfboards",
+      "urls": [
+        "https://lineuptrade.com/en/pages/alquiler-de-tablas",
+        "https://lineuptrade.com/en/pages/contact"
+      ],
+      "gear_count": 22,
+      "notes": "Official page lists surfboards at 22 USD daily and 110 USD weekly with model-level board inventory."
+    },
+    {
+      "shop": "Santa Catalina Surf Shop",
+      "category": "surfboards",
+      "urls": [
+        "https://www.santacatalinasurfshop.com/",
+        "https://www.santacatalinasurfshop.com/en/contact/"
+      ],
+      "gear_count": 2,
+      "notes": "Official page lists rentable Lost/Mayhem and Xanadu model-level surfboards with per-day USD prices."
+    },
+    {
+      "shop": "Sunzal Surf Company",
+      "category": "surfboards",
+      "urls": [
+        "https://www.sunzal.com/things-to-do/surf-board-rentals/"
+      ],
+      "gear_count": 33,
+      "notes": "Official page states rates are in USD and exposes model-level surfboard rental gallery entries with per-board prices."
+    }
+  ],
+  "planned_counts": {
+    "shops": 7,
+    "mountain_bikes": 17,
+    "surfboards": 57,
+    "skis": 0,
+    "snowboards": 0,
+    "gear_total": 74,
+    "image_total": 148
+  },
+  "duplicate_check_result": {
+    "linked_db_rows": 0,
+    "checked_at": "2026-06-06",
+    "query_file": "demostoke_seed_batches/central_south_america_gear/validation.sql",
+    "notes": "Linked read-only duplicate query returned rows: [] during authoring. Rerun immediately before any remote dry run or apply."
+  }
+}

@@ -335,6 +335,13 @@ These files exist locally but have **not** been pushed/applied to the linked Dem
   - audit folder: `demostoke_seed_batches/eastern_time_zone_all_categories/`
   - shops: Belleayre Mountain; Highland Mountain Bike Park; Thunder Mountain Bike Park; Ride Kanuga; REAL Watersports; Warm Winds Surf Shop; Cinnamon Rainbows Surf Co.
   - planned gear counts: surfboards 14, skis 5, snowboards 2, mountain-bikes 19
+- Central and South America gear batch, status `local pending`, created June 6, 2026:
+  - shops migration: `supabase/migrations/20260606120000_seed_central_south_america_gear_shops.sql`
+  - gear migrations: `20260606120100_seed_central_south_america_surfboards_gear.sql`, `20260606120200_seed_central_south_america_mountain_bikes_gear.sql`
+  - audit folder: `demostoke_seed_batches/central_south_america_gear/`
+  - shops: MTB Guatemala; Bike Arenal; Nosara MTB; Buen Camino Bike Park; Line Up Surf Shop; Santa Catalina Surf Shop; Sunzal Surf Company
+  - planned gear counts: surfboards 57, mountain-bikes 17, skis 0, snowboards 0
+  - no ski/snowboard rows were seeded because reviewed Central/South America candidates lacked public model-level priced inventory
 
 ## Seed Data — Historical Hermes Migration Notes
 
