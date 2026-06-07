@@ -258,7 +258,7 @@ Do not substitute other image sources for seed data. If new categories are added
 
 ## Seed Data — Current Seeded Shops
 
-This summary reflects read-only linked DemoStoke data checks after the June 1, 2026 U.S. Eastern, Hawaii, Mountain, Central, and North America coverage fill seed applies. The Wax Bench row is an existing live profile retargeted by the Canada batch; its gear count is the current profile count after 17 inserts and 11 updates, not a newly created shop.
+This summary reflects read-only linked DemoStoke data checks after the June 7, 2026 Central and South America surfboards follow-up seed apply. The Wax Bench row is an existing live profile retargeted by the Canada batch; its gear count is the current profile count after 17 inserts and 11 updates, not a newly created shop.
 
 | # | Shop | Region | Category | Gear | Status |
 |---|---|---|---|---|---|
@@ -321,7 +321,15 @@ This summary reflects read-only linked DemoStoke data checks after the June 1, 2
 | 57 | Dismount Bike Shop | Toronto, ON | mountain-bikes | 3 | applied |
 | 58 | Willi's Ski and Board Seven Springs | Champion, PA | skis | 10 | applied |
 | 59 | Tactics Bend | Bend, OR | snowboards | 10 | applied |
-| | **Total** | | | **646** | |
+| 60 | MTB Guatemala | Tecpan, Guatemala | mountain-bikes | 9 | applied |
+| 61 | Bike Arenal | La Fortuna, Costa Rica | mountain-bikes | 3 | applied |
+| 62 | Nosara MTB | Nosara, Costa Rica | mountain-bikes | 4 | applied |
+| 63 | Buen Camino Bike Park | San Mateo, Costa Rica | mountain-bikes | 1 | applied |
+| 64 | Line Up Surf Shop | Coronado, Panama | surfboards | 22 | applied |
+| 65 | Santa Catalina Surf Shop | Santa Catalina, Panama | surfboards | 2 | applied |
+| 66 | Sunzal Surf Company | El Tunco, El Salvador | surfboards | 36 | applied |
+| 67 | Nosara Surfboards | Nosara, Costa Rica | surfboards | 9 | applied |
+| | **Total** | | | **732** | |
 
 Do not re-seed any shop already in this table. Do not seed Hawaii Surfboard Rentals under any Hawaii discovery task.
 
