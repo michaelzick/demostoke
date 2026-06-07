@@ -1,7 +1,7 @@
 {
   "batch": "central_south_america_gear",
   "created": "2026-06-06",
-  "remote_status": "local pending; not applied to linked Supabase",
+  "remote_status": "applied to linked Supabase project on 2026-06-07",
   "accepted": [
     {
       "shop": "MTB Guatemala",
@@ -84,6 +84,6 @@
     "linked_db_rows": 0,
     "checked_at": "2026-06-06",
     "query_file": "demostoke_seed_batches/central_south_america_gear/validation.sql",
-    "notes": "Linked read-only duplicate query returned rows: [] during authoring. Rerun immediately before any remote dry run or apply."
+    "notes": "Linked read-only duplicate query returned rows: [] before the rollback dry run and commit."
   }
 }

@@ -1,6 +1,6 @@
 # Central and South America Gear Discovery Audit
 
-Status: local pending. These migrations have not been applied to the linked DemoStoke Supabase project.
+Status: applied to the linked DemoStoke Supabase project on 2026-06-07 after a rollback dry run succeeded.
 
 Created: 2026-06-06
 

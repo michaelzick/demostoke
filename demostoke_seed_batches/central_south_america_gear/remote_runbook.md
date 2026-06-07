@@ -1,6 +1,16 @@
 # Remote Runbook - Central and South America Gear
 
-Status: local pending. Do not apply to linked DemoStoke until a human explicitly approves remote execution.
+Status: applied to the linked DemoStoke Supabase project on 2026-06-07. Keep this runbook as the historical apply sequence.
+
+## Actual Apply Notes
+
+`psql` was not installed in the local environment, so the apply used the durable Supabase CLI fallback: `supabase db query --linked` with the exact migration file contents wrapped in explicit `BEGIN` / `ROLLBACK` and `BEGIN` / `COMMIT` transactions.
+
+- Rollback dry run status: `central_south_america_exact_dry_run_complete`
+- Commit status: `central_south_america_committed`
+- Idempotency rollback status: `central_south_america_idempotency_rollback_complete`
+- Migration repair: `supabase migration repair --linked --status applied 20260606120000 20260606120100 20260606120200`
+- Final migration state: local and remote aligned through `20260606120200`
 
 ## Migration Files
 
