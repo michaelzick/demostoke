@@ -9,7 +9,7 @@ WITH expected_shops (name, email, category, expected_gear_count) AS (
     ('Buen Camino Bike Park', 'michaelzick+buencamino@gmail.com', 'mountain-bikes', 1),
     ('Line Up Surf Shop', 'michaelzick+lineuptrade@gmail.com', 'surfboards', 22),
     ('Santa Catalina Surf Shop', 'michaelzick+santacatalinasurfshop@gmail.com', 'surfboards', 2),
-    ('Sunzal Surf Company', 'michaelzick+sunzalsurfcompany@gmail.com', 'surfboards', 33)
+    ('Sunzal Surf Company', 'michaelzick+sunzalsurfcompany@gmail.com', 'surfboards', 36)
 ),
 actual AS (
   SELECT

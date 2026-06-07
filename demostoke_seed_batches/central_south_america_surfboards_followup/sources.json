@@ -1,0 +1,47 @@
+{
+  "batch": "central_south_america_surfboards_followup",
+  "created": "2026-06-07",
+  "remote_status": "applied to linked Supabase project on 2026-06-07",
+  "accepted": [
+    {
+      "shop": "Sunzal Surf Company",
+      "category": "surfboards",
+      "urls": [
+        "https://www.sunzal.com/things-to-do/surf-board-rentals/"
+      ],
+      "new_gear_count": 3,
+      "notes": "Official page states all rates are in USD and exposes individual gallery blocks with board names and per-board prices. Existing applied Sunzal gear already includes Tomo Boss Up and Takayama In The Pink."
+    },
+    {
+      "shop": "Nosara Surfboards",
+      "category": "surfboards",
+      "urls": [
+        "https://nosarasurfboards.com/",
+        "https://nosarasurfboards.com/collections/all",
+        "https://nosarasurfboards.com/pages/rentals",
+        "https://nosarasurfboards.com/pages/contact",
+        "https://nosarasurfboards.com/policies/contact-information"
+      ],
+      "new_gear_count": 9,
+      "notes": "Official Shopify storefront lists premium surfboard rentals, minimum one-day rental terms, product-level surfboard pages with USD prices, and Become Nosara pickup/contact details."
+    }
+  ],
+  "planned_counts": {
+    "shops": 1,
+    "existing_shop_updates": 1,
+    "surfboards": 12,
+    "gear_total": 12,
+    "image_total": 24
+  },
+  "duplicate_check_result": {
+    "linked_db_rows": [
+      {
+        "shop": "Sunzal Surf Company",
+        "email": "michaelzick+sunzalsurfcompany@gmail.com",
+        "gear_count": 33
+      }
+    ],
+    "checked_at": "2026-06-07",
+    "notes": "Linked read-only checks found Sunzal already applied with 33 surfboards, found the user's Sunzal examples already present, found the three follow-up Sunzal names missing, and found no Nosara Surfboards profile or seed email. Rollback dry run and linked commit both succeeded on 2026-06-07."
+  }
+}
