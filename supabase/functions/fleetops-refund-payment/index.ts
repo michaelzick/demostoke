@@ -30,6 +30,18 @@ function getBearerToken(header: string | null) {
   return token;
 }
 
+function logInternalError(label: string, error: unknown) {
+  if (error instanceof Error) {
+    console.error(label, {
+      name: error.name,
+      message: error.message,
+    });
+    return;
+  }
+
+  console.error(label, error);
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -142,8 +154,10 @@ Deno.serve(async (req: Request) => {
       bookingStatus: nextStatus,
     });
   } catch (error) {
-    console.error("[refund] Error:", error);
-    const message = error instanceof Error ? error.message : String(error);
-    return jsonResponse({ error: message || "Refund failed." }, 400);
+    logInternalError("[refund] Error", error);
+    return jsonResponse(
+      { error: "Unable to refund this booking right now." },
+      500
+    );
   }
 });
