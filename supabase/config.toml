@@ -20,3 +20,27 @@ verify_jwt = false
 
 [functions.generate-gear-review-blog-draft]
 verify_jwt = false
+
+[functions.fleetops-admin-create-shop]
+verify_jwt = false
+
+[functions.fleetops-ai-analytics]
+verify_jwt = false
+
+[functions.fleetops-create-payment-intent]
+verify_jwt = false
+
+[functions.fleetops-refund-payment]
+verify_jwt = false
+
+[functions.fleetops-seed-pos-inventory]
+verify_jwt = false
+
+[functions.fleetops-send-booking-email]
+verify_jwt = true
+
+[functions.fleetops-shop-gear-feed]
+verify_jwt = false
+
+[functions.fleetops-stripe-webhook]
+verify_jwt = false
