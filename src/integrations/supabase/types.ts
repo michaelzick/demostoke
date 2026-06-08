@@ -654,6 +654,440 @@ export type Database = {
           },
         ]
       }
+      fleetops_add_ons: {
+        Row: {
+          category: string
+          created_at: string | null
+          id: string
+          image_url: string | null
+          name: string
+          price_per_day: number
+          shop_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          price_per_day: number
+          shop_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          price_per_day?: number
+          shop_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleetops_add_ons_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fleetops_bookings: {
+        Row: {
+          add_ons_price: number | null
+          add_ons_snapshot: Json | null
+          base_price: number
+          created_at: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone: string | null
+          damage_deposit: number | null
+          end_date: string
+          equipment_id: string
+          id: string
+          notes: string | null
+          num_days: number
+          refunded_at: string | null
+          service_fee: number | null
+          shop_id: string
+          start_date: string
+          status: string | null
+          stripe_charge_id: string | null
+          stripe_payment_intent_id: string | null
+          stripe_refund_id: string | null
+          total_price: number
+          updated_at: string | null
+        }
+        Insert: {
+          add_ons_price?: number | null
+          add_ons_snapshot?: Json | null
+          base_price: number
+          created_at?: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone?: string | null
+          damage_deposit?: number | null
+          end_date: string
+          equipment_id: string
+          id?: string
+          notes?: string | null
+          num_days: number
+          refunded_at?: string | null
+          service_fee?: number | null
+          shop_id: string
+          start_date: string
+          status?: string | null
+          stripe_charge_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_refund_id?: string | null
+          total_price: number
+          updated_at?: string | null
+        }
+        Update: {
+          add_ons_price?: number | null
+          add_ons_snapshot?: Json | null
+          base_price?: number
+          created_at?: string | null
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string | null
+          damage_deposit?: number | null
+          end_date?: string
+          equipment_id?: string
+          id?: string
+          notes?: string | null
+          num_days?: number
+          refunded_at?: string | null
+          service_fee?: number | null
+          shop_id?: string
+          start_date?: string
+          status?: string | null
+          stripe_charge_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_refund_id?: string | null
+          total_price?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleetops_bookings_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_equipment"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fleetops_bookings_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fleetops_booqable_inventory_items: {
+        Row: {
+          base_price_in_cents: number
+          booking_story: string
+          created_at: string
+          description: string | null
+          group_name: string
+          id: string
+          location: Json | null
+          mock_shop_id: string
+          name: string
+          owner_id: string
+          photo_url: string
+          pos_connection_id: string
+          product_id: string
+          product_type: string
+          raw_payload: Json
+          shop_id: string
+          sku: string | null
+          updated_at: string
+        }
+        Insert: {
+          base_price_in_cents: number
+          booking_story?: string
+          created_at?: string
+          description?: string | null
+          group_name: string
+          id?: string
+          location?: Json | null
+          mock_shop_id: string
+          name: string
+          owner_id: string
+          photo_url: string
+          pos_connection_id: string
+          product_id: string
+          product_type?: string
+          raw_payload?: Json
+          shop_id: string
+          sku?: string | null
+          updated_at?: string
+        }
+        Update: {
+          base_price_in_cents?: number
+          booking_story?: string
+          created_at?: string
+          description?: string | null
+          group_name?: string
+          id?: string
+          location?: Json | null
+          mock_shop_id?: string
+          name?: string
+          owner_id?: string
+          photo_url?: string
+          pos_connection_id?: string
+          product_id?: string
+          product_type?: string
+          raw_payload?: Json
+          shop_id?: string
+          sku?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleetops_booqable_inventory_items_pos_connection_id_fkey"
+            columns: ["pos_connection_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_pos_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fleetops_booqable_inventory_items_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fleetops_equipment: {
+        Row: {
+          availability: Json | null
+          category: string
+          created_at: string | null
+          damage_deposit: number | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_featured: boolean | null
+          location: Json | null
+          name: string
+          price_per_day: number
+          price_per_hour: number | null
+          price_per_week: number | null
+          rating: number | null
+          review_count: number | null
+          shop_id: string
+          specifications: Json | null
+          status: string | null
+          subcategory: string | null
+          updated_at: string | null
+          visible: boolean | null
+        }
+        Insert: {
+          availability?: Json | null
+          category: string
+          created_at?: string | null
+          damage_deposit?: number | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          location?: Json | null
+          name: string
+          price_per_day: number
+          price_per_hour?: number | null
+          price_per_week?: number | null
+          rating?: number | null
+          review_count?: number | null
+          shop_id: string
+          specifications?: Json | null
+          status?: string | null
+          subcategory?: string | null
+          updated_at?: string | null
+          visible?: boolean | null
+        }
+        Update: {
+          availability?: Json | null
+          category?: string
+          created_at?: string | null
+          damage_deposit?: number | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          location?: Json | null
+          name?: string
+          price_per_day?: number
+          price_per_hour?: number | null
+          price_per_week?: number | null
+          rating?: number | null
+          review_count?: number | null
+          shop_id?: string
+          specifications?: Json | null
+          status?: string | null
+          subcategory?: string | null
+          updated_at?: string | null
+          visible?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleetops_equipment_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fleetops_equipment_images: {
+        Row: {
+          created_at: string | null
+          display_order: number | null
+          equipment_id: string
+          id: string
+          image_url: string
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number | null
+          equipment_id: string
+          id?: string
+          image_url: string
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number | null
+          equipment_id?: string
+          id?: string
+          image_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleetops_equipment_images_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_equipment"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fleetops_lightspeed_inventory_items: {
+        Row: {
+          booking_story: string
+          category: string
+          created_at: string
+          description: string
+          id: string
+          image_url: string
+          item_id: string
+          location: Json | null
+          manufacturer: string | null
+          mock_shop_id: string
+          owner_id: string
+          pos_connection_id: string
+          price: number
+          raw_payload: Json
+          shop_id: string
+          updated_at: string
+        }
+        Insert: {
+          booking_story?: string
+          category: string
+          created_at?: string
+          description: string
+          id?: string
+          image_url: string
+          item_id: string
+          location?: Json | null
+          manufacturer?: string | null
+          mock_shop_id: string
+          owner_id: string
+          pos_connection_id: string
+          price: number
+          raw_payload?: Json
+          shop_id: string
+          updated_at?: string
+        }
+        Update: {
+          booking_story?: string
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string
+          item_id?: string
+          location?: Json | null
+          manufacturer?: string | null
+          mock_shop_id?: string
+          owner_id?: string
+          pos_connection_id?: string
+          price?: number
+          raw_payload?: Json
+          shop_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleetops_lightspeed_inventory_items_pos_connection_id_fkey"
+            columns: ["pos_connection_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_pos_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fleetops_lightspeed_inventory_items_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fleetops_pos_connections: {
+        Row: {
+          created_at: string | null
+          credentials: Json | null
+          field_mapping: Json | null
+          id: string
+          is_connected: boolean | null
+          last_sync_at: string | null
+          provider: string
+          shop_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          credentials?: Json | null
+          field_mapping?: Json | null
+          id?: string
+          is_connected?: boolean | null
+          last_sync_at?: string | null
+          provider: string
+          shop_id: string
+        }
+        Update: {
+          created_at?: string | null
+          credentials?: Json | null
+          field_mapping?: Json | null
+          id?: string
+          is_connected?: boolean | null
+          last_sync_at?: string | null
+          provider?: string
+          shop_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleetops_pos_connections_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fleetops_pos_inventory_seed_config: {
         Row: {
           created_at: string
@@ -687,6 +1121,241 @@ export type Database = {
           last_queued_at?: string | null
           last_request_id?: number | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      fleetops_pos_inventory_seed_runs: {
+        Row: {
+          booqable_inventory_item_id: string | null
+          booqable_pos_connection_id: string | null
+          booqable_product_id: string | null
+          completed_at: string | null
+          created_at: string
+          error_message: string | null
+          generated_sequence: number
+          id: string
+          lightspeed_inventory_item_id: string | null
+          lightspeed_item_id: string | null
+          lightspeed_pos_connection_id: string | null
+          mock_shop_id: string | null
+          raw_result: Json
+          source: string
+          started_at: string
+          status: string
+          target_owner_id: string | null
+          target_shop_id: string | null
+          verification_counts: Json
+        }
+        Insert: {
+          booqable_inventory_item_id?: string | null
+          booqable_pos_connection_id?: string | null
+          booqable_product_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          generated_sequence: number
+          id?: string
+          lightspeed_inventory_item_id?: string | null
+          lightspeed_item_id?: string | null
+          lightspeed_pos_connection_id?: string | null
+          mock_shop_id?: string | null
+          raw_result?: Json
+          source: string
+          started_at?: string
+          status: string
+          target_owner_id?: string | null
+          target_shop_id?: string | null
+          verification_counts?: Json
+        }
+        Update: {
+          booqable_inventory_item_id?: string | null
+          booqable_pos_connection_id?: string | null
+          booqable_product_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          error_message?: string | null
+          generated_sequence?: number
+          id?: string
+          lightspeed_inventory_item_id?: string | null
+          lightspeed_item_id?: string | null
+          lightspeed_pos_connection_id?: string | null
+          mock_shop_id?: string | null
+          raw_result?: Json
+          source?: string
+          started_at?: string
+          status?: string
+          target_owner_id?: string | null
+          target_shop_id?: string | null
+          verification_counts?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleetops_pos_inventory_seed_r_lightspeed_inventory_item_id_fkey"
+            columns: ["lightspeed_inventory_item_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_lightspeed_inventory_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fleetops_pos_inventory_seed_r_lightspeed_pos_connection_id_fkey"
+            columns: ["lightspeed_pos_connection_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_pos_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fleetops_pos_inventory_seed_run_booqable_inventory_item_id_fkey"
+            columns: ["booqable_inventory_item_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_booqable_inventory_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fleetops_pos_inventory_seed_run_booqable_pos_connection_id_fkey"
+            columns: ["booqable_pos_connection_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_pos_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fleetops_pos_inventory_seed_runs_target_shop_id_fkey"
+            columns: ["target_shop_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fleetops_pricing_options: {
+        Row: {
+          created_at: string | null
+          duration: string
+          equipment_id: string
+          id: string
+          price: number
+        }
+        Insert: {
+          created_at?: string | null
+          duration: string
+          equipment_id: string
+          id?: string
+          price: number
+        }
+        Update: {
+          created_at?: string | null
+          duration?: string
+          equipment_id?: string
+          id?: string
+          price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleetops_pricing_options_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_equipment"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fleetops_shop_viewers: {
+        Row: {
+          id: string
+          shop_id: string
+          viewer_user_id: string
+        }
+        Insert: {
+          id?: string
+          shop_id: string
+          viewer_user_id: string
+        }
+        Update: {
+          id?: string
+          shop_id?: string
+          viewer_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fleetops_shop_viewers_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "fleetops_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fleetops_shops: {
+        Row: {
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          location: Json | null
+          logo_url: string | null
+          name: string
+          owner_id: string
+          slug: string
+          stripe_account_id: string | null
+          updated_at: string | null
+          website_url: string | null
+          widget_config: Json | null
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          location?: Json | null
+          logo_url?: string | null
+          name: string
+          owner_id: string
+          slug: string
+          stripe_account_id?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+          widget_config?: Json | null
+        }
+        Update: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          location?: Json | null
+          logo_url?: string | null
+          name?: string
+          owner_id?: string
+          slug?: string
+          stripe_account_id?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+          widget_config?: Json | null
+        }
+        Relationships: []
+      }
+      fleetops_user_roles: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["fleetops_app_role"]
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["fleetops_app_role"]
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["fleetops_app_role"]
+          user_id?: string
         }
         Relationships: []
       }
@@ -1245,6 +1914,11 @@ export type Database = {
           reason: string
         }[]
       }
+      fleetops_is_admin: { Args: { target_user_id?: string }; Returns: boolean }
+      fleetops_is_shop_viewer: {
+        Args: { target_shop_id: string }
+        Returns: boolean
+      }
       get_app_setting: { Args: { key: string }; Returns: Json }
       get_public_generated_gear_review_metadata: {
         Args: { p_blog_post_ids: string[] }
@@ -1289,14 +1963,461 @@ export type Database = {
         Returns: undefined
       }
       trigger_demo_event_discovery_cron: { Args: never; Returns: Json }
-      trigger_fleetops_pos_inventory_seed_cron: {
-        Args: { p_force?: boolean }
-        Returns: Json
-      }
       trigger_gear_review_blog_generation_cron: { Args: never; Returns: Json }
     }
     Enums: {
       app_role: "admin" | "user"
+      fleetops_app_role: "shop" | "admin" | "guest"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+  storage: {
+    Tables: {
+      buckets: {
+        Row: {
+          allowed_mime_types: string[] | null
+          avif_autodetection: boolean | null
+          created_at: string | null
+          file_size_limit: number | null
+          id: string
+          name: string
+          owner: string | null
+          owner_id: string | null
+          public: boolean | null
+          type: Database["storage"]["Enums"]["buckettype"]
+          updated_at: string | null
+        }
+        Insert: {
+          allowed_mime_types?: string[] | null
+          avif_autodetection?: boolean | null
+          created_at?: string | null
+          file_size_limit?: number | null
+          id: string
+          name: string
+          owner?: string | null
+          owner_id?: string | null
+          public?: boolean | null
+          type?: Database["storage"]["Enums"]["buckettype"]
+          updated_at?: string | null
+        }
+        Update: {
+          allowed_mime_types?: string[] | null
+          avif_autodetection?: boolean | null
+          created_at?: string | null
+          file_size_limit?: number | null
+          id?: string
+          name?: string
+          owner?: string | null
+          owner_id?: string | null
+          public?: boolean | null
+          type?: Database["storage"]["Enums"]["buckettype"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      buckets_analytics: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          format: string
+          id: string
+          name: string
+          type: Database["storage"]["Enums"]["buckettype"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          format?: string
+          id?: string
+          name: string
+          type?: Database["storage"]["Enums"]["buckettype"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          format?: string
+          id?: string
+          name?: string
+          type?: Database["storage"]["Enums"]["buckettype"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      buckets_vectors: {
+        Row: {
+          created_at: string
+          id: string
+          type: Database["storage"]["Enums"]["buckettype"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          type?: Database["storage"]["Enums"]["buckettype"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          type?: Database["storage"]["Enums"]["buckettype"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      migrations: {
+        Row: {
+          executed_at: string | null
+          hash: string
+          id: number
+          name: string
+        }
+        Insert: {
+          executed_at?: string | null
+          hash: string
+          id: number
+          name: string
+        }
+        Update: {
+          executed_at?: string | null
+          hash?: string
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      objects: {
+        Row: {
+          bucket_id: string | null
+          created_at: string | null
+          id: string
+          last_accessed_at: string | null
+          metadata: Json | null
+          name: string | null
+          owner: string | null
+          owner_id: string | null
+          path_tokens: string[] | null
+          updated_at: string | null
+          user_metadata: Json | null
+          version: string | null
+        }
+        Insert: {
+          bucket_id?: string | null
+          created_at?: string | null
+          id?: string
+          last_accessed_at?: string | null
+          metadata?: Json | null
+          name?: string | null
+          owner?: string | null
+          owner_id?: string | null
+          path_tokens?: string[] | null
+          updated_at?: string | null
+          user_metadata?: Json | null
+          version?: string | null
+        }
+        Update: {
+          bucket_id?: string | null
+          created_at?: string | null
+          id?: string
+          last_accessed_at?: string | null
+          metadata?: Json | null
+          name?: string | null
+          owner?: string | null
+          owner_id?: string | null
+          path_tokens?: string[] | null
+          updated_at?: string | null
+          user_metadata?: Json | null
+          version?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objects_bucketId_fkey"
+            columns: ["bucket_id"]
+            isOneToOne: false
+            referencedRelation: "buckets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      s3_multipart_uploads: {
+        Row: {
+          bucket_id: string
+          created_at: string
+          id: string
+          in_progress_size: number
+          key: string
+          metadata: Json | null
+          owner_id: string | null
+          upload_signature: string
+          user_metadata: Json | null
+          version: string
+        }
+        Insert: {
+          bucket_id: string
+          created_at?: string
+          id: string
+          in_progress_size?: number
+          key: string
+          metadata?: Json | null
+          owner_id?: string | null
+          upload_signature: string
+          user_metadata?: Json | null
+          version: string
+        }
+        Update: {
+          bucket_id?: string
+          created_at?: string
+          id?: string
+          in_progress_size?: number
+          key?: string
+          metadata?: Json | null
+          owner_id?: string | null
+          upload_signature?: string
+          user_metadata?: Json | null
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "s3_multipart_uploads_bucket_id_fkey"
+            columns: ["bucket_id"]
+            isOneToOne: false
+            referencedRelation: "buckets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      s3_multipart_uploads_parts: {
+        Row: {
+          bucket_id: string
+          created_at: string
+          etag: string
+          id: string
+          key: string
+          owner_id: string | null
+          part_number: number
+          size: number
+          upload_id: string
+          version: string
+        }
+        Insert: {
+          bucket_id: string
+          created_at?: string
+          etag: string
+          id?: string
+          key: string
+          owner_id?: string | null
+          part_number: number
+          size?: number
+          upload_id: string
+          version: string
+        }
+        Update: {
+          bucket_id?: string
+          created_at?: string
+          etag?: string
+          id?: string
+          key?: string
+          owner_id?: string | null
+          part_number?: number
+          size?: number
+          upload_id?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "s3_multipart_uploads_parts_bucket_id_fkey"
+            columns: ["bucket_id"]
+            isOneToOne: false
+            referencedRelation: "buckets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "s3_multipart_uploads_parts_upload_id_fkey"
+            columns: ["upload_id"]
+            isOneToOne: false
+            referencedRelation: "s3_multipart_uploads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vector_indexes: {
+        Row: {
+          bucket_id: string
+          created_at: string
+          data_type: string
+          dimension: number
+          distance_metric: string
+          id: string
+          metadata_configuration: Json | null
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          bucket_id: string
+          created_at?: string
+          data_type: string
+          dimension: number
+          distance_metric: string
+          id?: string
+          metadata_configuration?: Json | null
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          bucket_id?: string
+          created_at?: string
+          data_type?: string
+          dimension?: number
+          distance_metric?: string
+          id?: string
+          metadata_configuration?: Json | null
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vector_indexes_bucket_id_fkey"
+            columns: ["bucket_id"]
+            isOneToOne: false
+            referencedRelation: "buckets_vectors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      allow_any_operation: {
+        Args: { expected_operations: string[] }
+        Returns: boolean
+      }
+      allow_only_operation: {
+        Args: { expected_operation: string }
+        Returns: boolean
+      }
+      can_insert_object: {
+        Args: { bucketid: string; metadata: Json; name: string; owner: string }
+        Returns: undefined
+      }
+      extension: { Args: { name: string }; Returns: string }
+      filename: { Args: { name: string }; Returns: string }
+      foldername: { Args: { name: string }; Returns: string[] }
+      get_common_prefix: {
+        Args: { p_delimiter: string; p_key: string; p_prefix: string }
+        Returns: string
+      }
+      get_size_by_bucket: {
+        Args: never
+        Returns: {
+          bucket_id: string
+          size: number
+        }[]
+      }
+      list_multipart_uploads_with_delimiter: {
+        Args: {
+          bucket_id: string
+          delimiter_param: string
+          max_keys?: number
+          next_key_token?: string
+          next_upload_token?: string
+          prefix_param: string
+        }
+        Returns: {
+          created_at: string
+          id: string
+          key: string
+        }[]
+      }
+      list_objects_with_delimiter: {
+        Args: {
+          _bucket_id: string
+          delimiter_param: string
+          max_keys?: number
+          next_token?: string
+          prefix_param: string
+          sort_order?: string
+          start_after?: string
+        }
+        Returns: {
+          created_at: string
+          id: string
+          last_accessed_at: string
+          metadata: Json
+          name: string
+          updated_at: string
+        }[]
+      }
+      operation: { Args: never; Returns: string }
+      search: {
+        Args: {
+          bucketname: string
+          levels?: number
+          limits?: number
+          offsets?: number
+          prefix: string
+          search?: string
+          sortcolumn?: string
+          sortorder?: string
+        }
+        Returns: {
+          created_at: string
+          id: string
+          last_accessed_at: string
+          metadata: Json
+          name: string
+          updated_at: string
+        }[]
+      }
+      search_by_timestamp: {
+        Args: {
+          p_bucket_id: string
+          p_level: number
+          p_limit: number
+          p_prefix: string
+          p_sort_column: string
+          p_sort_column_after: string
+          p_sort_order: string
+          p_start_after: string
+        }
+        Returns: {
+          created_at: string
+          id: string
+          key: string
+          last_accessed_at: string
+          metadata: Json
+          name: string
+          updated_at: string
+        }[]
+      }
+      search_v2: {
+        Args: {
+          bucket_name: string
+          levels?: number
+          limits?: number
+          prefix: string
+          sort_column?: string
+          sort_column_after?: string
+          sort_order?: string
+          start_after?: string
+        }
+        Returns: {
+          created_at: string
+          id: string
+          key: string
+          last_accessed_at: string
+          metadata: Json
+          name: string
+          updated_at: string
+        }[]
+      }
+    }
+    Enums: {
+      buckettype: "STANDARD" | "ANALYTICS" | "VECTOR"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1425,6 +2546,12 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      fleetops_app_role: ["shop", "admin", "guest"],
+    },
+  },
+  storage: {
+    Enums: {
+      buckettype: ["STANDARD", "ANALYTICS", "VECTOR"],
     },
   },
 } as const

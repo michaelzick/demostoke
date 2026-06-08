@@ -123,7 +123,7 @@
   - `profiles`, `public_profiles`, `user_roles`
   - `blog_posts`
   - `gear_review_blog_generation_config`, `gear_review_blog_generation_runs`
-  - `fleetops_pos_inventory_seed_config`
+  - imported FleetOps tables: `fleetops_shops`, `fleetops_shop_viewers`, `fleetops_user_roles`, `fleetops_equipment`, `fleetops_equipment_images`, `fleetops_pricing_options`, `fleetops_add_ons`, `fleetops_bookings`, `fleetops_pos_connections`, `fleetops_lightspeed_inventory_items`, `fleetops_booqable_inventory_items`, `fleetops_pos_inventory_seed_runs`, `fleetops_pos_inventory_seed_config`
   - `demo_calendar`, `demo_event_candidates`, `demo_event_discovery_config`
   - `app_settings`, `app_privacy_settings`
   - `shop_gear_feed_mappings`, `scraped_retailers`, `downloaded_images`
@@ -188,6 +188,15 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
   - `crawl-retailer-details`
   - `extract-gear-from-html`
   - `insert-equipment-from-sql`
+- Imported FleetOps:
+  - `fleetops-admin-create-shop`
+  - `fleetops-ai-analytics`
+  - `fleetops-create-payment-intent`
+  - `fleetops-refund-payment`
+  - `fleetops-send-booking-email`
+  - `fleetops-shop-gear-feed`
+  - `fleetops-stripe-webhook`
+  - `fleetops-seed-pos-inventory`
 
 ## Env and Integration Surface
 - Browser/public runtime uses `VITE_SUPABASE_URL` plus `VITE_SUPABASE_PUBLISHABLE_KEY` or `VITE_SUPABASE_ANON_KEY` when provided, and otherwise falls back to checked-in values in `src/integrations/supabase/config.js` for the Supabase URL and publishable key.
@@ -203,7 +212,8 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
 - Theme flicker fix can be disabled with `VITE_ENABLE_THEME_FLICKER_FIX=false`.
 - Edge functions rely on combinations of `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `MAPBOX_TOKEN`, `GOOGLE_API_KEY`, `GOOGLE_CSE_ID`, `GOOGLE_SEARCH_API_KEY`, `GOOGLE_SEARCH_ENGINE_ID`, and `HCAPTCHA_SECRET`.
 - `generate-gear-review-blog-draft` also relies on `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, and the Google Custom Search image/web keys. It is protected by the `gear_review_blog_generation_config.cron_secret` value passed as `x-cron-secret`.
-- The FleetOps POS demo inventory cron runs from the main DemoStoke DB via `trigger_fleetops_pos_inventory_seed_cron()` and posts to `https://imdhbnfgrrckwoboodox.supabase.co/functions/v1/seed-pos-inventory`; keep `fleetops_pos_inventory_seed_config.cron_secret` synchronized with the FleetOps `POS_INVENTORY_SEED_CRON_SECRET` function secret.
+- Imported FleetOps storage uses public buckets `fleetops-equipment-images` and `fleetops-shop-logos`.
+- Imported FleetOps Edge Functions use prefixed secrets where available: `FLEETOPS_STRIPE_SECRET_KEY`, `FLEETOPS_STRIPE_WEBHOOK_SECRET`, `FLEETOPS_SENDGRID_API_KEY`, `FLEETOPS_FROM_EMAIL`, `FLEETOPS_PUBLIC_SUPABASE_URL`, and `FLEETOPS_POS_INVENTORY_SEED_CRON_SECRET`. The retained `fleetops_pos_inventory_seed_config.cron_secret` should stay synchronized with the prefixed POS function secret if the disabled seed flow is ever re-enabled.
 - Do not introduce new hardcoded secrets. Keep public browser tokens and service secrets clearly separated.
 
 ## Critical Invariants and Gotchas
@@ -216,7 +226,7 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
 - Search/explore/profile visibility behavior is tightly coupled to `equipmentDataService`, `searchService`, `useEquipmentWithDynamicDistance`, and advanced filter helpers.
 - Automated gear-review drafts must not create `equipment_reviews` rows or mutate `equipment.rating` / `equipment.review_count`. Hidden factual evidence belongs in `gear_review_blog_generation_runs.hidden_evidence`, not in public blog copy, tags, excerpts, or analytics payloads.
 - Cron-generated gear-review drafts use the evergreen model-review prompt `Write a comprehensive evergreen product review of the [gear brand/model] [category]`. Drafts should read like standalone product reviews, not listing, rental, shop, travel, or local availability pages. They must not use listing metadata such as owner/shop details, pickup or booking details, listing locations, city/state/region copy, daily or weekly rates, rental prices, dollar amounts, or rate structures in public copy. They must include category-specific review structure such as design/construction, ride/use profile, natural language headings like `Who it's for` instead of `Who it is for`, setup guidance, strengths, tradeoffs, care/tuning, and a final `<h2>Final Call</h2>` section with a natural relative `/gear/...` link to the reviewed DemoStoke gear detail page. Draft tags must be exactly the post category, gear category, and brand, for example `gear reviews`, `skis`, `stockli`. The generator must deterministically normalize Final Thoughts/Verdict style headings to Final Call, normalize formal `Who it is for` phrasing to `Who it's for`, and insert that gear-detail link before saving if the model omits it. They must not use em dashes in public copy, must target about 1200 visible body words after stripping HTML tags with a 1000-1400 word guardrail, and must store a selected gear image URL for the blog thumbnail instead of a small Google `thumbnailLink`.
-- FleetOps POS inventory seeding is queued by `pg_net` from the main DemoStoke project at the daily 9/10 UTC schedule, gated to 2 AM Pacific and a 2-day cadence. The FleetOps `seed-pos-inventory` function performs the actual inserts and read-back verification in the FleetOps DB; use `trigger_fleetops_pos_inventory_seed_cron(true)` for a live forced validation run.
+- As of June 8, 2026, FleetOps has been imported into the main DemoStoke project with prefixed `fleetops_` tables, `fleetops-` storage buckets, and `fleetops-` Edge Functions. The old main cron job `fleetops-pos-inventory-seed-2am-pt` was unscheduled, `fleetops_pos_inventory_seed_config.enabled` is false, and `trigger_fleetops_pos_inventory_seed_cron(boolean)` was dropped. Do not recreate the old cron or post to the separate FleetOps project unless the user explicitly requests it.
 - Generated gear-review analytics must use safe metadata only: post id/slug, category, source equipment id, gear category, author, generated flag, and preview/published mode. Never send hidden evidence, source snippets, credentials, or raw prompts to Amplitude or Google Analytics.
 - `DemoStokeWidget` is a local-dev artifact right now. Treat it as unfinished unless you intentionally wire it to production.
 - There is a large amount of existing debug logging. Remove or preserve it intentionally, not accidentally.
