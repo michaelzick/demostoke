@@ -127,7 +127,7 @@
   - `demo_calendar`, `demo_event_candidates`, `demo_event_discovery_config`
   - `app_settings`, `app_privacy_settings`
   - `shop_gear_feed_mappings`, `scraped_retailers`, `downloaded_images`
-  - `design_system_*` and `figma_*` tables also exist
+  - the old separate design-system database is not part of this linked project
 - Durable schema/type source for agents is `src/integrations/supabase/types.ts`. If migrations change tables or RPCs, update that type file and this memory.
 - Public marketplace reads often flow through `getEquipmentData()` in `src/services/equipment/equipmentDataService.ts`, which can switch between Supabase and an external shop feed.
 
