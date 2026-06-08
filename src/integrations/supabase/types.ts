@@ -360,351 +360,6 @@ export type Database = {
         }
         Relationships: []
       }
-      design_system_components: {
-        Row: {
-          category: string
-          component_code: string
-          created_at: string
-          created_by: string
-          description: string | null
-          figma_file_id: string | null
-          id: string
-          is_public: boolean
-          name: string
-          props_schema: Json | null
-          status: string
-          stories: Json | null
-          tags: string[] | null
-          updated_at: string
-          version: string
-        }
-        Insert: {
-          category: string
-          component_code: string
-          created_at?: string
-          created_by: string
-          description?: string | null
-          figma_file_id?: string | null
-          id?: string
-          is_public?: boolean
-          name: string
-          props_schema?: Json | null
-          status?: string
-          stories?: Json | null
-          tags?: string[] | null
-          updated_at?: string
-          version?: string
-        }
-        Update: {
-          category?: string
-          component_code?: string
-          created_at?: string
-          created_by?: string
-          description?: string | null
-          figma_file_id?: string | null
-          id?: string
-          is_public?: boolean
-          name?: string
-          props_schema?: Json | null
-          status?: string
-          stories?: Json | null
-          tags?: string[] | null
-          updated_at?: string
-          version?: string
-        }
-        Relationships: []
-      }
-      design_system_profiles: {
-        Row: {
-          avatar_url: string | null
-          bio: string | null
-          company: string | null
-          created_at: string
-          display_name: string | null
-          dribbble_url: string | null
-          github_url: string | null
-          id: string
-          updated_at: string
-          user_id: string
-          website_url: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          bio?: string | null
-          company?: string | null
-          created_at?: string
-          display_name?: string | null
-          dribbble_url?: string | null
-          github_url?: string | null
-          id?: string
-          updated_at?: string
-          user_id: string
-          website_url?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          bio?: string | null
-          company?: string | null
-          created_at?: string
-          display_name?: string | null
-          dribbble_url?: string | null
-          github_url?: string | null
-          id?: string
-          updated_at?: string
-          user_id?: string
-          website_url?: string | null
-        }
-        Relationships: []
-      }
-      design_system_settings: {
-        Row: {
-          auto_publish: boolean | null
-          build_command: string | null
-          code_generation: string | null
-          created_at: string
-          default_theme: string | null
-          id: string
-          notifications: boolean | null
-          project_description: string | null
-          project_name: string | null
-          project_version: string | null
-          public_components: boolean | null
-          storybook_port: string | null
-          test_command: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          auto_publish?: boolean | null
-          build_command?: string | null
-          code_generation?: string | null
-          created_at?: string
-          default_theme?: string | null
-          id?: string
-          notifications?: boolean | null
-          project_description?: string | null
-          project_name?: string | null
-          project_version?: string | null
-          public_components?: boolean | null
-          storybook_port?: string | null
-          test_command?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          auto_publish?: boolean | null
-          build_command?: string | null
-          code_generation?: string | null
-          created_at?: string
-          default_theme?: string | null
-          id?: string
-          notifications?: boolean | null
-          project_description?: string | null
-          project_name?: string | null
-          project_version?: string | null
-          public_components?: boolean | null
-          storybook_port?: string | null
-          test_command?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      design_system_tokens: {
-        Row: {
-          accent_color: string | null
-          accent_color_dark: string | null
-          background_color: string | null
-          background_color_dark: string | null
-          base_font_size: string | null
-          border_color: string | null
-          border_color_dark: string | null
-          created_at: string
-          destructive_color: string | null
-          destructive_color_dark: string | null
-          font_body_lg: string | null
-          font_body_md: string | null
-          font_body_sm: string | null
-          font_caption: string | null
-          font_display_lg: string | null
-          font_display_md: string | null
-          font_display_sm: string | null
-          font_family: string | null
-          font_heading_lg: string | null
-          font_heading_md: string | null
-          font_heading_sm: string | null
-          foreground_color: string | null
-          foreground_color_dark: string | null
-          id: string
-          muted_color: string | null
-          muted_color_dark: string | null
-          primary_color: string | null
-          primary_color_dark: string | null
-          ring_color: string | null
-          ring_color_dark: string | null
-          secondary_color: string | null
-          secondary_color_dark: string | null
-          sidebar_accent: string | null
-          sidebar_accent_dark: string | null
-          sidebar_accent_foreground: string | null
-          sidebar_accent_foreground_dark: string | null
-          sidebar_background: string | null
-          sidebar_background_dark: string | null
-          sidebar_border: string | null
-          sidebar_border_dark: string | null
-          sidebar_foreground: string | null
-          sidebar_foreground_dark: string | null
-          sidebar_primary: string | null
-          sidebar_primary_dark: string | null
-          sidebar_primary_foreground: string | null
-          sidebar_primary_foreground_dark: string | null
-          sidebar_ring: string | null
-          sidebar_ring_dark: string | null
-          spacing_2xl: string | null
-          spacing_3xl: string | null
-          spacing_4xl: string | null
-          spacing_lg: string | null
-          spacing_md: string | null
-          spacing_sm: string | null
-          spacing_xl: string | null
-          spacing_xs: string | null
-          success_color: string | null
-          success_color_dark: string | null
-          updated_at: string
-          user_id: string
-          warning_color: string | null
-          warning_color_dark: string | null
-        }
-        Insert: {
-          accent_color?: string | null
-          accent_color_dark?: string | null
-          background_color?: string | null
-          background_color_dark?: string | null
-          base_font_size?: string | null
-          border_color?: string | null
-          border_color_dark?: string | null
-          created_at?: string
-          destructive_color?: string | null
-          destructive_color_dark?: string | null
-          font_body_lg?: string | null
-          font_body_md?: string | null
-          font_body_sm?: string | null
-          font_caption?: string | null
-          font_display_lg?: string | null
-          font_display_md?: string | null
-          font_display_sm?: string | null
-          font_family?: string | null
-          font_heading_lg?: string | null
-          font_heading_md?: string | null
-          font_heading_sm?: string | null
-          foreground_color?: string | null
-          foreground_color_dark?: string | null
-          id?: string
-          muted_color?: string | null
-          muted_color_dark?: string | null
-          primary_color?: string | null
-          primary_color_dark?: string | null
-          ring_color?: string | null
-          ring_color_dark?: string | null
-          secondary_color?: string | null
-          secondary_color_dark?: string | null
-          sidebar_accent?: string | null
-          sidebar_accent_dark?: string | null
-          sidebar_accent_foreground?: string | null
-          sidebar_accent_foreground_dark?: string | null
-          sidebar_background?: string | null
-          sidebar_background_dark?: string | null
-          sidebar_border?: string | null
-          sidebar_border_dark?: string | null
-          sidebar_foreground?: string | null
-          sidebar_foreground_dark?: string | null
-          sidebar_primary?: string | null
-          sidebar_primary_dark?: string | null
-          sidebar_primary_foreground?: string | null
-          sidebar_primary_foreground_dark?: string | null
-          sidebar_ring?: string | null
-          sidebar_ring_dark?: string | null
-          spacing_2xl?: string | null
-          spacing_3xl?: string | null
-          spacing_4xl?: string | null
-          spacing_lg?: string | null
-          spacing_md?: string | null
-          spacing_sm?: string | null
-          spacing_xl?: string | null
-          spacing_xs?: string | null
-          success_color?: string | null
-          success_color_dark?: string | null
-          updated_at?: string
-          user_id: string
-          warning_color?: string | null
-          warning_color_dark?: string | null
-        }
-        Update: {
-          accent_color?: string | null
-          accent_color_dark?: string | null
-          background_color?: string | null
-          background_color_dark?: string | null
-          base_font_size?: string | null
-          border_color?: string | null
-          border_color_dark?: string | null
-          created_at?: string
-          destructive_color?: string | null
-          destructive_color_dark?: string | null
-          font_body_lg?: string | null
-          font_body_md?: string | null
-          font_body_sm?: string | null
-          font_caption?: string | null
-          font_display_lg?: string | null
-          font_display_md?: string | null
-          font_display_sm?: string | null
-          font_family?: string | null
-          font_heading_lg?: string | null
-          font_heading_md?: string | null
-          font_heading_sm?: string | null
-          foreground_color?: string | null
-          foreground_color_dark?: string | null
-          id?: string
-          muted_color?: string | null
-          muted_color_dark?: string | null
-          primary_color?: string | null
-          primary_color_dark?: string | null
-          ring_color?: string | null
-          ring_color_dark?: string | null
-          secondary_color?: string | null
-          secondary_color_dark?: string | null
-          sidebar_accent?: string | null
-          sidebar_accent_dark?: string | null
-          sidebar_accent_foreground?: string | null
-          sidebar_accent_foreground_dark?: string | null
-          sidebar_background?: string | null
-          sidebar_background_dark?: string | null
-          sidebar_border?: string | null
-          sidebar_border_dark?: string | null
-          sidebar_foreground?: string | null
-          sidebar_foreground_dark?: string | null
-          sidebar_primary?: string | null
-          sidebar_primary_dark?: string | null
-          sidebar_primary_foreground?: string | null
-          sidebar_primary_foreground_dark?: string | null
-          sidebar_ring?: string | null
-          sidebar_ring_dark?: string | null
-          spacing_2xl?: string | null
-          spacing_3xl?: string | null
-          spacing_4xl?: string | null
-          spacing_lg?: string | null
-          spacing_md?: string | null
-          spacing_sm?: string | null
-          spacing_xl?: string | null
-          spacing_xs?: string | null
-          success_color?: string | null
-          success_color_dark?: string | null
-          updated_at?: string
-          user_id?: string
-          warning_color?: string | null
-          warning_color_dark?: string | null
-        }
-        Relationships: []
-      }
       downloaded_images: {
         Row: {
           created_at: string
@@ -903,6 +558,13 @@ export type Database = {
             referencedRelation: "equipment"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "equipment_images_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment_category_visible_top1500_mv"
+            referencedColumns: ["id"]
+          },
         ]
       }
       equipment_reviews: {
@@ -941,6 +603,13 @@ export type Database = {
             referencedRelation: "equipment"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "equipment_reviews_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment_category_visible_top1500_mv"
+            referencedColumns: ["id"]
+          },
         ]
       }
       equipment_views: {
@@ -976,7 +645,50 @@ export type Database = {
             referencedRelation: "equipment"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "equipment_views_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment_category_visible_top1500_mv"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      fleetops_pos_inventory_seed_config: {
+        Row: {
+          created_at: string
+          cron_secret: string
+          enabled: boolean
+          fleetops_function_url: string
+          id: boolean
+          last_cron_attempt_at: string | null
+          last_queued_at: string | null
+          last_request_id: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          cron_secret?: string
+          enabled?: boolean
+          fleetops_function_url?: string
+          id?: boolean
+          last_cron_attempt_at?: string | null
+          last_queued_at?: string | null
+          last_request_id?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          cron_secret?: string
+          enabled?: boolean
+          fleetops_function_url?: string
+          id?: boolean
+          last_cron_attempt_at?: string | null
+          last_queued_at?: string | null
+          last_request_id?: number | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       gear_review_blog_generation_config: {
         Row: {
@@ -1066,130 +778,14 @@ export type Database = {
             referencedRelation: "equipment"
             referencedColumns: ["id"]
           },
-        ]
-      }
-      figma_components: {
-        Row: {
-          component_data: Json | null
-          created_at: string
-          design_system_component_id: string | null
-          figma_component_id: string
-          figma_component_name: string
-          figma_file_id: string
-          id: string
-          mapping_status: string
-          updated_at: string
-        }
-        Insert: {
-          component_data?: Json | null
-          created_at?: string
-          design_system_component_id?: string | null
-          figma_component_id: string
-          figma_component_name: string
-          figma_file_id: string
-          id?: string
-          mapping_status?: string
-          updated_at?: string
-        }
-        Update: {
-          component_data?: Json | null
-          created_at?: string
-          design_system_component_id?: string | null
-          figma_component_id?: string
-          figma_component_name?: string
-          figma_file_id?: string
-          id?: string
-          mapping_status?: string
-          updated_at?: string
-        }
-        Relationships: [
           {
-            foreignKeyName: "figma_components_design_system_component_id_fkey"
-            columns: ["design_system_component_id"]
+            foreignKeyName: "gear_review_blog_generation_runs_equipment_id_fkey"
+            columns: ["equipment_id"]
             isOneToOne: false
-            referencedRelation: "design_system_components"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "figma_components_figma_file_id_fkey"
-            columns: ["figma_file_id"]
-            isOneToOne: false
-            referencedRelation: "figma_files"
+            referencedRelation: "equipment_category_visible_top1500_mv"
             referencedColumns: ["id"]
           },
         ]
-      }
-      figma_connections: {
-        Row: {
-          created_at: string
-          id: string
-          team_id: string | null
-          updated_at: string
-          user_id: string
-          user_info: Json
-          vault_secret_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          team_id?: string | null
-          updated_at?: string
-          user_id: string
-          user_info: Json
-          vault_secret_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          team_id?: string | null
-          updated_at?: string
-          user_id?: string
-          user_info?: Json
-          vault_secret_id?: string
-        }
-        Relationships: []
-      }
-      figma_files: {
-        Row: {
-          component_count: number | null
-          created_at: string
-          figma_file_id: string
-          id: string
-          last_sync: string | null
-          metadata: Json | null
-          name: string
-          sync_status: string
-          updated_at: string
-          url: string
-          user_id: string
-        }
-        Insert: {
-          component_count?: number | null
-          created_at?: string
-          figma_file_id: string
-          id?: string
-          last_sync?: string | null
-          metadata?: Json | null
-          name: string
-          sync_status?: string
-          updated_at?: string
-          url: string
-          user_id: string
-        }
-        Update: {
-          component_count?: number | null
-          created_at?: string
-          figma_file_id?: string
-          id?: string
-          last_sync?: string | null
-          metadata?: Json | null
-          name?: string
-          sync_status?: string
-          updated_at?: string
-          url?: string
-          user_id?: string
-        }
-        Relationships: []
       }
       pricing_options: {
         Row: {
@@ -1219,6 +815,13 @@ export type Database = {
             columns: ["equipment_id"]
             isOneToOne: false
             referencedRelation: "equipment"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pricing_options_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment_category_visible_top1500_mv"
             referencedColumns: ["id"]
           },
         ]
@@ -1291,57 +894,6 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
-      }
-      shop_gear_feed_mappings: {
-        Row: {
-          created_at: string
-          endpoint_url: string
-          id: string
-          include_hidden: boolean
-          is_active: boolean
-          profile_id: string
-          provider: string
-          shop_slug: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          endpoint_url: string
-          id?: string
-          include_hidden?: boolean
-          is_active?: boolean
-          profile_id: string
-          provider?: string
-          shop_slug: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          endpoint_url?: string
-          id?: string
-          include_hidden?: boolean
-          is_active?: boolean
-          profile_id?: string
-          provider?: string
-          shop_slug?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "shop_gear_feed_mappings_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "shop_gear_feed_mappings_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       scraped_retailers: {
         Row: {
@@ -1454,6 +1006,57 @@ export type Database = {
         }
         Relationships: []
       }
+      shop_gear_feed_mappings: {
+        Row: {
+          created_at: string
+          endpoint_url: string
+          id: string
+          include_hidden: boolean
+          is_active: boolean
+          profile_id: string
+          provider: string
+          shop_slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          endpoint_url: string
+          id?: string
+          include_hidden?: boolean
+          is_active?: boolean
+          profile_id: string
+          provider?: string
+          shop_slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          endpoint_url?: string
+          id?: string
+          include_hidden?: boolean
+          is_active?: boolean
+          profile_id?: string
+          provider?: string
+          shop_slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_gear_feed_mappings_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shop_gear_feed_mappings_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           assigned_at: string | null
@@ -1483,6 +1086,84 @@ export type Database = {
       }
     }
     Views: {
+      equipment_category_visible_top1500_mv: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          damage_deposit: number | null
+          description: string | null
+          external_source_endpoint_url: string | null
+          external_source_item_id: string | null
+          external_source_provider: string | null
+          external_source_shop_slug: string | null
+          external_source_synced_at: string | null
+          has_multiple_images: boolean | null
+          id: string | null
+          is_featured: boolean | null
+          location_address: string | null
+          location_lat: number | null
+          location_lng: number | null
+          material: string | null
+          name: string | null
+          price_per_day: number | null
+          price_per_hour: number | null
+          price_per_week: number | null
+          rating: number | null
+          review_count: number | null
+          size: string | null
+          status: string | null
+          subcategory: string | null
+          suitable_skill_level: string | null
+          updated_at: string | null
+          user_id: string | null
+          view_count: number | null
+          visible_on_map: boolean | null
+          weight: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipment_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipment_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      equipment_images_visible_top1500_mv: {
+        Row: {
+          created_at: string | null
+          display_order: number | null
+          equipment_id: string | null
+          id: string | null
+          image_url: string | null
+          is_primary: boolean | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipment_images_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipment_images_equipment_id_fkey"
+            columns: ["equipment_id"]
+            isOneToOne: false
+            referencedRelation: "equipment_category_visible_top1500_mv"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       public_profiles: {
         Row: {
           about: string | null
@@ -1556,10 +1237,6 @@ export type Database = {
           deleted_records: number
         }[]
       }
-      delete_figma_token_encrypted: {
-        Args: { p_user_id: string }
-        Returns: undefined
-      }
       find_unused_downloaded_images: {
         Args: never
         Returns: {
@@ -1569,23 +1246,19 @@ export type Database = {
         }[]
       }
       get_app_setting: { Args: { key: string }; Returns: Json }
-      get_figma_token_decrypted: {
-        Args: { p_user_id: string }
-        Returns: string
-      }
-      get_trending_equipment: {
-        Args: { limit_count?: number }
-        Returns: {
-          equipment_id: string
-          view_count: number
-        }[]
-      }
       get_public_generated_gear_review_metadata: {
         Args: { p_blog_post_ids: string[] }
         Returns: {
           blog_post_id: string
           equipment_id: string
           gear_category: string
+        }[]
+      }
+      get_trending_equipment: {
+        Args: { limit_count?: number }
+        Returns: {
+          equipment_id: string
+          view_count: number
         }[]
       }
       get_user_role: {
@@ -1611,21 +1284,15 @@ export type Database = {
         }
         Returns: undefined
       }
-      migrate_figma_tokens_to_vault: { Args: never; Returns: undefined }
       reject_demo_event_candidate: {
         Args: { p_candidate_id: string; p_reason?: string }
         Returns: undefined
       }
-      store_figma_token_encrypted: {
-        Args: {
-          p_access_token: string
-          p_team_id?: string
-          p_user_id: string
-          p_user_info: Json
-        }
-        Returns: string
-      }
       trigger_demo_event_discovery_cron: { Args: never; Returns: Json }
+      trigger_fleetops_pos_inventory_seed_cron: {
+        Args: { p_force?: boolean }
+        Returns: Json
+      }
       trigger_gear_review_blog_generation_cron: { Args: never; Returns: Json }
     }
     Enums: {
