@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import HCaptcha from "@/components/HCaptcha";
+import Recaptcha, { RecaptchaHandle } from "@/components/Recaptcha";
 
 interface ContactFormModalProps {
   open: boolean;
@@ -30,7 +30,7 @@ const ContactFormModal = ({ open, onOpenChange, onDontShowAgain }: ContactFormMo
     message: ""
   });
 const [isSubmitting, setIsSubmitting] = useState(false);
-const [captchaToken, setCaptchaToken] = useState("");
+const recaptchaRef = useRef<RecaptchaHandle>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -42,8 +42,7 @@ const isFormValid =
     formData.lastName &&
     formData.email &&
     formData.subject &&
-    formData.message &&
-    captchaToken;
+    formData.message;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,6 +59,11 @@ const isFormValid =
     setIsSubmitting(true);
 
     try {
+      const captchaToken = await recaptchaRef.current?.execute();
+      if (!captchaToken) {
+        throw new Error("Captcha verification failed");
+      }
+
       const { error } = await supabase.functions.invoke('send-contact-email', {
         body: {
           firstName: formData.firstName,
@@ -171,7 +175,7 @@ const isFormValid =
               className="min-h-[100px]"
             />
           </div>
-            <HCaptcha siteKey="e30661ca-467c-43cc-899c-be56ab28c2a2" onVerify={setCaptchaToken} />
+            <Recaptcha ref={recaptchaRef} />
             <DialogFooter>
             <Button
               type="button"

@@ -4,13 +4,26 @@ import { User } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
 
 export class AuthService {
+  // Supabase Auth's built-in captcha protection only supports hCaptcha/Turnstile,
+  // so reCAPTCHA tokens are verified via the verify-recaptcha edge function
+  // before calling Supabase Auth.
+  private static async verifyRecaptcha(token: string) {
+    const { data, error } = await supabase.functions.invoke('verify-recaptcha', {
+      body: { token },
+    });
+
+    if (error) throw new Error(error.message || "Captcha verification failed");
+    if (!data?.success) throw new Error(data?.error || "Captcha verification failed");
+  }
+
   static async loginWithEmailPassword(email: string, password: string, captchaToken?: string) {
+    if (captchaToken) {
+      await AuthService.verifyRecaptcha(captchaToken);
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
-      options: {
-        captchaToken: captchaToken,
-      },
     });
 
     if (error) throw error;
@@ -18,6 +31,10 @@ export class AuthService {
   }
 
   static async signupWithEmailPassword(name: string, email: string, password: string, captchaToken?: string) {
+    if (captchaToken) {
+      await AuthService.verifyRecaptcha(captchaToken);
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -25,7 +42,6 @@ export class AuthService {
         data: {
           name,
         },
-        captchaToken: captchaToken,
       },
     });
 

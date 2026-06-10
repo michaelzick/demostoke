@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/auth";
 import { MapPin } from "lucide-react";
-import HCaptcha from "@/components/HCaptcha";
+import Recaptcha, { RecaptchaHandle } from "@/components/Recaptcha";
 import { trackEvent } from "@/utils/tracking";
 
 const SignInPage = () => {
@@ -30,7 +30,7 @@ const SignInPage = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [captchaToken, setCaptchaToken] = useState("");
+  const recaptchaRef = useRef<RecaptchaHandle>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,10 +39,11 @@ const SignInPage = () => {
 
     trackEvent("auth_signin_started", {
       signin_method: "email_password",
-      has_captcha_token: Boolean(captchaToken),
     });
 
+    let captchaToken = "";
     try {
+      captchaToken = (await recaptchaRef.current?.execute()) ?? "";
       await login(email, password, captchaToken);
       trackEvent("auth_signin_succeeded", {
         signin_method: "email_password",
@@ -63,7 +64,7 @@ const SignInPage = () => {
 
   // We use local loading state to avoid button getting stuck
   // if the global loading state isn't properly reset
-  const buttonDisabled = isLoading || !captchaToken;
+  const buttonDisabled = isLoading;
   const buttonText = isLoading ? "Signing in..." : "Sign In";
 
   return (
@@ -124,10 +125,7 @@ const SignInPage = () => {
             </Label>
           </div>
 
-          <HCaptcha
-            siteKey="e30661ca-467c-43cc-899c-be56ab28c2a2"
-            onVerify={setCaptchaToken}
-          />
+          <Recaptcha ref={recaptchaRef} />
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <Button type="submit" className="w-full" disabled={buttonDisabled}>

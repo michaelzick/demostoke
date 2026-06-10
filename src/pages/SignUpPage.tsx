@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { Link } from "react-router-dom";
 import {
@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/auth";
 import { MapPin } from "lucide-react";
-import HCaptcha from "@/components/HCaptcha";
+import Recaptcha, { RecaptchaHandle } from "@/components/Recaptcha";
 
 const SignUpPage = () => {
   usePageMetadata({
@@ -28,7 +28,7 @@ const SignUpPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const [captchaToken, setCaptchaToken] = useState("");
+  const recaptchaRef = useRef<RecaptchaHandle>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +40,7 @@ const SignUpPage = () => {
     }
 
     try {
+      const captchaToken = await recaptchaRef.current?.execute();
       await signup(name, email, password, captchaToken);
       // We don't navigate here as the auth state change will trigger automatically
     } catch (err: unknown) {
@@ -133,10 +134,7 @@ const SignUpPage = () => {
             </Label>
           </div>
 
-          <HCaptcha
-            siteKey="e30661ca-467c-43cc-899c-be56ab28c2a2"
-            onVerify={setCaptchaToken}
-          />
+          <Recaptcha ref={recaptchaRef} />
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           {/* <Button type="submit" className="w-full" disabled={buttonDisabled}>
