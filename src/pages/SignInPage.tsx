@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/auth";
 import { MapPin } from "lucide-react";
-import Recaptcha, { RecaptchaHandle } from "@/components/Recaptcha";
+import Recaptcha, { RecaptchaDisclosure, RecaptchaHandle } from "@/components/Recaptcha";
 import { trackEvent } from "@/utils/tracking";
 
 const SignInPage = () => {
@@ -79,7 +79,7 @@ const SignInPage = () => {
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 pb-4">
           {error && (
             <div className="bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 p-3 rounded-md text-sm">
               {error}
@@ -114,29 +114,14 @@ const SignInPage = () => {
               className="dark:bg-gray-800 dark:border-gray-700"
             />
           </div>
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="remember"
-              className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800"
-            />
-            <Label htmlFor="remember" className="text-sm font-normal">
-              Remember me
-            </Label>
-          </div>
-
-          <Recaptcha ref={recaptchaRef} />
         </CardContent>
+        {/* Invisible challenge; renders no visible UI (badge is hidden, disclosure shown below) */}
+        <Recaptcha ref={recaptchaRef} hideBadge />
         <CardFooter className="flex flex-col space-y-4">
           <Button type="submit" className="w-full" disabled={buttonDisabled}>
             {buttonText}
           </Button>
-          {/* <div className="text-center text-sm dark:text-gray-400">
-            Don't have an account?{" "}
-            <Link to="/auth/signup" className="text-primary hover:underline dark:text-blue-400">
-              Sign up
-            </Link>
-          </div> */}
+          <RecaptchaDisclosure />
         </CardFooter>
       </form>
     </Card>

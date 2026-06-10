@@ -119,6 +119,12 @@
     color: #212121;
     /* Ensure hover state matches */
   }
+
+  /* Hide the floating reCAPTCHA badge where the form shows the Google
+     disclosure text instead (allowed per Google's reCAPTCHA FAQ). */
+  .recaptcha-badge-hidden .grecaptcha-badge {
+    visibility: hidden;
+  }
 }
 
 .mapboxgl-popup {

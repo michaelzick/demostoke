@@ -11,6 +11,11 @@ export interface RecaptchaHandle {
 
 interface RecaptchaProps {
   siteKey?: string;
+  /**
+   * Hides the floating Google badge. Google permits this only when the host
+   * form shows the reCAPTCHA disclosure text instead (see RecaptchaDisclosure).
+   */
+  hideBadge?: boolean;
 }
 
 declare global {
@@ -26,7 +31,7 @@ declare global {
 
 const SCRIPT_SRC = "https://www.google.com/recaptcha/api.js?onload=onloadRecaptchaCallback&render=explicit";
 
-const Recaptcha = forwardRef<RecaptchaHandle, RecaptchaProps>(({ siteKey = RECAPTCHA_SITE_KEY }, ref) => {
+const Recaptcha = forwardRef<RecaptchaHandle, RecaptchaProps>(({ siteKey = RECAPTCHA_SITE_KEY, hideBadge = false }, ref) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const widgetIdRef = useRef<number | null>(null);
   const pendingRef = useRef<{ resolve: (token: string) => void; reject: (error: Error) => void } | null>(null);
@@ -112,10 +117,39 @@ const Recaptcha = forwardRef<RecaptchaHandle, RecaptchaProps>(({ siteKey = RECAP
     },
   }), []);
 
-  // Invisible mode: the badge renders bottom-right automatically
-  return <div ref={containerRef} />;
+  // Invisible mode: the badge renders bottom-right automatically. The badge
+  // element is created inside this container, so a scoped class can hide it.
+  return <div ref={containerRef} className={hideBadge ? "recaptcha-badge-hidden" : undefined} />;
 });
 
 Recaptcha.displayName = "Recaptcha";
+
+/**
+ * Google's required disclosure for forms that hide the reCAPTCHA badge:
+ * https://developers.google.com/recaptcha/docs/faq#id-like-to-hide-the-recaptcha-badge.-what-is-allowed
+ */
+export const RecaptchaDisclosure = ({ className = "" }: { className?: string }) => (
+  <p className={`text-center text-xs leading-5 text-muted-foreground ${className}`.trim()}>
+    This site is protected by reCAPTCHA and the Google{" "}
+    <a
+      href="https://policies.google.com/privacy"
+      target="_blank"
+      rel="noreferrer"
+      className="underline underline-offset-2 hover:text-foreground"
+    >
+      Privacy Policy
+    </a>{" "}
+    and{" "}
+    <a
+      href="https://policies.google.com/terms"
+      target="_blank"
+      rel="noreferrer"
+      className="underline underline-offset-2 hover:text-foreground"
+    >
+      Terms of Service
+    </a>{" "}
+    apply.
+  </p>
+);
 
 export default Recaptcha;
