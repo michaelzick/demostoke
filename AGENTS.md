@@ -50,7 +50,7 @@
 - `src/App.tsx` wires providers: query client, SSR page data, theme, auth, favorites, geolocation, tooltip, analytics/toaster.
 - `src/components/AppRoutes.tsx` is the authoritative route map.
 - `server/index.js` serves `dist/client`, loads the server bundle, and injects canonical/meta/schema/robots/404 behavior using `src/lib/seo/*`.
-- `server/index.js` also owns the live security headers, including the production `Content-Security-Policy` allowlists for analytics, Supabase, Mapbox, hCaptcha, and similar third-party origins.
+- `server/index.js` also owns the live security headers, including the production `Content-Security-Policy` allowlists for analytics, Supabase, Mapbox, Google reCAPTCHA, and similar third-party origins.
 - `index.html` contains the pre-hydration theme resolver plus GTM, GA4, and Amplitude script tags. If you touch head behavior, inspect this file.
 
 ## High-Value Route Areas
@@ -176,6 +176,7 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
   - `get-user-display-role`
   - `set-user-display-role`
   - `send-contact-email`
+  - `verify-recaptcha`
   - `get-mapbox-token`
   - `scan-broken-images`
   - `download-store-image`
@@ -210,7 +211,7 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
   - `VITE_SHOP_GEAR_FEED_INCLUDE_HIDDEN`
   - `VITE_SHOP_GEAR_FEED_APIKEY`
 - Theme flicker fix can be disabled with `VITE_ENABLE_THEME_FLICKER_FIX=false`.
-- Edge functions rely on combinations of `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `MAPBOX_TOKEN`, `GOOGLE_API_KEY`, `GOOGLE_CSE_ID`, `GOOGLE_SEARCH_API_KEY`, `GOOGLE_SEARCH_ENGINE_ID`, and `HCAPTCHA_SECRET`.
+- Edge functions rely on combinations of `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `MAPBOX_TOKEN`, `GOOGLE_API_KEY`, `GOOGLE_CSE_ID`, `GOOGLE_SEARCH_API_KEY`, `GOOGLE_SEARCH_ENGINE_ID`, `GOOGLE_RECAPTCHA_SECRET_KEY`, and `HCAPTCHA_SECRET` (legacy, no longer read).
 - `generate-gear-review-blog-draft` also relies on `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, and the Google Custom Search image/web keys. It is protected by the `gear_review_blog_generation_config.cron_secret` value passed as `x-cron-secret`.
 - Imported FleetOps storage uses public buckets `fleetops-equipment-images` and `fleetops-shop-logos`.
 - Imported FleetOps Edge Functions use prefixed secrets where available: `FLEETOPS_STRIPE_SECRET_KEY`, `FLEETOPS_STRIPE_WEBHOOK_SECRET`, `FLEETOPS_SENDGRID_API_KEY`, `FLEETOPS_FROM_EMAIL`, `FLEETOPS_PUBLIC_SUPABASE_URL`, and `FLEETOPS_POS_INVENTORY_SEED_CRON_SECRET`. The retained `fleetops_pos_inventory_seed_config.cron_secret` should stay synchronized with the prefixed POS function secret if the disabled seed flow is ever re-enabled.

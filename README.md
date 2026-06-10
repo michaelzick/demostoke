@@ -40,4 +40,4 @@ VITE_SUPABASE_URL=http://localhost:54321
 VITE_SUPABASE_PUBLISHABLE_KEY=your-local-publishable-key
 ```
 
-Supabase edge functions use their own secrets, including `OPENAI_API_KEY`, service-role Supabase credentials, and provider keys for Mapbox, Google Search, and hCaptcha where needed.
+Supabase edge functions use their own secrets, including `OPENAI_API_KEY`, service-role Supabase credentials, and provider keys for Mapbox, Google Search, and Google reCAPTCHA (`GOOGLE_RECAPTCHA_SECRET_KEY`) where needed.

@@ -55,11 +55,11 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Verify hCaptcha token
-    console.log("Verifying hCaptcha token...");
-    const hcaptchaSecret = Deno.env.get("HCAPTCHA_SECRET");
-    if (!hcaptchaSecret) {
-      console.error("HCAPTCHA_SECRET environment variable not set");
+    // Verify Google reCAPTCHA token
+    console.log("Verifying reCAPTCHA token...");
+    const recaptchaSecret = Deno.env.get("GOOGLE_RECAPTCHA_SECRET_KEY");
+    if (!recaptchaSecret) {
+      console.error("GOOGLE_RECAPTCHA_SECRET_KEY environment variable not set");
       return new Response(
         JSON.stringify({ error: "Server configuration error - missing captcha secret" }),
         {
@@ -69,25 +69,29 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    const captchaResponse = await fetch('https://hcaptcha.com/siteverify', {
+    const captchaResponse = await fetch('https://www.google.com/recaptcha/api/siteverify', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams({
-        secret: hcaptchaSecret,
+        secret: recaptchaSecret,
         response: captchaToken,
       }),
     });
 
     const captchaResult = await captchaResponse.json();
     console.log("Captcha verification result:", captchaResult);
-    
+
     if (!captchaResult.success) {
       console.error("Captcha verification failed:", captchaResult);
       let errorMessage = "Captcha verification failed.";
       if (captchaResult['error-codes']) {
-        if (captchaResult['error-codes'].includes('sitekey-secret-mismatch')) {
+        if (
+          captchaResult['error-codes'].includes('missing-input-secret') ||
+          captchaResult['error-codes'].includes('invalid-input-secret') ||
+          captchaResult['error-codes'].includes('bad-request')
+        ) {
           errorMessage = "Captcha configuration error. Please contact support.";
         } else if (captchaResult['error-codes'].includes('invalid-input-response')) {
           errorMessage = "Invalid captcha response. Please try again.";

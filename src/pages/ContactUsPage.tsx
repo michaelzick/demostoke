@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import HCaptcha from "@/components/HCaptcha";
+import Recaptcha, { RecaptchaHandle } from "@/components/Recaptcha";
 import { RequiredIndicator } from "@/components/waiver/RequiredIndicator";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,8 +27,8 @@ const ContactUsPage = () => {
     subject: "",
     message: ""
   });
-  const [captchaToken, setCaptchaToken] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const recaptchaRef = useRef<RecaptchaHandle>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -38,17 +38,12 @@ const ContactUsPage = () => {
     }));
   };
 
-  const handleCaptchaVerify = (token: string) => {
-    setCaptchaToken(token);
-  };
-
-  // Check if all required fields are filled and captcha is completed
+  // Check if all required fields are filled
   const isFormValid = formData.firstName &&
     formData.lastName &&
     formData.email &&
     formData.subject &&
-    formData.message &&
-    captchaToken;
+    formData.message;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +51,7 @@ const ContactUsPage = () => {
     if (!isFormValid) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields and complete the captcha.",
+        description: "Please fill in all required fields.",
         variant: "destructive"
       });
       return;
@@ -65,6 +60,11 @@ const ContactUsPage = () => {
     setIsSubmitting(true);
 
     try {
+      const captchaToken = await recaptchaRef.current?.execute();
+      if (!captchaToken) {
+        throw new Error("Captcha verification failed");
+      }
+
       console.log("Submitting contact form with data:", {
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -105,7 +105,6 @@ const ContactUsPage = () => {
         subject: "",
         message: ""
       });
-      setCaptchaToken("");
 
     } catch (error) {
       console.error('Contact form error:', error);
@@ -208,10 +207,7 @@ const ContactUsPage = () => {
               />
             </div>
 
-            <HCaptcha
-              siteKey="e30661ca-467c-43cc-899c-be56ab28c2a2"
-              onVerify={handleCaptchaVerify}
-            />
+            <Recaptcha ref={recaptchaRef} />
 
             <div className="flex gap-4">
               <Button

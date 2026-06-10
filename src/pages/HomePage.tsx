@@ -26,7 +26,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import HCaptcha from "@/components/HCaptcha";
+import Recaptcha, { RecaptchaHandle } from "@/components/Recaptcha";
 import { safeLocalStorage } from "@/utils/ssrSafe";
 import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
@@ -51,9 +51,9 @@ const HomePage = () => {
     subject: "",
     message: ""
   });
-  const [captchaToken, setCaptchaToken] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const recaptchaRef = useRef<RecaptchaHandle>(null);
   const { user } = useAuth();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -61,17 +61,12 @@ const HomePage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCaptchaVerify = (token: string) => {
-    setCaptchaToken(token);
-  };
-
   const isFormValid =
     formData.firstName &&
     formData.lastName &&
     formData.email &&
     formData.subject &&
-    formData.message &&
-    captchaToken;
+    formData.message;
 
   const handleDontShowAgain = () => {
     const timer = timerRef.current;
@@ -89,7 +84,7 @@ const HomePage = () => {
     if (!isFormValid) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields and complete the captcha.",
+        description: "Please fill in all required fields.",
         variant: "destructive"
       });
       return;
@@ -98,6 +93,11 @@ const HomePage = () => {
     setIsSubmitting(true);
 
     try {
+      const captchaToken = await recaptchaRef.current?.execute();
+      if (!captchaToken) {
+        throw new Error("Captcha verification failed");
+      }
+
       console.log("Submitting contact form with data:", {
         firstName: formData.firstName,
         lastName: formData.lastName,
@@ -141,7 +141,6 @@ const HomePage = () => {
         subject: "",
         message: ""
       });
-      setCaptchaToken("");
       setShowModal(false); // Close the modal on success
 
     } catch (error) {
@@ -228,7 +227,7 @@ const HomePage = () => {
                 className="min-h-[100px]"
               />
             </div>
-            <HCaptcha siteKey="e30661ca-467c-43cc-899c-be56ab28c2a2" onVerify={handleCaptchaVerify} />
+            <Recaptcha ref={recaptchaRef} />
             <DialogFooter>
               <Button
                 type="button"
