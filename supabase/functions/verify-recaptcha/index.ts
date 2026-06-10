@@ -76,7 +76,6 @@ const handler = async (req: Request): Promise<Response> => {
       {
         success: false,
         error: "Captcha verification failed.",
-        details: error instanceof Error ? error.message : String(error),
       },
       500,
     );
