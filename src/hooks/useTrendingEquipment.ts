@@ -54,12 +54,17 @@ export const useTrendingEquipment = () => {
 
         // Convert and sort equipment to maintain trending order
         const { convertSupabaseToEquipment } = await import('@/services/equipment/equipmentConverter');
-        const { fetchEquipmentImages } = await import('@/utils/multipleImageHandling');
+        const { fetchEquipmentImagesForIds } = await import('@/utils/multipleImageHandling');
+
+        // Batch-fetch gallery images for all trending items in a single query
+        const imagesByEquipmentId = await fetchEquipmentImagesForIds(
+          equipmentDetails.map((item) => item.id),
+        );
 
         const equipmentPromises = equipmentDetails.map(async (item) => {
-          // Fetch gallery images from equipment_images table
-          const galleryImages = await fetchEquipmentImages(item.id);
-          const allImages = deduplicateImageUrls(galleryImages);
+          const allImages = deduplicateImageUrls(
+            imagesByEquipmentId.get(item.id) || [],
+          );
 
           const flatItem = {
             ...item,

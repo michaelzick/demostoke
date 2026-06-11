@@ -25,6 +25,7 @@ import {
   type GeneratedReviewDraft,
   type SourceSnippet,
 } from "../_shared/gearReviewBlogGeneration.ts";
+import { timingSafeEqualString } from "../_shared/timingSafeEqual.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -531,7 +532,7 @@ serve(async (req) => {
 
     const config = await loadConfig();
     const cronSecret = req.headers.get("x-cron-secret")?.trim();
-    if (!cronSecret || cronSecret !== config.cron_secret) {
+    if (!cronSecret || !timingSafeEqualString(cronSecret, config.cron_secret ?? "")) {
       return jsonResponse({ status: "error", reason: "invalid_cron_secret" }, 401);
     }
 

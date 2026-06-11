@@ -35,15 +35,25 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
+    // Bind the verification to the caller's IP when available so a solved
+    // token cannot be replayed from a different network.
+    const forwardedFor = req.headers.get("x-forwarded-for") ?? "";
+    const remoteIp = forwardedFor.split(",")[0]?.trim();
+
+    const verifyParams = new URLSearchParams({
+      secret: recaptchaSecret,
+      response: token,
+    });
+    if (remoteIp) {
+      verifyParams.set("remoteip", remoteIp);
+    }
+
     const captchaResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: new URLSearchParams({
-        secret: recaptchaSecret,
-        response: token,
-      }),
+      body: verifyParams,
     });
 
     const captchaResult = await captchaResponse.json();

@@ -17,9 +17,10 @@ export class AuthService {
   }
 
   static async loginWithEmailPassword(email: string, password: string, captchaToken?: string) {
-    if (captchaToken) {
-      await AuthService.verifyRecaptcha(captchaToken);
+    if (!captchaToken) {
+      throw new Error("Captcha verification required");
     }
+    await AuthService.verifyRecaptcha(captchaToken);
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -31,9 +32,10 @@ export class AuthService {
   }
 
   static async signupWithEmailPassword(name: string, email: string, password: string, captchaToken?: string) {
-    if (captchaToken) {
-      await AuthService.verifyRecaptcha(captchaToken);
+    if (!captchaToken) {
+      throw new Error("Captcha verification required");
     }
+    await AuthService.verifyRecaptcha(captchaToken);
 
     const { data, error } = await supabase.auth.signUp({
       email,

@@ -43,6 +43,16 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const clientDist = path.join(__dirname, '../dist/client');
 const serverDist = path.join(__dirname, '../dist/server');
 
+// The built client template is immutable after build, so read it once at
+// startup instead of synchronously re-reading it from disk on every request.
+let cachedTemplate = null;
+const getTemplate = () => {
+  if (cachedTemplate === null) {
+    cachedTemplate = fs.readFileSync(path.join(clientDist, 'index.html'), 'utf-8');
+  }
+  return cachedTemplate;
+};
+
 // Supabase client for fetching blog metadata on the server
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
 const SUPABASE_URL_SOURCE = process.env.VITE_SUPABASE_URL
@@ -1225,7 +1235,7 @@ app.use(sirv(clientDist, {
 
 app.get('*', async (req, res) => {
   try {
-    const template = fs.readFileSync(path.join(clientDist, 'index.html'), 'utf-8');
+    const template = getTemplate();
     const { render } = await import(path.join(serverDist, 'entry-server.js'));
     const requestOrigin = buildRequestOrigin(req);
     const requestSearch = getRequestSearch(req);

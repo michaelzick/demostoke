@@ -28,6 +28,45 @@ export const fetchEquipmentImages = async (
   }
 };
 
+export const fetchEquipmentImagesForIds = async (
+  equipmentIds: string[],
+): Promise<Map<string, string[]>> => {
+  const result = new Map<string, string[]>();
+
+  const uniqueIds = Array.from(new Set(equipmentIds));
+  if (uniqueIds.length === 0) {
+    return result;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('equipment_images')
+      .select('equipment_id, image_url, display_order, is_primary')
+      .in('equipment_id', uniqueIds)
+      .order('is_primary', { ascending: false })
+      .order('display_order', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching equipment images:', error);
+      return result;
+    }
+
+    for (const img of data || []) {
+      const existing = result.get(img.equipment_id);
+      if (existing) {
+        existing.push(img.image_url);
+      } else {
+        result.set(img.equipment_id, [img.image_url]);
+      }
+    }
+
+    return result;
+  } catch (err) {
+    console.error('Exception while fetching equipment images:', err);
+    return result;
+  }
+};
+
 export const uploadEquipmentImage = async (
   equipmentId: string,
   file: File,

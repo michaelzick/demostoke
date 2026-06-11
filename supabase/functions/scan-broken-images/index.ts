@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { assertSafePublicUrl } from "../_shared/urlSafety.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -48,6 +49,14 @@ async function testImageUrl(
   // Skip Supabase storage URLs - they're reliable
   if (url.includes("supabase.co/storage")) {
     return { broken: false, reason: "" };
+  }
+
+  // Block SSRF: never fetch private/reserved/non-https hosts even if such a
+  // URL ended up stored in the database.
+  try {
+    assertSafePublicUrl(url);
+  } catch {
+    return { broken: true, reason: "Blocked non-public URL" };
   }
 
   const headers = {

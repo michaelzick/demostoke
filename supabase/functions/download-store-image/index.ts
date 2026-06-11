@@ -1,6 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
+import { assertSafePublicUrl } from "../_shared/urlSafety.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -53,6 +54,9 @@ serve(async (req) => {
     if (!ALLOWED[sourceTable] || !ALLOWED[sourceTable].includes(sourceColumn)) {
       return new Response(JSON.stringify({ error: 'Invalid target' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
+
+    // Block SSRF: only allow fetching public https image URLs
+    assertSafePublicUrl(imageUrl);
 
     console.log('Downloading image:', { imageUrl, sourceTable, sourceColumn, sourceRecordId });
 
