@@ -28,6 +28,14 @@ serve(async (req) => {
       );
     }
 
+    const VALID_DISPLAY_ROLES = ['admin', 'user', 'retail-store', 'private-party', 'builder'];
+    if (!VALID_DISPLAY_ROLES.includes(displayRole)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid display_role' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Authenticate the requester and authorize: must be the same user or an admin
     const authorization = req.headers.get('Authorization');
     if (!authorization?.startsWith('Bearer ')) {

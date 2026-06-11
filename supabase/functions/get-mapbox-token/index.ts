@@ -28,9 +28,6 @@ serve(async (req) => {
                         Deno.env.get('VITE_MAPBOX_TOKEN') || 
                         Deno.env.get('REACT_APP_MAPBOX_TOKEN');
     
-    console.log('🔍 Environment check:');
-    console.log('  - MAPBOX_TOKEN exists:', !!MAPBOX_TOKEN);
-    
     if (!MAPBOX_TOKEN) {
       console.error('❌ No Mapbox token found in environment variables');
       return new Response(
@@ -46,9 +43,6 @@ serve(async (req) => {
       );
     }
 
-    console.log('  - MAPBOX_TOKEN length:', MAPBOX_TOKEN.length);
-    console.log('  - MAPBOX_TOKEN starts with pk.:', MAPBOX_TOKEN.startsWith('pk.'));
-    
     if (!MAPBOX_TOKEN.startsWith('pk.')) {
       console.error('❌ MAPBOX_TOKEN does not appear to be a valid public token');
       return new Response(

@@ -159,6 +159,11 @@ serve(async (req) => {
       return jsonResponse(400, { error: "name, email, password, and role are required" });
     }
 
+    const VALID_DISPLAY_ROLES = ["admin", "user", "retail-store", "private-party", "builder"];
+    if (!VALID_DISPLAY_ROLES.includes(displayRole)) {
+      return jsonResponse(400, { error: "Invalid role" });
+    }
+
     if (password.length < 6) {
       return jsonResponse(400, { error: "Password should be at least 6 characters" });
     }

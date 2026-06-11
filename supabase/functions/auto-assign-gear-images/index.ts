@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { filterHighResolutionGearImageResults } from "../_shared/googleImageFilters.ts";
+import { timingSafeEqualString } from "../_shared/timingSafeEqual.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -79,6 +80,52 @@ Deno.serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // This function writes equipment_images with the service-role key and
+    // triggers billable image searches, so it must never be callable
+    // anonymously. Two callers are allowed:
+    //   1. The on_equipment_created DB trigger (pg_net), which presents a
+    //      shared internal secret header.
+    //   2. An authenticated admin invoking it manually.
+    const internalSecret = Deno.env.get("AUTO_ASSIGN_INTERNAL_SECRET");
+    const providedSecret = req.headers.get("x-internal-secret");
+    const hasValidInternalSecret = Boolean(
+      internalSecret &&
+        providedSecret &&
+        timingSafeEqualString(providedSecret, internalSecret)
+    );
+
+    if (!hasValidInternalSecret) {
+      const authorization = req.headers.get("Authorization");
+      if (!authorization?.startsWith("Bearer ")) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { data: authData, error: authError } = await supabase.auth.getUser(
+        authorization.slice("Bearer ".length)
+      );
+      if (authError || !authData?.user) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { data: adminRole, error: adminError } = await supabase
+        .from("user_roles")
+        .select("id")
+        .eq("user_id", authData.user.id)
+        .eq("role", "admin")
+        .limit(1)
+        .maybeSingle();
+      if (adminError || !adminRole) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
 
     // Check if images already exist for this equipment
     const { count: existingCount, error: countError } = await supabase

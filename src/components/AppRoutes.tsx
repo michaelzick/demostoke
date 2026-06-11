@@ -43,13 +43,14 @@ import { useAuth } from "@/contexts/auth";
 import { useIsAdmin } from "@/hooks/useUserRole";
 
 const AdminRouteGate = () => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const { isAdmin, isLoading: isRoleLoading } = useIsAdmin();
 
-  if (isLoading) {
+  if (isAuthLoading || (isAuthenticated && isRoleLoading)) {
     return <div className="min-h-screen" />;
   }
 
-  return isAuthenticated ? <AdminPage /> : <NotFoundPage />;
+  return isAuthenticated && isAdmin ? <AdminPage /> : <NotFoundPage />;
 };
 
 const AdminOnlyRouteGate = ({ children }: { children: ReactNode }) => {

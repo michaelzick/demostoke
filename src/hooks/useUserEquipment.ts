@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/helpers";
-import { fetchEquipmentImages } from "@/utils/multipleImageHandling";
+import { fetchEquipmentImagesForIds } from "@/utils/multipleImageHandling";
 import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 import { syncShopGearFromEndpoint } from "@/services/equipment/shopGearSyncService";
 import { normalizeCurrencyCode } from "@/utils/currency";
@@ -108,22 +108,16 @@ export const useUserEquipment = (
         throw error;
       }
 
-      // Fetch additional images for each equipment item
-      const equipmentWithImages = await Promise.all(
-        (data || []).map(async (item) => {
-          console.log(
-            `=== FETCHING IMAGES FOR USER EQUIPMENT ${item.name} ===`,
-          );
-          console.log("Equipment ID:", item.id);
+      // Batch-fetch images for all equipment items in a single query
+      const imagesByEquipmentId = await fetchEquipmentImagesForIds(
+        (data || []).map((item) => item.id),
+      );
 
-          // Fetch images from equipment_images table
-          const additionalImages = await fetchEquipmentImages(item.id);
-          console.log("Additional images fetched:", additionalImages);
-
+      const equipmentWithImages = (data || []).map((item) => {
           // Use images from equipment_images table or fallback to primary
-          const allImages = deduplicateImageUrls(additionalImages);
-          console.log("Images array:", allImages);
-          console.log("=== END USER EQUIPMENT IMAGES FETCH ===");
+          const allImages = deduplicateImageUrls(
+            imagesByEquipmentId.get(item.id) || [],
+          );
 
           return {
             id: item.id,
@@ -162,8 +156,7 @@ export const useUserEquipment = (
               name: "User", // We don't have profile name in this query
             },
           };
-        }),
-      );
+        });
 
       return equipmentWithImages;
     },

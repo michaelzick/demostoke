@@ -123,7 +123,7 @@
   - `profiles`, `public_profiles`, `user_roles`
   - `blog_posts`
   - `gear_review_blog_generation_config`, `gear_review_blog_generation_runs`
-  - `fleetops_pos_inventory_seed_config`
+  - imported FleetOps tables: `fleetops_shops`, `fleetops_shop_viewers`, `fleetops_user_roles`, `fleetops_equipment`, `fleetops_equipment_images`, `fleetops_pricing_options`, `fleetops_add_ons`, `fleetops_bookings`, `fleetops_pos_connections`, `fleetops_lightspeed_inventory_items`, `fleetops_booqable_inventory_items`, `fleetops_pos_inventory_seed_runs`, `fleetops_pos_inventory_seed_config`
   - `demo_calendar`, `demo_event_candidates`, `demo_event_discovery_config`
   - `app_settings`, `app_privacy_settings`
   - `shop_gear_feed_mappings`, `scraped_retailers`, `downloaded_images`
@@ -153,6 +153,8 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
 - The linked DemoStoke project is `qtlhqsqanbxgfbcjigrl`.
 - On May 21, 2026, linked migration metadata was repaired: legacy `001` through `011` entries were marked reverted, timestamped local migrations through `20260520010000` were marked applied, and already-applied Hermes seed migrations for Park City, Arizona, Oregon, Colorado, Ventura County, and Texas were copied into this repo and marked applied. Migration history has 240 timestamped entries and is aligned through `20260520232100`.
 - Before running migration-history-driven commands, run `supabase migration list --linked`; it should show local and remote aligned except for intentionally new local migrations.
+- On June 11, 2026, the already-applied FleetOps seed migrations `20260608140000_seed_fleetops_guest_viewer.sql` and `20260608150000_seed_fleetops_admin_roles.sql` were copied from the `demostoke-fleet-ops` repo into this repo (same pattern as the Hermes reconciliation) so `supabase db push` history stays aligned. They are already applied to the linked project; `db push` skips them.
+- The `demostoke-fleet-ops` repo links to this same Supabase project. Never run `supabase config push` from that repo: its `supabase/config.toml` auth section (`enable_signup = false`, `site_url = "https://widget.demostoke.com"`) would overwrite the shared project's auth configuration, disabling DemoStoke self-signup and redirecting auth emails. That file is local-dev-only documentation; FleetOps invite-only enforcement belongs at the `fleetops_user_roles` level.
 - If historical drift reappears, do not apply local migrations to the linked DB just because they appear local-only. First verify whether the intended schema/data already exists. For data-only seed work, use the rollback-first transaction pattern documented in `supabase/MIGRATION_RECONCILIATION.md`.
 - After changing any file under `supabase/migrations/` or `supabase/functions/`, you MUST explicitly tell the user that those migration or Edge Function changes have not been pushed/deployed to the linked Supabase project, unless you actually pushed or deployed them in the same turn. Do not let local Supabase changes sound live.
 
@@ -189,6 +191,15 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
   - `crawl-retailer-details`
   - `extract-gear-from-html`
   - `insert-equipment-from-sql`
+- Imported FleetOps:
+  - `fleetops-admin-create-shop`
+  - `fleetops-ai-analytics`
+  - `fleetops-create-payment-intent`
+  - `fleetops-refund-payment`
+  - `fleetops-send-booking-email`
+  - `fleetops-shop-gear-feed`
+  - `fleetops-stripe-webhook`
+  - `fleetops-seed-pos-inventory`
 
 ## Env and Integration Surface
 - Browser/public runtime uses `VITE_SUPABASE_URL` plus `VITE_SUPABASE_PUBLISHABLE_KEY` or `VITE_SUPABASE_ANON_KEY` when provided, and otherwise falls back to checked-in values in `src/integrations/supabase/config.js` for the Supabase URL and publishable key.
@@ -203,8 +214,11 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
   - `VITE_SHOP_GEAR_FEED_APIKEY`
 - Theme flicker fix can be disabled with `VITE_ENABLE_THEME_FLICKER_FIX=false`.
 - Edge functions rely on combinations of `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `MAPBOX_TOKEN`, `GOOGLE_API_KEY`, `GOOGLE_CSE_ID`, `GOOGLE_SEARCH_API_KEY`, `GOOGLE_SEARCH_ENGINE_ID`, `GOOGLE_RECAPTCHA_SECRET_KEY`, and `HCAPTCHA_SECRET` (legacy, no longer read).
-- `generate-gear-review-blog-draft` also relies on `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, and the Google Custom Search image/web keys. It is protected by the `gear_review_blog_generation_config.cron_secret` value passed as `x-cron-secret`.
-- The FleetOps POS demo inventory cron runs from the main DemoStoke DB via `trigger_fleetops_pos_inventory_seed_cron()` and posts to `https://imdhbnfgrrckwoboodox.supabase.co/functions/v1/seed-pos-inventory`; keep `fleetops_pos_inventory_seed_config.cron_secret` synchronized with the FleetOps `POS_INVENTORY_SEED_CRON_SECRET` function secret.
+- `generate-gear-review-blog-draft` also relies on `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, and the Google Custom Search image/web keys. It is protected by the `gear_review_blog_generation_config.cron_secret` value passed as `x-cron-secret`, compared in constant time via `_shared/timingSafeEqual.ts`.
+- `auto-assign-gear-images` is no longer anonymous. It now requires either an admin JWT or a shared internal secret `AUTO_ASSIGN_INTERNAL_SECRET` passed as the `x-internal-secret` header. The `on_equipment_created` DB trigger (`notify_new_equipment`) sends that header, reading the value from the `app.auto_assign_internal_secret` database setting (migration `20260610120000_auto_assign_images_internal_secret.sql`). Set the DB setting and the function secret to the same value and deploy together.
+- SSRF-prone image/fetch functions (`download-store-image`, `convert-image-to-webp`, `convert-to-jpeg`, `scan-broken-images`) validate user/DB-supplied URLs through `_shared/urlSafety.ts`, which requires https and rejects private/reserved hosts.
+- Imported FleetOps storage uses public buckets `fleetops-equipment-images` and `fleetops-shop-logos`.
+- Imported FleetOps Edge Functions use prefixed secrets where available: `FLEETOPS_STRIPE_SECRET_KEY`, `FLEETOPS_STRIPE_WEBHOOK_SECRET`, `FLEETOPS_SENDGRID_API_KEY`, `FLEETOPS_FROM_EMAIL`, `FLEETOPS_PUBLIC_SUPABASE_URL`, and `FLEETOPS_POS_INVENTORY_SEED_CRON_SECRET`. The retained `fleetops_pos_inventory_seed_config.cron_secret` should stay synchronized with the prefixed POS function secret if the disabled seed flow is ever re-enabled.
 - Do not introduce new hardcoded secrets. Keep public browser tokens and service secrets clearly separated.
 
 ## Critical Invariants and Gotchas
@@ -215,9 +229,10 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
 - `AuthProvider` syncs favorites and recently viewed items from localStorage into Supabase on sign-in; browser-only storage assumptions matter.
 - The theme system is split between `index.html` and `src/theme/*`; if you change theme startup behavior, keep both in sync.
 - Search/explore/profile visibility behavior is tightly coupled to `equipmentDataService`, `searchService`, `useEquipmentWithDynamicDistance`, and advanced filter helpers.
+- The sign-in page runs invisible reCAPTCHA with the floating Google badge hidden (`hideBadge` prop on `src/components/Recaptcha.tsx`). Google only allows hiding the badge when the disclosure text is shown instead, so keep `hideBadge` paired with `RecaptchaDisclosure` on any form that uses it.
 - Automated gear-review drafts must not create `equipment_reviews` rows or mutate `equipment.rating` / `equipment.review_count`. Hidden factual evidence belongs in `gear_review_blog_generation_runs.hidden_evidence`, not in public blog copy, tags, excerpts, or analytics payloads.
 - Cron-generated gear-review drafts use the evergreen model-review prompt `Write a comprehensive evergreen product review of the [gear brand/model] [category]`. Drafts should read like standalone product reviews, not listing, rental, shop, travel, or local availability pages. They must not use listing metadata such as owner/shop details, pickup or booking details, listing locations, city/state/region copy, daily or weekly rates, rental prices, dollar amounts, or rate structures in public copy. They must include category-specific review structure such as design/construction, ride/use profile, natural language headings like `Who it's for` instead of `Who it is for`, setup guidance, strengths, tradeoffs, care/tuning, and a final `<h2>Final Call</h2>` section with a natural relative `/gear/...` link to the reviewed DemoStoke gear detail page. Draft tags must be exactly the post category, gear category, and brand, for example `gear reviews`, `skis`, `stockli`. The generator must deterministically normalize Final Thoughts/Verdict style headings to Final Call, normalize formal `Who it is for` phrasing to `Who it's for`, and insert that gear-detail link before saving if the model omits it. They must not use em dashes in public copy, must target about 1200 visible body words after stripping HTML tags with a 1000-1400 word guardrail, and must store a selected gear image URL for the blog thumbnail instead of a small Google `thumbnailLink`.
-- FleetOps POS inventory seeding is queued by `pg_net` from the main DemoStoke project at the daily 9/10 UTC schedule, gated to 2 AM Pacific and a 2-day cadence. The FleetOps `seed-pos-inventory` function performs the actual inserts and read-back verification in the FleetOps DB; use `trigger_fleetops_pos_inventory_seed_cron(true)` for a live forced validation run.
+- As of June 8, 2026, FleetOps has been imported into the main DemoStoke project with prefixed `fleetops_` tables, `fleetops-` storage buckets, and `fleetops-` Edge Functions. The old main cron job `fleetops-pos-inventory-seed-2am-pt` was unscheduled, `fleetops_pos_inventory_seed_config.enabled` is false, and `trigger_fleetops_pos_inventory_seed_cron(boolean)` was dropped. Do not recreate the old cron or post to the separate FleetOps project unless the user explicitly requests it.
 - Generated gear-review analytics must use safe metadata only: post id/slug, category, source equipment id, gear category, author, generated flag, and preview/published mode. Never send hidden evidence, source snippets, credentials, or raw prompts to Amplitude or Google Analytics.
 - `DemoStokeWidget` is a local-dev artifact right now. Treat it as unfinished unless you intentionally wire it to production.
 - There is a large amount of existing debug logging. Remove or preserve it intentionally, not accidentally.
@@ -259,7 +274,7 @@ Do not substitute other image sources for seed data. If new categories are added
 
 ## Seed Data — Current Seeded Shops
 
-This summary reflects read-only linked DemoStoke data checks after the June 1, 2026 U.S. Eastern, Hawaii, Mountain, Central, and North America coverage fill seed applies. The Wax Bench row is an existing live profile retargeted by the Canada batch; its gear count is the current profile count after 17 inserts and 11 updates, not a newly created shop.
+This summary reflects read-only linked DemoStoke data checks after the June 7, 2026 Central and South America surfboards follow-up seed apply. The Wax Bench row is an existing live profile retargeted by the Canada batch; its gear count is the current profile count after 17 inserts and 11 updates, not a newly created shop.
 
 | # | Shop | Region | Category | Gear | Status |
 |---|---|---|---|---|---|
@@ -322,7 +337,15 @@ This summary reflects read-only linked DemoStoke data checks after the June 1, 2
 | 57 | Dismount Bike Shop | Toronto, ON | mountain-bikes | 3 | applied |
 | 58 | Willi's Ski and Board Seven Springs | Champion, PA | skis | 10 | applied |
 | 59 | Tactics Bend | Bend, OR | snowboards | 10 | applied |
-| | **Total** | | | **646** | |
+| 60 | MTB Guatemala | Tecpan, Guatemala | mountain-bikes | 9 | applied |
+| 61 | Bike Arenal | La Fortuna, Costa Rica | mountain-bikes | 3 | applied |
+| 62 | Nosara MTB | Nosara, Costa Rica | mountain-bikes | 4 | applied |
+| 63 | Buen Camino Bike Park | San Mateo, Costa Rica | mountain-bikes | 1 | applied |
+| 64 | Line Up Surf Shop | Coronado, Panama | surfboards | 22 | applied |
+| 65 | Santa Catalina Surf Shop | Santa Catalina, Panama | surfboards | 2 | applied |
+| 66 | Sunzal Surf Company | El Tunco, El Salvador | surfboards | 36 | applied |
+| 67 | Nosara Surfboards | Nosara, Costa Rica | surfboards | 9 | applied |
+| | **Total** | | | **732** | |
 
 Do not re-seed any shop already in this table. Do not seed Hawaii Surfboard Rentals under any Hawaii discovery task.
 
