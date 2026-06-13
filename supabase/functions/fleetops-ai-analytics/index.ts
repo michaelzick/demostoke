@@ -127,8 +127,7 @@ Please analyze this data and provide insights and predictions.`;
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: userPrompt },
         ],
-        temperature: 0.7,
-        max_tokens: 1500,
+        max_completion_tokens: 1500,
       }),
     });
 
