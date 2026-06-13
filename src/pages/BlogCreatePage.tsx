@@ -56,6 +56,7 @@ function BlogCreatePageInner() {
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [publishedDate, setPublishedDate] = useState<Date>();
+  const [publishedDateOpen, setPublishedDateOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [excerpt, setExcerpt] = useState("");
   const [content, setContent] = useState("");
@@ -496,7 +497,7 @@ function BlogCreatePageInner() {
 
                       <div>
                         <Label>Published Date *</Label>
-                        <Popover>
+                        <Popover open={publishedDateOpen} onOpenChange={setPublishedDateOpen}>
                           <PopoverTrigger asChild>
                             <Button
                               variant="outline"
@@ -513,7 +514,12 @@ function BlogCreatePageInner() {
                             <Calendar
                               mode="single"
                               selected={publishedDate}
-                              onSelect={setPublishedDate}
+                              onSelect={(date) => {
+                                setPublishedDate(date);
+                                if (date) {
+                                  setPublishedDateOpen(false);
+                                }
+                              }}
                               initialFocus
                             />
                           </PopoverContent>

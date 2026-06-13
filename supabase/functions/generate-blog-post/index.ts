@@ -53,7 +53,8 @@ serve(async (req) => {
       );
     }
 
-    const systemPrompt = `You are a professional content writer specializing in outdoor gear and adventure sports. Create engaging blog posts that are informative, well-structured, and appeal to outdoor enthusiasts.`;
+    const systemPrompt = `You are a professional content writer specializing in outdoor gear and adventure sports. Create engaging blog posts that are informative, well-structured, and appeal to outdoor enthusiasts.
+Never use em dashes (—) anywhere in the title, excerpt, or content. Rewrite any sentence that would use one; if a stronger break than a comma is needed, use a semicolon (;) instead.`;
 
     const userPrompt = `Write a comprehensive blog post based on this prompt: "${requestData.prompt}"
 
