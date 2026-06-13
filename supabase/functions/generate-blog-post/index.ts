@@ -117,7 +117,14 @@ Format the response as a JSON object with the following structure:
     const data = await response.json();
     console.log('✅ OpenAI API response received');
     
-    const generatedContent = data.choices[0].message.content;
+    const generatedContent = data.choices?.[0]?.message?.content;
+    if (!generatedContent || generatedContent.trim().length === 0) {
+      console.error('OpenAI returned empty content. Finish reason:', data.choices?.[0]?.finish_reason);
+      return new Response(
+        JSON.stringify({ error: 'OpenAI returned empty content. Please try again.' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     console.log('📄 Generated content length:', generatedContent.length);
 
     // Parse the JSON response from OpenAI
