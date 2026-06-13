@@ -49,13 +49,14 @@ Deno.serve(async (req: Request) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini',
+        model: 'gpt-5.4-mini',
         messages: [
           {
             role: 'system',
-            content: `You are an expert outdoor gear and adventure sports content writer. 
+            content: `You are an expert outdoor gear and adventure sports content writer.
 Write engaging, informative blog content with proper HTML formatting.
 Use headings (<h2>, <h3>), paragraphs (<p>), lists (<ul>, <ol>), and emphasis (<strong>, <em>) appropriately.
+Never use em dashes (—) anywhere in the output. Rewrite any sentence that would use one; if a stronger break than a comma is needed, use a semicolon (;) instead.
 Return ONLY the content HTML - no full page structure.`
           },
           {
@@ -99,7 +100,7 @@ Return ONLY the content HTML - no full page structure.`
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini',
+        model: 'gpt-5.4-mini',
         messages: [
           {
             role: 'system',
@@ -107,7 +108,8 @@ Return ONLY the content HTML - no full page structure.`
 Return a JSON object with "title" and "excerpt" fields.
 - Title: 50-70 characters, catchy and SEO-friendly
 - Excerpt: 120-160 characters, engaging summary
-- Make both title and excerpt compelling for search engines and readers`
+- Make both title and excerpt compelling for search engines and readers
+- Never use em dashes (—) in the title or excerpt; use a semicolon (;) instead if a stronger break than a comma is needed`
           },
           {
             role: 'user',

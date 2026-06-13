@@ -220,7 +220,7 @@ async function parserAgent(scrapedData: any[], _shopUserId: string) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "gpt-5-mini",
+            model: "gpt-5.4-mini",
             messages: [
               { role: "system", content: "You are a data extraction expert. Return only valid JSON array." },
               { role: "user", content: `${prompt}\n\nContent:\n${content?.substring(0, 12000)}` },

@@ -62,7 +62,7 @@ const GOOGLE_API_KEY =
   Deno.env.get("GOOGLE_SEARCH_API_KEY") ?? Deno.env.get("GOOGLE_API_KEY") ?? "";
 const GOOGLE_SEARCH_ENGINE_ID =
   Deno.env.get("GOOGLE_SEARCH_ENGINE_ID") ?? Deno.env.get("GOOGLE_CSE_ID") ?? "";
-const OPENAI_MODEL = Deno.env.get("GEAR_REVIEW_BLOG_MODEL") ?? "gpt-5-mini";
+const OPENAI_MODEL = Deno.env.get("GEAR_REVIEW_BLOG_MODEL") ?? "gpt-5.4-mini";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 

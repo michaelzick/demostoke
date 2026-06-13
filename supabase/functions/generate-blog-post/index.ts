@@ -53,7 +53,8 @@ serve(async (req) => {
       );
     }
 
-    const systemPrompt = `You are a professional content writer specializing in outdoor gear and adventure sports. Create engaging blog posts that are informative, well-structured, and appeal to outdoor enthusiasts.`;
+    const systemPrompt = `You are a professional content writer specializing in outdoor gear and adventure sports. Create engaging blog posts that are informative, well-structured, and appeal to outdoor enthusiasts.
+Never use em dashes (—) anywhere in the title, excerpt, or content. Rewrite any sentence that would use one; if a stronger break than a comma is needed, use a semicolon (;) instead.`;
 
     const userPrompt = `Write a comprehensive blog post based on this prompt: "${requestData.prompt}"
 
@@ -94,7 +95,7 @@ Format the response as a JSON object with the following structure:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini',
+        model: 'gpt-5.4-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -116,7 +117,14 @@ Format the response as a JSON object with the following structure:
     const data = await response.json();
     console.log('✅ OpenAI API response received');
     
-    const generatedContent = data.choices[0].message.content;
+    const generatedContent = data.choices?.[0]?.message?.content;
+    if (!generatedContent || generatedContent.trim().length === 0) {
+      console.error('OpenAI returned empty content. Finish reason:', data.choices?.[0]?.finish_reason);
+      return new Response(
+        JSON.stringify({ error: 'OpenAI returned empty content. Please try again.' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     console.log('📄 Generated content length:', generatedContent.length);
 
     // Parse the JSON response from OpenAI
