@@ -49,7 +49,7 @@ Deno.serve(async (req: Request) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini',
+        model: 'gpt-5.4-mini',
         messages: [
           {
             role: 'system',
@@ -99,7 +99,7 @@ Return ONLY the content HTML - no full page structure.`
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-mini',
+        model: 'gpt-5.4-mini',
         messages: [
           {
             role: 'system',
