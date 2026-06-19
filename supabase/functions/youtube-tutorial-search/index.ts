@@ -53,6 +53,15 @@ serve(async (req) => {
     if (!response.ok) {
       const errorText = await response.text();
       console.error("YouTube API error:", response.status, errorText);
+      // 429 = YouTube Data API quota/rate limit. It is transient and retryable,
+      // so surface a stable code the client can map to a "try again later"
+      // message instead of a generic failure.
+      if (response.status === 429) {
+        return new Response(
+          JSON.stringify({ error: "rate_limited", rateLimited: true, videos: [] }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
       throw new Error(`YouTube API error: ${response.status}`);
     }
 

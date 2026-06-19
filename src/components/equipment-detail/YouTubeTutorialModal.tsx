@@ -23,19 +23,25 @@ const difficultyColors = {
 };
 
 export function YouTubeTutorialModal({ isOpen, onClose, trick }: YouTubeTutorialModalProps) {
-  const { videos, isLoading, error, searchVideos, reset } = useYouTubeSearch();
+  const { videos, isLoading, error, isRateLimited, searchVideos, reset } = useYouTubeSearch();
   const [selectedVideo, setSelectedVideo] = useState<YouTubeVideo | null>(null);
 
   useEffect(() => {
-    if (isOpen && trick) {
-      reset();
-      setSelectedVideo(null);
-      searchVideos(trick.youtubeSearchQuery).then((results) => {
-        if (results.length > 0) {
-          setSelectedVideo(results[0]);
-        }
-      });
-    }
+    if (!isOpen || !trick) return;
+
+    let active = true;
+    reset();
+    setSelectedVideo(null);
+    searchVideos(trick.youtubeSearchQuery).then((results) => {
+      // Ignore results that arrive after the drawer closed or the trick changed.
+      if (active && results.length > 0) {
+        setSelectedVideo(results[0]);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
   }, [isOpen, reset, searchVideos, trick]);
 
   if (!trick) return null;
@@ -60,13 +66,21 @@ export function YouTubeTutorialModal({ isOpen, onClose, trick }: YouTubeTutorial
           </div>
         )}
 
-        {error && (
+        {isRateLimited && !isLoading && (
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">
+              Tutorials are temporarily unavailable due to high demand. Please try again later.
+            </p>
+          </div>
+        )}
+
+        {error && !isRateLimited && (
           <div className="text-center py-8">
             <p className="text-destructive">Failed to load videos. Please try again.</p>
           </div>
         )}
 
-        {!isLoading && videos.length === 0 && !error && (
+        {!isLoading && !isRateLimited && !error && videos.length === 0 && (
           <div className="text-center py-8">
             <p className="text-muted-foreground">No tutorials found for this trick.</p>
           </div>

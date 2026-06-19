@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MapPinIcon, PhoneIcon, GlobeIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { slugify } from "@/utils/slugify";
 import { GearOwner } from "@/types";
@@ -31,11 +31,14 @@ const ContactInfoModal = ({
   const profileLinkPath = `/user-profile/${slugify(owner.name)}`;
   const outboundActionTakenRef = useRef(false);
   const noContactInfoTrackedRef = useRef(false);
-  const baseLeadEvent = {
-    owner_id: owner.id,
-    owner_name: displayName,
-    ...leadContext,
-  };
+  const baseLeadEvent = useMemo(
+    () => ({
+      owner_id: owner.id,
+      owner_name: displayName,
+      ...leadContext,
+    }),
+    [owner.id, displayName, leadContext]
+  );
 
   useEffect(() => {
     if (isOpen) {
