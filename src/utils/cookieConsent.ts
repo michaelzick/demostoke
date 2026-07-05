@@ -1,0 +1,160 @@
+import { safeGet, safeSet, safeSetCookie } from "@/theme/storage";
+
+// The consent bootstrap IIFE in index.html duplicates CONSENT_KEY and
+// CONSENT_VERSION so it can gate analytics before any bundle loads.
+// Keep the literals there in sync with these constants.
+export const CONSENT_KEY = "cookie-consent";
+export const CONSENT_VERSION = 1;
+
+export interface ConsentState {
+  version: number;
+  timestamp: string;
+  analytics: boolean;
+}
+
+declare global {
+  interface Window {
+    __loadAnalytics?: () => void;
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
+type ConsentListener = (state: ConsentState) => void;
+type OpenListener = () => void;
+
+const consentListeners = new Set<ConsentListener>();
+const preferencesOpenListeners = new Set<OpenListener>();
+
+// Indirection so tests can stub the reload; jsdom's location.reload is
+// non-configurable and cannot be spied on directly.
+export const pageReloader = {
+  reload: () => window.location.reload(),
+};
+
+const safeGetCookie = (key: string): string | null => {
+  try {
+    const match = document.cookie.match("(?:^|; )" + key + "=([^;]*)");
+    return match ? decodeURIComponent(match[1]) : null;
+  } catch {
+    return null;
+  }
+};
+
+export const getStoredConsent = (): ConsentState | null => {
+  const raw = safeGet(CONSENT_KEY) ?? safeGetCookie(CONSENT_KEY);
+  if (!raw) return null;
+
+  try {
+    const parsed = JSON.parse(raw) as Partial<ConsentState> | null;
+    if (
+      parsed &&
+      parsed.version === CONSENT_VERSION &&
+      typeof parsed.analytics === "boolean"
+    ) {
+      return parsed as ConsentState;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+};
+
+export const hasAnalyticsConsent = (): boolean =>
+  getStoredConsent()?.analytics === true;
+
+export const isGpcEnabled = (): boolean => {
+  try {
+    return (
+      (navigator as Navigator & { globalPrivacyControl?: boolean })
+        .globalPrivacyControl === true
+    );
+  } catch {
+    return false;
+  }
+};
+
+// Amplitude can rewrite its AMP_* cookie between revocation and the page
+// unload, so this also runs on load whenever consent is denied.
+export const expireAnalyticsCookies = () => {
+  try {
+    const names = document.cookie
+      .split(";")
+      .map((part) => part.split("=")[0].trim())
+      .filter((name) => /^(_ga|_gid|_gat|AMP_|amp_)/.test(name));
+
+    const hostname = window.location.hostname;
+    const domains = ["", `; domain=${hostname}`, `; domain=.${hostname}`];
+    for (const name of names) {
+      for (const domain of domains) {
+        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/${domain}`;
+      }
+    }
+  } catch {
+    // ignore
+  }
+};
+
+const pushCurrentPageView = () => {
+  try {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "page_view",
+      page_location: window.location.href,
+      page_path:
+        window.location.pathname + window.location.search + window.location.hash,
+      page_title: document.title,
+    });
+  } catch {
+    // ignore
+  }
+};
+
+export const setConsent = (analytics: boolean): ConsentState => {
+  const previous = getStoredConsent();
+  const state: ConsentState = {
+    version: CONSENT_VERSION,
+    timestamp: new Date().toISOString(),
+    analytics,
+  };
+  const serialized = JSON.stringify(state);
+  safeSet(CONSENT_KEY, serialized);
+  safeSetCookie(CONSENT_KEY, serialized);
+
+  if (analytics) {
+    window.__loadAnalytics?.();
+    // The page_view for the current page was suppressed pre-consent.
+    pushCurrentPageView();
+  } else if (previous?.analytics === true) {
+    window.gtag?.("consent", "update", { analytics_storage: "denied" });
+    const amplitude = (
+      window as Window & {
+        amplitude?: { setOptOut?: (optOut: boolean) => void };
+      }
+    ).amplitude;
+    amplitude?.setOptOut?.(true);
+    expireAnalyticsCookies();
+    consentListeners.forEach((listener) => listener(state));
+    // Reload so already-initialized trackers are fully unloaded.
+    pageReloader.reload();
+    return state;
+  }
+
+  consentListeners.forEach((listener) => listener(state));
+  return state;
+};
+
+export const subscribeToConsent = (listener: ConsentListener): (() => void) => {
+  consentListeners.add(listener);
+  return () => consentListeners.delete(listener);
+};
+
+export const openCookiePreferences = () => {
+  preferencesOpenListeners.forEach((listener) => listener());
+};
+
+export const subscribeToPreferencesOpen = (
+  listener: OpenListener,
+): (() => void) => {
+  preferencesOpenListeners.add(listener);
+  return () => preferencesOpenListeners.delete(listener);
+};

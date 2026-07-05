@@ -1,6 +1,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import { hasAnalyticsConsent } from '@/utils/cookieConsent';
 
 declare global {
   interface Window {
@@ -29,6 +30,12 @@ const GoogleTagManager = () => {
 
     const pushPageView = (pageTitle: string) => {
       if (!isActive || lastTrackedPathRef.current === pagePath) {
+        return;
+      }
+
+      // GTM replays queued dataLayer events on load, so never push
+      // page views before analytics consent is granted.
+      if (!hasAnalyticsConsent()) {
         return;
       }
 

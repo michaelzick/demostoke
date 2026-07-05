@@ -25,7 +25,7 @@ const PrivacyPolicyPage = () => {
         <div className="prose prose-lg max-w-none space-y-8">
           <section>
             <p className="text-muted-foreground mb-6">
-              <strong className="text-muted-foreground">Effective Date:</strong> {new Date().toLocaleDateString()}
+              <strong className="text-muted-foreground">Effective Date:</strong> July 5, 2026
             </p>
             <p className={legalLeadClassName}>
               At DemoStoke, we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you use our platform.
@@ -46,7 +46,7 @@ const PrivacyPolicyPage = () => {
 
             <h3 className={legalSubheadingClassName}>Anonymous Analytics Data</h3>
             <p className={legalBodyClassName}>
-              We collect anonymous data for performance analytics only, including:
+              Only with your consent, we collect anonymous data for performance analytics, including:
             </p>
             <ul className={legalListClassName}>
               <li className={legalListItemClassName}>Website usage patterns and page views</li>
@@ -55,7 +55,40 @@ const PrivacyPolicyPage = () => {
               <li className={legalListItemClassName}>Search queries and filter preferences</li>
             </ul>
             <p className={legalBodyClassName}>
-              This data is used solely to improve our platform's performance and user experience.
+              This data is used solely to improve our platform's performance and user experience. Analytics cookies are off by default and are set only after you opt in through our cookie consent banner. See the Cookies and Tracking Technologies section below for details.
+            </p>
+          </section>
+
+          <section id="cookies">
+            <h2 className={legalSectionHeadingClassName}>Cookies and Tracking Technologies</h2>
+            <p className={legalBodyClassName}>
+              We use cookies and similar technologies in two categories:
+            </p>
+            <h3 className={legalSubheadingClassName}>Essential Cookies (Always On)</h3>
+            <p className={legalBodyClassName}>
+              These are required for DemoStoke to function and cannot be turned off. They include authentication and security cookies, your theme preference (<code>ui-theme</code>), and the record of your cookie consent choice (<code>cookie-consent</code>).
+            </p>
+            <h3 className={legalSubheadingClassName}>Analytics Cookies (Opt-In Only)</h3>
+            <p className={legalBodyClassName}>
+              These are set only if you accept them through our cookie consent banner. With your consent, we use:
+            </p>
+            <ul className={legalListClassName}>
+              <li className={legalListItemClassName}>
+                <strong className="text-foreground">Google Analytics 4</strong> (via Google Tag Manager) — usage and performance measurement. Sets cookies such as <code>_ga</code> and <code>_ga_*</code>, retained for up to about 2 years.
+              </li>
+              <li className={legalListItemClassName}>
+                <strong className="text-foreground">Google Tag Manager</strong> — delivers our analytics tags and honors your consent state.
+              </li>
+              <li className={legalListItemClassName}>
+                <strong className="text-foreground">Amplitude</strong> — product analytics and session replay. With your consent, Amplitude may visually replay your session (clicks, scrolling, and page interactions; sensitive inputs are masked). Sets cookies such as <code>AMP_*</code>, retained for up to about 1 year.
+              </li>
+            </ul>
+            <h3 className={legalSubheadingClassName}>Managing Your Choices</h3>
+            <p className={legalBodyClassName}>
+              You can change or withdraw your consent at any time using the Cookie Settings link in the site footer. Withdrawing consent stops analytics collection and removes analytics cookies from your browser on a best-effort basis.
+            </p>
+            <p className={legalBodyClassName}>
+              We honor the Global Privacy Control (GPC) browser signal and treat it as a request to opt out of analytics by default.
             </p>
           </section>
 
@@ -111,6 +144,19 @@ const PrivacyPolicyPage = () => {
               <li className={legalListItemClassName}>Request a copy of your data</li>
               <li className={legalListItemClassName}>Report privacy concerns or violations</li>
             </ul>
+            <p className={legalBodyClassName}>
+              If you are in the European Economic Area or United Kingdom, you also have rights under the GDPR, including the rights to access, rectify, erase, and port your data, to object to or restrict certain processing, and to withdraw consent at any time — withdrawing consent is as easy as giving it, via the Cookie Settings link in the site footer. You may also lodge a complaint with your local supervisory authority.
+            </p>
+          </section>
+
+          <section>
+            <h2 className={legalSectionHeadingClassName}>California and US State Privacy Rights (CCPA/CPRA)</h2>
+            <p className={legalBodyClassName}>
+              We do not sell your personal information. Some analytics activity may be considered "sharing" under the California Privacy Rights Act; you can opt out at any time using the Cookie Settings link in the site footer (our "Your Privacy Choices" mechanism) or by enabling the Global Privacy Control signal in your browser, which we honor.
+            </p>
+            <p className={legalBodyClassName}>
+              If you are a California resident (or a resident of another US state with a similar privacy law), you have the right to know what personal information we collect, to request its deletion, to correct inaccurate information, and to exercise these rights without discrimination. To make a request, <Link to="/contact-us" className="text-ocean hover:underline">contact us</Link>.
+            </p>
           </section>
 
           <section>

@@ -25,7 +25,7 @@ const TermsOfServicePage = () => {
         <div className="prose prose-lg max-w-none space-y-8">
           <section>
             <p className="text-muted-foreground mb-6">
-              <strong className="text-muted-foreground">Effective Date:</strong> {new Date().toLocaleDateString()}
+              <strong className="text-muted-foreground">Effective Date:</strong> July 5, 2026
             </p>
             <p className={legalLeadClassName}>
               Welcome to DemoStoke! These Terms of Service ("Terms") govern your use of our platform and services. By accessing or using DemoStoke, you agree to be bound by these Terms.
@@ -127,7 +127,7 @@ const TermsOfServicePage = () => {
           <section>
             <h2 className={legalSectionHeadingClassName}>8. Privacy</h2>
             <p className={legalBodyClassName}>
-              Your privacy is important to us. Please review our <Link to="/privacy-policy" className="text-ocean hover:underline">Privacy Policy</Link> to understand how we collect, use, and protect your information.
+              Your privacy is important to us. Please review our <Link to="/privacy-policy" className="text-ocean hover:underline">Privacy Policy</Link> to understand how we collect, use, and protect your information. Analytics cookies are used only with your consent, which you can give or withdraw at any time via the cookie consent banner or the Cookie Settings link in the site footer, as described in the Privacy Policy's Cookies and Tracking Technologies section.
             </p>
           </section>
 

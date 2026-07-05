@@ -103,24 +103,91 @@
     })();
   </script>
 
-  <!-- Google Tag Manager -->
-  <script>(function (w, d, s, l, i) {
-      w[l] = w[l] || []; w[l].push({
-        'gtm.start':
-          new Date().getTime(), event: 'gtm.js'
-      }); var f = d.getElementsByTagName(s)[0],
-        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
-          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
-    })(window, document, 'script', 'dataLayer', 'GTM-MHM2XTTV');</script>
-  <!-- End Google Tag Manager -->
-
-  <!-- GA4 Direct Fallback -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KKQJ9P2ECC"></script>
+  <!-- Consent-gated analytics bootstrap.
+       GTM, GA4, and Amplitude load ONLY after the visitor opts in via the
+       cookie consent banner. The 'cookie-consent' key/version literals are
+       duplicated in src/utils/cookieConsent.ts — keep them in sync. -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-KKQJ9P2ECC');
+    (function () {
+      var KEY = 'cookie-consent';
+      var VERSION = 1;
+
+      // Google Consent Mode v2 defaults, queued before any Google script
+      // could possibly run.
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { window.dataLayer.push(arguments); }
+      window.gtag = window.gtag || gtag;
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied'
+      });
+
+      function readConsent() {
+        var raw = null;
+        try { raw = localStorage.getItem(KEY); } catch (e) { }
+        if (!raw) {
+          try {
+            var m = document.cookie.match('(?:^|; )' + KEY + '=([^;]*)');
+            if (m) raw = decodeURIComponent(m[1]);
+          } catch (e) { }
+        }
+        if (!raw) return null;
+        try {
+          var parsed = JSON.parse(raw);
+          return parsed && parsed.version === VERSION ? parsed : null;
+        } catch (e) { return null; }
+      }
+
+      var loaded = false;
+      window.__loadAnalytics = function () {
+        if (loaded) return;
+        loaded = true;
+
+        window.gtag('consent', 'update', { analytics_storage: 'granted' });
+
+        // Google Tag Manager
+        window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        var gtm = document.createElement('script');
+        gtm.async = true;
+        gtm.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-MHM2XTTV';
+        document.head.appendChild(gtm);
+
+        // GA4 direct fallback
+        var ga = document.createElement('script');
+        ga.async = true;
+        ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-KKQJ9P2ECC';
+        document.head.appendChild(ga);
+        window.gtag('js', new Date());
+        window.gtag('config', 'G-KKQJ9P2ECC');
+
+        // Amplitude Analytics & Session Replay — init runs in onload since
+        // the CDN script is injected asynchronously.
+        var amp = document.createElement('script');
+        amp.src = 'https://cdn.amplitude.com/script/f8e22b9e6a107073fe8cb51424e63488.js';
+        amp.onload = function () {
+          if (!window.amplitude) return;
+          if (window.sessionReplay) {
+            window.amplitude.add(window.sessionReplay.plugin({
+              sampleRate: 1,
+              config: {
+                captureRageClicks: true,
+                captureDeadClicks: true,
+              },
+              logLevel: 3,
+            }));
+          }
+          window.amplitude.init('f8e22b9e6a107073fe8cb51424e63488', { "fetchRemoteConfig": true, "autocapture": true });
+        };
+        document.head.appendChild(amp);
+      };
+
+      var stored = readConsent();
+      if (stored && stored.analytics === true) {
+        window.__loadAnalytics();
+      }
+    })();
   </script>
 
   <!-- JS Error Tracking -->
@@ -145,31 +212,9 @@
     });
   </script>
 
-  <!-- Amplitude Analytics & Session Replay -->
-  <script src="https://cdn.amplitude.com/script/f8e22b9e6a107073fe8cb51424e63488.js"></script>
-  <script>
-    if (window.amplitude) {
-      if (window.sessionReplay) {
-        window.amplitude.add(window.sessionReplay.plugin({
-          sampleRate: 1,
-          config: {
-            captureRageClicks: true,
-            captureDeadClicks: true,
-          },
-          logLevel: 3,
-        }));
-      }
-      window.amplitude.init('f8e22b9e6a107073fe8cb51424e63488', { "fetchRemoteConfig": true, "autocapture": true });
-    }
-  </script>
 </head>
 
 <body>
-  <!-- Google Tag Manager (noscript) -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MHM2XTTV" height="0" width="0"
-      style="display:none;visibility:hidden"></iframe></noscript>
-  <!-- End Google Tag Manager (noscript) -->
-
   <div id="root"><!--app-html--></div>
 
   <script type="module" src="/src/entry-client.tsx"></script>
