@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import useScrollToTop from "@/hooks/useScrollToTop";
 import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
+import { openCookiePreferences } from "@/utils/cookieConsent";
 
 const legalPageHeadingClassName = "text-4xl font-bold mb-8 text-foreground";
 const legalSectionHeadingClassName = "text-2xl font-bold mb-4 text-foreground";
@@ -46,7 +47,7 @@ const PrivacyPolicyPage = () => {
 
             <h3 className={legalSubheadingClassName}>Anonymous Analytics Data</h3>
             <p className={legalBodyClassName}>
-              Only with your consent, we collect anonymous data for performance analytics, including:
+              Unless you opt out, we collect anonymous data for performance analytics, including:
             </p>
             <ul className={legalListClassName}>
               <li className={legalListItemClassName}>Website usage patterns and page views</li>
@@ -55,7 +56,7 @@ const PrivacyPolicyPage = () => {
               <li className={legalListItemClassName}>Search queries and filter preferences</li>
             </ul>
             <p className={legalBodyClassName}>
-              This data is used solely to improve our platform's performance and user experience. Analytics cookies are off by default and are set only after you opt in through our cookie consent banner. See the Cookies and Tracking Technologies section below for details.
+              This data is used solely to improve our platform's performance and user experience. Analytics cookies are on by default, and you can opt out at any time through our cookie consent banner or the Cookie Settings link in the site footer. See the Cookies and Tracking Technologies section below for details.
             </p>
           </section>
 
@@ -68,9 +69,9 @@ const PrivacyPolicyPage = () => {
             <p className={legalBodyClassName}>
               These are required for DemoStoke to function and cannot be turned off. They include authentication and security cookies, your theme preference (<code>ui-theme</code>), and the record of your cookie consent choice (<code>cookie-consent</code>).
             </p>
-            <h3 className={legalSubheadingClassName}>Analytics Cookies (Opt-In Only)</h3>
+            <h3 className={legalSubheadingClassName}>Analytics Cookies (On by Default, Opt Out Anytime)</h3>
             <p className={legalBodyClassName}>
-              These are set only if you accept them through our cookie consent banner. With your consent, we use:
+              These are set by default unless you opt out through our cookie consent banner, turn on the Do Not Sell or Share My Information setting, or send a Global Privacy Control signal. We use:
             </p>
             <ul className={legalListClassName}>
               <li className={legalListItemClassName}>
@@ -85,10 +86,18 @@ const PrivacyPolicyPage = () => {
             </ul>
             <h3 className={legalSubheadingClassName}>Managing Your Choices</h3>
             <p className={legalBodyClassName}>
-              You can change or withdraw your consent at any time using the Cookie Settings link in the site footer. Withdrawing consent stops analytics collection and removes analytics cookies from your browser on a best-effort basis.
+              You can change your choices at any time using the Cookie Settings or Do Not Sell or Share My Information links in the site footer, or by{" "}
+              <button
+                type="button"
+                onClick={openCookiePreferences}
+                className="text-ocean hover:underline"
+              >
+                opening Cookie Settings right here
+              </button>
+              . Opting out stops analytics collection and removes analytics cookies from your browser on a best-effort basis.
             </p>
             <p className={legalBodyClassName}>
-              We honor the Global Privacy Control (GPC) browser signal and treat it as a request to opt out of analytics by default.
+              We honor the Global Privacy Control (GPC) browser signal and treat it as a request to opt out of analytics and the sale or sharing of personal information by default.
             </p>
           </section>
 
@@ -152,7 +161,7 @@ const PrivacyPolicyPage = () => {
           <section>
             <h2 className={legalSectionHeadingClassName}>California and US State Privacy Rights (CCPA/CPRA)</h2>
             <p className={legalBodyClassName}>
-              We do not sell your personal information. Some analytics activity may be considered "sharing" under the California Privacy Rights Act; you can opt out at any time using the Cookie Settings link in the site footer (our "Your Privacy Choices" mechanism) or by enabling the Global Privacy Control signal in your browser, which we honor.
+              We do not sell your personal information for money. Some analytics activity may be considered "sharing" under the California Privacy Rights Act; you can opt out at any time by turning on the Do Not Sell or Share My Information toggle in Cookie Settings (linked in the site footer and available above), or by enabling the Global Privacy Control signal in your browser, which we honor. Turning it on also disables analytics cookies, since our analytics providers are third parties.
             </p>
             <p className={legalBodyClassName}>
               If you are a California resident (or a resident of another US state with a similar privacy law), you have the right to know what personal information we collect, to request its deletion, to correct inaccurate information, and to exercise these rights without discrimination. To make a request, <Link to="/contact-us" className="text-ocean hover:underline">contact us</Link>.

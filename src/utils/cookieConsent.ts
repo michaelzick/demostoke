@@ -4,12 +4,13 @@ import { safeGet, safeSet, safeSetCookie } from "@/theme/storage";
 // CONSENT_VERSION so it can gate analytics before any bundle loads.
 // Keep the literals there in sync with these constants.
 export const CONSENT_KEY = "cookie-consent";
-export const CONSENT_VERSION = 1;
+export const CONSENT_VERSION = 2;
 
 export interface ConsentState {
   version: number;
   timestamp: string;
   analytics: boolean;
+  doNotSell: boolean;
 }
 
 declare global {
@@ -49,7 +50,8 @@ export const getStoredConsent = (): ConsentState | null => {
     if (
       parsed &&
       parsed.version === CONSENT_VERSION &&
-      typeof parsed.analytics === "boolean"
+      typeof parsed.analytics === "boolean" &&
+      typeof parsed.doNotSell === "boolean"
     ) {
       return parsed as ConsentState;
     }
@@ -58,9 +60,6 @@ export const getStoredConsent = (): ConsentState | null => {
     return null;
   }
 };
-
-export const hasAnalyticsConsent = (): boolean =>
-  getStoredConsent()?.analytics === true;
 
 export const isGpcEnabled = (): boolean => {
   try {
@@ -71,6 +70,18 @@ export const isGpcEnabled = (): boolean => {
   } catch {
     return false;
   }
+};
+
+// Opt-out model: analytics runs by default until the visitor opts out,
+// except when a Global Privacy Control signal is present. A do-not-sell
+// opt-out overrides the analytics toggle because our analytics vendors
+// are third parties.
+export const hasAnalyticsConsent = (): boolean => {
+  const stored = getStoredConsent();
+  if (stored) {
+    return stored.analytics && !stored.doNotSell;
+  }
+  return !isGpcEnabled();
 };
 
 // Amplitude can rewrite its AMP_* cookie between revocation and the page
@@ -109,22 +120,33 @@ const pushCurrentPageView = () => {
   }
 };
 
-export const setConsent = (analytics: boolean): ConsentState => {
-  const previous = getStoredConsent();
+export const setConsent = (
+  analytics: boolean,
+  doNotSell: boolean,
+): ConsentState => {
+  // With the opt-out default, analytics may already be running even when
+  // nothing is stored yet, so the previous effective state matters more
+  // than the previous stored state.
+  const wasAllowed = hasAnalyticsConsent();
   const state: ConsentState = {
     version: CONSENT_VERSION,
     timestamp: new Date().toISOString(),
     analytics,
+    doNotSell,
   };
   const serialized = JSON.stringify(state);
   safeSet(CONSENT_KEY, serialized);
   safeSetCookie(CONSENT_KEY, serialized);
 
-  if (analytics) {
+  const isAllowed = analytics && !doNotSell;
+  if (isAllowed) {
     window.__loadAnalytics?.();
-    // The page_view for the current page was suppressed pre-consent.
-    pushCurrentPageView();
-  } else if (previous?.analytics === true) {
+    // The page_view for the current page was suppressed if analytics was
+    // off when the route rendered.
+    if (!wasAllowed) {
+      pushCurrentPageView();
+    }
+  } else if (wasAllowed) {
     window.gtag?.("consent", "update", { analytics_storage: "denied" });
     const amplitude = (
       window as Window & {

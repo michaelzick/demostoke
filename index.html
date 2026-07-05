@@ -110,7 +110,7 @@
   <script>
     (function () {
       var KEY = 'cookie-consent';
-      var VERSION = 1;
+      var VERSION = 2;
 
       // Google Consent Mode v2 defaults, queued before any Google script
       // could possibly run.
@@ -136,7 +136,9 @@
         if (!raw) return null;
         try {
           var parsed = JSON.parse(raw);
-          return parsed && parsed.version === VERSION ? parsed : null;
+          return parsed && parsed.version === VERSION &&
+            typeof parsed.analytics === 'boolean' &&
+            typeof parsed.doNotSell === 'boolean' ? parsed : null;
         } catch (e) { return null; }
       }
 
@@ -183,8 +185,14 @@
         document.head.appendChild(amp);
       };
 
+      // Opt-out model: analytics runs by default unless the visitor opted
+      // out (analytics off or do-not-sell on) or sends a Global Privacy
+      // Control signal.
       var stored = readConsent();
-      if (stored && stored.analytics === true) {
+      var allowed = stored
+        ? (stored.analytics === true && stored.doNotSell !== true)
+        : navigator.globalPrivacyControl !== true;
+      if (allowed) {
         window.__loadAnalytics();
       }
     })();

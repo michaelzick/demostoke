@@ -88,6 +88,15 @@ const Footer = () => {
                     Cookie Settings
                   </button>
                 </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={openCookiePreferences}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
+                  >
+                    Do Not Sell or Share My Information
+                  </button>
+                </li>
                 {/* <li>
                   <Link to="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     FAQ
