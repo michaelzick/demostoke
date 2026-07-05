@@ -1,3 +1,5 @@
+import { hasAnalyticsConsent } from "@/utils/cookieConsent";
+
 export const buildEquipmentTrackingFrom = (equipment: {
   owner: { name: string };
   name: string;
@@ -25,6 +27,12 @@ export const trackEvent = (
   eventName: string,
   properties?: Record<string, unknown>
 ) => {
+  // GTM replays the whole dataLayer queue when it loads after a late opt-in,
+  // so pre-consent events must never be pushed.
+  if (!hasAnalyticsConsent()) {
+    return;
+  }
+
   const eventProperties = {
     ...properties,
     ...getAttributionFromUrl(),

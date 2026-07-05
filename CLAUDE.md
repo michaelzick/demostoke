@@ -51,7 +51,7 @@
 - `src/components/AppRoutes.tsx` is the authoritative route map.
 - `server/index.js` serves `dist/client`, loads the server bundle, and injects canonical/meta/schema/robots/404 behavior using `src/lib/seo/*`.
 - `server/index.js` also owns the live security headers, including the production `Content-Security-Policy` allowlists for analytics, Supabase, Mapbox, Google reCAPTCHA, and similar third-party origins.
-- `index.html` contains the pre-hydration theme resolver plus GTM, GA4, and Amplitude script tags. If you touch head behavior, inspect this file.
+- `index.html` contains the pre-hydration theme resolver plus a consent-gated analytics bootstrap. GTM, GA4, and Amplitude scripts are injected only by `window.__loadAnalytics()`, which runs by default (opt-out model) for visitors outside the EU/EEA/UK unless they opted out; EU/EEA/UK visitors (timezone heuristic) must opt in first. Do Not Sell and GPC do not gate analytics. If you touch head behavior, inspect this file.
 
 ## High-Value Route Areas
 - Marketing/public pages:
@@ -228,6 +228,7 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
 - Multi-image behavior prefers `equipment_images` / `all_images`; many components assume the primary image is `images[0]`, not a legacy single `image_url`.
 - `AuthProvider` syncs favorites and recently viewed items from localStorage into Supabase on sign-in; browser-only storage assumptions matter.
 - The theme system is split between `index.html` and `src/theme/*`; if you change theme startup behavior, keep both in sync.
+- All analytics (GTM, GA4, Amplitude incl. session replay) are consent-gated: US-style opt-out (default on) for visitors outside GDPR territories, opt-in (default off) for EU/EEA/UK/CH visitors detected via the free timezone heuristic `isEuVisitor()` (`Europe/*` plus the EU Atlantic island zones; duplicated in the `index.html` bootstrap — keep in sync). Effective consent is `stored ? stored.analytics : !isEuVisitor()`. The "Do Not Sell or Share My Information" preference (`doNotSell`) is INDEPENDENT of analytics and ON by default: DemoStoke does not sell or share data (analytics is internal-use only, a deliberate product decision, July 2026), so `doNotSell` and GPC signals record the CPRA opt-out but never disable analytics. Scripts load only via `window.__loadAnalytics()` in the `index.html` bootstrap; consent state lives in `src/utils/cookieConsent.ts` (`cookie-consent` key, versioned via `CONSENT_VERSION` — bump it to re-prompt everyone, localStorage + cookie mirror). The banner is `src/components/CookieConsentBanner.tsx` (mounted via `ClientOnlyCookieConsent` in `App.tsx`; reopened from the Footer's "Cookie Settings" and "Do Not Sell or Share My Information" buttons and a link on the Privacy Policy page). `trackEvent`, `GoogleTagManager`, and `vitals.sendToGA4` all guard on `hasAnalyticsConsent()` so opted-out events never enter the dataLayer queue (GTM replays it on late load). Never add analytics scripts directly to `index.html` or push to `dataLayer` without a consent check. The `cookie-consent` key/version literals and the default-allowed logic are duplicated between `index.html` and `cookieConsent.ts` — keep them in sync.
 - Search/explore/profile visibility behavior is tightly coupled to `equipmentDataService`, `searchService`, `useEquipmentWithDynamicDistance`, and advanced filter helpers.
 - The sign-in page runs invisible reCAPTCHA with the floating Google badge hidden (`hideBadge` prop on `src/components/Recaptcha.tsx`). Google only allows hiding the badge when the disclosure text is shown instead, so keep `hideBadge` paired with `RecaptchaDisclosure` on any form that uses it.
 - Automated gear-review drafts must not create `equipment_reviews` rows or mutate `equipment.rating` / `equipment.review_count`. Hidden factual evidence belongs in `gear_review_blog_generation_runs.hidden_evidence`, not in public blog copy, tags, excerpts, or analytics payloads.
@@ -260,6 +261,7 @@ Do not substitute other image sources for seed data. If new categories are added
 - Unit tests live under `src/__tests__/` and focus heavily on SEO, SSR/server behavior, map/hybrid filtering, quiz resolution, and related regressions.
 - If you change routing, SEO, SSR, schema, or public discovery behavior, run the most relevant local checks and update tests when behavior changed intentionally.
 - Before finishing a code change, re-check whether this file needs an update.
+- Before finishing any work session, kill every process you started (dev servers, preview servers, background builds, watchers) and verify their ports are free (e.g. `lsof -i :<port>`). Never leave processes running for the user to hunt down. Never kill processes you did not start, such as the user's own dev server.
 
 ## Seed Data — Schema Gotchas (equipment table)
 

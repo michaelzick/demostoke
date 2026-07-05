@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import useScrollToTop from "@/hooks/useScrollToTop";
 import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
+import { openCookiePreferences } from "@/utils/cookieConsent";
 
 const legalPageHeadingClassName = "text-4xl font-bold mb-8 text-foreground";
 const legalSectionHeadingClassName = "text-2xl font-bold mb-4 text-foreground";
@@ -25,7 +26,7 @@ const PrivacyPolicyPage = () => {
         <div className="prose prose-lg max-w-none space-y-8">
           <section>
             <p className="text-muted-foreground mb-6">
-              <strong className="text-muted-foreground">Effective Date:</strong> {new Date().toLocaleDateString()}
+              <strong className="text-muted-foreground">Effective Date:</strong> July 5, 2026
             </p>
             <p className={legalLeadClassName}>
               At DemoStoke, we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you use our platform.
@@ -46,7 +47,7 @@ const PrivacyPolicyPage = () => {
 
             <h3 className={legalSubheadingClassName}>Anonymous Analytics Data</h3>
             <p className={legalBodyClassName}>
-              We collect anonymous data for performance analytics only, including:
+              Unless you opt out, we collect anonymous data for performance analytics, including:
             </p>
             <ul className={legalListClassName}>
               <li className={legalListItemClassName}>Website usage patterns and page views</li>
@@ -55,7 +56,48 @@ const PrivacyPolicyPage = () => {
               <li className={legalListItemClassName}>Search queries and filter preferences</li>
             </ul>
             <p className={legalBodyClassName}>
-              This data is used solely to improve our platform's performance and user experience.
+              This data is used solely to improve our platform's performance and user experience; it is never sold or shared for advertising. Analytics cookies are on by default for visitors outside the EU/EEA/UK (visitors there are asked to opt in first), and you can opt out at any time through our cookie consent banner or the Cookie Settings link in the site footer. See the Cookies and Tracking Technologies section below for details.
+            </p>
+          </section>
+
+          <section id="cookies">
+            <h2 className={legalSectionHeadingClassName}>Cookies and Tracking Technologies</h2>
+            <p className={legalBodyClassName}>
+              We use cookies and similar technologies in two categories:
+            </p>
+            <h3 className={legalSubheadingClassName}>Essential Cookies (Always On)</h3>
+            <p className={legalBodyClassName}>
+              These are required for DemoStoke to function and cannot be turned off. They include authentication and security cookies, your theme preference (<code>ui-theme</code>), and the record of your cookie consent choice (<code>cookie-consent</code>).
+            </p>
+            <h3 className={legalSubheadingClassName}>Analytics Cookies (On by Default, Opt Out Anytime)</h3>
+            <p className={legalBodyClassName}>
+              For visitors outside the European Economic Area, United Kingdom, and Switzerland, these are set by default unless you opt out through our cookie consent banner or Cookie Settings. If you appear to be visiting from those regions (based on your device's timezone), analytics cookies are off by default and load only after you opt in. We use:
+            </p>
+            <ul className={legalListClassName}>
+              <li className={legalListItemClassName}>
+                <strong className="text-foreground">Google Analytics 4</strong> (via Google Tag Manager) — usage and performance measurement. Sets cookies such as <code>_ga</code> and <code>_ga_*</code>, retained for up to about 2 years.
+              </li>
+              <li className={legalListItemClassName}>
+                <strong className="text-foreground">Google Tag Manager</strong> — delivers our analytics tags and honors your consent state.
+              </li>
+              <li className={legalListItemClassName}>
+                <strong className="text-foreground">Amplitude</strong> — product analytics and session replay. With your consent, Amplitude may visually replay your session (clicks, scrolling, and page interactions; sensitive inputs are masked). Sets cookies such as <code>AMP_*</code>, retained for up to about 1 year.
+              </li>
+            </ul>
+            <h3 className={legalSubheadingClassName}>Managing Your Choices</h3>
+            <p className={legalBodyClassName}>
+              You can change your choices at any time using the Cookie Settings or Do Not Sell or Share My Information links in the site footer, or by{" "}
+              <button
+                type="button"
+                onClick={openCookiePreferences}
+                className="text-ocean hover:underline"
+              >
+                opening Cookie Settings right here
+              </button>
+              . Opting out stops analytics collection and removes analytics cookies from your browser on a best-effort basis.
+            </p>
+            <p className={legalBodyClassName}>
+              We honor the Global Privacy Control (GPC) browser signal and treat it as a request to opt out of the sale or sharing of personal information. Because we do not sell or share personal information, and your Do Not Sell or Share My Information preference is already on by default, honoring GPC does not change how the site works. GPC does not affect analytics cookies, which we use only for our own internal site improvement; you can opt out of those separately in Cookie Settings.
             </p>
           </section>
 
@@ -111,6 +153,19 @@ const PrivacyPolicyPage = () => {
               <li className={legalListItemClassName}>Request a copy of your data</li>
               <li className={legalListItemClassName}>Report privacy concerns or violations</li>
             </ul>
+            <p className={legalBodyClassName}>
+              If you are in the European Economic Area or United Kingdom, you also have rights under the GDPR, including the rights to access, rectify, erase, and port your data, to object to or restrict certain processing, and to withdraw consent at any time — withdrawing consent is as easy as giving it, via the Cookie Settings link in the site footer. Analytics cookies are off by default for visitors from these regions and load only after you opt in. You may also lodge a complaint with your local supervisory authority.
+            </p>
+          </section>
+
+          <section>
+            <h2 className={legalSectionHeadingClassName}>California and US State Privacy Rights (CCPA/CPRA)</h2>
+            <p className={legalBodyClassName}>
+              We do not sell your personal information, and we do not share it for cross-context behavioral advertising. Our analytics providers (Google and Amplitude) process usage data solely as service providers for our own internal site improvement. The Do Not Sell or Share My Information preference is on by default for every visitor and can be reviewed anytime in Cookie Settings (linked in the site footer and available above); we also honor the Global Privacy Control browser signal. Because this preference concerns sale and sharing only, it does not turn off analytics cookies — you can opt out of those separately in the same Cookie Settings dialog.
+            </p>
+            <p className={legalBodyClassName}>
+              If you are a California resident (or a resident of another US state with a similar privacy law), you have the right to know what personal information we collect, to request its deletion, to correct inaccurate information, and to exercise these rights without discrimination. To make a request, <Link to="/contact-us" className="text-ocean hover:underline">contact us</Link>.
+            </p>
           </section>
 
           <section>

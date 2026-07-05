@@ -1,6 +1,7 @@
 
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { openCookiePreferences } from "@/utils/cookieConsent";
 
 const Footer = () => {
   return (
@@ -77,6 +78,24 @@ const Footer = () => {
                   <Link to="/terms-of-service" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     Terms of Service
                   </Link>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={openCookiePreferences}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Cookie Settings
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={openCookiePreferences}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
+                  >
+                    Do Not Sell or Share My Information
+                  </button>
                 </li>
                 {/* <li>
                   <Link to="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">

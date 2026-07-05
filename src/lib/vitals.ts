@@ -1,6 +1,11 @@
 import { onCLS, onINP, onLCP } from 'web-vitals';
+import { hasAnalyticsConsent } from '@/utils/cookieConsent';
 
 function sendToGA4(metric: { name: string; value: number; id: string }) {
+  if (!hasAnalyticsConsent()) {
+    return;
+  }
+
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event: 'web_vitals',
