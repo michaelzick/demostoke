@@ -7,6 +7,7 @@ import {
   CONSENT_VERSION,
   openCookiePreferences,
   pageReloader,
+  timeZoneReader,
 } from "@/utils/cookieConsent";
 
 const renderBanner = () =>
@@ -35,6 +36,9 @@ const setGpc = (value: boolean | undefined) => {
   });
 };
 
+const setTimeZone = (tz: string) =>
+  vi.spyOn(timeZoneReader, "get").mockReturnValue(tz);
+
 describe("CookieConsentBanner", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -43,6 +47,8 @@ describe("CookieConsentBanner", () => {
     setGpc(undefined);
     vi.restoreAllMocks();
     vi.spyOn(pageReloader, "reload").mockImplementation(() => {});
+    // Deterministic non-EU default regardless of the host machine.
+    setTimeZone("America/Los_Angeles");
   });
 
   it("shows the banner when no consent is stored", () => {
@@ -55,14 +61,14 @@ describe("CookieConsentBanner", () => {
   });
 
   it("stays hidden when consent is already stored", () => {
-    storeConsent(true, false);
+    storeConsent(true, true);
     renderBanner();
     expect(
       screen.queryByRole("dialog", { name: "Cookie consent" }),
     ).not.toBeInTheDocument();
   });
 
-  it("stores analytics on and do-not-sell off on Accept All", () => {
+  it("stores analytics on and keeps do-not-sell on with Accept All", () => {
     const loadAnalytics = vi.fn();
     window.__loadAnalytics = loadAnalytics;
     renderBanner();
@@ -72,7 +78,7 @@ describe("CookieConsentBanner", () => {
     expect(JSON.parse(localStorage.getItem(CONSENT_KEY)!)).toMatchObject({
       version: CONSENT_VERSION,
       analytics: true,
-      doNotSell: false,
+      doNotSell: true,
     });
     expect(loadAnalytics).toHaveBeenCalledTimes(1);
     expect(
@@ -94,7 +100,7 @@ describe("CookieConsentBanner", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("opens preferences with analytics on and do-not-sell off by default", () => {
+  it("opens preferences with analytics on and do-not-sell on by default", () => {
     renderBanner();
 
     fireEvent.click(screen.getByRole("button", { name: "Manage Preferences" }));
@@ -108,11 +114,28 @@ describe("CookieConsentBanner", () => {
     expect(screen.getByRole("switch", { name: "Analytics cookies" })).toBeChecked();
     expect(
       screen.getByRole("switch", { name: "Do not sell or share my information" }),
-    ).not.toBeChecked();
+    ).toBeChecked();
   });
 
-  it("defaults analytics off and do-not-sell on when GPC is present", () => {
+  it("keeps analytics on by default under GPC and shows the honor copy", () => {
     setGpc(true);
+    renderBanner();
+
+    fireEvent.click(screen.getByRole("button", { name: "Manage Preferences" }));
+
+    expect(
+      screen.getByRole("switch", { name: "Analytics cookies" }),
+    ).toBeChecked();
+    expect(
+      screen.getByRole("switch", { name: "Do not sell or share my information" }),
+    ).toBeChecked();
+    expect(
+      screen.getByText(/We detected a Global Privacy Control signal/i),
+    ).toBeInTheDocument();
+  });
+
+  it("defaults analytics off for EU/EEA/UK visitors and shows the opt-in copy", () => {
+    setTimeZone("Europe/Berlin");
     renderBanner();
 
     fireEvent.click(screen.getByRole("button", { name: "Manage Preferences" }));
@@ -124,11 +147,11 @@ describe("CookieConsentBanner", () => {
       screen.getByRole("switch", { name: "Do not sell or share my information" }),
     ).toBeChecked();
     expect(
-      screen.getByText(/We detected a Global Privacy Control signal/i),
+      screen.getByText(/visiting from the EU\/EEA\/UK/i),
     ).toBeInTheDocument();
   });
 
-  it("links the toggles: do-not-sell on turns analytics off and vice versa", () => {
+  it("keeps the toggles independent: neither changes the other", () => {
     renderBanner();
     fireEvent.click(screen.getByRole("button", { name: "Manage Preferences" }));
 
@@ -138,15 +161,17 @@ describe("CookieConsentBanner", () => {
     });
 
     fireEvent.click(doNotSell);
-    expect(doNotSell).toBeChecked();
-    expect(analytics).not.toBeChecked();
+    expect(doNotSell).not.toBeChecked();
+    expect(analytics).toBeChecked();
 
     fireEvent.click(analytics);
-    expect(analytics).toBeChecked();
+    expect(analytics).not.toBeChecked();
     expect(doNotSell).not.toBeChecked();
   });
 
-  it("saves the do-not-sell opt-out from the preferences dialog", () => {
+  it("saves independent toggle choices from the preferences dialog", () => {
+    const loadAnalytics = vi.fn();
+    window.__loadAnalytics = loadAnalytics;
     renderBanner();
 
     fireEvent.click(screen.getByRole("button", { name: "Manage Preferences" }));
@@ -156,8 +181,8 @@ describe("CookieConsentBanner", () => {
     fireEvent.click(screen.getByRole("button", { name: "Save Preferences" }));
 
     expect(JSON.parse(localStorage.getItem(CONSENT_KEY)!)).toMatchObject({
-      analytics: false,
-      doNotSell: true,
+      analytics: true,
+      doNotSell: false,
     });
   });
 

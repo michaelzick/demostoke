@@ -56,7 +56,7 @@ const PrivacyPolicyPage = () => {
               <li className={legalListItemClassName}>Search queries and filter preferences</li>
             </ul>
             <p className={legalBodyClassName}>
-              This data is used solely to improve our platform's performance and user experience. Analytics cookies are on by default, and you can opt out at any time through our cookie consent banner or the Cookie Settings link in the site footer. See the Cookies and Tracking Technologies section below for details.
+              This data is used solely to improve our platform's performance and user experience; it is never sold or shared for advertising. Analytics cookies are on by default for visitors outside the EU/EEA/UK (visitors there are asked to opt in first), and you can opt out at any time through our cookie consent banner or the Cookie Settings link in the site footer. See the Cookies and Tracking Technologies section below for details.
             </p>
           </section>
 
@@ -71,7 +71,7 @@ const PrivacyPolicyPage = () => {
             </p>
             <h3 className={legalSubheadingClassName}>Analytics Cookies (On by Default, Opt Out Anytime)</h3>
             <p className={legalBodyClassName}>
-              These are set by default unless you opt out through our cookie consent banner, turn on the Do Not Sell or Share My Information setting, or send a Global Privacy Control signal. We use:
+              For visitors outside the European Economic Area, United Kingdom, and Switzerland, these are set by default unless you opt out through our cookie consent banner or Cookie Settings. If you appear to be visiting from those regions (based on your device's timezone), analytics cookies are off by default and load only after you opt in. We use:
             </p>
             <ul className={legalListClassName}>
               <li className={legalListItemClassName}>
@@ -97,7 +97,7 @@ const PrivacyPolicyPage = () => {
               . Opting out stops analytics collection and removes analytics cookies from your browser on a best-effort basis.
             </p>
             <p className={legalBodyClassName}>
-              We honor the Global Privacy Control (GPC) browser signal and treat it as a request to opt out of analytics and the sale or sharing of personal information by default.
+              We honor the Global Privacy Control (GPC) browser signal and treat it as a request to opt out of the sale or sharing of personal information. Because we do not sell or share personal information, and your Do Not Sell or Share My Information preference is already on by default, honoring GPC does not change how the site works. GPC does not affect analytics cookies, which we use only for our own internal site improvement; you can opt out of those separately in Cookie Settings.
             </p>
           </section>
 
@@ -154,14 +154,14 @@ const PrivacyPolicyPage = () => {
               <li className={legalListItemClassName}>Report privacy concerns or violations</li>
             </ul>
             <p className={legalBodyClassName}>
-              If you are in the European Economic Area or United Kingdom, you also have rights under the GDPR, including the rights to access, rectify, erase, and port your data, to object to or restrict certain processing, and to withdraw consent at any time — withdrawing consent is as easy as giving it, via the Cookie Settings link in the site footer. You may also lodge a complaint with your local supervisory authority.
+              If you are in the European Economic Area or United Kingdom, you also have rights under the GDPR, including the rights to access, rectify, erase, and port your data, to object to or restrict certain processing, and to withdraw consent at any time — withdrawing consent is as easy as giving it, via the Cookie Settings link in the site footer. Analytics cookies are off by default for visitors from these regions and load only after you opt in. You may also lodge a complaint with your local supervisory authority.
             </p>
           </section>
 
           <section>
             <h2 className={legalSectionHeadingClassName}>California and US State Privacy Rights (CCPA/CPRA)</h2>
             <p className={legalBodyClassName}>
-              We do not sell your personal information for money. Some analytics activity may be considered "sharing" under the California Privacy Rights Act; you can opt out at any time by turning on the Do Not Sell or Share My Information toggle in Cookie Settings (linked in the site footer and available above), or by enabling the Global Privacy Control signal in your browser, which we honor. Turning it on also disables analytics cookies, since our analytics providers are third parties.
+              We do not sell your personal information, and we do not share it for cross-context behavioral advertising. Our analytics providers (Google and Amplitude) process usage data solely as service providers for our own internal site improvement. The Do Not Sell or Share My Information preference is on by default for every visitor and can be reviewed anytime in Cookie Settings (linked in the site footer and available above); we also honor the Global Privacy Control browser signal. Because this preference concerns sale and sharing only, it does not turn off analytics cookies — you can opt out of those separately in the same Cookie Settings dialog.
             </p>
             <p className={legalBodyClassName}>
               If you are a California resident (or a resident of another US state with a similar privacy law), you have the right to know what personal information we collect, to request its deletion, to correct inaccurate information, and to exercise these rights without discrimination. To make a request, <Link to="/contact-us" className="text-ocean hover:underline">contact us</Link>.

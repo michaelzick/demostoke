@@ -72,16 +72,47 @@ export const isGpcEnabled = (): boolean => {
   }
 };
 
-// Opt-out model: analytics runs by default until the visitor opts out,
-// except when a Global Privacy Control signal is present. A do-not-sell
-// opt-out overrides the analytics toggle because our analytics vendors
-// are third parties.
+// Indirection so tests can stub the timezone; Intl.DateTimeFormat cannot
+// be reliably spied on across environments.
+export const timeZoneReader = {
+  get: () => Intl.DateTimeFormat().resolvedOptions().timeZone,
+};
+
+const EU_ATLANTIC_ZONES = [
+  "Atlantic/Canary",
+  "Atlantic/Madeira",
+  "Atlantic/Azores",
+  "Atlantic/Reykjavik",
+  "Atlantic/Faroe",
+];
+
+// Free timezone heuristic for GDPR territories (EU/EEA/UK/CH) — no network
+// request or IP lookup, so it can run before any consent decision. It is
+// deliberately over-inclusive: every Europe/* zone counts, plus the
+// Atlantic islands used by Spain, Portugal, Iceland, and Denmark. The
+// index.html consent bootstrap duplicates this check — keep them in sync.
+export const isEuVisitor = (): boolean => {
+  try {
+    const tz = timeZoneReader.get();
+    if (!tz) return false;
+    return tz.startsWith("Europe/") || EU_ATLANTIC_ZONES.includes(tz);
+  } catch {
+    return false;
+  }
+};
+
+// Opt-out model outside GDPR territories: analytics runs by default until
+// the visitor opts out. EU/EEA/UK visitors (timezone heuristic) get an
+// opt-in model instead — nothing runs until they accept. The do-not-sell
+// preference is independent of analytics: we do not sell or share data,
+// so it only records the CPRA opt-out and never gates analytics. GPC is a
+// sale/sharing signal, so it also does not gate analytics.
 export const hasAnalyticsConsent = (): boolean => {
   const stored = getStoredConsent();
   if (stored) {
-    return stored.analytics && !stored.doNotSell;
+    return stored.analytics;
   }
-  return !isGpcEnabled();
+  return !isEuVisitor();
 };
 
 // Amplitude can rewrite its AMP_* cookie between revocation and the page
@@ -138,7 +169,7 @@ export const setConsent = (
   safeSet(CONSENT_KEY, serialized);
   safeSetCookie(CONSENT_KEY, serialized);
 
-  const isAllowed = analytics && !doNotSell;
+  const isAllowed = analytics;
   if (isAllowed) {
     window.__loadAnalytics?.();
     // The page_view for the current page was suppressed if analytics was

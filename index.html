@@ -104,8 +104,9 @@
   </script>
 
   <!-- Consent-gated analytics bootstrap.
-       GTM, GA4, and Amplitude load ONLY after the visitor opts in via the
-       cookie consent banner. The 'cookie-consent' key/version literals are
+       GTM, GA4, and Amplitude load by default (opt-out) for visitors
+       outside the EU/EEA/UK, and only after opt-in for visitors there
+       (timezone heuristic). The 'cookie-consent' key/version literals are
        duplicated in src/utils/cookieConsent.ts — keep them in sync. -->
   <script>
     (function () {
@@ -185,13 +186,23 @@
         document.head.appendChild(amp);
       };
 
-      // Opt-out model: analytics runs by default unless the visitor opted
-      // out (analytics off or do-not-sell on) or sends a Global Privacy
-      // Control signal.
+      // Timezone heuristic for GDPR territories, duplicated from
+      // isEuVisitor() in src/utils/cookieConsent.ts — keep in sync.
+      function isEuTimeZone() {
+        try {
+          var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+          return tz.indexOf('Europe/') === 0 ||
+            ['Atlantic/Canary', 'Atlantic/Madeira', 'Atlantic/Azores',
+              'Atlantic/Reykjavik', 'Atlantic/Faroe'].indexOf(tz) !== -1;
+        } catch (e) { return false; }
+      }
+
+      // Opt-out model outside the EU/EEA/UK: analytics runs by default
+      // unless the visitor opted out. EU/EEA/UK visitors (timezone
+      // heuristic) must opt in first. The do-not-sell preference and GPC
+      // cover sale/sharing only and never gate analytics.
       var stored = readConsent();
-      var allowed = stored
-        ? (stored.analytics === true && stored.doNotSell !== true)
-        : navigator.globalPrivacyControl !== true;
+      var allowed = stored ? stored.analytics === true : !isEuTimeZone();
       if (allowed) {
         window.__loadAnalytics();
       }

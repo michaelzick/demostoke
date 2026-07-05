@@ -4,12 +4,14 @@ import {
   CONSENT_VERSION,
   getStoredConsent,
   hasAnalyticsConsent,
+  isEuVisitor,
   isGpcEnabled,
   openCookiePreferences,
   pageReloader,
   setConsent,
   subscribeToConsent,
   subscribeToPreferencesOpen,
+  timeZoneReader,
 } from "@/utils/cookieConsent";
 
 const clearConsentCookie = () => {
@@ -23,6 +25,9 @@ const setGpc = (value: boolean | undefined) => {
   });
 };
 
+const setTimeZone = (tz: string) =>
+  vi.spyOn(timeZoneReader, "get").mockReturnValue(tz);
+
 describe("cookieConsent", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -31,6 +36,8 @@ describe("cookieConsent", () => {
     delete window.gtag;
     setGpc(undefined);
     vi.restoreAllMocks();
+    // Deterministic non-EU default regardless of the host machine.
+    setTimeZone("America/Los_Angeles");
   });
 
   it("defaults to analytics allowed when nothing is stored (opt-out model)", () => {
@@ -38,20 +45,38 @@ describe("cookieConsent", () => {
     expect(hasAnalyticsConsent()).toBe(true);
   });
 
-  it("defaults to analytics denied when a GPC signal is present", () => {
+  it("keeps analytics allowed by default under GPC (GPC covers sale/sharing only)", () => {
     setGpc(true);
+    expect(getStoredConsent()).toBeNull();
+    expect(hasAnalyticsConsent()).toBe(true);
+  });
+
+  it("defaults to analytics denied for EU/EEA/UK timezones (opt-in model)", () => {
+    setTimeZone("Europe/Berlin");
     expect(getStoredConsent()).toBeNull();
     expect(hasAnalyticsConsent()).toBe(false);
   });
 
+  it("treats EU Atlantic island timezones as GDPR territory", () => {
+    setTimeZone("Atlantic/Canary");
+    expect(isEuVisitor()).toBe(true);
+    expect(hasAnalyticsConsent()).toBe(false);
+  });
+
+  it("detects non-EU timezones as outside GDPR territory", () => {
+    expect(isEuVisitor()).toBe(false);
+    setTimeZone("Europe/Madrid");
+    expect(isEuVisitor()).toBe(true);
+  });
+
   it("round-trips consent through localStorage and the mirror cookie", () => {
     window.__loadAnalytics = vi.fn();
-    const state = setConsent(true, false);
+    const state = setConsent(true, true);
 
     expect(state).toMatchObject({
       version: CONSENT_VERSION,
       analytics: true,
-      doNotSell: false,
+      doNotSell: true,
     });
     expect(getStoredConsent()).toEqual(state);
     expect(JSON.parse(localStorage.getItem(CONSENT_KEY)!)).toEqual(state);
@@ -101,11 +126,14 @@ describe("cookieConsent", () => {
     clearConsentCookie();
   });
 
-  it("treats do-not-sell as overriding the analytics toggle", () => {
-    window.__loadAnalytics = vi.fn();
-    vi.spyOn(pageReloader, "reload").mockImplementation(() => {});
+  it("does not let do-not-sell disable analytics", () => {
+    const loadAnalytics = vi.fn();
+    window.__loadAnalytics = loadAnalytics;
+
     setConsent(true, true);
-    expect(hasAnalyticsConsent()).toBe(false);
+
+    expect(hasAnalyticsConsent()).toBe(true);
+    expect(loadAnalytics).toHaveBeenCalledTimes(1);
   });
 
   it("loads analytics and replays the suppressed page_view when opting back in", () => {
@@ -117,7 +145,7 @@ describe("cookieConsent", () => {
     window.__loadAnalytics = loadAnalytics;
     window.dataLayer = [];
 
-    setConsent(true, false);
+    setConsent(true, true);
 
     expect(loadAnalytics).toHaveBeenCalledTimes(1);
     expect(window.dataLayer).toContainEqual(
@@ -131,7 +159,7 @@ describe("cookieConsent", () => {
     window.dataLayer = [];
 
     // Nothing stored → analytics already running by default.
-    setConsent(true, false);
+    setConsent(true, true);
 
     expect(loadAnalytics).toHaveBeenCalledTimes(1);
     expect(window.dataLayer).not.toContainEqual(
@@ -161,8 +189,8 @@ describe("cookieConsent", () => {
     expect(hasAnalyticsConsent()).toBe(false);
   });
 
-  it("does not reload when opting out while analytics was already off (GPC)", () => {
-    setGpc(true);
+  it("does not reload when declining analytics while it was already off (EU default)", () => {
+    setTimeZone("Europe/Paris");
     const reload = vi.spyOn(pageReloader, "reload").mockImplementation(() => {});
 
     setConsent(false, true);
