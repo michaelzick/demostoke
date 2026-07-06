@@ -11,7 +11,7 @@ interface EnhancedMarkdownRendererProps {
 
 const EnhancedMarkdownRenderer: React.FC<EnhancedMarkdownRendererProps> = ({ text, className = "", textColor = "text-foreground" }) => {
   return (
-    <div className={`prose prose-lg max-w-none ${className}`}>
+    <div className={`prose prose-lg dark:prose-invert max-w-none ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
