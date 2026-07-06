@@ -38,7 +38,7 @@ const SafeHtmlRenderer: React.FC<SafeHtmlRendererProps> = ({ html, className = "
 
   return (
     <div
-      className={`prose prose-lg max-w-none ${getProseTextClass(textColor)} prose-a:text-primary ${className}`}
+      className={`prose prose-lg dark:prose-invert max-w-none ${getProseTextClass(textColor)} prose-a:text-primary ${className}`}
       dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
     />
   );

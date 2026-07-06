@@ -23,7 +23,7 @@ const PrivacyPolicyPage = () => {
       <div className="container px-4 md:px-6 py-16 max-w-4xl mx-auto">
         <h1 className={legalPageHeadingClassName}>Privacy Policy</h1>
         
-        <div className="prose prose-lg max-w-none space-y-8">
+        <div className="prose prose-lg dark:prose-invert max-w-none space-y-8">
           <section>
             <p className="text-muted-foreground mb-6">
               <strong className="text-muted-foreground">Effective Date:</strong> July 5, 2026

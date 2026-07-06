@@ -29,7 +29,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({ content, className = 
     default:
       // For plain text, preserve line breaks and basic formatting with custom text color
       return (
-        <div className={`prose prose-lg max-w-none ${className}`}>
+        <div className={`prose prose-lg dark:prose-invert max-w-none ${className}`}>
           {content.split('\n\n').map((paragraph, index) => (
             <p key={index} className={`mb-4 ${textColor} leading-relaxed`}>
               {paragraph.split('\n').map((line, lineIndex) => (
