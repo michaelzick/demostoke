@@ -79,7 +79,11 @@ export function TricksSection({ equipmentId, category, subcategory, equipmentNam
     }
 
     // Track generate tricks click
-    trackEvent(`Generate Tricks - ${equipmentName}`);
+    trackEvent("tricks_generate_clicked", {
+      gear_id: equipmentId,
+      gear_category: category,
+      equipment_name: equipmentName,
+    });
 
     setIsExpanded(true);
     const result = await generateTricks({
@@ -134,7 +138,12 @@ export function TricksSection({ equipmentId, category, subcategory, equipmentNam
 
   const handleTrickClick = (trick: Trick) => {
     // Track trick click
-    trackEvent(`Trick - ${trick.name} - ${equipmentName}`);
+    trackEvent("trick_clicked", {
+      gear_id: equipmentId,
+      gear_category: category,
+      equipment_name: equipmentName,
+      trick_name: trick.name,
+    });
 
     setSelectedTrick(trick);
     setShowTutorialModal(true);
