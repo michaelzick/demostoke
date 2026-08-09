@@ -135,7 +135,7 @@ const CookieConsentBanner = () => {
               <div>
                 <p className="text-sm font-medium">Analytics</p>
                 <p className="text-sm text-muted-foreground">
-                  Google Analytics, Google Tag Manager, and Amplitude
+                  Google Analytics, Google Tag Manager, and Mixpanel
                   (including session replay), used only by us to improve
                   DemoStoke. On by default outside the EU/EEA/UK; opt out
                   anytime.
