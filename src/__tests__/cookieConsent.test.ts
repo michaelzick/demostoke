@@ -34,6 +34,7 @@ describe("cookieConsent", () => {
     clearConsentCookie();
     delete window.__loadAnalytics;
     delete window.gtag;
+    delete window.mixpanel;
     setGpc(undefined);
     vi.restoreAllMocks();
     // Deterministic non-EU default regardless of the host machine.
@@ -170,11 +171,11 @@ describe("cookieConsent", () => {
   it("mutes trackers, expires cookies, and reloads on opt-out from the default-on state", () => {
     const gtag = vi.fn();
     window.gtag = gtag;
-    const setOptOut = vi.fn();
-    (window as Window & { amplitude?: unknown }).amplitude = {
+    const optOutTracking = vi.fn();
+    window.mixpanel = {
       track: vi.fn(),
-      setOptOut,
-    };
+      opt_out_tracking: optOutTracking,
+    } as unknown as Mixpanel;
     document.cookie = "_ga=GA1.1.1; path=/";
     const reload = vi.spyOn(pageReloader, "reload").mockImplementation(() => {});
 
@@ -183,10 +184,27 @@ describe("cookieConsent", () => {
     expect(gtag).toHaveBeenCalledWith("consent", "update", {
       analytics_storage: "denied",
     });
-    expect(setOptOut).toHaveBeenCalledWith(true);
+    expect(optOutTracking).toHaveBeenCalledTimes(1);
     expect(document.cookie).not.toContain("_ga=");
     expect(reload).toHaveBeenCalledTimes(1);
     expect(hasAnalyticsConsent()).toBe(false);
+  });
+
+  it("clears tracker localStorage keys but preserves consent state on opt-out", () => {
+    vi.spyOn(pageReloader, "reload").mockImplementation(() => {});
+    localStorage.setItem("mp_bd90c5d017f23977ba6dd6965e4fa8c7_mixpanel", "{}");
+    localStorage.setItem("AMP_test", "{}");
+
+    setConsent(false, true);
+
+    expect(
+      localStorage.getItem("mp_bd90c5d017f23977ba6dd6965e4fa8c7_mixpanel"),
+    ).toBeNull();
+    expect(localStorage.getItem("AMP_test")).toBeNull();
+    expect(getStoredConsent()).toMatchObject({
+      analytics: false,
+      doNotSell: true,
+    });
   });
 
   it("does not reload when declining analytics while it was already off (EU default)", () => {

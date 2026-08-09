@@ -45,8 +45,26 @@ export const trackEvent = (
     ...eventProperties,
   });
 
-  // Amplitude
-  if (window.amplitude?.track) {
-    window.amplitude.track(eventName, eventProperties);
+  // Mixpanel
+  if (window.mixpanel?.track) {
+    window.mixpanel.track(eventName, eventProperties);
   }
+};
+
+// Analytics identity is UUID-only by design: no people.set of name/email or
+// other PII (privacy-minimization decision, Aug 2026). The UUID joins to
+// Supabase internally when needed.
+export const identifyUser = (userId: string) => {
+  if (typeof window === "undefined" || !hasAnalyticsConsent()) {
+    return;
+  }
+  // Supabase user UUID, never email.
+  window.mixpanel?.identify?.(userId);
+};
+
+export const resetAnalyticsIdentity = () => {
+  if (typeof window === "undefined") {
+    return;
+  }
+  window.mixpanel?.reset?.();
 };

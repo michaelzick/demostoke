@@ -1,14 +1,6 @@
-declare global {
-  interface Window {
-    amplitude: {
-      track: (eventType: string, eventProperties?: Record<string, unknown>) => void;
-    };
-  }
-}
-
 let isInitialized = false;
 
-export const initializeAmplitudeClickTracking = () => {
+export const initializeClickTracking = () => {
   if (isInitialized) return;
 
   // Wait for DOM to be ready
@@ -45,15 +37,10 @@ const setupClickTracking = () => {
         matchedElement.classList.contains(className)
       );
 
-      // Send tracking data to Amplitude
-      if (matchedClass && window.amplitude && window.amplitude.track) {
-        window.amplitude.track('element_clicked', {
-          element_class: matchedClass,
-          element_id: matchedElement.id,
-          element_type: matchedElement.tagName.toLowerCase()
-        });
-
-        console.log('Amplitude tracking sent:', {
+      // Consent gating is implicit: window.mixpanel only exists after the
+      // consent-gated __loadAnalytics() bootstrap in index.html has run.
+      if (matchedClass && window.mixpanel?.track) {
+        window.mixpanel.track('element_clicked', {
           element_class: matchedClass,
           element_id: matchedElement.id,
           element_type: matchedElement.tagName.toLowerCase()

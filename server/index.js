@@ -1007,12 +1007,12 @@ app.use((req, res, next) => {
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Content-Security-Policy': `
       default-src 'self';
-      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://cdn.amplitude.com https://api2.amplitude.com https://*.amplitude.com https://*.mapbox.com https://www.google.com https://www.gstatic.com https://static.cloudflareinsights.com blob:;
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.amplitude.com;
-      font-src 'self' https://fonts.gstatic.com https://*.amplitude.com;
-      img-src 'self' data: https: http: https://*.mapbox.com https://*.amplitude.com;
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://cdn.mxpnl.com https://*.mapbox.com https://www.google.com https://www.gstatic.com https://static.cloudflareinsights.com blob:;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data: https: http: https://*.mapbox.com;
       media-src 'self' https: http:;
-      connect-src 'self' https://qtlhqsqanbxgfbcjigrl.supabase.co https://api2.amplitude.com https://sr-client-cfg.amplitude.com https://cdn.amplitude.com https://api-sr.amplitude.com https://*.amplitude.com https://www.google.com https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://analytics.google.com https://api.mapbox.com https://events.mapbox.com https://*.tiles.mapbox.com https://*.mapbox.com https://cloudflareinsights.com;
+      connect-src 'self' https://qtlhqsqanbxgfbcjigrl.supabase.co https://api-js.mixpanel.com https://api.mixpanel.com https://www.google.com https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://analytics.google.com https://api.mapbox.com https://events.mapbox.com https://*.tiles.mapbox.com https://*.mapbox.com https://cloudflareinsights.com;
       worker-src 'self' blob:;
       child-src 'self' blob: https://www.google.com https://recaptcha.google.com https://www.youtube.com;
       frame-src 'self' https://www.google.com https://recaptcha.google.com https://www.youtube.com;

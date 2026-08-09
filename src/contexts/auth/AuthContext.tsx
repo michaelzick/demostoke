@@ -7,7 +7,7 @@ import { Session } from "@supabase/supabase-js";
 import { AuthContextType } from "./types";
 import { AuthService } from "./AuthService";
 import { getLocalFavorites, mergeFavoritesArrays } from "@/services/localStorageFavoritesService";
-import { trackEvent } from "@/utils/tracking";
+import { trackEvent, identifyUser, resetAnalyticsIdentity } from "@/utils/tracking";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -36,6 +36,9 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
       const userData = await AuthService.fetchUserProfile(session);
       setUser(userData);
       setIsAuthenticated(true);
+      // Analytics identity is the Supabase UUID only — never email/name/PII
+      // profile props. Covers sign-in, user updates, and session restore.
+      identifyUser(session.user.id);
 
       // Sync localStorage data to database only on true sign-in or initial load.
       if (syncLocalData) {
@@ -65,6 +68,11 @@ export function AuthProvider({ children }: { children: ReactNode; }) {
         setIsAuthenticated(!!currentSession);
 
         if (!currentSession) {
+          // Only tear down analytics identity on a real sign-out; anonymous
+          // visitors' initial null session must not reset the device id.
+          if (event === "SIGNED_OUT") {
+            resetAnalyticsIdentity();
+          }
           setUser(null);
           setIsLoading(false);
           return;

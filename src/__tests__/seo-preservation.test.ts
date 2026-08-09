@@ -236,12 +236,12 @@ describe('Preservation 3.5 — GTM dataLayer page_view events', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Test 3.6 — Amplitude tracking is initialized and unaffected
+// Test 3.6 — Mixpanel tracking is initialized and unaffected
 //
 // Preservation: src/utils/tracking.ts must exist and export trackEvent,
-// which calls window.amplitude.track for Amplitude tracking.
+// which calls window.mixpanel.track for Mixpanel tracking.
 // ---------------------------------------------------------------------------
-describe('Preservation 3.6 — Amplitude tracking', () => {
+describe('Preservation 3.6 — Mixpanel tracking', () => {
   const trackingPath = path.join(ROOT, 'src/utils/tracking.ts');
   let source: string;
 
@@ -265,11 +265,11 @@ describe('Preservation 3.6 — Amplitude tracking', () => {
     ).toMatch(/export\s+const\s+trackEvent/);
   });
 
-  it('tracking.ts should call window.amplitude.track for Amplitude', () => {
+  it('tracking.ts should call window.mixpanel.track for Mixpanel', () => {
     expect(
       source,
-      'window.amplitude.track not found in tracking.ts — Amplitude tracking may be broken',
-    ).toMatch(/window\.amplitude.*track/);
+      'window.mixpanel.track not found in tracking.ts — Mixpanel tracking may be broken',
+    ).toMatch(/window\.mixpanel.*track/);
   });
 
   it('tracking.ts should also push to window.dataLayer for GA4', () => {

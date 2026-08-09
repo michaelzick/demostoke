@@ -81,7 +81,7 @@ const PrivacyPolicyPage = () => {
                 <strong className="text-foreground">Google Tag Manager</strong> — delivers our analytics tags and honors your consent state.
               </li>
               <li className={legalListItemClassName}>
-                <strong className="text-foreground">Amplitude</strong> — product analytics and session replay. With your consent, Amplitude may visually replay your session (clicks, scrolling, and page interactions; sensitive inputs are masked). Sets cookies such as <code>AMP_*</code>, retained for up to about 1 year.
+                <strong className="text-foreground">Mixpanel</strong> — product analytics and session replay. With your consent, Mixpanel may visually replay your session (clicks, scrolling, and page interactions; sensitive inputs are masked). Stores identifiers such as <code>mp_*</code> in cookies and browser local storage, retained for up to about 1 year.
               </li>
             </ul>
             <h3 className={legalSubheadingClassName}>Managing Your Choices</h3>
@@ -161,7 +161,7 @@ const PrivacyPolicyPage = () => {
           <section>
             <h2 className={legalSectionHeadingClassName}>California and US State Privacy Rights (CCPA/CPRA)</h2>
             <p className={legalBodyClassName}>
-              We do not sell your personal information, and we do not share it for cross-context behavioral advertising. Our analytics providers (Google and Amplitude) process usage data solely as service providers for our own internal site improvement. The Do Not Sell or Share My Information preference is on by default for every visitor and can be reviewed anytime in Cookie Settings (linked in the site footer and available above); we also honor the Global Privacy Control browser signal. Because this preference concerns sale and sharing only, it does not turn off analytics cookies — you can opt out of those separately in the same Cookie Settings dialog.
+              We do not sell your personal information, and we do not share it for cross-context behavioral advertising. Our analytics providers (Google and Mixpanel) process usage data solely as service providers for our own internal site improvement. The Do Not Sell or Share My Information preference is on by default for every visitor and can be reviewed anytime in Cookie Settings (linked in the site footer and available above); we also honor the Global Privacy Control browser signal. Because this preference concerns sale and sharing only, it does not turn off analytics cookies — you can opt out of those separately in the same Cookie Settings dialog.
             </p>
             <p className={legalBodyClassName}>
               If you are a California resident (or a resident of another US state with a similar privacy law), you have the right to know what personal information we collect, to request its deletion, to correct inaccurate information, and to exercise these rights without discrimination. To make a request, <Link to="/contact-us" className="text-ocean hover:underline">contact us</Link>.
