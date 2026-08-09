@@ -7,7 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { FavoritesProvider } from "./contexts/FavoritesContext";
 import { GeolocationProvider } from "./contexts/GeolocationContext";
 import { SsrPageData, SsrPageDataProvider } from "./contexts/SsrPageDataContext";
-import { ClientOnlyAmplitudeInit } from "./components/ClientOnlyAmplitudeInit";
+import { ClientOnlyClickTracking } from "./components/ClientOnlyClickTracking";
 import { ClientOnlyCookieConsent } from "./components/ClientOnlyCookieConsent";
 import GoogleTagManager from "./components/GoogleTagManager";
 import AppRoutes from "./components/AppRoutes";
@@ -36,7 +36,7 @@ const App = ({ initialSsrPageData = {} }: AppProps) => {
                 <TooltipProvider>
                   <ClientOnlyToaster />
                   <ClientOnlyCookieConsent />
-                  <ClientOnlyAmplitudeInit />
+                  <ClientOnlyClickTracking />
                   <GoogleTagManager />
                   <AppRoutes />
                 </TooltipProvider>

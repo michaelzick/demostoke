@@ -45,8 +45,8 @@ export const trackEvent = (
     ...eventProperties,
   });
 
-  // Amplitude
-  if (window.amplitude?.track) {
-    window.amplitude.track(eventName, eventProperties);
+  // Mixpanel
+  if (window.mixpanel?.track) {
+    window.mixpanel.track(eventName, eventProperties);
   }
 };

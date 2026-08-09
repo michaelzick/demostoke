@@ -115,20 +115,33 @@ export const hasAnalyticsConsent = (): boolean => {
   return !isEuVisitor();
 };
 
-// Amplitude can rewrite its AMP_* cookie between revocation and the page
-// unload, so this also runs on load whenever consent is denied.
+// Trackers can rewrite their cookies (and Mixpanel its mp_* localStorage
+// state) between revocation and the page unload, so this also runs on load
+// whenever consent is denied. AMP_/amp_ stay in the sweep for migration
+// hygiene: visitors from the Amplitude era still carry those cookies.
+const TRACKER_PREFIX = /^(_ga|_gid|_gat|AMP_|amp_|mp_)/;
+
 export const expireAnalyticsCookies = () => {
   try {
     const names = document.cookie
       .split(";")
       .map((part) => part.split("=")[0].trim())
-      .filter((name) => /^(_ga|_gid|_gat|AMP_|amp_)/.test(name));
+      .filter((name) => TRACKER_PREFIX.test(name));
 
     const hostname = window.location.hostname;
     const domains = ["", `; domain=${hostname}`, `; domain=.${hostname}`];
     for (const name of names) {
       for (const domain of domains) {
         document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/${domain}`;
+      }
+    }
+
+    // Mixpanel persists to localStorage (mp_<token>_mixpanel), not cookies.
+    // Neither `cookie-consent` nor Mixpanel's __mp_opt_in_out_* flag matches
+    // the prefix, so the consent record and opt-out state survive the sweep.
+    for (const key of Object.keys(localStorage)) {
+      if (TRACKER_PREFIX.test(key)) {
+        localStorage.removeItem(key);
       }
     }
   } catch {
@@ -179,12 +192,7 @@ export const setConsent = (
     }
   } else if (wasAllowed) {
     window.gtag?.("consent", "update", { analytics_storage: "denied" });
-    const amplitude = (
-      window as Window & {
-        amplitude?: { setOptOut?: (optOut: boolean) => void };
-      }
-    ).amplitude;
-    amplitude?.setOptOut?.(true);
+    window.mixpanel?.opt_out_tracking?.();
     expireAnalyticsCookies();
     consentListeners.forEach((listener) => listener(state));
     // Reload so already-initialized trackers are fully unloaded.
