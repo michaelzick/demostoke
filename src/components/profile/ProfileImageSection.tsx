@@ -58,7 +58,7 @@ export const ProfileImageSection = ({
       </div>
       <div className="flex-1 space-y-2 text-center sm:text-left">
         <h3 className="font-medium">{name || "User"}</h3>
-        <p className="text-sm text-muted-foreground">{email}</p>
+        <p className="mp-mask text-sm text-muted-foreground">{email}</p>
         <div className="flex gap-2">
           <Button
             variant="outline"

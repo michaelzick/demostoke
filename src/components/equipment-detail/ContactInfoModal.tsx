@@ -104,7 +104,7 @@ const ContactInfoModal = ({
                       href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(profile.address)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-muted-foreground hover:text-primary underline profile-address"
+                      className="mp-block text-sm text-muted-foreground hover:text-primary underline profile-address"
                       data-tracking={trackingData}
                        id={`${owner.name} - ${profile?.address} - Contact Info Modal`}
                        onClick={() => {
@@ -127,7 +127,7 @@ const ContactInfoModal = ({
                   <div>
                     <a
                       href={`tel:${profile.phone}`}
-                      className="text-sm text-muted-foreground hover:text-primary underline profile-phone"
+                      className="mp-block text-sm text-muted-foreground hover:text-primary underline profile-phone"
                       data-tracking={trackingData}
                        id={`${owner.name} - ${profile?.phone} - Contact Info Modal`}
                        onClick={() => {
