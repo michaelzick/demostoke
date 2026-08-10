@@ -66,7 +66,7 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate, isOwnProfi
                         href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(profile.address!)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-muted-foreground hover:text-primary underline"
+                        className="mp-block text-sm text-muted-foreground hover:text-primary underline"
                       >
                         {profile.address}
                       </a>
@@ -77,7 +77,7 @@ export const UserProfileSidebar = ({ profile, stats, memberSinceDate, isOwnProfi
                   <div className="flex items-start gap-3">
                     <PhoneIcon className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-sm text-muted-foreground">{profile.phone}</p>
+                      <p className="mp-mask text-sm text-muted-foreground">{profile.phone}</p>
                     </div>
                   </div>
                 )}
