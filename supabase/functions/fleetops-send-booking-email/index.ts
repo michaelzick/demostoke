@@ -1,7 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const SENDGRID_API_KEY = Deno.env.get("FLEETOPS_SENDGRID_API_KEY") || Deno.env.get("SENDGRID_API_KEY")!;
-const FROM_EMAIL = Deno.env.get("FLEETOPS_FROM_EMAIL") || Deno.env.get("FROM_EMAIL") || "bookings@demostoke.com";
+const SENDGRID_API_KEY = Deno.env.get("FLEETOPS_SENDGRID_API_KEY")!;
+const FROM_EMAIL = Deno.env.get("FLEETOPS_FROM_EMAIL") || "bookings@demostoke.com";
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,

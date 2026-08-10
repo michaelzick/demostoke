@@ -60,10 +60,7 @@ const jsonResponse = (status: number, body: Record<string, unknown>) =>
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const getMapboxToken = (): string | null =>
-  Deno.env.get("MAPBOX_TOKEN") ??
-  Deno.env.get("VITE_MAPBOX_TOKEN") ??
-  Deno.env.get("REACT_APP_MAPBOX_TOKEN") ??
-  null;
+  Deno.env.get("MAPBOX_TOKEN") ?? null;
 
 async function geocodeAddress(address: string): Promise<GeocodeResult | null> {
   const token = getMapboxToken();

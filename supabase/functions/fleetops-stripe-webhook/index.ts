@@ -1,7 +1,7 @@
 import Stripe from "https://esm.sh/stripe@17?target=deno";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const stripe = new Stripe(Deno.env.get("FLEETOPS_STRIPE_SECRET_KEY") || Deno.env.get("STRIPE_SECRET_KEY")!, {
+const stripe = new Stripe(Deno.env.get("FLEETOPS_STRIPE_SECRET_KEY")!, {
   apiVersion: "2024-12-18.acacia",
 });
 
@@ -10,8 +10,8 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
 );
 
-const SENDGRID_API_KEY = Deno.env.get("FLEETOPS_SENDGRID_API_KEY") || Deno.env.get("SENDGRID_API_KEY");
-const FROM_EMAIL = Deno.env.get("FLEETOPS_FROM_EMAIL") || Deno.env.get("FROM_EMAIL") || "bookings@demostoke.com";
+const SENDGRID_API_KEY = Deno.env.get("FLEETOPS_SENDGRID_API_KEY");
+const FROM_EMAIL = Deno.env.get("FLEETOPS_FROM_EMAIL") || "bookings@demostoke.com";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -183,7 +183,7 @@ Deno.serve(async (req: Request) => {
     event = stripe.webhooks.constructEvent(
       body,
       signature!,
-      Deno.env.get("FLEETOPS_STRIPE_WEBHOOK_SECRET") || Deno.env.get("STRIPE_WEBHOOK_SECRET")!
+      Deno.env.get("FLEETOPS_STRIPE_WEBHOOK_SECRET")!
     );
   } catch (err) {
     return new Response(`Webhook Error: ${err.message}`, {

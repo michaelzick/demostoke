@@ -245,7 +245,7 @@ Deno.serve(async (req: Request) => {
     return jsonResponse({ error: "Method not allowed." }, 405);
   }
 
-  const expectedSecret = Deno.env.get("FLEETOPS_POS_INVENTORY_SEED_CRON_SECRET") || Deno.env.get("POS_INVENTORY_SEED_CRON_SECRET")?.trim();
+  const expectedSecret = Deno.env.get("FLEETOPS_POS_INVENTORY_SEED_CRON_SECRET")?.trim();
   const suppliedSecret = req.headers.get("x-cron-secret")?.trim() ?? "";
   if (
     !expectedSecret ||

@@ -5,7 +5,7 @@ import {
   resolveWidgetCheckoutMode,
 } from "../_shared/fleetopsWidgetCheckout.ts";
 
-const stripe = new Stripe(Deno.env.get("FLEETOPS_STRIPE_SECRET_KEY") || Deno.env.get("STRIPE_SECRET_KEY")!, {
+const stripe = new Stripe(Deno.env.get("FLEETOPS_STRIPE_SECRET_KEY")!, {
   apiVersion: "2024-12-18.acacia",
 });
 
