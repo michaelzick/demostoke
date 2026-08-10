@@ -1,7 +1,7 @@
 import Stripe from "https://esm.sh/stripe@17?target=deno";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const stripe = new Stripe(Deno.env.get("FLEETOPS_STRIPE_SECRET_KEY") || Deno.env.get("STRIPE_SECRET_KEY")!, {
+const stripe = new Stripe(Deno.env.get("FLEETOPS_STRIPE_SECRET_KEY")!, {
   apiVersion: "2024-12-18.acacia",
 });
 
@@ -12,9 +12,7 @@ const corsHeaders = {
 };
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-const supabaseServiceRoleKey =
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ||
-  Deno.env.get("SERVICE_ROLE_KEY")!;
+const supabaseServiceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 function jsonResponse(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), {

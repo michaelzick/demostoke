@@ -266,9 +266,6 @@ Deno.serve(async (req: Request) => {
       Deno.env.get("SUPABASE_ANON_KEY");
     const publicSupabaseOrigin =
       toOrigin(Deno.env.get("FLEETOPS_PUBLIC_SUPABASE_URL")) ||
-      toOrigin(Deno.env.get("PUBLIC_SUPABASE_URL")) ||
-      toOrigin(Deno.env.get("SUPABASE_PUBLIC_URL")) ||
-      toOrigin(Deno.env.get("SITE_URL")) ||
       toOrigin(req.url) ||
       toOrigin(supabaseUrl);
 

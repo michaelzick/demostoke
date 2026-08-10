@@ -1,7 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const SENDGRID_API_KEY = Deno.env.get("FLEETOPS_SENDGRID_API_KEY") || Deno.env.get("SENDGRID_API_KEY")!;
-const FROM_EMAIL = Deno.env.get("FLEETOPS_FROM_EMAIL") || Deno.env.get("FROM_EMAIL") || "bookings@demostoke.com";
+const SENDGRID_API_KEY = Deno.env.get("FLEETOPS_SENDGRID_API_KEY")!;
+const FROM_EMAIL = Deno.env.get("FLEETOPS_FROM_EMAIL") || "bookings@demostoke.com";
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -28,8 +28,31 @@ function getBearerToken(header: string | null) {
   return token;
 }
 
+function escapeHtml(value: unknown): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// Only allow https image URLs into the src attribute; reject anything else so
+// untrusted equipment data cannot break out of the attribute or load
+// javascript:/data: payloads.
+function safeImageSrc(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
 function buildEmailHtml(booking: any, equipment: any, shop: any): string {
   const confirmationNumber = booking.id.slice(0, 8).toUpperCase();
+  const imageSrc = safeImageSrc(equipment.image_url);
 
   return `
 <!DOCTYPE html>
@@ -50,10 +73,10 @@ function buildEmailHtml(booking: any, equipment: any, shop: any): string {
   <div class="container">
     <div class="header">
       <h1 style="margin:0;font-size:20px;">Booking Confirmed!</h1>
-      <p style="margin:8px 0 0;opacity:0.9;font-size:14px;">${shop.name}</p>
+      <p style="margin:8px 0 0;opacity:0.9;font-size:14px;">${escapeHtml(shop.name)}</p>
     </div>
     <div class="content">
-      <p style="font-size:14px;color:#666;">Hi ${booking.customer_name},</p>
+      <p style="font-size:14px;color:#666;">Hi ${escapeHtml(booking.customer_name)},</p>
       <p style="font-size:14px;color:#666;">Your gear rental reservation has been confirmed. Here are your booking details:</p>
 
       <div style="background:#f9fafb;border-radius:8px;padding:16px;margin:16px 0;">
@@ -61,9 +84,9 @@ function buildEmailHtml(booking: any, equipment: any, shop: any): string {
         <p style="margin:0;font-size:18px;font-weight:bold;font-family:monospace;">${confirmationNumber}</p>
       </div>
 
-      ${equipment.image_url ? `<img src="${equipment.image_url}" alt="${equipment.name}" style="width:100%;height:200px;object-fit:cover;border-radius:8px;margin-bottom:16px;">` : ""}
+      ${imageSrc ? `<img src="${escapeHtml(imageSrc)}" alt="${escapeHtml(equipment.name)}" style="width:100%;height:200px;object-fit:cover;border-radius:8px;margin-bottom:16px;">` : ""}
 
-      <h3 style="font-size:16px;margin:0 0 12px;">${equipment.name}</h3>
+      <h3 style="font-size:16px;margin:0 0 12px;">${escapeHtml(equipment.name)}</h3>
 
       <div class="detail-row">
         <span style="color:#666;">Dates</span>
@@ -98,7 +121,7 @@ function buildEmailHtml(booking: any, equipment: any, shop: any): string {
       </div>
     </div>
     <div class="footer">
-      <p>Questions? Contact ${shop.contact_email || shop.name}</p>
+      <p>Questions? Contact ${escapeHtml(shop.contact_email || shop.name)}</p>
       <p>Powered by DemoStoke</p>
     </div>
   </div>

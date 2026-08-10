@@ -23,10 +23,7 @@ serve(async (req) => {
   try {
     console.log('🔑 Processing get-mapbox-token request');
     
-    // Try multiple environment variable names
-    const MAPBOX_TOKEN = Deno.env.get('MAPBOX_TOKEN') || 
-                        Deno.env.get('VITE_MAPBOX_TOKEN') || 
-                        Deno.env.get('REACT_APP_MAPBOX_TOKEN');
+    const MAPBOX_TOKEN = Deno.env.get('MAPBOX_TOKEN');
     
     if (!MAPBOX_TOKEN) {
       console.error('❌ No Mapbox token found in environment variables');

@@ -213,12 +213,37 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
   - `VITE_SHOP_GEAR_FEED_INCLUDE_HIDDEN`
   - `VITE_SHOP_GEAR_FEED_APIKEY`
 - Theme flicker fix can be disabled with `VITE_ENABLE_THEME_FLICKER_FIX=false`.
-- Edge functions rely on combinations of `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `MAPBOX_TOKEN`, `GOOGLE_API_KEY`, `GOOGLE_CSE_ID`, `GOOGLE_SEARCH_API_KEY`, `GOOGLE_SEARCH_ENGINE_ID`, `GOOGLE_RECAPTCHA_SECRET_KEY`, and `HCAPTCHA_SECRET` (legacy, no longer read).
+
+### Where Secrets Actually Live
+
+There are five distinct stores. Do not assume the root `.env` is the app's config.
+
+1. **Root `.env` (gitignored) - local tooling only, not read by app code.** Holds `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `SUPABASE_ACCESS_TOKEN` (Supabase CLI), and `MIXPANEL_SA_USERNAME` / `MIXPANEL_SA_SECRET` (Mixpanel service account for API/agent access). None carry a `VITE_` prefix, so Vite never exposes them and the SSR server never reads them. It is the only env file in the tree; there is no `.env.example`.
+2. **Supabase Edge Function secrets** (`supabase secrets set`, or the dashboard) - the real secret store. See the full inventory below.
+3. **Hardcoded public keys in the repo** - `src/integrations/supabase/config.js` (project URL + anon JWT), `index.html` (Mixpanel project token, `GTM-MHM2XTTV`, `G-KKQJ9P2ECC`), and `src/components/Recaptcha.tsx` (`RECAPTCHA_SITE_KEY`). All are public-by-design client keys. Never add a private key to these files.
+4. **The database** - Supabase Vault secret `auto_assign_internal_secret`, plus `gear_review_blog_generation_config.cron_secret` and `fleetops_pos_inventory_seed_config.cron_secret`.
+5. **The SSR host** - the `VITE_*` vars the client and `server/index.js` read are set in whatever platform runs `npm start`. There is no hosting config in this repo (no `vercel.json`, `netlify.toml`, `Dockerfile`, or `fly.toml`), so that configuration lives outside the codebase.
+
+CI holds no repository secrets; `.github/workflows/security.yml` uses only the auto-provided `secrets.GITHUB_TOKEN`.
+
+- Edge function secret inventory, by area:
+  - Supabase (auto-injected into every function): `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_ANON_KEY`
+  - AI: `OPENAI_API_KEY`, `GEAR_REVIEW_BLOG_MODEL` (model id override, not a credential)
+  - Google: `GOOGLE_API_KEY`, `GOOGLE_CSE_ID`, `GOOGLE_SEARCH_API_KEY`, `GOOGLE_SEARCH_ENGINE_ID`, `GOOGLE_RECAPTCHA_SECRET_KEY`, `YOUTUBE_V3_API_KEY`
+  - Maps: `MAPBOX_TOKEN` (used by `get-mapbox-token` and `admin-create-user`)
+  - Crawling: `FIRECRAWL_API_KEY` (`rental-discovery-agent`, `discover-demo-events`, `crawl-retailer-details`)
+  - Email: `RESEND_API_KEY` (`send-contact-email`)
+  - Internal auth: `AUTO_ASSIGN_INTERNAL_SECRET`
+  - FleetOps: see the prefixed list below
+- `HCAPTCHA_SECRET` and `HCAPTCHA_SITE_KEY` are legacy and no longer read by any function. `AUTH_SEND_EMAIL_HOOK_SECRET`, `DS_DESIGN_SYSTEM_TOKEN` (design-system tables were dropped in `20260608120000`), `HUGGING_FACE_ACCESS_TOKEN`, and `LOVABLE_API_KEY` are also set on the linked project but unreferenced in this repo. Leave them alone unless the user explicitly asks to prune them.
+- The client never receives the Mapbox token as an env var. It calls the `get-mapbox-token` edge function, which reads `MAPBOX_TOKEN` server-side. Keep it that way.
+- To audit what is actually set on the linked project, run `supabase secrets list` (prints names and value digests, never plaintext).
 - `generate-gear-review-blog-draft` also relies on `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, and the Google Custom Search image/web keys. It is protected by the `gear_review_blog_generation_config.cron_secret` value passed as `x-cron-secret`, compared in constant time via `_shared/timingSafeEqual.ts`.
 - `auto-assign-gear-images` is no longer anonymous. It now requires either an admin JWT or a shared internal secret `AUTO_ASSIGN_INTERNAL_SECRET` passed as the `x-internal-secret` header. The `on_equipment_created` DB trigger (`notify_new_equipment`) sends that header, reading the value from the Vault secret named `auto_assign_internal_secret` (migration `20260611120000_auto_assign_secret_vault_fallback.sql`), falling back to the `app.auto_assign_internal_secret` GUC. Persisting custom GUCs via `ALTER DATABASE/ROLE ... SET` is denied on Supabase managed Postgres, which is why Vault is the primary source. Keep the Vault secret and the function secret set to the same value.
 - SSRF-prone image/fetch functions (`download-store-image`, `convert-image-to-webp`, `convert-to-jpeg`, `scan-broken-images`) validate user/DB-supplied URLs through `_shared/urlSafety.ts`, which requires https and rejects private/reserved hosts.
 - Imported FleetOps storage uses public buckets `fleetops-equipment-images` and `fleetops-shop-logos`.
-- Imported FleetOps Edge Functions use prefixed secrets where available: `FLEETOPS_STRIPE_SECRET_KEY`, `FLEETOPS_STRIPE_WEBHOOK_SECRET`, `FLEETOPS_SENDGRID_API_KEY`, `FLEETOPS_FROM_EMAIL`, `FLEETOPS_PUBLIC_SUPABASE_URL`, and `FLEETOPS_POS_INVENTORY_SEED_CRON_SECRET`. The retained `fleetops_pos_inventory_seed_config.cron_secret` should stay synchronized with the prefixed POS function secret if the disabled seed flow is ever re-enabled.
+- Imported FleetOps Edge Functions read `FLEETOPS_`-prefixed secrets exclusively: `FLEETOPS_STRIPE_SECRET_KEY`, `FLEETOPS_STRIPE_WEBHOOK_SECRET`, `FLEETOPS_SENDGRID_API_KEY`, `FLEETOPS_FROM_EMAIL`, `FLEETOPS_PUBLIC_SUPABASE_URL`, and `FLEETOPS_POS_INVENTORY_SEED_CRON_SECRET`. The unprefixed fallbacks (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SENDGRID_API_KEY`, `FROM_EMAIL`, `PUBLIC_SUPABASE_URL`, `SITE_URL`, `POS_INVENTORY_SEED_CRON_SECRET`, `SERVICE_ROLE_KEY`) were removed in August 2026; they were never set on the linked project, so they were dead code that made the real source of each value ambiguous. Do not reintroduce them. `FLEETOPS_FROM_EMAIL` is intentionally optional and defaults to `bookings@demostoke.com`.
+- The retained `fleetops_pos_inventory_seed_config.cron_secret` should stay synchronized with `FLEETOPS_POS_INVENTORY_SEED_CRON_SECRET` if the disabled seed flow is ever re-enabled.
 - Do not introduce new hardcoded secrets. Keep public browser tokens and service secrets clearly separated.
 
 ## Critical Invariants and Gotchas
