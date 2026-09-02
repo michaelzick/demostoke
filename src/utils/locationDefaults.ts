@@ -1,6 +1,7 @@
 import { isValidCoordinate } from '@/utils/distanceCalculation';
 
-export const LAKE_TAHOE_COORDINATES = { lat: 39.0968, lng: -120.0324 } as const;
+// Surf-first fallback: Santa Monica Bay, the center of the SoCal surfboard inventory.
+export const DEFAULT_EXPLORE_COORDINATES = { lat: 34.0195, lng: -118.4912 } as const;
 
 export const DEFAULT_EXPLORE_ZOOM = 9;
 export const USER_LOCATION_EXPLORE_ZOOM = 10;
@@ -37,8 +38,8 @@ export function resolveExploreCenter(
 
   if (geo.permissionState === 'denied') {
     return {
-      lat: LAKE_TAHOE_COORDINATES.lat,
-      lng: LAKE_TAHOE_COORDINATES.lng,
+      lat: DEFAULT_EXPLORE_COORDINATES.lat,
+      lng: DEFAULT_EXPLORE_COORDINATES.lng,
       zoom: DEFAULT_EXPLORE_ZOOM,
       isUserLocation: false,
     };

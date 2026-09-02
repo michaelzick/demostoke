@@ -18,6 +18,7 @@ import {
   normalizeGeneratedDraft,
   normalizeGeneratedTags,
   selectBlogImages,
+  SURF_CATEGORY_WEIGHT,
   TARGET_GENERATED_REVIEW_BODY_WORDS,
   type GearReviewCandidate,
 } from "../../supabase/functions/_shared/gearReviewBlogGeneration";
@@ -68,9 +69,35 @@ describe("gear review blog generation helpers", () => {
     expect(isEligibleGearCategory("helmets")).toBe(false);
   });
 
-  it("can choose a deterministic category for tests", () => {
-    expect(chooseRandomCategory(() => 0)).toBe("skis");
-    expect(chooseRandomCategory(() => 0.99)).toBe("mountain-bikes");
+  it("chooses surfboards whenever the first draw lands under the surf weight", () => {
+    expect(chooseRandomCategory(() => 0)).toBe("surfboards");
+    expect(chooseRandomCategory(() => SURF_CATEGORY_WEIGHT - 0.01)).toBe("surfboards");
+  });
+
+  it("splits the remaining weight evenly across the other categories", () => {
+    const sequence = (...values: number[]) => {
+      let index = 0;
+      return () => values[Math.min(index++, values.length - 1)];
+    };
+    expect(chooseRandomCategory(sequence(0.6, 0))).toBe("skis");
+    expect(chooseRandomCategory(sequence(0.6, 0.5))).toBe("snowboards");
+    expect(chooseRandomCategory(sequence(0.6, 0.99))).toBe("mountain-bikes");
+  });
+
+  it("lands on surfboards about half the time with a seeded generator", () => {
+    let seed = 42;
+    const random = () => {
+      seed = (seed * 1664525 + 1013904223) % 4294967296;
+      return seed / 4294967296;
+    };
+    const draws = 2000;
+    let surfCount = 0;
+    for (let i = 0; i < draws; i += 1) {
+      if (chooseRandomCategory(random) === "surfboards") surfCount += 1;
+    }
+    const share = surfCount / draws;
+    expect(share).toBeGreaterThan(0.44);
+    expect(share).toBeLessThan(0.56);
   });
 
   it("rejects gear without enough listing detail or images", () => {

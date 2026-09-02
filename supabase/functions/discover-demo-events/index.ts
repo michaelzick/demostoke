@@ -120,10 +120,13 @@ const BLOCKED_DOMAINS = [
   "yahoo.com",
 ];
 
+// Surf-first: surfboards lead the search order. Queries are interleaved across
+// categories in buildQueries so the small per-run query budget still reaches
+// every category instead of spending itself on the first one.
 const CATEGORY_SEARCH_TERMS: Record<GearCategory, string[]> = {
+  surfboards: ["surfboard demo day", "surfboard test ride", "surf demo event"],
   skis: ["ski demo day", "ski test event", "ski demo tour"],
   snowboards: ["snowboard demo day", "snowboard test ride", "snowboard demo event"],
-  surfboards: ["surfboard demo day", "surfboard test ride", "surf demo event"],
   "mountain-bikes": ["mountain bike demo day", "mtb demo ride", "bike park demo event"],
 };
 
@@ -188,15 +191,28 @@ const buildQueries = (searchScope: string): string[] => {
   const nextYear = currentYear + 1;
   const scopeSuffix = searchScope === "us" ? "United States" : searchScope;
 
+  // Build each category's query list, then interleave them round-robin so the
+  // first N queries cover N categories (surfboards first) rather than N
+  // variants of a single category's first term.
+  const perCategory = (Object.entries(CATEGORY_SEARCH_TERMS) as [GearCategory, string[]][]).map(
+    ([gearCategory, terms]) =>
+      terms.flatMap((term) => [
+        `${term} ${scopeSuffix} ${currentYear}`,
+        `${term} ${scopeSuffix} ${nextYear}`,
+        `${term} ${scopeSuffix} upcoming`,
+        `${term} ${scopeSuffix} calendar`,
+        `${term} hosted by brand shop ${gearCategory} ${scopeSuffix}`,
+        `${term} inurl:events ${scopeSuffix}`,
+      ]),
+  );
+
   const queries: string[] = [];
-  for (const [gearCategory, terms] of Object.entries(CATEGORY_SEARCH_TERMS) as [GearCategory, string[]][]) {
-    for (const term of terms) {
-      queries.push(`${term} ${scopeSuffix} ${currentYear}`);
-      queries.push(`${term} ${scopeSuffix} ${nextYear}`);
-      queries.push(`${term} ${scopeSuffix} upcoming`);
-      queries.push(`${term} ${scopeSuffix} calendar`);
-      queries.push(`${term} hosted by brand shop ${gearCategory} ${scopeSuffix}`);
-      queries.push(`${term} inurl:events ${scopeSuffix}`);
+  const longest = Math.max(...perCategory.map((list) => list.length));
+  for (let position = 0; position < longest; position += 1) {
+    for (const list of perCategory) {
+      if (position < list.length) {
+        queries.push(list[position]);
+      }
     }
   }
 

@@ -12,6 +12,7 @@ import { AdvancedFilterDrawer } from "@/components/AdvancedFilterDrawer";
 import { AdvancedFilterPills } from "@/components/AdvancedFilterPills";
 import { AdvancedFilters } from "@/types/advancedFilters";
 import { RecentlyViewedCompact } from "./RecentlyViewedCompact";
+import { GEAR_CATEGORIES, GEAR_CATEGORY_LABELS } from "@/lib/gearCategories";
 
 interface FilterBarProps {
   activeCategory: string | null;
@@ -52,12 +53,7 @@ const FilterBar = ({
   const smallButtonClasses =
     "max-[400px]:text-xs max-[400px]:px-2 max-[400px]:py-1 max-[400px]:h-7";
 
-  const categoryLabels: Record<string, string> = {
-    "snowboards": "Snowboards",
-    "skis": "Skis",
-    "surfboards": "Surfboards",
-    "mountain-bikes": "Mountain Bikes",
-  };
+  const categoryLabels: Record<string, string> = GEAR_CATEGORY_LABELS;
 
   const viewLabels: Record<'map' | 'list' | 'hybrid', string> = {
     map: "Map View",
@@ -86,10 +82,11 @@ const FilterBar = ({
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => setActiveCategory(null)}>All Equipment</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setActiveCategory('snowboards')}>Snowboards</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setActiveCategory('skis')}>Skis</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setActiveCategory('surfboards')}>Surfboards</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setActiveCategory('mountain-bikes')}>Mountain Bikes</DropdownMenuItem>
+                {GEAR_CATEGORIES.map((category) => (
+                  <DropdownMenuItem key={category.slug} onClick={() => setActiveCategory(category.slug)}>
+                    {category.label}
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
             <DropdownMenu>
@@ -173,38 +170,17 @@ const FilterBar = ({
               >
                 All Equipment
               </Button>
-              <Button
-                variant={activeCategory === 'snowboards' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setActiveCategory('snowboards')}
-                className="whitespace-nowrap category-filter-button"
-              >
-                Snowboards
-              </Button>
-              <Button
-                variant={activeCategory === 'skis' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setActiveCategory('skis')}
-                className="whitespace-nowrap gap-1 category-filter-button"
-              >
-                Skis
-              </Button>
-              <Button
-                variant={activeCategory === 'surfboards' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setActiveCategory('surfboards')}
-                className="whitespace-nowrap gap-1 category-filter-button"
-              >
-                Surfboards
-              </Button>
-              <Button
-                variant={activeCategory === 'mountain-bikes' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setActiveCategory('mountain-bikes')}
-                className="whitespace-nowrap gap-1 category-filter-button"
-              >
-                Mountain Bikes
-              </Button>
+              {GEAR_CATEGORIES.map((category) => (
+                <Button
+                  key={category.slug}
+                  variant={activeCategory === category.slug ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setActiveCategory(category.slug)}
+                  className="whitespace-nowrap gap-1 category-filter-button"
+                >
+                  {category.label}
+                </Button>
+              ))}
             </div>
             <div className="flex gap-2">
               <Button

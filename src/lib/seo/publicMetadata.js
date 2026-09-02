@@ -149,9 +149,9 @@ export const buildDemoEventDescription = ({
 
 export const PUBLIC_ROUTE_META = {
   "/": {
-    title: "Demo & Rent Surfboards, Snowboards, Skis & Mountain Bikes | DemoStoke",
+    title: "Demo & Rent Surfboards From Local Shops | DemoStoke",
     description:
-      "DemoStoke is the go-to marketplace to demo, rent, and try action sports gear from local shops and riders. Surfboards, snowboards, skis, and mountain bikes. Try before you buy.",
+      "DemoStoke is the marketplace to demo, rent, and try surfboards from local surf shops, indie shapers, and fellow surfers. Snowboards, skis, and mountain bikes too. Try before you buy.",
     type: "website",
     canonicalUrl: `${PUBLIC_SITE_URL}/`,
   },
@@ -163,9 +163,9 @@ export const PUBLIC_ROUTE_META = {
     canonicalUrl: `${PUBLIC_SITE_URL}/about`,
   },
   "/explore": {
-    title: "Explore Surfboards, Snowboards, Skis & Bikes Near You | DemoStoke",
+    title: "Explore Surfboards & Gear Demos Near You | DemoStoke",
     description:
-      "Browse available surfboards, snowboards, skis, and mountain bikes for demo and rental near you. Filter by sport, location, skill level, and price.",
+      "Browse surfboards available for demo and rental near you, plus snowboards, skis, and mountain bikes. Filter by sport, location, skill level, and price.",
     type: "website",
     canonicalUrl: `${PUBLIC_SITE_URL}/explore`,
   },
@@ -177,9 +177,9 @@ export const PUBLIC_ROUTE_META = {
     canonicalUrl: `${PUBLIC_SITE_URL}/how-it-works`,
   },
   "/blog": {
-    title: "Gear Reviews, Surf & Snow Stories | DemoStoke Blog",
+    title: "Surfboard Reviews, Gear Guides & Surf Stories | DemoStoke Blog",
     description:
-      "Gear reviews, surf and snow culture, demo day calendars, and rider stories from the DemoStoke community.",
+      "Surfboard reviews, gear guides, snow and bike reviews, demo day calendars, and rider stories from the DemoStoke community.",
     type: "website",
     canonicalUrl: `${PUBLIC_SITE_URL}/blog`,
   },
@@ -200,7 +200,7 @@ export const PUBLIC_ROUTE_META = {
   "/search": {
     title: "Search Surfboards, Snowboards, Skis & Bikes | DemoStoke",
     description:
-      "Search for surfboards, snowboards, skis, and mountain bikes available for demo and rental on DemoStoke.",
+      "Search surfboards available for demo and rental on DemoStoke, along with snowboards, skis, and mountain bikes.",
     type: "website",
     canonicalUrl: `${PUBLIC_SITE_URL}/search`,
   },

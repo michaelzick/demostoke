@@ -50,7 +50,7 @@ export function RentalDiscoveryDashboard() {
       const { data, error } = await supabase.functions.invoke("rental-discovery-agent", {
         body: {
           region: "los-angeles",
-          categories: ["ski", "snowboard"],
+          categories: ["surfboard", "ski", "snowboard"],
           maxShops: 10,
         },
       });
@@ -104,7 +104,7 @@ export function RentalDiscoveryDashboard() {
           <div>
             <h2 className="text-2xl font-bold">Rental Discovery Agent</h2>
             <p className="text-muted-foreground">
-              Automated discovery of ski/snowboard rental shops in LA County
+              Automated discovery of surf, ski, and snowboard rental shops in LA County
             </p>
           </div>
           <div className="flex gap-2">

@@ -3,6 +3,8 @@ import usePageMetadata from "@/hooks/usePageMetadata";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
+import { RIPTYDE_APP_STORE_URL } from "@/lib/gearCategories";
+import { trackEvent } from "@/utils/tracking";
 
 interface GearCategoryPageProps {
   categoryKey: "surfboards" | "used-skis";
@@ -22,6 +24,8 @@ const categoryConfig: Record<
     intro: string;
     bodyContent: string[];
     dbCategory: string;
+    /** Optional closing line with an external link, rendered after bodyContent. */
+    externalCta?: { lead: string; linkLabel: string; href: string; source: string };
   }
 > = {
   surfboards: {
@@ -41,6 +45,12 @@ const categoryConfig: Record<
       "Many shops on DemoStoke offer try-before-you-buy programs where your rental fee is credited toward purchase. It's the smartest way to find your next daily driver.",
     ],
     dbCategory: "surfboards",
+    externalCta: {
+      lead: "Check conditions before you book a demo with",
+      linkLabel: "Riptyde, our surf forecasting app",
+      href: RIPTYDE_APP_STORE_URL,
+      source: "surfboards_category_page",
+    },
   },
   "used-skis": {
     title: "Used Ski Rentals & Demos | DemoStoke",
@@ -104,6 +114,21 @@ const GearCategoryPage = ({ categoryKey }: GearCategoryPageProps) => {
         {config.bodyContent.map((paragraph, i) => (
           <p key={i}>{paragraph}</p>
         ))}
+        {config.externalCta && (
+          <p>
+            {config.externalCta.lead}{" "}
+            <a
+              href={config.externalCta.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEvent("riptyde_link_click", { source: config.externalCta?.source })}
+              className="underline underline-offset-4 hover:text-foreground transition-colors"
+            >
+              {config.externalCta.linkLabel}
+            </a>
+            .
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">

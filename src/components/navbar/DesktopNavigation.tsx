@@ -11,17 +11,11 @@ import {
 } from "@/components/ui/navigation-menu";
 import { useState } from "react";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { GEAR_CATEGORIES } from "@/lib/gearCategories";
 
 type DesktopNavigationProps = {
   onOpenSearch: () => void;
 };
-
-const gearCategories = [
-  { name: "Snowboards", category: "snowboards" },
-  { name: "Skis", category: "skis" },
-  { name: "Surfboards", category: "surfboards" },
-  { name: "Mountain Bikes", category: "mountain-bikes" },
-];
 
 const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
   const [isExploreOpen, setIsExploreOpen] = useState(false);
@@ -74,14 +68,14 @@ const DesktopNavigation = ({ onOpenSearch }: DesktopNavigationProps) => {
                   My Favorites {!hasFavorites && '(empty)'}
                 </Link>
                 
-                {gearCategories.map((gear) => (
+                {GEAR_CATEGORIES.map((gear) => (
                   <Link
-                    key={gear.category}
-                    to={`/explore?category=${gear.category}`}
+                    key={gear.slug}
+                    to={`/explore?category=${gear.slug}`}
                     className="block px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground rounded-sm transition-colors"
                     onClick={handleCategoryClick}
                   >
-                    {gear.name}
+                    {gear.label}
                   </Link>
                 ))}
               </div>

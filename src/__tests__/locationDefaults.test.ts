@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   DEFAULT_EXPLORE_ZOOM,
-  LAKE_TAHOE_COORDINATES,
+  DEFAULT_EXPLORE_COORDINATES,
   USER_LOCATION_EXPLORE_ZOOM,
   resolveExploreCenter,
 } from "@/utils/locationDefaults";
@@ -59,7 +59,7 @@ describe("resolveExploreCenter", () => {
     });
   });
 
-  it("returns Lake Tahoe fallback when permission is denied", () => {
+  it("returns the Santa Monica fallback when permission is denied", () => {
     const result = resolveExploreCenter({
       latitude: null,
       longitude: null,
@@ -67,8 +67,8 @@ describe("resolveExploreCenter", () => {
     });
 
     expect(result).toEqual({
-      lat: LAKE_TAHOE_COORDINATES.lat,
-      lng: LAKE_TAHOE_COORDINATES.lng,
+      lat: DEFAULT_EXPLORE_COORDINATES.lat,
+      lng: DEFAULT_EXPLORE_COORDINATES.lng,
       zoom: DEFAULT_EXPLORE_ZOOM,
       isUserLocation: false,
     });
@@ -82,7 +82,7 @@ describe("resolveExploreCenter", () => {
     });
 
     expect(result?.isUserLocation).toBe(false);
-    expect(result?.lat).toBe(LAKE_TAHOE_COORDINATES.lat);
-    expect(result?.lng).toBe(LAKE_TAHOE_COORDINATES.lng);
+    expect(result?.lat).toBe(DEFAULT_EXPLORE_COORDINATES.lat);
+    expect(result?.lng).toBe(DEFAULT_EXPLORE_COORDINATES.lng);
   });
 });

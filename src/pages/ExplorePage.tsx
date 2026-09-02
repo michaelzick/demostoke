@@ -28,7 +28,7 @@ import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 import { resolveStaticRouteSeo } from "@/lib/seo/policy.js";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import {
-  LAKE_TAHOE_COORDINATES,
+  DEFAULT_EXPLORE_COORDINATES,
   resolveExploreCenter,
 } from "@/utils/locationDefaults";
 
@@ -77,7 +77,7 @@ const ExplorePage = () => {
   );
   const hasResolvedDecision = exploreCenter !== null;
   const distanceFallbackOrigin = exploreCenter && !exploreCenter.isUserLocation
-    ? LAKE_TAHOE_COORDINATES
+    ? DEFAULT_EXPLORE_COORDINATES
     : undefined;
 
   const { data: allEquipment = [], isLoading: isEquipmentLoading } = useQuery({

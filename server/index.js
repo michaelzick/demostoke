@@ -960,7 +960,7 @@ const HOMEPAGE_SCHEMA = [
     url: PUBLIC_SITE_URL,
     logo: DEFAULT_SOCIAL_IMAGE,
     description:
-      'DemoStoke is an action sports gear marketplace where riders demo, rent, and try surfboards, snowboards, skis, and mountain bikes from local shops and other riders.',
+      'DemoStoke is a surf-first gear marketplace where surfers demo, rent, and try surfboards from local surf shops, indie shapers, and other riders. Snowboards, skis, and mountain bikes are also listed.',
     foundingDate: '2024',
     sameAs: [],
   },
@@ -981,16 +981,16 @@ const HOMEPAGE_SCHEMA = [
 ];
 
 const HOMEPAGE_SUMMARY = `<noscript><section id="homepage-crawl-summary" style="padding:16px;max-width:720px;margin:0 auto;">
-  <h1>DemoStoke — Demo & Rent Action Sports Gear</h1>
-  <p>DemoStoke is the go-to marketplace to demo, rent, and try surfboards, snowboards, skis, and mountain bikes from local shops and riders. Try before you buy.</p>
+  <h1>DemoStoke — Demo & Rent Surfboards From Local Shops</h1>
+  <p>DemoStoke is the marketplace to demo, rent, and try surfboards from local surf shops, indie shapers, and fellow surfers. Snowboards, skis, and mountain bikes too. Try before you buy.</p>
   <h2>How It Works</h2>
   <p>Browse available gear by sport and location. Connect with the shop or owner. Try the gear in real conditions. Buy what you love.</p>
   <h2>Gear Categories</h2>
   <ul>
     <li><a href="/gear/surfboards">Surfboards</a> — shortboards, longboards, fish, mid-lengths</li>
-    <li><a href="/gear/used-skis">Skis</a> — all-mountain, powder, park, touring</li>
     <li><a href="/explore?category=snowboards">Snowboards</a> — all-mountain, freestyle, powder</li>
-    <li><a href="/explore?category=bikes">Mountain Bikes</a> — trail, enduro, downhill</li>
+    <li><a href="/gear/used-skis">Skis</a> — all-mountain, powder, park, touring</li>
+    <li><a href="/explore?category=mountain-bikes">Mountain Bikes</a> — trail, enduro, downhill</li>
   </ul>
   <h2>For Shops</h2>
   <p><a href="/list-your-gear">List your shop on DemoStoke</a> — free to start, commission-based.</p>

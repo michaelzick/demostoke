@@ -2,6 +2,8 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { openCookiePreferences } from "@/utils/cookieConsent";
+import { RIPTYDE_APP_STORE_URL } from "@/lib/gearCategories";
+import { trackEvent } from "@/utils/tracking";
 
 const Footer = () => {
   return (
@@ -41,6 +43,17 @@ const Footer = () => {
                   <Link to="/how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     How It Works
                   </Link>
+                </li>
+                <li>
+                  <a
+                    href={RIPTYDE_APP_STORE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackEvent("riptyde_link_click", { source: "footer" })}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Riptyde Surf Forecast
+                  </a>
                 </li>
               </ul>
             </div>

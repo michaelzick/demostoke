@@ -1,37 +1,37 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Snowflake, Mountain, Waves, Bike } from "lucide-react";
+import { Snowflake, Mountain, Waves, Bike, type LucideIcon } from "lucide-react";
+import { GEAR_CATEGORIES, type GearCategorySlug } from "@/lib/gearCategories";
 
 interface CategorySelectionProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-const categories = [
-  {
-    id: 'snowboards',
-    name: 'Snowboards',
-    icon: Snowflake,
-    description: 'All-mountain, freestyle, freeride, and alpine snowboards'
-  },
-  {
-    id: 'skis',
-    name: 'Skis',
-    icon: Mountain,
-    description: 'All-mountain, freestyle, touring, and racing skis'
-  },
-  {
-    id: 'surfboards',
-    name: 'Surfboards',
+const CATEGORY_DETAILS: Record<GearCategorySlug, { icon: LucideIcon; description: string }> = {
+  surfboards: {
     icon: Waves,
-    description: 'Shortboards, longboards, fish, and specialty surfboards'
+    description: 'Shortboards, longboards, fish, and specialty surfboards',
   },
-  {
-    id: 'mountain-bikes',
-    name: 'Mountain Bikes',
+  snowboards: {
+    icon: Snowflake,
+    description: 'All-mountain, freestyle, freeride, and alpine snowboards',
+  },
+  skis: {
+    icon: Mountain,
+    description: 'All-mountain, freestyle, touring, and racing skis',
+  },
+  'mountain-bikes': {
     icon: Bike,
-    description: 'Cross-country, trail, enduro, and downhill bikes'
-  }
-];
+    description: 'Cross-country, trail, enduro, and downhill bikes',
+  },
+};
+
+// Order follows the shared surf-first category list.
+const categories = GEAR_CATEGORIES.map((category) => ({
+  id: category.slug,
+  name: category.label,
+  ...CATEGORY_DETAILS[category.slug],
+}));
 
 const CategorySelection = ({ value, onChange }: CategorySelectionProps) => {
   return (

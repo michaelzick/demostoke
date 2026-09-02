@@ -1,13 +1,20 @@
 import type { ValidGoogleImageSearchResult } from "./googleImageFilters.ts";
 
 export const ELIGIBLE_GEAR_CATEGORIES = [
+  "surfboards",
   "skis",
   "snowboards",
-  "surfboards",
   "mountain-bikes",
 ] as const;
 
 export type EligibleGearCategory = (typeof ELIGIBLE_GEAR_CATEGORIES)[number];
+
+/**
+ * DemoStoke is surf-first: half of automated review drafts target surfboards.
+ * The remaining probability is split evenly across the other categories.
+ */
+export const SURF_CATEGORY_WEIGHT = 0.5;
+export const SURF_CATEGORY: EligibleGearCategory = "surfboards";
 
 export type GearReviewCandidate = {
   id: string;
@@ -258,8 +265,12 @@ export const buildUniqueSlug = (baseSlug: string, existingSlugs: Set<string>): s
 export const chooseRandomCategory = (
   random: () => number = Math.random,
 ): EligibleGearCategory => {
-  const index = Math.floor(random() * ELIGIBLE_GEAR_CATEGORIES.length);
-  return ELIGIBLE_GEAR_CATEGORIES[Math.min(index, ELIGIBLE_GEAR_CATEGORIES.length - 1)];
+  if (random() < SURF_CATEGORY_WEIGHT) {
+    return SURF_CATEGORY;
+  }
+  const others = ELIGIBLE_GEAR_CATEGORIES.filter((category) => category !== SURF_CATEGORY);
+  const index = Math.floor(random() * others.length);
+  return others[Math.min(index, others.length - 1)];
 };
 
 export const shuffleCategories = (

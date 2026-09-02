@@ -23,9 +23,9 @@ interface BusinessResult {
 }
 
 const CATEGORY_KEYWORDS = [
+  "surfboard",
   "snowboard",
   "ski",
-  "surfboard",
   "mountain bike",
 ];
 

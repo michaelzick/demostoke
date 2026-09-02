@@ -22,6 +22,7 @@
   - admin tooling for users, discovery, media, and data cleanup
   - widget and external shop-feed ingestion
 - Live data is centered on Supabase. Some surfaces are still mock or placeholder: `AnalyticsPage`, `BookingsPage`, `PrivatePartyPage`, and parts of the Lightspeed flow.
+- Category strategy (September 2026): DemoStoke is surf-first. Surfboards lead every category list, the homepage, site metadata, the explore fallback map center, the quiz default, the weekly gear-review draft mix, and demo-event discovery order. Snowboards, skis, and mountain bikes remain fully supported long-tail categories: do not delete categories, routes, inventory, or content to narrow scope. Riptyde (`https://apps.apple.com/us/app/riptyde/id6793336480`) is the companion surf-forecasting iOS app; its App Store link lives in `src/lib/gearCategories.ts` as `RIPTYDE_APP_STORE_URL` and is the only external app link on the site (hero, footer, `/gear/surfboards`). Riptyde clicks emit the `riptyde_link_click` event with a `source` property only.
 
 ## Stack and Runtime
 - Node `>=24`
@@ -247,6 +248,9 @@ CI holds no repository secrets; `.github/workflows/security.yml` uses only the a
 - Do not introduce new hardcoded secrets. Keep public browser tokens and service secrets clearly separated.
 
 ## Critical Invariants and Gotchas
+- Category ordering for client UI comes from `GEAR_CATEGORIES` in `src/lib/gearCategories.ts` (surfboards first). Nav menus, the hero category row, `FilterBar`, and the quiz `CategorySelection` all render from it. Do not reintroduce hand-written four-category lists in components. Route parsing still uses `PUBLIC_GEAR_CATEGORIES` in `src/lib/seo/gearSeo.js`, and Deno edge functions keep their own copies.
+- Explore falls back to Santa Monica Bay (`DEFAULT_EXPLORE_COORDINATES` in `src/utils/locationDefaults.ts`) when geolocation is denied. The gear quiz opens with `surfboards` preselected.
+- The weekly `generate-gear-review-blog-draft` cron picks its category with `chooseRandomCategory` in `_shared/gearReviewBlogGeneration.ts`, weighted by `SURF_CATEGORY_WEIGHT` (0.5) toward surfboards and split evenly across the rest; `shuffleCategories` still provides fallback order. `discover-demo-events` lists surfboards first and interleaves its search queries round-robin across categories, because `MAX_QUERY_ATTEMPTS` (6) is smaller than the number of variants generated per search term.
 - SEO changes usually require edits in both client metadata (`usePageMetadata`) and server injection (`server/index.js` + `src/lib/seo/*`). Do not fix only one side.
 - Canonical gear URLs should go through `utils/gearUrl.ts`. When route shape changes, update route definitions, server SEO handling, and SEO tests together.
 - Detail-page visibility rules depend on `isPublicEquipmentRecord()` and hidden-user handling. Check both `useEquipmentById` and `useEquipmentBySlug`.
