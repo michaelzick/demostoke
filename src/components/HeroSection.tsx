@@ -5,8 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Search, ExternalLink } from "lucide-react";
 import { Snowflake, Mountains, Waves, Bicycle, type Icon } from "@phosphor-icons/react";
 import HeroVideoIndicators from "@/components/HeroVideoIndicators";
-import { GEAR_CATEGORIES, RIPTYDE_APP_STORE_URL, type GearCategorySlug } from "@/lib/gearCategories";
-import { trackEvent } from "@/utils/tracking";
+import { GEAR_CATEGORIES, type GearCategorySlug } from "@/lib/gearCategories";
+import { RiptydeLink } from "@/components/RiptydeLink";
 
 const SLIDE_DURATION = 5000;
 
@@ -180,16 +180,15 @@ const HeroSection = () => {
               );
             })}
           </div>
-          <a
-            href={RIPTYDE_APP_STORE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackEvent("riptyde_link_click", { source: "hero" })}
-            className="mt-6 inline-flex items-center gap-1.5 text-xs sm:text-sm text-white/70 hover:text-white underline-offset-4 hover:underline transition-colors"
+          <RiptydeLink
+            source="hero"
+            iconSize={20}
+            iconClassName="h-5 w-5 ring-1 ring-white/20 shadow-sm"
+            className="group mt-6 text-xs sm:text-sm text-white/80 hover:text-white transition-colors"
           >
-            Check the surf on Riptyde
-            <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-          </a>
+            <span className="underline-offset-4 group-hover:underline">Check the surf on Riptyde</span>
+            <ExternalLink className="h-3.5 w-3.5 -ml-0.5" aria-hidden="true" />
+          </RiptydeLink>
         </div>
       </div>
 
