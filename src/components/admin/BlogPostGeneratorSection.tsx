@@ -15,18 +15,11 @@ import { format } from "date-fns";
 import { CalendarIcon, Sparkles, Loader2 } from "lucide-react";
 import { generateBlogText } from "@/services/blog/generateBlogText";
 import { blogService } from "@/services/blogService";
+import { BLOG_CATEGORIES } from "@/lib/gearCategories";
 
 const BlogPostGeneratorSection = () => {
   const { toast } = useToast();
-  const categories = [
-    'snowboards',
-    'skis',
-    'surfboards',
-    'mountain bikes',
-    'gear reviews',
-    'stories that stoke',
-    'stories that suck'
-  ];
+  const categories = BLOG_CATEGORIES;
 
   const [prompt, setPrompt] = useState("");
   const [category, setCategory] = useState<string>(categories[0] || "");

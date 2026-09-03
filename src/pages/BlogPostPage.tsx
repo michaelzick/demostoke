@@ -230,9 +230,9 @@ const BlogPostPage = () => {
   const getCategoryColor = (category: string) => {
     const colors = {
       "gear reviews": "bg-rose-500 text-white hover:bg-rose-600",
+      surfboards: "bg-lime-300 text-gray-900 hover:bg-lime-400",
       snowboards: "bg-lime-300 text-gray-900 hover:bg-lime-400",
       skis: "bg-lime-300 text-gray-900 hover:bg-lime-400",
-      surfboards: "bg-lime-300 text-gray-900 hover:bg-lime-400",
       "mountain bikes": "bg-lime-300 text-gray-900 hover:bg-lime-400",
       "stories that stoke": "bg-fuchsia-500 text-gray-900 hover:bg-fuchsia-600",
       guides: "bg-sky-500 text-white hover:bg-sky-600"

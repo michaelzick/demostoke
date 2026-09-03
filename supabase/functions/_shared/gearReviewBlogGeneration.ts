@@ -2,8 +2,8 @@ import type { ValidGoogleImageSearchResult } from "./googleImageFilters.ts";
 
 export const ELIGIBLE_GEAR_CATEGORIES = [
   "surfboards",
-  "skis",
   "snowboards",
+  "skis",
   "mountain-bikes",
 ] as const;
 
@@ -79,16 +79,16 @@ export type SelectedBlogImages = {
 export const GEAR_REVIEW_DRAFT_PROMPT_VERSION = "gear-review-blog-draft-v6";
 
 export const CATEGORY_TAGS: Record<EligibleGearCategory, string> = {
-  skis: "skis",
-  snowboards: "snowboards",
   surfboards: "surfboards",
+  snowboards: "snowboards",
+  skis: "skis",
   "mountain-bikes": "mountain bikes",
 };
 
 const CATEGORY_REVIEW_LABELS: Record<EligibleGearCategory, string> = {
-  skis: "ski",
-  snowboards: "snowboard",
   surfboards: "surfboard",
+  snowboards: "snowboard",
+  skis: "ski",
   "mountain-bikes": "mountain bike",
 };
 
@@ -629,8 +629,8 @@ export const buildGeneratedReviewSystemPrompt = (): string =>
     "Use a standalone review structure: overview, who it's for, design and construction, ride or use profile, ideal conditions, setup guidance, strengths, tradeoffs, care or tuning tips, and Final Call.",
     "Use natural, conversational headings and phrasing, for example <h2>Who it's for</h2>, not formal labels like <h2>Who it is for</h2>.",
     "Return exactly these tags, in this order: gear reviews, the gear category, and the gear brand. Example: gear reviews, skis, stockli.",
-    "For snowboards, cover profile options, camber or rocker, flex, ideal conditions, boots, bindings, size guidance, and tuning where relevant.",
     "For surfboards, cover outline, rocker, rails, tail, fin setup, paddling, wave range, sizing, skill fit, strengths, tradeoffs, and Final Call. Do not mention specific beaches or surf towns.",
+    "For snowboards, cover profile options, camber or rocker, flex, ideal conditions, boots, bindings, size guidance, and tuning where relevant.",
     "For skis, cover rocker and camber profile, flex, construction, turn shape, terrain fit, boot or binding pairing if useful, sizing, tuning, strengths, tradeoffs, and Final Call.",
     "For mountain bikes, cover frame platform, suspension, geometry, drivetrain, brakes, wheels or tires if known, climbing, descending, sizing, setup, maintenance, strengths, tradeoffs, and Final Call.",
     "If exact tech details vary by model year or trim, say they vary instead of inventing a single exact spec.",

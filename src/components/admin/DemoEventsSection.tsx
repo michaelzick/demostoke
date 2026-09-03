@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { GEAR_CATEGORIES, GEAR_CATEGORY_LABELS } from "@/lib/gearCategories";
 import type { Dispatch, SetStateAction } from "react";
 import { format, formatDistanceToNowStrict } from "date-fns";
 import { useIsAdmin } from "@/hooks/useUserRole";
@@ -55,12 +56,7 @@ const STATUS_FILTER_OPTIONS: { value: DemoEventCandidateFilter; label: string }[
   { value: "all", label: "All" },
 ];
 
-const CATEGORY_LABELS: Record<DemoEventCandidate["gear_category"], string> = {
-  skis: "Skis",
-  snowboards: "Snowboards",
-  surfboards: "Surfboards",
-  "mountain-bikes": "Mountain Bikes",
-};
+const CATEGORY_LABELS: Record<DemoEventCandidate["gear_category"], string> = GEAR_CATEGORY_LABELS;
 
 type EditDraft = {
   title: string;
@@ -517,7 +513,7 @@ const DemoEventsSection = () => {
                 }
               }}
               className="min-h-[240px] font-mono text-xs"
-              placeholder={`[\n  {\n    "title": "Winter Demo Day",\n    "company": "Village Ski Loft",\n    "gear_category": "snowboards",\n    "event_date": "2026-03-01",\n    "location": "Diamond Peak, NV",\n    "source_primary_url": "https://example.com/events/winter-demo-day"\n  }\n]`}
+              placeholder={`[\n  {\n    "title": "Spring Surf Demo Day",\n    "company": "Malibu Surf Shack",\n    "gear_category": "surfboards",\n    "event_date": "2026-03-01",\n    "location": "Malibu, CA",\n    "source_primary_url": "https://example.com/events/winter-demo-day"\n  }\n]`}
             />
 
             <p className="text-xs text-muted-foreground">
@@ -790,8 +786,8 @@ const DemoEventsSection = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
-                        <SelectItem key={value} value={value}>
+                      {GEAR_CATEGORIES.map(({ slug, label }) => (
+                        <SelectItem key={slug} value={slug}>
                           {label}
                         </SelectItem>
                       ))}

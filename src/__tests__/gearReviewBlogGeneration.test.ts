@@ -79,8 +79,8 @@ describe("gear review blog generation helpers", () => {
       let index = 0;
       return () => values[Math.min(index++, values.length - 1)];
     };
-    expect(chooseRandomCategory(sequence(0.6, 0))).toBe("skis");
-    expect(chooseRandomCategory(sequence(0.6, 0.5))).toBe("snowboards");
+    expect(chooseRandomCategory(sequence(0.6, 0))).toBe("snowboards");
+    expect(chooseRandomCategory(sequence(0.6, 0.5))).toBe("skis");
     expect(chooseRandomCategory(sequence(0.6, 0.99))).toBe("mountain-bikes");
   });
 

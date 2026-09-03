@@ -1,4 +1,5 @@
 
+import { GEAR_CATEGORIES } from "@/lib/gearCategories";
 import { Equipment } from "@/types";
 import { supabase } from "@/integrations/supabase/client";
 import { extractBrandFromQuery } from "@/data/brandAliases";
@@ -245,22 +246,20 @@ const calculateRelevanceScore = (query: string, item: Equipment, categoryMatches
 
 // Extract category keywords from search query
 const extractCategoryMatches = (lowerQuery: string) => {
-  const categoryMatches: { [key: string]: number; } = {
-    snowboards: 0,
-    skis: 0,
-    surfboards: 0,
-    "mountain-bikes": 0,
-  };
+  // Key order follows GEAR_CATEGORIES so ties resolve surf-first.
+  const categoryMatches: { [key: string]: number; } = Object.fromEntries(
+    GEAR_CATEGORIES.map((category) => [category.slug, 0]),
+  );
 
   // Check for category keywords
+  if (lowerQuery.includes("surf") || lowerQuery.includes("surfboard") || lowerQuery.includes("waves")) {
+    categoryMatches.surfboards += 3;
+  }
   if (lowerQuery.includes("snow") || lowerQuery.includes("snowboard")) {
     categoryMatches.snowboards += 3;
   }
   if (lowerQuery.includes("ski") || lowerQuery.includes("skiing")) {
     categoryMatches.skis += 3;
-  }
-  if (lowerQuery.includes("surf") || lowerQuery.includes("surfboard") || lowerQuery.includes("waves")) {
-    categoryMatches.surfboards += 3;
   }
   if (lowerQuery.includes("bike") || lowerQuery.includes("mountain bike") || lowerQuery.includes("mtb") || lowerQuery.includes("cycling")) {
     categoryMatches["mountain-bikes"] += 3;

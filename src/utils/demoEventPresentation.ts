@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { CategoryFilter, DemoEvent } from "@/types/demo-calendar";
 
+// Key order drives DEMO_EVENT_CATEGORY_FILTERS; keep it aligned with GEAR_CATEGORIES.
 const CATEGORY_META: Record<
   DemoEvent["gear_category"],
   {
@@ -12,6 +13,14 @@ const CATEGORY_META: Record<
     placeholderTextClass: string;
   }
 > = {
+  surfboards: {
+    name: "Surfboards",
+    singularName: "Surfboard",
+    colorClass: "bg-sky-500",
+    textColorClass: "text-sky-500",
+    placeholderClass: "bg-sky-500",
+    placeholderTextClass: "text-white",
+  },
   snowboards: {
     name: "Snowboards",
     singularName: "Snowboard",
@@ -26,14 +35,6 @@ const CATEGORY_META: Record<
     colorClass: "bg-fuchsia-500",
     textColorClass: "text-fuchsia-500",
     placeholderClass: "bg-fuchsia-500",
-    placeholderTextClass: "text-white",
-  },
-  surfboards: {
-    name: "Surfboards",
-    singularName: "Surfboard",
-    colorClass: "bg-sky-500",
-    textColorClass: "text-sky-500",
-    placeholderClass: "bg-sky-500",
     placeholderTextClass: "text-white",
   },
   "mountain-bikes": {

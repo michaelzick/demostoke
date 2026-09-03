@@ -1,12 +1,19 @@
 
 import { useMatch } from 'react-router-dom';
+import { GEAR_CATEGORIES, type GearCategorySlug } from '@/lib/gearCategories';
 
-const gearLegendItems = [
-  { category: 'Snowboards', color: 'bg-rose-500' },
-  { category: 'Skis', color: 'bg-fuchsia-500' },
-  { category: 'Surfboards', color: 'bg-sky-500' },
-  { category: 'Mountain Bikes', color: 'bg-orange-400' },
-];
+const GEAR_LEGEND_COLORS: Record<GearCategorySlug, string> = {
+  surfboards: 'bg-sky-500',
+  snowboards: 'bg-rose-500',
+  skis: 'bg-fuchsia-500',
+  'mountain-bikes': 'bg-orange-400',
+};
+
+// Legend order follows the shared surf-first category list.
+const gearLegendItems = GEAR_CATEGORIES.map((category) => ({
+  category: category.label,
+  color: GEAR_LEGEND_COLORS[category.slug],
+}));
 
 const profileLegendItems = [
   { category: 'Retail Store', color: 'bg-fuchsia-500' },

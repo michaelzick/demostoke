@@ -511,11 +511,11 @@ const SearchResultsPage = () => {
                 <Button variant="outline" onClick={() => handleSuggestionClick("DHD surfboard")}>
                   DHD Surfboards
                 </Button>
-                <Button variant="outline" onClick={() => handleSuggestionClick("beginner mountain bike")}>
-                  Beginner Mountain Bikes
-                </Button>
                 <Button variant="outline" onClick={() => handleSuggestionClick("advanced snowboard")}>
                   Advanced Snowboards
+                </Button>
+                <Button variant="outline" onClick={() => handleSuggestionClick("beginner mountain bike")}>
+                  Beginner Mountain Bikes
                 </Button>
               </div>
             </div>

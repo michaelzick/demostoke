@@ -10,6 +10,7 @@ import { useIsAdmin } from "@/hooks/useUserRole";
 import { useDemoEvents } from "@/hooks/useDemoEvents";
 import { useToast } from "@/hooks/use-toast";
 import { DemoEvent, DemoEventInput } from "@/types/demo-calendar";
+import { GEAR_CATEGORIES } from "@/lib/gearCategories";
 
 interface AddEventModalProps {
   open: boolean;
@@ -19,17 +20,15 @@ interface AddEventModalProps {
   isSubmitting?: boolean;
 }
 
-const gearCategories = [
-  { value: 'snowboards', label: 'Snowboards' },
-  { value: 'skis', label: 'Skis' },
-  { value: 'surfboards', label: 'Surfboards' },
-  { value: 'mountain-bikes', label: 'Mountain Bikes' },
-];
+const gearCategories = GEAR_CATEGORIES.map((category) => ({
+  value: category.slug,
+  label: category.label,
+}));
 
 const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: AddEventModalProps) => {
   const [formData, setFormData] = useState<DemoEventInput>({
     title: '',
-    gear_category: 'snowboards',
+    gear_category: 'surfboards',
     event_date: '',
     event_time: '',
     location: '',
@@ -67,7 +66,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
     } else {
       setFormData({
         title: '',
-        gear_category: 'snowboards',
+        gear_category: 'surfboards',
         event_date: '',
         event_time: '',
         location: '',
@@ -138,7 +137,7 @@ const AddEventModal = ({ open, onClose, onSubmit, editEvent, isSubmitting }: Add
   const handleClose = () => {
     setFormData({
       title: '',
-      gear_category: 'snowboards',
+      gear_category: 'surfboards',
       event_date: '',
       event_time: '',
       location: '',

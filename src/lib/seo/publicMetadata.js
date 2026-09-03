@@ -61,9 +61,9 @@ const truncateMetaText = (value, maxLength = 160) => {
 };
 
 const DEMO_EVENT_CATEGORY_LABELS = {
+  surfboards: "surfboard",
   snowboards: "snowboard",
   skis: "ski",
-  surfboards: "surfboard",
   "mountain-bikes": "mountain bike",
 };
 

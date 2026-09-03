@@ -248,7 +248,7 @@ export default function RetailerDiscoverySection() {
     <Card>
       <CardHeader>
         <CardTitle>Local Retailer Discovery</CardTitle>
-        <CardDescription>Find nearby shops that carry snowboards, skis, surfboards, or mountain bikes.</CardDescription>
+        <CardDescription>Find nearby shops that carry surfboards, snowboards, skis, or mountain bikes.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3">

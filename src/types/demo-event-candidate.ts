@@ -1,3 +1,5 @@
+import type { GearCategorySlug } from "@/lib/gearCategories";
+
 export type DemoEventCandidateStatus = "pending" | "approved" | "rejected";
 export type DemoEventCandidateFilter = DemoEventCandidateStatus | "all";
 
@@ -6,7 +8,7 @@ export interface DemoEventCandidate {
   external_event_id: string;
   title: string;
   company: string;
-  gear_category: "snowboards" | "skis" | "surfboards" | "mountain-bikes";
+  gear_category: GearCategorySlug;
   event_date: string;
   event_time: string | null;
   location: string;

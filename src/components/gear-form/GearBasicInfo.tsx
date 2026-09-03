@@ -128,9 +128,10 @@ const GearBasicInfo = ({
             <SelectValue placeholder="Select Gear Type" />
           </SelectTrigger>
           <SelectContent>
+            {/* Singular form values; order mirrors GEAR_CATEGORIES in src/lib/gearCategories.ts */}
+            <SelectItem value="surfboard">Surfboard</SelectItem>
             <SelectItem value="snowboard">Snowboard</SelectItem>
             <SelectItem value="skis">Skis</SelectItem>
-            <SelectItem value="surfboard">Surfboard</SelectItem>
             <SelectItem value="mountain-bike">Mountain Bike</SelectItem>
           </SelectContent>
         </Select>
