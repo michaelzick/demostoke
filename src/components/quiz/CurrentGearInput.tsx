@@ -10,12 +10,12 @@ interface CurrentGearInputProps {
 
 const getCurrentGearPlaceholder = (category: string) => {
   switch (category) {
+    case 'surfboards':
+      return "e.g., 6'2\" Lost Mayhem (favorite shortboard), tried 9'0\" Noserider (fun but want something shorter), looking for better small wave performance...";
     case 'snowboards':
       return "e.g., Burton Custom 158cm (love the responsiveness), tried K2 Manifest (too stiff), currently own a Capita DOA 156cm...";
     case 'skis':
       return "e.g., Rossignol Experience 88 170cm (great all-mountain), tried Salomon QST 92 (loved in powder), looking for something more versatile...";
-    case 'surfboards':
-      return "e.g., 6'2\" Lost Mayhem (favorite shortboard), tried 9'0\" Noserider (fun but want something shorter), looking for better small wave performance...";
     case 'mountain-bikes':
       return "e.g., Trek Fuel EX 8 (love the suspension), borrowed Specialized Stumpjumper (great climbing), want something more aggressive for descents...";
     default:
@@ -25,12 +25,12 @@ const getCurrentGearPlaceholder = (category: string) => {
 
 const getCurrentGearTitle = (category: string) => {
   switch (category) {
+    case 'surfboards':
+      return "What surfboards do you own or have tried?";
     case 'snowboards':
       return "What snowboards do you own or have tried?";
     case 'skis':
       return "What skis do you own or have tried?";
-    case 'surfboards':
-      return "What surfboards do you own or have tried?";
     case 'mountain-bikes':
       return "What mountain bikes do you own or have tried?";
     default:

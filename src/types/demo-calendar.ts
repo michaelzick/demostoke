@@ -1,8 +1,8 @@
-
+import type { GearCategorySlug } from "@/lib/gearCategories";
 export interface DemoEvent {
   id: string;
   title: string;
-  gear_category: 'snowboards' | 'skis' | 'surfboards' | 'mountain-bikes';
+  gear_category: GearCategorySlug;
   event_date: string | null;
   event_time: string | null;
   location: string | null;
@@ -21,7 +21,7 @@ export interface DemoEvent {
 
 export interface DemoEventInput {
   title: string;
-  gear_category: 'snowboards' | 'skis' | 'surfboards' | 'mountain-bikes';
+  gear_category: GearCategorySlug;
   event_date?: string | null;
   event_time?: string | null;
   location?: string | null;
@@ -36,7 +36,7 @@ export interface DemoEventInput {
 }
 
 export interface CategoryFilter {
-  category: 'snowboards' | 'skis' | 'surfboards' | 'mountain-bikes';
+  category: GearCategorySlug;
   name: string;
   color: string;
   enabled: boolean;

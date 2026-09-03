@@ -12,9 +12,9 @@ const determinePrimaryCategory = (query: string): string[] => {
   
   // Check for specific brand and model combinations that indicate category
   const brandModelPatterns = [
-    { brands: ['head', 'rossignol', 'salomon', 'k2', 'volkl', 'atomic', 'blizzard'], category: 'skis' },
-    { brands: ['burton', 'lib tech', 'gnu', 'jones', 'capita', 'rome', 'never summer'], category: 'snowboards' },
     { brands: ['lost', 'firewire', 'js', 'sharp eye', 'haydenshapes', 'pyzel', 'channel islands'], category: 'surfboards' },
+    { brands: ['burton', 'lib tech', 'gnu', 'jones', 'capita', 'rome', 'never summer'], category: 'snowboards' },
+    { brands: ['head', 'rossignol', 'salomon', 'k2', 'volkl', 'atomic', 'blizzard'], category: 'skis' },
     { brands: ['specialized', 'trek', 'giant', 'cannondale', 'santa cruz', 'yeti'], category: 'mountain-bikes' }
   ];
 
@@ -25,15 +25,15 @@ const determinePrimaryCategory = (query: string): string[] => {
     }
   }
 
-  // Check for category keywords
+  // Check for category keywords (surf first: push order sets result precedence)
+  if (lowerQuery.includes("surf") || lowerQuery.includes("surfboard") || lowerQuery.includes("waves")) {
+    categories.push("surfboards");
+  }
   if (lowerQuery.includes("snow") || lowerQuery.includes("snowboard")) {
     categories.push("snowboards");
   }
   if (lowerQuery.includes("ski") && !lowerQuery.includes("snowboard")) {
     categories.push("skis");
-  }
-  if (lowerQuery.includes("surf") || lowerQuery.includes("surfboard") || lowerQuery.includes("waves")) {
-    categories.push("surfboards");
   }
   if (lowerQuery.includes("bike") || lowerQuery.includes("mountain bike") || lowerQuery.includes("mtb") || lowerQuery.includes("cycling")) {
     categories.push("mountain-bikes");

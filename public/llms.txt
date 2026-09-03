@@ -1,9 +1,9 @@
-# DemoStoke — Action Sports Gear Demo & Rental Marketplace
+# DemoStoke — Surfboard Demo & Rental Marketplace
 
-> DemoStoke is an online marketplace where riders find, demo, rent, and buy surfboards, snowboards, skis, and mountain bikes from local shops and other riders.
+> DemoStoke is an online marketplace where surfers find, demo, rent, and buy surfboards from local surf shops, indie shapers, and other surfers. Snowboards, skis, and mountain bikes are also listed.
 
 ## What DemoStoke Does
-DemoStoke connects action sports enthusiasts with local gear — surfboards, snowboards, skis, and mountain bikes — available for demo, rental, or purchase. The platform aggregates real-world inventory from surf shops, ski rental operations, indie board shapers, and individual gear owners into a searchable, location-aware marketplace. Riders can browse available gear by sport, location, skill level, and price, then book a demo or rental directly.
+DemoStoke is surf-first. It connects surfers with local surfboards — shortboards, longboards, fish, mid-lengths, and foam tops — available for demo, rental, or purchase, and also lists snowboards, skis, and mountain bikes. The platform aggregates real-world inventory from surf shops, indie board shapers, ski rental operations, and individual gear owners into a searchable, location-aware marketplace. Riders can browse available gear by sport, location, skill level, and price, then book a demo or rental directly.
 
 ## How It Works
 1. Riders browse available gear on the DemoStoke map or search by category, brand, and location.
@@ -23,7 +23,10 @@ DemoStoke offers three partner tiers:
 - Mountain Bikes (trail, enduro, downhill, cross-country, gravel)
 
 ## Coverage
-DemoStoke is currently focused on Southern California (surf) with expansion planned to major US action sports markets including Big Bear, Mammoth, Lake Tahoe, Pacific Northwest, and Colorado ski country.
+DemoStoke's surfboard inventory is concentrated in Southern California, Hawaii, and Central America, with snow and bike inventory across US and Canadian mountain towns.
+
+## Related Apps
+- Riptyde (surf forecasting, iOS): https://apps.apple.com/us/app/riptyde/id6793336480
 
 ## Key URLs
 - Homepage: https://www.demostoke.com/

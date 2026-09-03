@@ -10,9 +10,9 @@ export type { BlogPost };
 
 // Static blog posts - these will be combined with database posts
 export const blogPosts: BlogPost[] = [
+  ...surfboardsPosts,
   ...snowboardsPosts,
   ...skisPosts,
-  ...surfboardsPosts,
   ...mountainBikesPosts,
   ...gearReviewsPosts,
   ...storiesThatStokePosts,

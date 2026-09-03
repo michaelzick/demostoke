@@ -6,17 +6,18 @@ const SeoContentSection = () => {
       </h2>
       <div className="space-y-4 text-muted-foreground leading-relaxed">
         <p>
-          DemoStoke is the action sports gear marketplace built for riders who
-          want to try before they buy. Browse surfboards, snowboards, skis, and
-          mountain bikes from local shops, indie shapers, and fellow riders —
-          then demo them in the conditions you actually ride.
+          DemoStoke is the surfboard demo marketplace built for surfers who want
+          to try before they buy. Browse shortboards, longboards, fish, and
+          mid-lengths from local surf shops, indie shapers, and fellow surfers —
+          then ride them in the waves you actually surf. Snowboards, skis, and
+          mountain bikes are here too.
         </p>
         <p>
           Whether you're hunting for a new daily driver shortboard in Venice
-          Beach, looking to demo powder skis at Big Bear, or searching for a
-          mountain bike rental near your favorite trails, DemoStoke connects you
-          with real gear from real people in your area. No more guessing whether
-          a board will work based on specs alone.
+          Beach, a longboard for a week on the North Shore, or a step-up for a
+          Central America trip, DemoStoke connects you with real boards from real
+          people near the break. Skiers and mountain bikers can demo the same
+          way. No more guessing whether a board will work based on specs alone.
         </p>
         <p>
           For shops and gear owners, DemoStoke is a free platform to get your

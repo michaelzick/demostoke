@@ -2,11 +2,20 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
-import { Snowflake, Mountains, Waves, Bicycle } from "@phosphor-icons/react";
+import { Search, ExternalLink } from "lucide-react";
+import { Snowflake, Mountains, Waves, Bicycle, type Icon } from "@phosphor-icons/react";
 import HeroVideoIndicators from "@/components/HeroVideoIndicators";
+import { GEAR_CATEGORIES, type GearCategorySlug } from "@/lib/gearCategories";
+import { RiptydeLink } from "@/components/RiptydeLink";
 
 const SLIDE_DURATION = 5000;
+
+const CATEGORY_ICONS: Record<GearCategorySlug, { icon: Icon; weight?: "fill" }> = {
+  surfboards: { icon: Waves, weight: "fill" },
+  snowboards: { icon: Snowflake, weight: "fill" },
+  skis: { icon: Mountains, weight: "fill" },
+  "mountain-bikes": { icon: Bicycle },
+};
 
 const HeroSection = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -15,11 +24,12 @@ const HeroSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
+  // Surf-first: both surf clips lead the rotation.
   const backgrounds = [
     { type: 'video', url: '/vid/surfers_compressed_1920.mp4' },
+    { type: 'video', url: '/vid/surfer_compressed_1920.mp4' },
     { type: 'video', url: '/vid/snowboarder_compressed_1920.mp4' },
     { type: 'video', url: '/vid/skier_compressed_1920.mp4' },
-    { type: 'video', url: '/vid/surfer_compressed_1920.mp4' },
     { type: 'video', url: '/vid/mtb_compressed_2_1920.mp4' },
   ];
 
@@ -126,10 +136,13 @@ const HeroSection = () => {
             DemoStoke
           </h1>
           <h2 className="text-lg sm:text-2xl md:text-3xl mb-2 max-w-2xl mx-auto text-shop">
-            Demo & Rent Surfboards, Snowboards, Skis & Bikes From Local Shops
+            Demo & Rent Surfboards From Local Shops and Shapers
           </h2>
-          <p className="text-sm sm:text-base mb-6 text-white/70">
+          <p className="text-sm sm:text-base mb-1 text-white/70">
             Find it. Ride it. Love it? Buy it.
+          </p>
+          <p className="text-xs sm:text-sm mb-6 text-white/50">
+            Also snowboards, skis, and mountain bikes.
           </p>
           <div className="w-full max-w-2xl mx-auto mb-8">
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-2">
@@ -153,35 +166,29 @@ const HeroSection = () => {
             </div>
           </div>
           <div className="flex flex-wrap gap-8 justify-center">
-            <Link
-              to="/explore?category=snowboards"
-              className="flex items-center gap-2 transition-transform transform hover:scale-105"
-            >
-              <Snowflake className="h-6 w-6" weight="fill" />
-              <span className="text-sm font-medium">Snowboards</span>
-            </Link>
-            <Link
-              to="/explore?category=skis"
-              className="flex items-center gap-2 transition-transform transform hover:scale-105"
-            >
-              <Mountains className="h-6 w-6" weight="fill" />
-              <span className="text-sm font-medium">Skis</span>
-            </Link>
-            <Link
-              to="/explore?category=surfboards"
-              className="flex items-center gap-2 transition-transform transform hover:scale-105"
-            >
-              <Waves className="h-6 w-6" weight="fill" />
-              <span className="text-sm font-medium">Surfboards</span>
-            </Link>
-            <Link
-              to="/explore?category=mountain-bikes"
-              className="flex items-center gap-2 transition-transform transform hover:scale-105"
-            >
-              <Bicycle className="h-6 w-6" />
-              <span className="text-sm font-medium">Mountain Bikes</span>
-            </Link>
+            {GEAR_CATEGORIES.map((category) => {
+              const { icon: CategoryIcon, weight } = CATEGORY_ICONS[category.slug];
+              return (
+                <Link
+                  key={category.slug}
+                  to={`/explore?category=${category.slug}`}
+                  className="flex items-center gap-2 transition-transform transform hover:scale-105"
+                >
+                  <CategoryIcon className="h-6 w-6" weight={weight} />
+                  <span className="text-sm font-medium">{category.label}</span>
+                </Link>
+              );
+            })}
           </div>
+          <RiptydeLink
+            source="hero"
+            iconSize={20}
+            iconClassName="h-5 w-5 ring-1 ring-white/20 shadow-sm"
+            className="group mt-6 text-xs sm:text-sm text-white/80 hover:text-white transition-colors"
+          >
+            <span className="underline-offset-4 group-hover:underline">Check the surf on Riptyde</span>
+            <ExternalLink className="h-3.5 w-3.5 -ml-0.5" aria-hidden="true" />
+          </RiptydeLink>
         </div>
       </div>
 

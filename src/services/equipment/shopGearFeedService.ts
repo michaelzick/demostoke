@@ -125,6 +125,15 @@ const normalizeCategory = (category?: string): string => {
     .replace(/[_\s]+/g, '-');
 
   if (!normalized) return 'snowboards';
+  if (normalized === 'surfboard' || normalized === 'surfboards') {
+    return 'surfboards';
+  }
+  if (normalized === 'snowboard' || normalized === 'snowboards') {
+    return 'snowboards';
+  }
+  if (normalized === 'ski' || normalized === 'skis') {
+    return 'skis';
+  }
   if (
     normalized === 'mountain-bike' ||
     normalized === 'mountain-bikes' ||
@@ -133,15 +142,6 @@ const normalizeCategory = (category?: string): string => {
     normalized === 'mtb'
   ) {
     return 'mountain-bikes';
-  }
-  if (normalized === 'snowboard' || normalized === 'snowboards') {
-    return 'snowboards';
-  }
-  if (normalized === 'ski' || normalized === 'skis') {
-    return 'skis';
-  }
-  if (normalized === 'surfboard' || normalized === 'surfboards') {
-    return 'surfboards';
   }
 
   return normalized;

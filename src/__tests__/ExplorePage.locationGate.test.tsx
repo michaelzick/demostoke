@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import ExplorePage from "@/pages/ExplorePage";
 import type { Equipment } from "@/types";
-import { LAKE_TAHOE_COORDINATES } from "@/utils/locationDefaults";
+import { DEFAULT_EXPLORE_COORDINATES } from "@/utils/locationDefaults";
 
 interface MockGeolocationState {
   latitude: number | null;
@@ -247,7 +247,7 @@ describe("ExplorePage geolocation gate", () => {
     expect(hybridViewEl).toHaveAttribute("data-is-user-location", "true");
   });
 
-  it("fetches equipment and passes Lake Tahoe coords as initialCenter when denied", async () => {
+  it("fetches equipment and passes the Santa Monica fallback coords as initialCenter when denied", async () => {
     setGeoState({
       latitude: null,
       longitude: null,
@@ -265,11 +265,11 @@ describe("ExplorePage geolocation gate", () => {
     const hybridViewEl = await screen.findByTestId("hybrid-view-props");
     expect(hybridViewEl).toHaveAttribute(
       "data-initial-center-lat",
-      String(LAKE_TAHOE_COORDINATES.lat),
+      String(DEFAULT_EXPLORE_COORDINATES.lat),
     );
     expect(hybridViewEl).toHaveAttribute(
       "data-initial-center-lng",
-      String(LAKE_TAHOE_COORDINATES.lng),
+      String(DEFAULT_EXPLORE_COORDINATES.lng),
     );
     expect(hybridViewEl).toHaveAttribute("data-is-user-location", "false");
   });

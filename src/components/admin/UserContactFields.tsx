@@ -1,4 +1,5 @@
 
+import { GEAR_CATEGORIES as SHARED_GEAR_CATEGORIES } from "@/lib/gearCategories";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,12 +18,10 @@ interface UserContactFieldsProps {
   onInputChange: (field: string, value: string) => void;
 }
 
-const GEAR_CATEGORIES = [
-  { value: 'surfboards', label: 'Surfboards' },
-  { value: 'snowboards', label: 'Snowboards' },
-  { value: 'skis', label: 'Skis' },
-  { value: 'mountain-bikes', label: 'Mountain Bikes' },
-];
+const GEAR_CATEGORIES = SHARED_GEAR_CATEGORIES.map((category) => ({
+  value: category.slug,
+  label: category.label,
+}));
 
 const UserContactFields = ({ formData, role, isCreating, onInputChange }: UserContactFieldsProps) => {
   return (

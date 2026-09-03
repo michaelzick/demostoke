@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { openCookiePreferences } from "@/utils/cookieConsent";
+import { RiptydeLink } from "@/components/RiptydeLink";
 
 const Footer = () => {
   return (
@@ -41,6 +42,16 @@ const Footer = () => {
                   <Link to="/how-it-works" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     How It Works
                   </Link>
+                </li>
+                <li>
+                  <RiptydeLink
+                    source="footer"
+                    iconSize={16}
+                    iconClassName="h-4 w-4 rounded"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Riptyde Surf Forecast
+                  </RiptydeLink>
                 </li>
               </ul>
             </div>

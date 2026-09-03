@@ -3,17 +3,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useFavorites } from "@/contexts/FavoritesContext";
+import { GEAR_CATEGORIES } from "@/lib/gearCategories";
 
 type MobileExploreMenuProps = {
   onClose: () => void;
 };
-
-const gearCategories = [
-  { name: "Snowboards", category: "snowboards" },
-  { name: "Skis", category: "skis" },
-  { name: "Surfboards", category: "surfboards" },
-  { name: "Mountain Bikes", category: "mountain-bikes" },
-];
 
 const MobileExploreMenu = ({ onClose }: MobileExploreMenuProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -65,14 +59,14 @@ const MobileExploreMenu = ({ onClose }: MobileExploreMenuProps) => {
             My Favorites {!hasFavorites && '(empty)'}
           </Link>
           
-          {gearCategories.map((gear) => (
+          {GEAR_CATEGORIES.map((gear) => (
             <Link
-              key={gear.category}
-              to={`/explore?category=${gear.category}`}
+              key={gear.slug}
+              to={`/explore?category=${gear.slug}`}
               className="block text-base font-medium py-1"
               onClick={handleCategoryClick}
             >
-              {gear.name}
+              {gear.label}
             </Link>
           ))}
         </div>

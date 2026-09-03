@@ -10,9 +10,9 @@ const openAIApiKey = Deno.env.get("OPENAI_API_KEY");
 
 function mapCategory(text: string): string {
   const t = (text || "").toLowerCase();
+  if (t.includes("surf")) return "surfboards";
   if (t.includes("snow")) return "snowboards";
   if (t.includes("ski")) return "skis";
-  if (t.includes("surf")) return "surfboards";
   if (t.includes("bike") || t.includes("mtb") || t.includes("mountain")) return "bikes";
   return "snowboards";
 }
@@ -39,7 +39,7 @@ async function extractFromHtml(html: string) {
 Extract a single gear item from the provided HTML and return STRICT JSON with these keys:
 {
   "name": string,                      // product or gear name (required)
-  "category": string,                  // one of: snowboards | skis | surfboards | bikes
+  "category": string,                  // one of: surfboards | snowboards | skis | bikes
   "description": string,               // concise description (may be empty)
   "sizes": string[],                   // ARRAY of available sizes (e.g., ["Small", "Medium", "Large", "XL"])
   "weight": string|null,

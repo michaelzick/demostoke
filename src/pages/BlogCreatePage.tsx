@@ -23,16 +23,9 @@ import { cn } from "@/lib/utils";
 import { slugify } from "@/utils/slugify";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { trackEvent } from "@/utils/tracking";
+import { BLOG_CATEGORIES } from "@/lib/gearCategories";
 
-const categories = [
-  "snowboards",
-  "skis",
-  "surfboards",
-  "mountain bikes",
-  "gear reviews",
-  "stories that stoke",
-  "stories that suck",
-];
+const categories = BLOG_CATEGORIES;
 
 function BlogCreatePageInner() {
   const navigate = useNavigate();

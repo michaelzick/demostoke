@@ -28,9 +28,9 @@ const OPENAI_REQUEST_TIMEOUT_MS = 12_000;
 const MAPBOX_REQUEST_TIMEOUT_MS = 7_000;
 
 const ALLOWED_GEAR_CATEGORIES = [
+  "surfboards",
   "snowboards",
   "skis",
-  "surfboards",
   "mountain-bikes",
 ] as const;
 
@@ -120,17 +120,20 @@ const BLOCKED_DOMAINS = [
   "yahoo.com",
 ];
 
+// Surf-first: surfboards lead the search order. Queries are interleaved across
+// categories in buildQueries so the small per-run query budget still reaches
+// every category instead of spending itself on the first one.
 const CATEGORY_SEARCH_TERMS: Record<GearCategory, string[]> = {
-  skis: ["ski demo day", "ski test event", "ski demo tour"],
-  snowboards: ["snowboard demo day", "snowboard test ride", "snowboard demo event"],
   surfboards: ["surfboard demo day", "surfboard test ride", "surf demo event"],
+  snowboards: ["snowboard demo day", "snowboard test ride", "snowboard demo event"],
+  skis: ["ski demo day", "ski test event", "ski demo tour"],
   "mountain-bikes": ["mountain bike demo day", "mtb demo ride", "bike park demo event"],
 };
 
 const GEAR_CATEGORY_KEYWORDS: Record<GearCategory, string[]> = {
-  skis: ["ski", "skis", "skiing", "alpine", "nordic", "powder"],
-  snowboards: ["snowboard", "snowboards", "snowboarding"],
   surfboards: ["surf", "surfboard", "surfboards", "wave", "longboard", "shortboard"],
+  snowboards: ["snowboard", "snowboards", "snowboarding"],
+  skis: ["ski", "skis", "skiing", "alpine", "nordic", "powder"],
   "mountain-bikes": ["mountain bike", "mountain bikes", "mtb", "bike park", "trail bike", "enduro", "downhill"],
 };
 
@@ -188,15 +191,28 @@ const buildQueries = (searchScope: string): string[] => {
   const nextYear = currentYear + 1;
   const scopeSuffix = searchScope === "us" ? "United States" : searchScope;
 
+  // Build each category's query list, then interleave them round-robin so the
+  // first N queries cover N categories (surfboards first) rather than N
+  // variants of a single category's first term.
+  const perCategory = (Object.entries(CATEGORY_SEARCH_TERMS) as [GearCategory, string[]][]).map(
+    ([gearCategory, terms]) =>
+      terms.flatMap((term) => [
+        `${term} ${scopeSuffix} ${currentYear}`,
+        `${term} ${scopeSuffix} ${nextYear}`,
+        `${term} ${scopeSuffix} upcoming`,
+        `${term} ${scopeSuffix} calendar`,
+        `${term} hosted by brand shop ${gearCategory} ${scopeSuffix}`,
+        `${term} inurl:events ${scopeSuffix}`,
+      ]),
+  );
+
   const queries: string[] = [];
-  for (const [gearCategory, terms] of Object.entries(CATEGORY_SEARCH_TERMS) as [GearCategory, string[]][]) {
-    for (const term of terms) {
-      queries.push(`${term} ${scopeSuffix} ${currentYear}`);
-      queries.push(`${term} ${scopeSuffix} ${nextYear}`);
-      queries.push(`${term} ${scopeSuffix} upcoming`);
-      queries.push(`${term} ${scopeSuffix} calendar`);
-      queries.push(`${term} hosted by brand shop ${gearCategory} ${scopeSuffix}`);
-      queries.push(`${term} inurl:events ${scopeSuffix}`);
+  const longest = Math.max(...perCategory.map((list) => list.length));
+  for (let position = 0; position < longest; position += 1) {
+    for (const list of perCategory) {
+      if (position < list.length) {
+        queries.push(list[position]);
+      }
     }
   }
 
@@ -472,7 +488,7 @@ async function parseEventsFromPage(page: ScrapedPage): Promise<ParsedEvent[]> {
 
   const today = new Date().toISOString().slice(0, 10);
 
-  const prompt = `Extract upcoming US demo events for skis, snowboards, surfboards, and mountain bikes from this page.\nReturn ONLY a JSON array.\nEach item must include:\n- title (string)\n- company (string)\n- gear_category (one of: snowboards, skis, surfboards, mountain-bikes)\n- event_date (YYYY-MM-DD)\n- event_time (HH:MM 24h or null)\n- location (string)\n- equipment_available (string or null)\nRules:\n- Include only real upcoming events with explicit dates.\n- Skip generic rentals with no event date.\n- Normalize gear_category exactly to allowed values.\n- If no qualifying events exist, return []\nCurrent date: ${today}.`;
+  const prompt = `Extract upcoming US demo events for surfboards, snowboards, skis, and mountain bikes from this page.\nReturn ONLY a JSON array.\nEach item must include:\n- title (string)\n- company (string)\n- gear_category (one of: surfboards, snowboards, skis, mountain-bikes)\n- event_date (YYYY-MM-DD)\n- event_time (HH:MM 24h or null)\n- location (string)\n- equipment_available (string or null)\nRules:\n- Include only real upcoming events with explicit dates.\n- Skip generic rentals with no event date.\n- Normalize gear_category exactly to allowed values.\n- If no qualifying events exist, return []\nCurrent date: ${today}.`;
 
   const response = await fetchWithTimeout("https://api.openai.com/v1/chat/completions", {
     method: "POST",

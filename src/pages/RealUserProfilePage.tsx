@@ -1,6 +1,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import usePageMetadata from "@/hooks/usePageMetadata";
+import { sortByGearCategoryOrder } from "@/lib/gearCategories";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUserProfileBySlug } from "@/hooks/useUserProfileBySlug";
 import { useUserStats } from "@/hooks/useUserStats";
@@ -199,9 +200,9 @@ const RealUserProfilePage = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const hasSearchText = searchTerm.length > 0;
-  const categories = [
+  const categories = sortByGearCategoryOrder([
     ...new Set((userEquipment || []).map((item) => item.category)),
-  ] as string[];
+  ] as string[]);
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
   const filteredEquipment = (userEquipment || []).filter(
     (item) => {

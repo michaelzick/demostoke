@@ -104,7 +104,7 @@ serve(async (req) => {
 
     const payload = (await req.json()) as CrawlPayload;
     const urls = Array.isArray(payload?.urls) ? payload.urls : [];
-    const keywords = (payload?.keywords?.length ? payload.keywords : ["snowboard", "ski", "surfboard", "mountain bike"]).map(
+    const keywords = (payload?.keywords?.length ? payload.keywords : ["surfboard", "snowboard", "ski", "mountain bike"]).map(
       (k) => k.toLowerCase()
     );
     const limit = Math.min(Math.max(payload?.limit ?? 30, 5), 80);

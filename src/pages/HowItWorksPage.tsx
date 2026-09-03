@@ -23,7 +23,7 @@ const HowItWorksPage = () => {
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
               Browse gear based on where you ride, how you ride, and what makes you feel alive.
-              Demo snowboards, skis, bikes, or surfboards from local shops, indie shapers, or other riders
+              Demo surfboards, snowboards, skis, or bikes from local shops, indie shapers, or other riders
               — all matched to your conditions, skill level, and vibe.
             </p>
             <p className="text-lg text-muted-foreground">
@@ -47,8 +47,8 @@ const HowItWorksPage = () => {
                 Filter by category, skill level, and distance to find exactly what you need.
               </p>
               <ul className="text-sm text-muted-foreground space-y-2">
-                <li>• Snowboards & Skis</li>
                 <li>• Surfboards</li>
+                <li>• Snowboards & Skis</li>
                 <li>• Mountain Bikes</li>
                 <li>• Equipment from local shops and shapers</li>
               </ul>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { GEAR_CATEGORIES } from "@/lib/gearCategories";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Plus, FileText } from "lucide-react";
@@ -105,10 +106,10 @@ const BlogPageInner = () => {
 
   const filters = [
     { label: "Gear Reviews", value: "gear reviews" },
-    { label: "Snowboards", value: "snowboards" },
-    { label: "Skis", value: "skis" },
-    { label: "Surfboards", value: "surfboards" },
-    { label: "Mountain Bikes", value: "mountain bikes" },
+    ...GEAR_CATEGORIES.map((category) => ({
+      label: category.label,
+      value: category.label.toLowerCase(),
+    })),
     { label: "Stories That Stoke", value: "stories that stoke" },
     { label: "Stories That Suck", value: "stories that suck" },
   ];
@@ -354,9 +355,9 @@ const BlogPageInner = () => {
   const getCategoryColor = (category: string) => {
     const colors = {
       "gear reviews": "bg-rose-500 text-white hover:bg-rose-600",
+      surfboards: "bg-lime-300 text-gray-900 hover:bg-lime-400",
       snowboards: "bg-lime-300 text-gray-900 hover:bg-lime-400",
       skis: "bg-lime-300 text-gray-900 hover:bg-lime-400",
-      surfboards: "bg-lime-300 text-gray-900 hover:bg-lime-400",
       "mountain bikes": "bg-lime-300 text-gray-900 hover:bg-lime-400",
       "stories that stoke": "bg-fuchsia-500 text-gray-900 hover:bg-fuchsia-600",
     };

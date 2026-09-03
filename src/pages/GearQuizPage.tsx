@@ -68,8 +68,9 @@ const GearQuizPage = () => {
     maxProgressBeforeComplete: 94,
   });
 
+  // Surf-first: the quiz opens with surfboards preselected; users can change it.
   const [quizData, setQuizData] = useState<QuizData>({
-    category: '',
+    category: 'surfboards',
     height: '',
     weight: '',
     age: '',
@@ -197,7 +198,7 @@ const GearQuizPage = () => {
     setCurrentStep(1);
     setResults(null);
     setQuizData({
-      category: '',
+      category: 'surfboards',
       height: '',
       weight: '',
       age: '',

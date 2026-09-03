@@ -1,7 +1,8 @@
+// Keep in the same order as GEAR_CATEGORIES in src/lib/gearCategories.ts.
 export const PUBLIC_GEAR_CATEGORIES = Object.freeze([
+  'surfboards',
   'snowboards',
   'skis',
-  'surfboards',
   'mountain-bikes',
 ]);
 

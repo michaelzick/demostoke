@@ -27,16 +27,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { BLOG_CATEGORIES } from "@/lib/gearCategories";
 
-const categories = [
-  "snowboards",
-  "skis",
-  "surfboards",
-  "mountain bikes",
-  "gear reviews",
-  "stories that stoke",
-  "stories that suck",
-];
+const categories = BLOG_CATEGORIES;
 
 function BlogEditPageInner() {
   const { id } = useParams<{ id: string }>();

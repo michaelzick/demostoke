@@ -5,9 +5,9 @@ import { buildGearPath } from '@/utils/gearUrl';
 import { formatCurrencyPerDuration } from '@/utils/currency';
 
 const CATEGORY_COLORS: Record<string, string> = {
+  surfboards: 'bg-sky-500',
   snowboards: 'bg-rose-500',
   skis: 'bg-fuchsia-500',
-  surfboards: 'bg-sky-500',
   'mountain-bikes': 'bg-orange-400',
 };
 

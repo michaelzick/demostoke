@@ -35,7 +35,7 @@ const TermsOfServicePage = () => {
           <section>
             <h2 className={legalSectionHeadingClassName}>1. Service Description</h2>
             <p className={legalBodyClassName}>
-              DemoStoke is a platform that connects users with local gear owners, shops, and shapers to demo outdoor equipment including snowboards, skis, surfboards, and mountain bikes before purchase.
+              DemoStoke is a platform that connects users with local gear owners, shops, and shapers to demo outdoor equipment including surfboards, snowboards, skis, and mountain bikes before purchase.
             </p>
           </section>
 

@@ -3,6 +3,7 @@ import usePageMetadata from "@/hooks/usePageMetadata";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
+import { RiptydeIcon, RiptydeLink } from "@/components/RiptydeLink";
 
 interface GearCategoryPageProps {
   categoryKey: "surfboards" | "used-skis";
@@ -22,6 +23,8 @@ const categoryConfig: Record<
     intro: string;
     bodyContent: string[];
     dbCategory: string;
+    /** Optional Riptyde callout rendered after bodyContent; `source` feeds the riptyde_link_click event. */
+    externalCta?: { lead: string; linkLabel: string; source: string };
   }
 > = {
   surfboards: {
@@ -41,6 +44,11 @@ const categoryConfig: Record<
       "Many shops on DemoStoke offer try-before-you-buy programs where your rental fee is credited toward purchase. It's the smartest way to find your next daily driver.",
     ],
     dbCategory: "surfboards",
+    externalCta: {
+      lead: "Check conditions before you book a demo with",
+      linkLabel: "Riptyde, our surf forecasting app",
+      source: "surfboards_category_page",
+    },
   },
   "used-skis": {
     title: "Used Ski Rentals & Demos | DemoStoke",
@@ -104,6 +112,22 @@ const GearCategoryPage = ({ categoryKey }: GearCategoryPageProps) => {
         {config.bodyContent.map((paragraph, i) => (
           <p key={i}>{paragraph}</p>
         ))}
+        {config.externalCta && (
+          <aside className="flex items-center gap-4 rounded-lg border bg-muted/40 p-4">
+            <RiptydeIcon size={48} className="h-12 w-12 rounded-xl shadow-sm" />
+            <p className="text-sm sm:text-base">
+              {config.externalCta.lead}{" "}
+              <RiptydeLink
+                source={config.externalCta.source}
+                hideIcon
+                className="inline text-foreground font-medium underline underline-offset-4 decoration-muted-foreground/60 hover:decoration-foreground transition-colors"
+              >
+                {config.externalCta.linkLabel}
+              </RiptydeLink>
+              .
+            </p>
+          </aside>
+        )}
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
