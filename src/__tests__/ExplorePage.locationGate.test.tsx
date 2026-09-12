@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -19,6 +19,8 @@ const harness = vi.hoisted(() => ({
   getEquipmentDataMock: vi.fn(),
   hybridViewMock: vi.fn(),
   requestLocationMock: vi.fn(),
+  toastMock: vi.fn(),
+  trackMock: vi.fn(),
   geoState: {
     latitude: null,
     longitude: null,
@@ -67,7 +69,7 @@ vi.mock("@/hooks/useUserRole", () => ({
 }));
 
 vi.mock("@/hooks/use-toast", () => ({
-  useToast: () => ({ toast: vi.fn() }),
+  useToast: () => ({ toast: harness.toastMock }),
 }));
 
 vi.mock("@/contexts/FavoritesContext", () => ({
@@ -145,13 +147,15 @@ vi.mock("@/components/ScrollToTopButton", () => ({
   ScrollToTopButton: () => null,
 }));
 
-const renderExplore = () => {
+vi.mock("@/utils/tracking", () => ({ trackEvent: harness.trackMock }));
+
+const renderExplore = (url = "/explore") => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={["/explore"]}>
+      <MemoryRouter initialEntries={[url]}>
         <ExplorePage />
       </MemoryRouter>
     </QueryClientProvider>,
@@ -210,6 +214,31 @@ describe("ExplorePage geolocation gate", () => {
     expect(screen.getByText("Finding gear near you...")).toBeInTheDocument();
     expect(harness.getEquipmentDataMock).not.toHaveBeenCalled();
     expect(screen.queryByTestId("hybrid-view-props")).not.toBeInTheDocument();
+  });
+
+  it("does not announce empty category results while the query is disabled", () => {
+    renderExplore("/explore?category=surfboards");
+    expect(harness.toastMock).not.toHaveBeenCalled();
+    expect(harness.trackMock).not.toHaveBeenCalled();
+  });
+
+  it("waits for a successful query before announcing genuinely empty results", async () => {
+    setGeoState({ permissionState: "denied", permissionDenied: true });
+    let resolveEquipment!: (value: Equipment[]) => void;
+    harness.getEquipmentDataMock.mockReturnValue(new Promise<Equipment[]>(resolve => { resolveEquipment = resolve; }));
+    renderExplore("/explore?category=surfboards");
+    expect(harness.toastMock).not.toHaveBeenCalled();
+    await act(async () => resolveEquipment([]));
+    await waitFor(() => expect(harness.toastMock).toHaveBeenCalledWith(expect.objectContaining({ title: "No equipment found" })));
+  });
+
+  it("does not call a failed query an empty search", async () => {
+    setGeoState({ permissionState: "denied", permissionDenied: true });
+    harness.getEquipmentDataMock.mockRejectedValue(new Error("offline"));
+    renderExplore("/explore?category=surfboards");
+    await screen.findByTestId("hybrid-view-props");
+    expect(harness.toastMock).not.toHaveBeenCalled();
+    expect(harness.trackMock).not.toHaveBeenCalledWith("explore_filter_no_results", expect.anything());
   });
 
   it("triggers requestLocation once on mount when state is idle", () => {

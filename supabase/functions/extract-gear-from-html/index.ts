@@ -1,3 +1,6 @@
+import { authenticate } from "../_shared/requestAuth.ts";
+import { errorResponse, readJson } from "../_shared/http.ts";
+import { validate, extractionRequest } from "../_shared/requestValidation.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
@@ -172,6 +175,7 @@ serve(async (req) => {
   }
 
   try {
+    await authenticate(req, true);
     if (!openAIApiKey) {
       return new Response(JSON.stringify({ error: "OPENAI_API_KEY is not set" }), {
         status: 500,
@@ -179,13 +183,7 @@ serve(async (req) => {
       });
     }
 
-    const { html } = await req.json();
-    if (!html || typeof html !== "string") {
-      return new Response(JSON.stringify({ error: "Missing 'html' in request body" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const { html } = validate(extractionRequest, await readJson(req, 1024 * 1024));
 
     const raw = await extractFromHtml(html);
     const category = mapCategory(raw?.category || "");
@@ -211,12 +209,7 @@ serve(async (req) => {
     return new Response(JSON.stringify({ ...normalized, sql }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (e: unknown) {
-    console.error("extract-gear-from-html error:", e);
-    const message = e instanceof Error ? e.message : String(e);
-    return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  } catch (error: unknown) {
+    return errorResponse(error, corsHeaders);
   }
 });

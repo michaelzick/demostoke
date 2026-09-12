@@ -252,7 +252,7 @@ describe("Gear SEO server regression coverage", () => {
 
   it("redirects stale /gear/ slugs to the exact canonical product URL", () => {
     expect(serverSource).toMatch(
-      /canonicalPathname[\s\S]*appendOriginalSearch\(meta\.canonicalUrl\.replace\(PUBLIC_SITE_URL,\s*requestOrigin\),\s*req\.originalUrl\)/,
+      /canonicalPathname[\s\S]*appendOriginalSearch\(meta\.canonicalUrl\.replace\(PUBLIC_SITE_URL,\s*\(\) => requestOrigin\),\s*req\.originalUrl\)/,
     );
   });
 

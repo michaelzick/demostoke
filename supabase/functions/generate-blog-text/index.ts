@@ -1,3 +1,6 @@
+import { authenticate } from "../_shared/requestAuth.ts";
+import { errorResponse, readJson } from "../_shared/http.ts";
+import { validate, blogTextRequest } from "../_shared/requestValidation.ts";
 declare const Deno: {
   env: {
     get(key: string): string | undefined;
@@ -10,27 +13,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface GenerateBlogTextRequest {
-  prompt: string;
-  category: string;
-}
-
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { prompt, category }: GenerateBlogTextRequest = await req.json();
-
-    if (!prompt) {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Prompt is required' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-      );
-    }
-
-    console.log('Generating blog text for prompt:', prompt);
+    await authenticate(req);
+    const { prompt, category } = validate(blogTextRequest, await readJson(req));
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
@@ -44,6 +34,7 @@ Deno.serve(async (req: Request) => {
     // First, generate the main content
     const contentResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
+      signal: AbortSignal.timeout(60_000),
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
@@ -69,20 +60,17 @@ Return ONLY the content HTML - no full page structure.`
     });
 
     if (!contentResponse.ok) {
-      const errorData = await contentResponse.json();
-      console.error('OpenAI API error for content generation:', errorData);
+      await contentResponse.body?.cancel();
       return new Response(
-        JSON.stringify({ success: false, error: `Failed to generate content: ${errorData.error?.message || 'Unknown error'}` }),
+        JSON.stringify({ success: false, error: 'Failed to generate content. Please try again.' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
       );
     }
 
     const contentData = await contentResponse.json();
     console.log('Content response status:', contentResponse.ok, contentResponse.status);
-    console.log('Full contentData response:', JSON.stringify(contentData, null, 2));
     
     const content = contentData.choices?.[0]?.message?.content;
-    console.log('Extracted content (first 200 chars):', content?.substring(0, 200));
     
     if (!content || content.trim().length === 0) {
       console.error('Content generation failed - empty or undefined content');
@@ -95,6 +83,7 @@ Return ONLY the content HTML - no full page structure.`
     // Generate title and excerpt based on the content and prompt
     const metaResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
+      signal: AbortSignal.timeout(60_000),
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
@@ -131,10 +120,8 @@ Please return ONLY the JSON object with title and excerpt fields.`
     if (metaResponse.ok) {
       const metaData = await metaResponse.json();
       console.log('Meta response status:', metaResponse.ok, metaResponse.status);
-      console.log('Full metaData response:', JSON.stringify(metaData, null, 2));
       
       const metaContent = metaData.choices?.[0]?.message?.content;
-      console.log('Raw meta content from OpenAI:', metaContent);
 
       if (metaContent) {
         try {
@@ -162,21 +149,16 @@ Please return ONLY the JSON object with title and excerpt fields.`
             excerpt = parsedMeta.excerpt.trim();
           }
 
-          console.log('Successfully parsed meta content - Title:', title, 'Excerpt:', excerpt);
-        } catch (error) {
-          console.warn('Failed to parse meta content as JSON, using fallback. Error:', error);
-          console.warn('Content that failed to parse:', metaContent);
+        } catch {
+          console.warn('Invalid generated metadata; using fallback');
         }
       }
     } else {
-      const metaErrorData = await metaResponse.json().catch(() => ({}));
-      console.warn('Meta response not ok:', metaResponse.status, metaResponse.statusText, metaErrorData);
+      await metaResponse.body?.cancel();
     }
 
     console.log('Blog content, title, and excerpt generated successfully');
     console.log('Final content length:', content.length);
-    console.log('Final title:', title);
-    console.log('Final excerpt:', excerpt);
 
     return new Response(
       JSON.stringify({
@@ -191,11 +173,7 @@ Please return ONLY the JSON object with title and excerpt fields.`
       }
     );
 
-  } catch (error) {
-    console.error('Error in generate-blog-text function:', error);
-    return new Response(
-      JSON.stringify({ success: false, error: 'An unexpected error occurred' }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
-    );
+  } catch (error: unknown) {
+    return errorResponse(error, corsHeaders);
   }
 });

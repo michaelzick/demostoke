@@ -135,8 +135,8 @@ const HeroSection = () => {
           <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 text-primary tracking-tight" style={{ fontFamily: 'Tahoma, sans-serif' }}>
             DemoStoke
           </h1>
-          <h2 className="text-lg sm:text-2xl md:text-3xl mb-2 max-w-2xl mx-auto text-shop">
-            Demo & Rent Surfboards From Local Shops and Shapers
+          <h2 className="text-lg sm:text-2xl md:text-3xl mb-2 max-w-2xl mx-auto text-shop text-balance">
+            Demo & Rent Surfboards From Local <span className="whitespace-nowrap">Shops and Shapers</span>
           </h2>
           <p className="text-sm sm:text-base mb-1 text-white/70">
             Find it. Ride it. Love it? Buy it.
@@ -182,12 +182,12 @@ const HeroSection = () => {
           </div>
           <RiptydeLink
             source="hero"
-            iconSize={20}
-            iconClassName="h-5 w-5 ring-1 ring-white/20 shadow-sm"
-            className="group mt-6 text-xs sm:text-sm text-white/80 hover:text-white transition-colors"
+            iconSize={24}
+            iconClassName="h-6 w-6 ring-1 ring-white/20 shadow-sm"
+            className="group mt-6 text-sm sm:text-base text-white/80 hover:text-white transition-colors"
           >
             <span className="underline-offset-4 group-hover:underline">Check the surf on Riptyde</span>
-            <ExternalLink className="h-3.5 w-3.5 -ml-0.5" aria-hidden="true" />
+            <ExternalLink className="h-4 w-4 -ml-0.5" aria-hidden="true" />
           </RiptydeLink>
         </div>
       </div>

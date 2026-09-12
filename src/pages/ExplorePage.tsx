@@ -80,7 +80,7 @@ const ExplorePage = () => {
     ? DEFAULT_EXPLORE_COORDINATES
     : undefined;
 
-  const { data: allEquipment = [], isLoading: isEquipmentLoading } = useQuery({
+  const { data: allEquipment = [], isLoading: isEquipmentLoading, isSuccess: isEquipmentReady } = useQuery({
     queryKey: ['explore-equipment', feedStart, feedEnd],
     queryFn: () => getEquipmentData({ start: feedStart, end: feedEnd }),
     staleTime: 3 * 60 * 1000,
@@ -202,7 +202,7 @@ const ExplorePage = () => {
 
   // Show toast when no equipment is found after filtering
   useEffect(() => {
-    if (!isEquipmentLoading && filteredEquipment.length === 0 && activeCategory && !hasShownNoEquipmentToast) {
+    if (hasResolvedDecision && isEquipmentReady && filteredEquipment.length === 0 && activeCategory && !hasShownNoEquipmentToast) {
       trackEvent("explore_filter_no_equipment_toast", {
         selected_category: activeCategory,
       });
@@ -212,10 +212,10 @@ const ExplorePage = () => {
       });
       setHasShownNoEquipmentToast(true);
     }
-  }, [filteredEquipment.length, activeCategory, isEquipmentLoading, hasShownNoEquipmentToast, toast]);
+  }, [filteredEquipment.length, activeCategory, hasResolvedDecision, isEquipmentReady, hasShownNoEquipmentToast, toast]);
 
   useEffect(() => {
-    if (isEquipmentLoading || !activeCategory) {
+    if (!hasResolvedDecision || !isEquipmentReady || !activeCategory) {
       return;
     }
 
@@ -245,7 +245,8 @@ const ExplorePage = () => {
     advancedFilters.priceRanges,
     advancedFilters.ratingRanges,
     filteredEquipment.length,
-    isEquipmentLoading,
+    hasResolvedDecision,
+    isEquipmentReady,
     quickFilter,
   ]);
 

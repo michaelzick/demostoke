@@ -320,7 +320,7 @@ function BlogCreatePageInner() {
         category={category.replace(/-/g, ' ')}
       />
 
-      <SidebarInset>
+      <SidebarInset className="min-w-0">
         <div className="flex flex-col min-h-screen">
           <div className="flex-1 p-6">
             <div className="max-w-4xl mx-auto">

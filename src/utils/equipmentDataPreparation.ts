@@ -1,4 +1,5 @@
 
+import type { TablesInsert } from "@/integrations/supabase/types";
 import { mapGearTypeToCategory } from "@/utils/gearTypeMapping";
 import { normalizeCurrencyCode } from "@/utils/currency";
 
@@ -19,7 +20,11 @@ interface PrepareEquipmentDataParams {
   damageDeposit: string;
 }
 
-export const prepareEquipmentData = ({
+type PreparedEquipmentData = Omit<TablesInsert<"equipment">, "user_id"> & { user_id?: string };
+
+export function prepareEquipmentData(params: PrepareEquipmentDataParams & { userId: string }): TablesInsert<"equipment">;
+export function prepareEquipmentData(params: PrepareEquipmentDataParams): PreparedEquipmentData;
+export function prepareEquipmentData({
   userId,
   gearName,
   gearType,
@@ -34,14 +39,14 @@ export const prepareEquipmentData = ({
   currencyCode,
   finalImageUrl: _finalImageUrl,
   damageDeposit,
-}: PrepareEquipmentDataParams) => {
+}: PrepareEquipmentDataParams): PreparedEquipmentData {
   // Parse numeric values
   const parsedPricePerDay = parseFloat(pricePerDay) || 0;
   const parsedPricePerHour = pricePerHour && pricePerHour.trim() ? parseFloat(pricePerHour) : null;
   const parsedPricePerWeek = pricePerWeek && pricePerWeek.trim() ? parseFloat(pricePerWeek) : null;
   const parsedDamageDeposit = damageDeposit && damageDeposit.trim() ? parseFloat(damageDeposit) : null;
 
-  const equipmentData: Record<string, unknown> = {
+  const equipmentData: PreparedEquipmentData = {
     name: gearName,
     category: mapGearTypeToCategory(gearType),
     description: description,
@@ -71,4 +76,4 @@ export const prepareEquipmentData = ({
 
   console.log('Prepared equipment data:', equipmentData);
   return equipmentData;
-};
+}

@@ -1,3 +1,6 @@
+import { authenticate } from "../_shared/requestAuth.ts";
+import { errorResponse, readJson } from "../_shared/http.ts";
+import { validate, crawlRequest } from "../_shared/requestValidation.ts";
 // Supabase Edge Function: crawl-retailer-details (enhanced)
 // Crawls retailer sites with Firecrawl, finds relevant gear pages, and extracts contact info and address
 
@@ -7,12 +10,6 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
-
-interface CrawlPayload {
-  urls: string[];
-  keywords?: string[]; // e.g., ["snowboard","ski","surfboard","mountain bike"]
-  limit?: number; // max pages to crawl per site
-}
 
 interface PageItem {
   url: string;
@@ -94,6 +91,7 @@ serve(async (req) => {
   }
 
   try {
+    await authenticate(req, true);
     const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
     if (!FIRECRAWL_API_KEY) {
       return new Response(JSON.stringify({ error: "Missing FIRECRAWL_API_KEY" }), {
@@ -102,19 +100,9 @@ serve(async (req) => {
       });
     }
 
-    const payload = (await req.json()) as CrawlPayload;
-    const urls = Array.isArray(payload?.urls) ? payload.urls : [];
-    const keywords = (payload?.keywords?.length ? payload.keywords : ["surfboard", "snowboard", "ski", "mountain bike"]).map(
-      (k) => k.toLowerCase()
-    );
-    const limit = Math.min(Math.max(payload?.limit ?? 30, 5), 80);
-
-    if (urls.length === 0) {
-      return new Response(JSON.stringify({ error: "No urls provided" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const payload = validate(crawlRequest, await readJson(req));
+    const { urls, limit } = payload;
+    const keywords = payload.keywords.map((keyword) => keyword.toLowerCase());
 
     async function crawlSite(baseUrl: string): Promise<PageItem[]> {
       // Use Firecrawl crawl to get multiple pages
@@ -238,11 +226,7 @@ serve(async (req) => {
     return new Response(JSON.stringify({ results }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch (e) {
-    console.error(e);
-    return new Response(JSON.stringify({ error: "Bad request" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  } catch (error: unknown) {
+    return errorResponse(error, corsHeaders);
   }
 });
