@@ -37,7 +37,7 @@ describe("entry-client bootstrap", () => {
 
   it("hydrates when SSR markup is already present", async () => {
     document.getElementById("root")!.innerHTML = '<div data-ssr="true"></div>';
-    window.__SSR_PAGE_DATA__ = { source: "server" };
+    window.__SSR_PAGE_DATA__ = { demoEvent: null, demoEventResolved: true };
 
     await import("../entry-client");
 

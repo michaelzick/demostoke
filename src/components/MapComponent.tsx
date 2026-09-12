@@ -166,7 +166,7 @@ const MapComponent = ({
 
         if (showEquipmentPopups) {
           marker.setPopup(
-            new mapboxgl.Popup({ offset: 25 }).setHTML(
+            new mapboxgl.Popup({ offset: 25 }).setDOMContent(
               createPopupContent(item)
             )
           );
@@ -196,7 +196,7 @@ const MapComponent = ({
         new mapboxgl.Marker(el)
           .setLngLat([user.location.lng, user.location.lat])
           .setPopup(
-            new mapboxgl.Popup({ offset: 25 }).setHTML(
+            new mapboxgl.Popup({ offset: 25 }).setDOMContent(
               createUserLocationPopupContent(user)
             )
           )
@@ -227,7 +227,7 @@ const MapComponent = ({
         new mapboxgl.Marker(el)
           .setLngLat([user.location.lng, user.location.lat])
           .setPopup(
-            new mapboxgl.Popup({ offset: 25 }).setHTML(
+            new mapboxgl.Popup({ offset: 25 }).setDOMContent(
               createUserLocationPopupContent(user)
             )
           )

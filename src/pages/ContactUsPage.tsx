@@ -13,6 +13,8 @@ import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
 
+const SUBJECT_PREFIX = "[DemoStoke] ";
+
 const ContactUsPage = () => {
   usePageMetadata(PUBLIC_ROUTE_META["/contact-us"]);
   useEffect(() => {
@@ -65,31 +67,19 @@ const ContactUsPage = () => {
         throw new Error("Captcha verification failed");
       }
 
-      console.log("Submitting contact form with data:", {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        subject: formData.subject,
-        messageLength: formData.message.length,
-        hasCaptcha: !!captchaToken
-      });
-
       const { data, error } = await supabase.functions.invoke('send-contact-email', {
         body: {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
-          subject: `[DemoStoke] ${formData.subject}`,
+          subject: `${SUBJECT_PREFIX}${formData.subject}`,
           message: formData.message,
           captchaToken
         }
       });
 
-      console.log("Function response:", { data, error });
-
-      if (error) {
-        console.error('Supabase function error:', error);
-        throw new Error(error.message || 'Failed to send email');
+      if (error || !data?.success) {
+        throw new Error("Failed to send email");
       }
 
       toast({
@@ -106,8 +96,7 @@ const ContactUsPage = () => {
         message: ""
       });
 
-    } catch (error) {
-      console.error('Contact form error:', error);
+    } catch {
       toast({
         title: "Error",
         description: "Failed to send message. Please try again.",
@@ -138,6 +127,7 @@ const ContactUsPage = () => {
                 <Input
                   id="firstName"
                   name="firstName"
+                  maxLength={100}
                   type="text"
                   value={formData.firstName}
                   onChange={handleInputChange}
@@ -152,6 +142,7 @@ const ContactUsPage = () => {
                 <Input
                   id="lastName"
                   name="lastName"
+                  maxLength={100}
                   type="text"
                   value={formData.lastName}
                   onChange={handleInputChange}
@@ -168,6 +159,7 @@ const ContactUsPage = () => {
               <Input
                 id="email"
                 name="email"
+                maxLength={254}
                 type="email"
                 value={formData.email}
                 onChange={handleInputChange}
@@ -183,6 +175,7 @@ const ContactUsPage = () => {
               <Input
                 id="subject"
                 name="subject"
+                maxLength={200 - SUBJECT_PREFIX.length}
                 type="text"
                 value={formData.subject}
                 onChange={handleInputChange}
@@ -199,6 +192,7 @@ const ContactUsPage = () => {
               <Textarea
                 id="message"
                 name="message"
+                maxLength={10000}
                 value={formData.message}
                 onChange={handleInputChange}
                 placeholder="Tell us how we can help you..."

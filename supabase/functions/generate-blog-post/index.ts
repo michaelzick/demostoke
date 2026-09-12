@@ -1,25 +1,14 @@
+import { authenticate } from "../_shared/requestAuth.ts";
+import { errorResponse, readJson } from "../_shared/http.ts";
+import { validate, blogPostRequest } from "../_shared/requestValidation.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
-
-interface GenerateBlogPostRequest {
-  prompt: string;
-  category: string;
-  author: string;
-  tags: string[];
-  thumbnail: string;
-  heroImage: string;
-  youtubeUrl: string;
-  useYoutubeThumbnail: boolean;
-  useYoutubeHero: boolean;
-  publishedAt: string;
-}
 
 function slugify(text: string): string {
   return text
@@ -34,15 +23,8 @@ serve(async (req) => {
   }
 
   try {
-    const requestData: GenerateBlogPostRequest = await req.json();
-    console.log('📝 Generate blog post request:', JSON.stringify(requestData, null, 2));
-
-    if (!requestData.prompt) {
-      return new Response(
-        JSON.stringify({ error: 'prompt is required' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    const { user, supabase } = await authenticate(req);
+    const requestData = validate(blogPostRequest, await readJson(req));
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
@@ -90,6 +72,7 @@ Format the response as a JSON object with the following structure:
     console.log('🤖 Calling OpenAI API...');
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
+      signal: AbortSignal.timeout(60_000),
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
@@ -106,8 +89,7 @@ Format the response as a JSON object with the following structure:
 
     if (!response.ok) {
       console.error('OpenAI API error:', response.status, response.statusText);
-      const errorText = await response.text();
-      console.error('OpenAI API error details:', errorText);
+      await response.body?.cancel();
       return new Response(
         JSON.stringify({ error: 'Failed to generate blog post' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -152,12 +134,9 @@ Format the response as a JSON object with the following structure:
         .replace(/\*\*([^*]+)\*\*[ \t]+$/gm, '**$1**'); // Remove trailing spaces at end of lines
       
       console.log('✅ Successfully parsed OpenAI response as JSON');
-      console.log('📝 Title:', parsedContent.title);
-      console.log('📝 Excerpt:', parsedContent.excerpt);
       
-    } catch (parseError) {
-      console.error('Failed to parse OpenAI response as JSON:', parseError);
-      console.error('Raw OpenAI response:', generatedContent.substring(0, 500) + '...');
+    } catch {
+      console.warn('Invalid generated JSON; using text fallback');
       
       // Try to extract title and excerpt from the raw content if it looks structured
       let extractedTitle = `Blog Post - ${requestData.category}`;
@@ -192,8 +171,6 @@ Format the response as a JSON object with the following structure:
           .trim();
       }
       
-      console.log('🔄 Using extracted title:', extractedTitle);
-      console.log('🔄 Using extracted excerpt:', extractedExcerpt);
       
       // Fallback: use extracted content
       parsedContent = {
@@ -204,10 +181,6 @@ Format the response as a JSON object with the following structure:
     }
 
     // Save the blog post to the database
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
     const readTime = Math.ceil(parsedContent.content.split(' ').length / 200);
     
     // Generate slug from title
@@ -227,6 +200,7 @@ Format the response as a JSON object with the following structure:
         category: requestData.category,
         author: requestData.author,
         author_id: authorSlug,
+        user_id: user.id,
         tags: requestData.tags,
         thumbnail: requestData.thumbnail,
         hero_image: requestData.heroImage,
@@ -273,11 +247,7 @@ Format the response as a JSON object with the following structure:
       }
     );
 
-  } catch (error) {
-    console.error('❌ Error in generate-blog-post function:', error);
-    return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+  } catch (error: unknown) {
+    return errorResponse(error, corsHeaders);
   }
 });

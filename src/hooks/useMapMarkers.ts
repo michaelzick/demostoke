@@ -71,7 +71,7 @@ export const useMapMarkers = ({ map, mapLoaded, equipment = [], userLocations = 
         if (!isSingleView) {
           marker.setPopup(
             new mapboxgl.Popup({ offset: 25 })
-              .setHTML(createPopupContent(item))
+              .setDOMContent(createPopupContent(item))
           );
         }
 
@@ -107,7 +107,7 @@ export const useMapMarkers = ({ map, mapLoaded, equipment = [], userLocations = 
           
           marker.setPopup(
             new mapboxgl.Popup({ offset: 25 })
-              .setHTML(popupContent)
+              .setDOMContent(popupContent)
           );
         }
 

@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { assertSafePublicUrl } from "../_shared/urlSafety.ts";
+import { assertSafePublicUrl, fetchPublicResource } from "../_shared/urlSafety.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -46,15 +46,12 @@ async function testImageUrl(
     return { broken: false, reason: "" };
   }
 
-  // Skip Supabase storage URLs - they're reliable
-  if (url.includes("supabase.co/storage")) {
-    return { broken: false, reason: "" };
-  }
-
-  // Block SSRF: never fetch private/reserved/non-https hosts even if such a
-  // URL ended up stored in the database.
   try {
-    assertSafePublicUrl(url);
+    const parsed = assertSafePublicUrl(url);
+    const storageHost = new URL(Deno.env.get("SUPABASE_URL")!).hostname;
+    if (parsed.hostname === storageHost && parsed.pathname.startsWith("/storage/v1/object/")) {
+      return { broken: false, reason: "" };
+    }
   } catch {
     return { broken: true, reason: "Blocked non-public URL" };
   }
@@ -69,18 +66,7 @@ async function testImageUrl(
   };
 
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000); // Increased timeout to 8s
-
-    // Try HEAD first
-    const response = await fetch(url, {
-      method: "HEAD",
-      signal: controller.signal,
-      headers: headers,
-      redirect: "follow",
-    });
-
-    clearTimeout(timeoutId);
+    const response = await fetchPublicResource(url, { method: "HEAD", headers });
 
     // If HEAD is successful and returns an image type, we're good
     if (response.ok) {
@@ -96,20 +82,7 @@ async function testImageUrl(
 
     // Only retry if it wasn't a timeout
 
-    const getController = new AbortController();
-    const getTimeoutId = setTimeout(() => getController.abort(), 10000); // 10s for GET
-
-    const getResponse = await fetch(url, {
-      method: "GET",
-      signal: getController.signal,
-      headers: {
-        ...headers,
-        // Range header can sometimes trigger different behavior, but for images strict checking removing it might be safer to mimic browser
-        // "Range": "bytes=0-0",
-      },
-    });
-
-    clearTimeout(getTimeoutId);
+    const getResponse = await fetchPublicResource(url, { headers, discardBody: true });
 
     if (!getResponse.ok) {
       // If 403/401, it might just be protected, but technically accessible to some.

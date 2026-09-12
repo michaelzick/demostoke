@@ -138,6 +138,26 @@ export const createUserLocationMarkerElement = (role: string, activeCategory?: s
   return el;
 };
 
+// Treat marketplace text as text even when a shop name contains HTML syntax.
+const popupText = (tag: string, className: string, text: string): HTMLElement => {
+  const element = document.createElement(tag);
+  element.className = className;
+  element.textContent = text;
+  return element;
+};
+
+const popupLink = (href: string, text: string, className: string): HTMLAnchorElement => {
+  const link = document.createElement("a");
+  link.href = href;
+  link.textContent = text;
+  link.className = className;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  return link;
+};
+
+const popupButtonClass = "mt-2 inline-block px-2 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600";
+
 export const createPopupContent = (item: {
   id: string;
   name: string;
@@ -146,54 +166,33 @@ export const createPopupContent = (item: {
   currency_code?: string;
   ownerId: string;
   ownerName: string;
-}): string => {
-  const detailPath = buildGearPath({
-    id: item.id,
-    name: item.name,
-  });
-
-  return `
-    <div>
-      <h3 class="text-base font-medium">${item.name}</h3>
-      <p class="text-sm text-gray-500">
-        <a
-          href="/user-profile/${slugify(item.ownerName)}"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="underline underline-offset-2 hover:text-blue-600"
-        >${item.ownerName}</a>
-      </p>
-      <p class="text-sm text-gray-500">${item.category}</p>
-      <p class="text-sm mt-1">${formatCurrencyPerDuration(item.price_per_day, item.currency_code)}</p>
-      <a
-        href="${detailPath}"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="mt-2 inline-block px-2 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
-      >
-        View Details
-      </a>
-    </div>
-  `;
+}): HTMLElement => {
+  const container = document.createElement("div");
+  const owner = popupText("p", "text-sm text-gray-500", "");
+  owner.append(popupLink(
+    `/user-profile/${slugify(item.ownerName)}`,
+    item.ownerName,
+    "underline underline-offset-2 hover:text-blue-600",
+  ));
+  container.append(
+    popupText("h3", "text-base font-medium", item.name),
+    owner,
+    popupText("p", "text-sm text-gray-500", item.category),
+    popupText("p", "text-sm mt-1", formatCurrencyPerDuration(item.price_per_day, item.currency_code)),
+    popupLink(buildGearPath({ id: item.id, name: item.name }), "View Details", popupButtonClass),
+  );
+  return container;
 };
 
-export const createUserLocationPopupContent = (user: { id: string; name: string; role: string; address: string; }): string => {
-  const roleDisplay = getRoleDisplayName(user.role);
-  return `
-    <div>
-      <h3 class="text-base font-medium">${user.name}</h3>
-      <p class="text-sm text-gray-500">${roleDisplay}</p>
-      <p class="text-sm mt-1">${user.address}</p>
-      <a
-        href="/user-profile/${slugify(user.name)}"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="mt-2 inline-block px-2 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
-      >
-        View Profile
-      </a>
-    </div>
-  `;
+export const createUserLocationPopupContent = (user: { id: string; name: string; role: string; address: string; }): HTMLElement => {
+  const container = document.createElement("div");
+  container.append(
+    popupText("h3", "text-base font-medium", user.name),
+    popupText("p", "text-sm text-gray-500", getRoleDisplayName(user.role)),
+    popupText("p", "text-sm mt-1", user.address),
+    popupLink(`/user-profile/${slugify(user.name)}`, "View Profile", popupButtonClass),
+  );
+  return container;
 };
 
 export const initializeMap = (

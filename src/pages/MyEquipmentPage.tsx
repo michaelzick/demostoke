@@ -17,6 +17,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import {
+  DollarSign,
   Eye,
   EyeOff,
   Plus,

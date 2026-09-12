@@ -1,12 +1,13 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import type { TablesInsert } from "@/integrations/supabase/types";
 import { PricingOption } from "@/hooks/gear-form/types";
 import {
   isMissingCurrencyCodeColumnError,
   omitCurrencyCode,
 } from "@/utils/supabaseCurrencyCompat";
 
-export const createEquipmentInDatabase = async (equipmentData: any) => {
+export const createEquipmentInDatabase = async (equipmentData: TablesInsert<"equipment">) => {
   console.log('Submitting equipment data:', equipmentData);
 
   let { data: equipmentResult, error: equipmentError } = await supabase

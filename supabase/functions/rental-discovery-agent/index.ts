@@ -1,3 +1,6 @@
+import { authenticate } from "../_shared/requestAuth.ts";
+import { errorResponse, readJson } from "../_shared/http.ts";
+import { validate, discoveryRequest } from "../_shared/requestValidation.ts";
 // Supabase Edge Function: rental-discovery-agent
 // Orchestrates 4 agents to discover, scrape, parse, and store ski/snowboard/surfboard/mountain bike rental shops
 
@@ -27,12 +30,6 @@ const BLOCKED_DOMAINS = [
   'bing.com', 'yahoo.com', 'linkedin.com', 'pinterest.com',
   'yellowpages.com', 'bbb.org', 'mapquest.com', 'manta.com',
 ];
-
-interface DiscoveryPayload {
-  region?: string;
-  categories?: string[];
-  maxShops?: number;
-}
 
 // Helper: Escape SQL strings
 function escapeSql(str: string): string {
@@ -386,14 +383,10 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-
   try {
-    const payload: DiscoveryPayload = await req.json().catch(() => ({}));
-    
-    const region = payload.region || "los-angeles";
-    const categories = payload.categories || ["surfboard", "snowboard", "ski", "mountain bike"];
-    const maxShops = payload.maxShops || 5; // Reduced default to process smaller batches
+    await authenticate(req, true);
+    const { region, categories, maxShops } = validate(discoveryRequest, await readJson(req));
+    const supabaseClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
     console.log("🚀 Starting Rental Discovery Agent");
     console.log(`  Region: ${region}`);
@@ -495,17 +488,7 @@ serve(async (req) => {
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
-  } catch (e) {
-    console.error("Agent error:", e);
-    return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: e instanceof Error ? e.message : "Unknown error" 
-      }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, "Content-Type": "application/json" } 
-      }
-    );
+  } catch (error: unknown) {
+    return errorResponse(error, corsHeaders);
   }
 });

@@ -2,7 +2,7 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
 import { Image } from "https://deno.land/x/imagescript@1.2.15/mod.ts";
-import { assertSafePublicUrl } from "../_shared/urlSafety.ts";
+import { fetchPublicResource } from "../_shared/urlSafety.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -55,14 +55,11 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Invalid target' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    // Block SSRF: only allow fetching public https image URLs
-    assertSafePublicUrl(imageUrl);
-
     console.log('Converting image:', { imageUrl, sourceTable, sourceColumn, sourceRecordId });
 
     // Step 1: Download the image
     console.log('Downloading image from:', imageUrl);
-    const imageResponse = await fetch(imageUrl, {
+    const imageResponse = await fetchPublicResource(imageUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; ImageConverter/1.0)',
       },
@@ -72,7 +69,7 @@ serve(async (req) => {
       throw new Error(`Failed to download image: ${imageResponse.status}`);
     }
 
-    const imageBuffer = await imageResponse.arrayBuffer();
+    const imageBuffer = imageResponse.body;
     const originalSize = imageBuffer.byteLength;
     console.log('Downloaded image size:', originalSize, 'bytes');
 

@@ -267,11 +267,11 @@ const escapeRegExp = (value) =>
 
 const upsertTag = (inputHtml, pattern, tag) =>
   pattern.test(inputHtml)
-    ? inputHtml.replace(pattern, tag)
-    : inputHtml.replace('</head>', `${tag}</head>`);
+    ? inputHtml.replace(pattern, () => tag)
+    : inputHtml.replace('</head>', () => `${tag}</head>`);
 
 const upsertTitle = (inputHtml, title) =>
-  inputHtml.replace(/<title>[^<]*<\/title>/i, `<title>${escapeContent(title)}</title>`);
+  inputHtml.replace(/<title>[^<]*<\/title>/i, () => `<title>${escapeContent(title)}</title>`);
 
 const upsertMetaByName = (inputHtml, name, value) =>
   upsertTag(
@@ -301,24 +301,27 @@ const upsertCanonical = (inputHtml, canonicalUrl) =>
     `<link rel="canonical" href="${escapeContent(canonicalUrl)}" />`,
   );
 
+// JSON inside a script element must not contain an HTML closing tag.
+const serializeForScript = (value) => JSON.stringify(value).replace(/</g, '\\u003c');
+
 const upsertStructuredData = (inputHtml, schema) => {
-  const scriptTag = `<script id="structured-data" type="application/ld+json">${JSON.stringify(schema)}</script>`;
+  const scriptTag = `<script id="structured-data" type="application/ld+json">${serializeForScript(schema)}</script>`;
   const withoutExisting = inputHtml.replace(
-    /<script\s+id="structured-data"[^>]*>.*?<\/script>/i,
+    /<script\s+id="structured-data"[^>]*>[\s\S]*?<\/script>/gi,
     '',
   );
 
-  return withoutExisting.replace('</head>', `${scriptTag}</head>`);
+  return withoutExisting.replace('</head>', () => `${scriptTag}</head>`);
 };
 
 const prependBeforeRoot = (inputHtml, markup = '') =>
-  markup ? inputHtml.replace('<div id="root">', `${markup}<div id="root">`) : inputHtml;
+  markup ? inputHtml.replace('<div id="root">', () => `${markup}<div id="root">`) : inputHtml;
 
 const injectSsrPageData = (inputHtml, pageData) => {
-  const serializedPageData = JSON.stringify(pageData).replace(/</g, '\\u003c');
+  const serializedPageData = serializeForScript(pageData);
   const script = `<script id="ssr-page-data">window.__SSR_PAGE_DATA__=${serializedPageData};</script>`;
 
-  return inputHtml.replace('</body>', `${script}</body>`);
+  return inputHtml.replace('</body>', () => `${script}</body>`);
 };
 
 const applyHeadMetadata = (
@@ -1202,7 +1205,7 @@ app.get(['/event/:eventSlug', '/demo-events/:eventSlug'], async (req, res) => {
       return res.redirect(301, fallbackCanonicalUrl);
     }
 
-    return res.redirect(301, appendOriginalSearch(meta.canonicalUrl.replace(PUBLIC_SITE_URL, requestOrigin), req.originalUrl));
+    return res.redirect(301, appendOriginalSearch(meta.canonicalUrl.replace(PUBLIC_SITE_URL, () => requestOrigin), req.originalUrl));
   } catch (error) {
     console.error('Error resolving legacy demo event URL', error);
     return res.redirect(301, fallbackCanonicalUrl);
@@ -1295,7 +1298,7 @@ app.get('*', async (req, res) => {
         if (req.path !== canonicalPathname) {
           return res.redirect(
             301,
-            appendOriginalSearch(meta.canonicalUrl.replace(PUBLIC_SITE_URL, requestOrigin), req.originalUrl),
+            appendOriginalSearch(meta.canonicalUrl.replace(PUBLIC_SITE_URL, () => requestOrigin), req.originalUrl),
           );
         }
 
@@ -1354,7 +1357,7 @@ app.get('*', async (req, res) => {
         if (req.path !== canonicalPathname) {
           return res.redirect(
             301,
-            appendOriginalSearch(meta.canonicalUrl.replace(PUBLIC_SITE_URL, requestOrigin), req.originalUrl),
+            appendOriginalSearch(meta.canonicalUrl.replace(PUBLIC_SITE_URL, () => requestOrigin), req.originalUrl),
           );
         }
 
@@ -1407,7 +1410,7 @@ app.get('*', async (req, res) => {
         if (req.path !== canonicalPathname) {
           return res.redirect(
             301,
-            appendOriginalSearch(meta.canonicalUrl.replace(PUBLIC_SITE_URL, requestOrigin), req.originalUrl),
+            appendOriginalSearch(meta.canonicalUrl.replace(PUBLIC_SITE_URL, () => requestOrigin), req.originalUrl),
           );
         }
 
@@ -1434,7 +1437,7 @@ app.get('*', async (req, res) => {
     }
 
     const appHtml = await render(req.url, ssrPageData);
-    let html = template.replace('<!--app-html-->', appHtml);
+    let html = template.replace('<!--app-html-->', () => appHtml);
 
     if (headMeta) {
       html = applyHeadMetadata(html, headMeta);

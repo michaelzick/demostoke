@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { assertSafePublicUrl } from "../_shared/urlSafety.ts";
+import { fetchPublicResource } from "../_shared/urlSafety.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -55,14 +55,11 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Invalid target' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    // Block SSRF: only allow fetching public https image URLs
-    assertSafePublicUrl(imageUrl);
-
     console.log('Downloading image:', { imageUrl, sourceTable, sourceColumn, sourceRecordId });
 
     // Step 1: Download the image
     console.log('Downloading image from:', imageUrl);
-    const imageResponse = await fetch(imageUrl, {
+    const imageResponse = await fetchPublicResource(imageUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; ImageDownloader/1.0)',
       },
@@ -72,7 +69,7 @@ serve(async (req) => {
       throw new Error(`Failed to download image: ${imageResponse.status}`);
     }
 
-    const imageBuffer = await imageResponse.arrayBuffer();
+    const imageBuffer = imageResponse.body;
     const originalSize = imageBuffer.byteLength;
     console.log('Downloaded image size:', originalSize, 'bytes');
 
@@ -167,25 +164,6 @@ serve(async (req) => {
   } catch (error: unknown) {
     console.error('Error in download-store-image function:', error);
     const message = error instanceof Error ? error.message : 'Unknown error';
-    
-    // Log the error to database if possible
-    try {
-      const supabase = createClient(supabaseUrl, supabaseServiceKey);
-      const { imageUrl, sourceTable, sourceColumn, sourceRecordId } = await req.json();
-      
-      await supabase
-        .from('downloaded_images')
-        .insert({
-          original_url: imageUrl,
-          downloaded_url: imageUrl, // Keep original URL
-          source_table: sourceTable,
-          source_column: sourceColumn,
-          source_record_id: sourceRecordId,
-          file_type: 'UNKNOWN',
-        });
-    } catch (logError) {
-      console.error('Failed to log error to database:', logError);
-    }
     
     return new Response(
       JSON.stringify({ 

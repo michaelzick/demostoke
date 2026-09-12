@@ -49,36 +49,12 @@ export const useUserEquipment = (
   const effectiveUserId = userId || user?.id;
 
   const buildEquipmentQuery = (includeCurrencyCode: boolean) => {
-    const currencyCodeSelect = includeCurrencyCode ? "currency_code," : "";
-    let query = supabase
-      .from("equipment")
-      .select(
-        `
-          id,
-          user_id,
-          name,
-          category,
-          description,
-          price_per_day,
-          price_per_hour,
-          price_per_week,
-          ${currencyCodeSelect}
-          damage_deposit,
-          rating,
-          review_count,
-          status,
-          created_at,
-          updated_at,
-          visible_on_map,
-          location_lat,
-          location_lng,
-          location_address,
-          size,
-          weight,
-          material,
-          suitable_skill_level
-        `,
-      )
+    const columns = "id, user_id, name, category, description, price_per_day, price_per_hour, price_per_week, damage_deposit, rating, review_count, status, created_at, updated_at, visible_on_map, location_lat, location_lng, location_address, size, weight, material, suitable_skill_level" as const;
+    const equipment = supabase.from("equipment");
+    // Keep each projection literal so the database client can infer its row type.
+    let query = (includeCurrencyCode
+      ? equipment.select(`${columns}, currency_code`)
+      : equipment.select(columns))
       .eq("user_id", effectiveUserId);
 
     if (visibleOnly) {
@@ -128,7 +104,11 @@ export const useUserEquipment = (
             price_per_day: item.price_per_day,
             price_per_hour: item.price_per_hour,
             price_per_week: item.price_per_week,
-            currency_code: normalizeCurrencyCode(item.currency_code),
+            currency_code: normalizeCurrencyCode(
+              "currency_code" in item && typeof item.currency_code === "string"
+                ? item.currency_code
+                : undefined,
+            ),
             damage_deposit: item.damage_deposit,
             images: allImages, // Include all images
             rating: item.rating || 0,

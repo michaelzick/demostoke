@@ -135,8 +135,8 @@ const HeroSection = () => {
           <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-4 text-primary tracking-tight" style={{ fontFamily: 'Tahoma, sans-serif' }}>
             DemoStoke
           </h1>
-          <h2 className="text-lg sm:text-2xl md:text-3xl mb-2 max-w-2xl mx-auto text-shop">
-            Demo & Rent Surfboards From Local Shops and Shapers
+          <h2 className="text-lg sm:text-2xl md:text-3xl mb-2 max-w-2xl mx-auto text-shop text-balance">
+            Demo & Rent Surfboards From Local <span className="whitespace-nowrap">Shops and Shapers</span>
           </h2>
           <p className="text-sm sm:text-base mb-1 text-white/70">
             Find it. Ride it. Love it? Buy it.
