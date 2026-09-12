@@ -22,6 +22,32 @@ const payload =
   '</script><script id=attack>void 0</script> $& $` $\' <img src=x onerror="void 0">';
 
 describe("safe SSR metadata", () => {
+  it.each([1, 2, 3, 4, 5, 6])("does not join split script tokens when replacing schema (split %s)", split => {
+    const scriptStart = "<script";
+    const staleSchema = '<script id="structured-data" type="application/ld+json">\n{}\n</script>';
+    const shell = `<html><head>${scriptStart.slice(0, split)}${staleSchema}${scriptStart.slice(split)} id="attack">void 0</script></head><body></body></html>`;
+    const html = helpers.upsertStructuredData(shell, { name: "Public gear" });
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    expect(doc.querySelector("script#attack")).toBeNull();
+    expect(doc.querySelectorAll("script")).toHaveLength(1);
+    expect(JSON.parse(doc.querySelector("#structured-data")!.textContent!))
+      .toEqual({ name: "Public gear" });
+  });
+
+  it("replaces duplicate multiline schema blocks while preserving unrelated scripts", () => {
+    const staleSchema = '<script id="structured-data" type="application/ld+json">\n{"name":"Old"}\n</script>';
+    const analytics = '<script id="analytics-bootstrap">window.ready = true;</script>';
+    const html = helpers.upsertStructuredData(
+      `<html><head>${staleSchema}\n${analytics}\n${staleSchema}</head><body></body></html>`,
+      { name: "New" },
+    );
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    expect(doc.querySelectorAll("#structured-data")).toHaveLength(1);
+    expect(JSON.parse(doc.querySelector("#structured-data")!.textContent!))
+      .toEqual({ name: "New" });
+    expect(doc.querySelector("#analytics-bootstrap")!.outerHTML).toBe(analytics);
+  });
+
   it("keeps hostile schema values parseable without adding executable elements", () => {
     const html = helpers.upsertStructuredData(
       '<html><head><script id="structured-data" type="application/ld+json">\n{}\n</script></head></html>',

@@ -5,7 +5,7 @@ Based on `main` at `03887ab`, including the latest surf-first changes.
 ## Changes
 
 - Map popups render public names, addresses, owners and gear text with DOM `textContent`, preventing stored HTML execution. All consumers use `setDOMContent`.
-- SSR JSON-LD and hydration JSON escape `<`. Metadata and rendered HTML insertion use replacement callbacks so user-supplied `$&`, `$'` and related sequences remain literal.
+- SSR JSON-LD and hydration JSON escape `<`. Removing existing structured-data scripts preserves a newline boundary so adjacent fragments cannot assemble a new HTML tag. Metadata and rendered HTML insertion use replacement callbacks so user-supplied `$&`, `$'` and related sequences remain literal.
 - Discovery, retailer crawling and HTML extraction require verified admins before paid work. Both blog generators support verified signed-in editors; generated posts carry the verified caller's `user_id` and use their JWT for database writes through existing RLS. Payloads have runtime schemas and size/count limits.
 - Image downloads/conversions/probes validate HTTPS URLs and literal IPs, resolve A/AAAA records, and manually validate each redirect. Limits: five redirects, 15 seconds per operation (including DNS and body reads), 20 MiB per download. Probes cancel response bodies. The download error path no longer attempts to consume the request body twice.
 - Anonymous contact submission retains required reCAPTCHA. Fields are bounded, HTML is escaped, provider errors are checked, and private submission/provider data is removed from logs and responses. Client lengths account for the subject prefix.
@@ -70,3 +70,9 @@ Signed-in Chrome at `http://localhost:8080/` verified:
 - `/blog/create`: document width equaled viewport width at **320px and 375px**; the SEO sheet opened and closed, had the accessible name “SEO Analysis,” and emitted no console errors in a fresh tab. The form stayed blank throughout.
 
 No blog posts, gear, profiles, demo events, image records, or other content were created, modified, or deleted by this UI pass. Test tabs were closed and viewport overrides reset. The user's existing Vite server on port 8080 was left running. Web/SSR changes await the normal application release; Edge Function changes described above are live.
+
+## CodeQL follow-up
+
+PR check [CodeQL alert 28](https://github.com/michaelzick/demostoke/security/code-scanning/28) identified incomplete multi-character sanitization in the SSR structured-data replacement. Replacing a whole script block with an empty string could join a surrounding `<scrip` prefix and `t>` suffix into a new script tag. The replacement now leaves a newline boundary. This changes template editing only; schema values still use script-safe JSON escaping, and public-data visibility is unchanged.
+
+Six regression cases covering every internal split of `<script` failed before the fix and pass afterward. A further test confirms duplicate multiline schema blocks are replaced while unrelated scripts remain intact. The full suite passes 327 tests across 36 files. No Edge Functions or migrations changed in this follow-up.

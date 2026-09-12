@@ -308,7 +308,8 @@ const upsertStructuredData = (inputHtml, schema) => {
   const scriptTag = `<script id="structured-data" type="application/ld+json">${serializeForScript(schema)}</script>`;
   const withoutExisting = inputHtml.replace(
     /<script\s+id="structured-data"[^>]*>[\s\S]*?<\/script>/gi,
-    '',
+    // Preserve a boundary so removing a block cannot assemble a new HTML tag.
+    '\n',
   );
 
   return withoutExisting.replace('</head>', () => `${scriptTag}</head>`);
