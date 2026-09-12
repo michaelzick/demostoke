@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { assertSafePublicUrl, fetchPublicResource } from "../_shared/urlSafety.ts";
 
 const corsHeaders = {
@@ -38,22 +38,30 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
+type ImageCheck = { status: "working" | "broken" | "inconclusive"; reason: string };
+
 async function testImageUrl(
-  url: string
-): Promise<{ broken: boolean; reason: string; }> {
+  url: string,
+  throttledHosts: Set<string>,
+): Promise<ImageCheck> {
   // Skip internal/relative URLs and Supabase storage URLs (they're managed internally)
   if (url.startsWith("/")) {
-    return { broken: false, reason: "" };
+    return { status: "working", reason: "" };
   }
 
+  let host: string;
   try {
     const parsed = assertSafePublicUrl(url);
+    host = parsed.hostname;
+    if (throttledHosts.has(host)) {
+      return { status: "inconclusive", reason: "Host rate limited; retry later" };
+    }
     const storageHost = new URL(Deno.env.get("SUPABASE_URL")!).hostname;
     if (parsed.hostname === storageHost && parsed.pathname.startsWith("/storage/v1/object/")) {
-      return { broken: false, reason: "" };
+      return { status: "working", reason: "" };
     }
   } catch {
-    return { broken: true, reason: "Blocked non-public URL" };
+    return { status: "inconclusive", reason: "URL could not be safely checked" };
   }
 
   const headers = {
@@ -72,46 +80,51 @@ async function testImageUrl(
     if (response.ok) {
       const contentType = response.headers.get("content-type");
       if (contentType && contentType.startsWith("image/")) {
-        return { broken: false, reason: "" };
+        return { status: "working", reason: "" };
       }
     }
 
-    // If HEAD failed (404, 403, 405) OR content-type wasn't image, try GET
-    // Many CDNs block HEAD or strictly require GET for images
-    // Also handles the case where HEAD returns 404 but GET returns 200 (rare but happens with some dynamic image handlers)
+    // Do not amplify throttling with an immediate GET retry. Other probes to
+    // this host stop for this scan; a later scan can retry after recovery.
+    if (response.status === 429) {
+      throttledHosts.add(host);
+      return { status: "inconclusive", reason: "HTTP 429: rate limited; retry later" };
+    }
+    if (response.status >= 500) {
+      return { status: "inconclusive", reason: `HTTP ${response.status}: retry later` };
+    }
 
-    // Only retry if it wasn't a timeout
-
+    // Some CDNs reject HEAD even for valid images. Confirm absence with GET.
     const getResponse = await fetchPublicResource(url, { headers, discardBody: true });
-
+    if (getResponse.status === 429) throttledHosts.add(host);
     if (!getResponse.ok) {
-      // If 403/401, it might just be protected, but technically accessible to some.
-      // But for a public site, 403 usually means broken/forbidden.
-      // 404 is definitely broken.
-      return { broken: true, reason: `HTTP ${getResponse.status}` };
+      return {
+        status: [404, 410].includes(getResponse.status) ? "broken" : "inconclusive",
+        reason: `HTTP ${getResponse.status}`,
+      };
     }
 
     const contentType = getResponse.headers.get("content-type");
     if (!contentType || !contentType.startsWith("image/")) {
-      // If it got 200 OK but not an image, it's likely a soft 404 or a generic error page
-      return { broken: true, reason: "Not an image" };
+      // Challenge pages and transient HTML errors are not proof of a missing image.
+      return { status: "inconclusive", reason: "Unexpected content type; review manually" };
     }
 
-    return { broken: false, reason: "" };
+    return { status: "working", reason: "" };
 
   } catch (error: unknown) {
     if (error instanceof Error) {
       if (error.name === "AbortError") {
-        return { broken: true, reason: "Timeout" };
+        return { status: "inconclusive", reason: "Timeout; retry later" };
       }
-      return { broken: true, reason: error.message || "Connection failed" };
+      return { status: "inconclusive", reason: "Connection could not be verified; retry later" };
     }
-    return { broken: true, reason: "Connection failed" };
+    return { status: "inconclusive", reason: "Connection could not be verified; retry later" };
   }
 }
 
 async function getImageCountForEquipment(
-  supabase: any,
+  supabase: SupabaseClient,
   equipmentId: string
 ): Promise<number> {
   const { count } = await supabase
@@ -175,8 +188,8 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Fetch all equipment_images with joined equipment data
-    const { data: images, error: fetchError } = await supabase
+    // Scan the API's bounded page and report its full count separately.
+    const { data: images, error: fetchError, count } = await supabase
       .from("equipment_images")
       .select(
         `
@@ -189,7 +202,7 @@ Deno.serve(async (req) => {
           category,
           user_id
         )
-      `
+      `, { count: "exact" }
       )
       .order("created_at", { ascending: false });
 
@@ -208,6 +221,8 @@ Deno.serve(async (req) => {
       return new Response(
         JSON.stringify({
           brokenImages: [],
+          inconclusiveImages: [],
+          uniqueUrlsChecked: 0,
           total: 0,
           scanned: 0,
         }),
@@ -218,7 +233,13 @@ Deno.serve(async (req) => {
     }
 
     const brokenImages: BrokenImage[] = [];
-    const total = images.length;
+    const inconclusiveImages: BrokenImage[] = [];
+    const total = count ?? images.length;
+    // Cache promises, including in-flight probes, so shared category images
+    // are fetched once rather than once per equipment_images row.
+    const checks = new Map<string, Promise<ImageCheck>>();
+    const throttledHosts = new Set<string>();
+    const imageCounts = new Map<string, Promise<number>>();
     const batchSize = 10; // Process 10 URLs in parallel
 
     // Process images in batches
@@ -227,40 +248,33 @@ Deno.serve(async (req) => {
 
       const results = await Promise.all(
         batch.map(async (img) => {
-          const testResult = await testImageUrl(img.image_url);
+          if (!checks.has(img.image_url)) {
+            checks.set(img.image_url, testImageUrl(img.image_url, throttledHosts));
+          }
+          const testResult = await checks.get(img.image_url)!;
 
           const equip = Array.isArray(img.equipment) ? img.equipment[0] : img.equipment;
 
-          if (testResult.broken && equip) {
-            const totalImages = await getImageCountForEquipment(
-              supabase,
-              img.equipment_id
-            );
-
-            return {
+          if (testResult.status !== "working") {
+            // Counts are only needed for the rows that can be removed.
+            if (equip && testResult.status === "broken" && !imageCounts.has(img.equipment_id)) {
+              imageCounts.set(img.equipment_id, getImageCountForEquipment(supabase, img.equipment_id));
+            }
+            const result: BrokenImage = {
               imageId: img.id,
               imageUrl: img.image_url,
               equipmentId: img.equipment_id,
-              gearName: equip.name,
-              gearSlug: slugify(equip.name),
-              category: equip.category,
-              totalImages,
+              gearName: equip?.name ?? "[Orphaned - Equipment Deleted]",
+              gearSlug: equip ? `${slugify(equip.name)}--${img.equipment_id}` : "",
+              category: equip?.category ?? "Unknown",
+              totalImages: await imageCounts.get(img.equipment_id) ?? 0,
               errorReason: testResult.reason,
-            } as BrokenImage;
-          }
-
-          // Handle orphaned images (equipment deleted but image remains)
-          if (testResult.broken && !equip) {
-            return {
-              imageId: img.id,
-              imageUrl: img.image_url,
-              equipmentId: img.equipment_id,
-              gearName: "[Orphaned - Equipment Deleted]",
-              gearSlug: "",
-              category: "Unknown",
-              totalImages: 0,
-              errorReason: testResult.reason,
-            } as BrokenImage;
+            };
+            if (testResult.status === "inconclusive") {
+              inconclusiveImages.push(result);
+              return null;
+            }
+            return result;
           }
 
           return null;
@@ -275,8 +289,10 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         brokenImages,
+        inconclusiveImages,
+        uniqueUrlsChecked: checks.size,
         total,
-        scanned: total,
+        scanned: images.length,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

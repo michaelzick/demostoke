@@ -48,4 +48,25 @@ All 10 changed Edge Functions and their shared helpers were **deployed on Septem
 | `download-store-image` | 305 | true |
 | `convert-image-to-webp` | 347 | true |
 | `convert-to-jpeg` | 318 | true |
-| `scan-broken-images` | 39 | false |
+| `scan-broken-images` | 40 | false |
+
+## Signed-in Chrome follow-up repairs
+
+The localhost UI pass exposed three issues: the image scanner treated CDN throttling as broken URLs, Explore announced empty results before its location-gated query ran, and the blog creator overflowed a 375px viewport by 11–12px.
+
+- The scanner now shares one in-flight check per image URL and stops subsequent probes to hosts returning 429. It does not retry throttling or server errors immediately with GET. Only a GET-confirmed 404/410 is a deletion candidate; timeouts, blocked requests, unsafe URLs, network errors, and unexpected content types are inconclusive. The UI filters legacy responses too, groups retry URLs, preserves exact failed rows after a partial bulk deletion, and links confirmed failures to resolvable gear URLs. Scanning remains read-only.
+- Scan results distinguish the bounded page from the full count. The current scan covers the newest 1,000 image records; older records are explicitly identified as unchecked. Full-inventory pagination is not part of this repair.
+- Explore waits for a resolved location decision and a successful equipment query before reporting results or firing empty-result analytics.
+- The blog creator's flex container can shrink to the viewport. Its mobile SEO sheet now uses the dialog title/description primitives so screen readers receive its name without a missing-title error.
+
+Follow-up validation: 320 unit tests across 36 files passed, including shared URL deduplication, host throttling, HEAD-to-GET recovery, 404/410 confirmation, transient/network failures, legacy response filtering, partial-delete bookkeeping with mocks, and disabled/loading/failed Explore queries. Lint, app/Vite type checks, client/server build, scanner Deno check, and whitespace validation passed. Existing build chunk/dynamic-import warnings remain.
+
+`scan-broken-images` was redeployed to the linked project on September 12, 2026 as version **40**, ACTIVE with its existing `verify_jwt=false` setting and in-function admin verification preserved. No other function metadata changed in this follow-up.
+
+Signed-in Chrome at `http://localhost:8080/` verified:
+
+- `/admin` → Tools: the deployed scan reported **1,000 of 3,822 images checked, zero broken, zero inconclusive**, compared with 919 false positives during the earlier pass. No deletion control appeared. The scanner summary and controls also fit at 375px.
+- `/explore?category=surfboards`: the initial location-loading screen had no empty-result toast; the loaded hybrid view displayed **515 surfboards**, with four in the local map area.
+- `/blog/create`: document width equaled viewport width at **320px and 375px**; the SEO sheet opened and closed, had the accessible name “SEO Analysis,” and emitted no console errors in a fresh tab. The form stayed blank throughout.
+
+No blog posts, gear, profiles, demo events, image records, or other content were created, modified, or deleted by this UI pass. Test tabs were closed and viewport overrides reset. The user's existing Vite server on port 8080 was left running. Web/SSR changes await the normal application release; Edge Function changes described above are live.

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Sidebar, SidebarContent, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
+import { SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { AlertCircle, CheckCircle, TrendingUp, Eye, Target, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -102,6 +103,8 @@ export function BlogCreateSidebar({ title, excerpt, content, category }: BlogCre
   const canAnalyze = title.trim() && content.trim();
 
   const hasAnalysis = !!seoAnalysis;
+  const Heading = isMobile ? SheetTitle : "h2";
+  const Description = isMobile ? SheetDescription : "p";
 
   const bottomPadding = isMobile
     ? hasAnalysis
@@ -114,13 +117,13 @@ export function BlogCreateSidebar({ title, excerpt, content, category }: BlogCre
   return (
     <Sidebar className="top-20 h-[calc(100vh-5rem)]">
       <SidebarHeader className="p-6">
-        <h2 className="text-lg font-semibold flex items-center gap-2">
+        <Heading className="text-lg font-semibold flex items-center gap-2">
           <TrendingUp className="h-5 w-5" />
           SEO Analysis
-        </h2>
-        <p className="text-sm text-muted-foreground">
+        </Heading>
+        <Description className="text-sm text-muted-foreground">
           Optimize your content for better search rankings
-        </p>
+        </Description>
       </SidebarHeader>
 
       <SidebarContent>

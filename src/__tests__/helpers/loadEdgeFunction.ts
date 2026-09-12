@@ -9,6 +9,7 @@ import { z } from "zod";
 export function loadEdgeFunction(name: string, mocks: {
   fetch: typeof fetch;
   createClient?: (...args: unknown[]) => unknown;
+  resolveDns?: (hostname: string, type: "A" | "AAAA") => Promise<string[]>;
   sendEmail?: (...args: unknown[]) => unknown;
 }) {
   let handler: (req: Request) => Promise<Response>;
@@ -29,6 +30,7 @@ export function loadEdgeFunction(name: string, mocks: {
     fetch: mocks.fetch,
     console: { log() {}, warn() {}, error() {} },
     Deno: {
+      resolveDns: mocks.resolveDns,
       env: {
         get: (key: string) =>
           key === "SUPABASE_URL"

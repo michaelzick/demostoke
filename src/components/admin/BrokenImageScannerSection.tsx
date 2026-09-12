@@ -38,6 +38,13 @@ interface BrokenImage {
   errorReason: string;
 }
 
+interface ScanResponse {
+  brokenImages: BrokenImage[];
+  inconclusiveImages?: BrokenImage[];
+  total: number;
+  scanned: number;
+}
+
 const BrokenImageScannerSection = () => {
   const { isAdmin, isLoading: isAdminLoading } = useIsAdmin();
   const { toast } = useToast();
@@ -45,6 +52,7 @@ const BrokenImageScannerSection = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState({ current: 0, total: 0 });
   const [brokenImages, setBrokenImages] = useState<BrokenImage[]>([]);
+  const [inconclusiveImages, setInconclusiveImages] = useState<BrokenImage[]>([]);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [isDeletingAll, setIsDeletingAll] = useState(false);
   const [hasScanned, setHasScanned] = useState(false);
@@ -53,6 +61,7 @@ const BrokenImageScannerSection = () => {
     setIsScanning(true);
     setScanProgress({ current: 0, total: 0 });
     setBrokenImages([]);
+    setInconclusiveImages([]);
     setHasScanned(false);
 
     try {
@@ -66,7 +75,7 @@ const BrokenImageScannerSection = () => {
         return;
       }
 
-      const response = await supabase.functions.invoke("scan-broken-images", {
+      const response = await supabase.functions.invoke<ScanResponse>("scan-broken-images", {
         headers: {
           Authorization: `Bearer ${sessionData.session.access_token}`,
         },
@@ -77,13 +86,22 @@ const BrokenImageScannerSection = () => {
       }
 
       const data = response.data;
-      setBrokenImages(data.brokenImages || []);
+      if (!data) throw new Error("No scan results returned");
+      // Also fail closed if this UI is served before the new function deploy:
+      // legacy 429/timeout results must never become deletion candidates.
+      const confirmed = (data.brokenImages || []).filter(img => /^HTTP (404|410)$/.test(img.errorReason));
+      const inconclusive = [
+        ...(data.inconclusiveImages || []),
+        ...(data.brokenImages || []).filter(img => !/^HTTP (404|410)$/.test(img.errorReason)),
+      ];
+      setBrokenImages(confirmed);
+      setInconclusiveImages(inconclusive);
       setScanProgress({ current: data.scanned, total: data.total });
       setHasScanned(true);
 
       toast({
         title: "Scan complete",
-        description: `Found ${data.brokenImages?.length || 0} broken image URLs out of ${data.total} total images.`,
+        description: `Checked ${data.scanned} of ${data.total} images: ${confirmed.length} confirmed broken, ${inconclusive.length} inconclusive.`,
       });
     } catch (error) {
       console.error("Scan error:", error);
@@ -98,6 +116,7 @@ const BrokenImageScannerSection = () => {
   };
 
   const handleDeleteSingle = async (imageId: string) => {
+    if (!brokenImages.some(img => img.imageId === imageId)) return;
     setDeletingIds((prev) => new Set(prev).add(imageId));
 
     try {
@@ -135,6 +154,7 @@ const BrokenImageScannerSection = () => {
     setIsDeletingAll(true);
     let successCount = 0;
     let failCount = 0;
+    const deletedIds = new Set<string>();
 
     for (const img of brokenImages) {
       try {
@@ -147,22 +167,14 @@ const BrokenImageScannerSection = () => {
           failCount++;
         } else {
           successCount++;
+          deletedIds.add(img.imageId);
         }
       } catch {
         failCount++;
       }
     }
 
-    setBrokenImages((prev) =>
-      prev.filter((img) => {
-        // Keep images that failed to delete
-        return failCount > 0 && brokenImages.indexOf(img) >= successCount;
-      })
-    );
-
-    if (failCount === 0) {
-      setBrokenImages([]);
-    }
+    setBrokenImages(prev => prev.filter(img => !deletedIds.has(img.imageId)));
 
     toast({
       title: "Batch delete complete",
@@ -177,6 +189,12 @@ const BrokenImageScannerSection = () => {
     if (url.length <= maxLength) return url;
     return url.substring(0, maxLength) + "...";
   };
+
+  const inconclusiveUrls = new Map<string, { reason: string; count: number }>();
+  for (const img of inconclusiveImages) {
+    const previous = inconclusiveUrls.get(img.imageUrl);
+    inconclusiveUrls.set(img.imageUrl, { reason: img.errorReason, count: (previous?.count ?? 0) + 1 });
+  }
 
   if (isAdminLoading) {
     return (
@@ -214,12 +232,12 @@ const BrokenImageScannerSection = () => {
           Broken Image Scanner
         </CardTitle>
         <CardDescription>
-          Scan all gear images to find and remove broken URLs that no longer load.
+          Check gear images and review confirmed missing URLs. Temporary failures are kept for retry.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Scan Controls */}
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <Button
             onClick={handleScan}
             disabled={isScanning || isDeletingAll}
@@ -293,12 +311,35 @@ const BrokenImageScannerSection = () => {
         {hasScanned && !isScanning && (
           <div className="rounded-lg border bg-muted/50 p-4">
             <p className="text-sm">
-              <strong>Scan Results:</strong> Found{" "}
+              <strong>Scan Results:</strong> Checked {scanProgress.current} of {scanProgress.total} images. Found{" "}
               <span className={brokenImages.length > 0 ? "text-destructive font-semibold" : "text-primary font-semibold"}>
-                {brokenImages.length} broken
+                {brokenImages.length} confirmed broken
               </span>{" "}
-              out of {scanProgress.total} total image URLs.
+              and {inconclusiveImages.length} inconclusive. Only confirmed 404/410 responses can be removed.
             </p>
+            {scanProgress.current < scanProgress.total && (
+              <p className="mt-2 text-sm text-muted-foreground">
+                This scan covers the newest {scanProgress.current} image records; older records have not been checked.
+              </p>
+            )}
+          </div>
+        )}
+
+        {hasScanned && !isScanning && inconclusiveImages.length > 0 && (
+          <div className="rounded-lg border p-4 space-y-3">
+            <h3 className="font-semibold">Checks to retry</h3>
+            <p className="text-sm text-muted-foreground">
+              Rate limits, timeouts, blocked requests, and unexpected responses do not prove an image is missing.
+              These {inconclusiveImages.length} images are excluded from deletion. Retry the scan later.
+            </p>
+            <ul className="space-y-2 text-sm">
+              {Array.from(inconclusiveUrls, ([url, result]) => (
+                <li key={url} className="break-words [overflow-wrap:anywhere]">
+                  <span className="font-medium">{result.reason}</span> ({result.count} images)
+                  <div className="text-muted-foreground">{url}</div>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
 
@@ -367,6 +408,7 @@ const BrokenImageScannerSection = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDeleteSingle(img.imageId)}
+                        aria-label={`Remove broken image for ${img.gearName}`}
                         disabled={deletingIds.has(img.imageId) || isDeletingAll}
                         className="h-8 w-8 text-destructive hover:text-destructive"
                       >
@@ -385,14 +427,14 @@ const BrokenImageScannerSection = () => {
         )}
 
         {/* Empty State */}
-        {hasScanned && !isScanning && brokenImages.length === 0 && (
+        {hasScanned && !isScanning && brokenImages.length === 0 && inconclusiveImages.length === 0 && (
           <div className="flex flex-col items-center justify-center py-8 text-center">
             <div className="rounded-full bg-primary/10 p-3">
               <Search className="h-6 w-6 text-primary" />
             </div>
-            <h3 className="mt-4 text-lg font-semibold">All images are working!</h3>
+            <h3 className="mt-4 text-lg font-semibold">No broken images found in this scan</h3>
             <p className="mt-1 text-sm text-muted-foreground">
-              No broken image URLs were found in the database.
+              Checked {scanProgress.current} of {scanProgress.total} image records.
             </p>
           </div>
         )}
