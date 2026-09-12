@@ -182,12 +182,12 @@ const HeroSection = () => {
           </div>
           <RiptydeLink
             source="hero"
-            iconSize={20}
-            iconClassName="h-5 w-5 ring-1 ring-white/20 shadow-sm"
-            className="group mt-6 text-xs sm:text-sm text-white/80 hover:text-white transition-colors"
+            iconSize={24}
+            iconClassName="h-6 w-6 ring-1 ring-white/20 shadow-sm"
+            className="group mt-6 text-sm sm:text-base text-white/80 hover:text-white transition-colors"
           >
             <span className="underline-offset-4 group-hover:underline">Check the surf on Riptyde</span>
-            <ExternalLink className="h-3.5 w-3.5 -ml-0.5" aria-hidden="true" />
+            <ExternalLink className="h-4 w-4 -ml-0.5" aria-hidden="true" />
           </RiptydeLink>
         </div>
       </div>
