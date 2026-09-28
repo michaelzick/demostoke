@@ -9,7 +9,7 @@ import {
 vi.mock("mapbox-gl", () => ({ default: {} }));
 
 // Execute the actual SSR injection helpers without starting the HTTP server.
-const source = fs.readFileSync("server/index.js", "utf8");
+const source = fs.readFileSync("server/app.js", "utf8");
 const helpers = vm.runInNewContext(
   source.slice(
     source.indexOf("const escapeContent ="),

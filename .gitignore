@@ -28,3 +28,6 @@ supabase/.temp
 launch.json
 
 Demostoke Demonstration
+
+.wrangler/
+.dev.vars*
