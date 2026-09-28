@@ -50,3 +50,11 @@ Cloudflare Builds is connected to `michaelzick/demostoke`, production branch
 `main`, with `npm run build:cloudflare`, `npx wrangler deploy`, and Node 24.14.1.
 The repository's CI and Security workflows were already manually disabled;
 their local migration checks passed, and hosted CodeQL passed for PR #179.
+
+DigitalOcean custom-domain attachments must be released after cutover because its
+Cloudflare for SaaS registrations can take precedence over the new zone. The
+app and its default DigitalOcean URL remain active. To roll back, reattach the
+six DemoStoke domains using the backed-up app spec before restoring DNS.
+
+Branch previews use the same public data configuration and NODE_ENV=production,
+with Cloudflare managing separate preview deployments.

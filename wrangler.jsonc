@@ -36,5 +36,10 @@
       "pattern": "www.demostoke.com",
       "custom_domain": true
     }
-  ]
+  ],
+  "previews": {
+    "vars": {
+      "NODE_ENV": "production"
+    }
+  }
 }
