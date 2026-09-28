@@ -9,7 +9,7 @@ DemoStoke's web applications run on Cloudflare Workers. Supabase remains the dat
 | designsystem.demostoke.com | demostoke-designsystem | michaelzick/ds-design-system-figma | npm run build |
 | demoshop.demostoke.com | demostoke-demoshop | michaelzick/big-mountain | npm run build |
 
-Production deploys use `main`. The main repository pins Wrangler in its lockfile; static repositories use `npx wrangler@4.142.0 deploy`. Cloudflare builds must install development dependencies before building. Use Node 24 for the main app, Node 22 for FleetOps/design system, and Node 20 for the demo shop.
+Production deploys use `main`. The main repository pins Wrangler in its lockfile; static repositories use `npx wrangler@4.142.0 deploy`. Cloudflare builds must install development dependencies before building. Use Node 24 for the main app and demo shop, and Node 22 for FleetOps/design system. The demo shop also builds under its original Node 20 runtime, but the Cloudflare deployment CLI requires Node 22 or newer.
 
 ## Main application
 
@@ -58,3 +58,26 @@ six DemoStoke domains using the backed-up app spec before restoring DNS.
 
 Branch previews use the same public data configuration and NODE_ENV=production,
 with Cloudflare managing separate preview deployments.
+
+## Verified production handoff
+
+All six hostnames served Cloudflare Workers directly over valid HTTPS after the
+final cutover on September 28, 2026. The apex retains its redirect to `www`.
+Always Use HTTPS is enabled. The wildcard Universal SSL certificate is active;
+it covers the apex and all five first-level subdomains.
+
+The initial handoff briefly failed TLS because certificate issuance was still
+pending. DigitalOcean domain attachments and delegation were restored until the
+Cloudflare certificate became active. Future migrations must verify an active
+certificate before releasing the previous provider's custom hostnames.
+
+Production checks covered SSR metadata on gear, blog, and event details; unknown
+route 404s; robots and sitemap; FleetOps assets; the live 21-item booking widget;
+and the demo shop's embedded widget. All four Git-connected production builds
+passed. No payment or outbound email was submitted during these smoke checks.
+
+The retained DigitalOcean app still serves its default URL and unrelated
+ZICKONEZERO domains. DemoStoke's six custom-domain attachments were released to
+remove their Cloudflare for SaaS routing precedence. All components remain, with
+fallback component routes in the retained app. Original DNS web records were
+restored in the old zone for clients with cached DigitalOcean delegation.
