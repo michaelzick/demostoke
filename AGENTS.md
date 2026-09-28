@@ -50,8 +50,8 @@
 - `src/entry-server.tsx` renders the React tree to string.
 - `src/App.tsx` wires providers: query client, SSR page data, theme, auth, favorites, geolocation, tooltip, analytics/toaster.
 - `src/components/AppRoutes.tsx` is the authoritative route map.
-- `server/index.js` serves `dist/client`, loads the server bundle, and injects canonical/meta/schema/robots/404 behavior using `src/lib/seo/*`.
-- `server/index.js` also owns the live security headers, including the production `Content-Security-Policy` allowlists for analytics, Supabase, Mapbox, Google reCAPTCHA, and similar third-party origins.
+- `server/app.js` defines shared Express routing, while `server/index.js` serves `dist/client`, loads the server bundle, and injects canonical/meta/schema/robots/404 behavior using `src/lib/seo/*`.
+- `server/app.js` also owns the live security headers, including the production `Content-Security-Policy` allowlists for analytics, Supabase, Mapbox, Google reCAPTCHA, and similar third-party origins.
 - `index.html` contains the pre-hydration theme resolver plus a consent-gated analytics bootstrap. GTM, GA4, and Mixpanel scripts are injected only by `window.__loadAnalytics()`, which runs by default (opt-out model) for visitors outside the EU/EEA/UK unless they opted out; EU/EEA/UK visitors (timezone heuristic) must opt in first. Do Not Sell and GPC do not gate analytics. If you touch head behavior, inspect this file.
 
 ## High-Value Route Areas
@@ -223,7 +223,7 @@ There are five distinct stores. Do not assume the root `.env` is the app's confi
 2. **Supabase Edge Function secrets** (`supabase secrets set`, or the dashboard) - the real secret store. See the full inventory below.
 3. **Hardcoded public keys in the repo** - `src/integrations/supabase/config.js` (project URL + anon JWT), `index.html` (Mixpanel project token, `GTM-MHM2XTTV`, `G-KKQJ9P2ECC`), and `src/components/Recaptcha.tsx` (`RECAPTCHA_SITE_KEY`). All are public-by-design client keys. Never add a private key to these files.
 4. **The database** - Supabase Vault secret `auto_assign_internal_secret`, plus `gear_review_blog_generation_config.cron_secret` and `fleetops_pos_inventory_seed_config.cron_secret`.
-5. **The SSR host** - the `VITE_*` vars the client and `server/index.js` read are set in whatever platform runs `npm start`. There is no hosting config in this repo (no `vercel.json`, `netlify.toml`, `Dockerfile`, or `fly.toml`), so that configuration lives outside the codebase.
+5. **The SSR host** - the `VITE_*` vars the client and `server/index.js` read are set in whatever platform runs `npm start`. Cloudflare hosting is configured in `wrangler.jsonc`; deployment topology and rollback are documented in `docs/cloudflare-hosting.md`. The retained DigitalOcean host still uses the Express Node entrypoint.
 
 CI holds no repository secrets; `.github/workflows/security.yml` uses only the auto-provided `secrets.GITHUB_TOKEN`.
 
@@ -258,7 +258,7 @@ CI holds no repository secrets; `.github/workflows/security.yml` uses only the a
 - Category ordering for client UI comes from `GEAR_CATEGORIES` in `src/lib/gearCategories.ts` (surfboards, snowboards, skis, mountain-bikes). Nav menus, the hero category row, `FilterBar`, the quiz `CategorySelection`, blog filters and category selects (`BLOG_CATEGORIES`, lowercase labels such as `mountain bikes`), the demo-calendar filters (`CATEGORY_META` key order in `demoEventPresentation.ts`) and `AddEventModal` (defaults to `surfboards`), the map legend, the admin demo-events select, `UserContactFields`, and the profile category dropdown (`sortByGearCategoryOrder`) all follow it. `DemoEvent`/`DemoEventCandidate` category types use `GearCategorySlug`. Do not reintroduce hand-written four-category lists in components. Hand-ordered copies that must stay in the same order: `GearBasicInfo` (singular form values), `PUBLIC_GEAR_CATEGORIES` in `src/lib/seo/gearSeo.js`, `DEMO_EVENT_CATEGORY_LABELS` in `publicMetadata.js`, and the Deno edge functions (`ELIGIBLE_GEAR_CATEGORIES`, `ALLOWED_GEAR_CATEGORIES`, discovery defaults).
 - Explore falls back to Santa Monica Bay (`DEFAULT_EXPLORE_COORDINATES` in `src/utils/locationDefaults.ts`) when geolocation is denied. Empty-result notifications and result analytics wait for both a resolved location decision and a successful equipment query; a disabled, loading, or failed query is not an empty result. The gear quiz opens with `surfboards` preselected.
 - The weekly `generate-gear-review-blog-draft` cron picks its category with `chooseRandomCategory` in `_shared/gearReviewBlogGeneration.ts`, weighted by `SURF_CATEGORY_WEIGHT` (0.5) toward surfboards and split evenly across the rest; `shuffleCategories` still provides fallback order. `discover-demo-events` lists surfboards first and interleaves its search queries round-robin across categories, because `MAX_QUERY_ATTEMPTS` (6) is smaller than the number of variants generated per search term.
-- SEO changes usually require edits in both client metadata (`usePageMetadata`) and server injection (`server/index.js` + `src/lib/seo/*`). Do not fix only one side.
+- SEO changes usually require edits in both client metadata (`usePageMetadata`) and server injection (`server/app.js` + `src/lib/seo/*`). Do not fix only one side.
 - Canonical gear URLs should go through `utils/gearUrl.ts`. When route shape changes, update route definitions, server SEO handling, and SEO tests together.
 - Detail-page visibility rules depend on `isPublicEquipmentRecord()` and hidden-user handling. Check both `useEquipmentById` and `useEquipmentBySlug`.
 - Multi-image behavior prefers `equipment_images` / `all_images`; many components assume the primary image is `images[0]`, not a legacy single `image_url`.
@@ -410,3 +410,9 @@ Documented in `demostoke-gear-adder/demostoke_seed_batches/arizona_mountain_bike
 - Cosmic Cycles Flagstaff — page returned empty
 - Flagstaff Bicycle Revolution — JS SPA at rentals.flagbikerev.com; mark for retry with Claude in Chrome
 - Prescott, Show Low/Pinetop, Phoenix metro, Cave Creek — not yet researched
+
+## Cloudflare Hosting
+- `server/app.js` is the shared Express application factory for Node and Cloudflare. `server/index.js` supplies disk assets and the Node listener; `server/worker.js` uses Cloudflare's Node HTTP adapter and bundled HTML/SSR imports. Keep metadata, redirects, sitemap, security headers, and visibility rules in the shared app.
+- `wrangler.jsonc` deploys the `demostoke` Worker with static assets from `dist/client`. HTML entry requests and `/sitemap.xml` must reach the Worker; missing routes must preserve SSR 404/noindex behavior.
+- `npm run build:cloudflare`, `npm run preview:cloudflare`, and `npm run deploy:cloudflare` build, preview, and deploy the complete site.
+- The DigitalOcean app is retained as a rollback host and also contains unrelated ZICKONEZERO components. Do not archive or delete it as part of this migration. Supabase remains the existing backend.

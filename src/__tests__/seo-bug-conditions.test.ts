@@ -90,18 +90,18 @@ describe('Test 1 — Sitemap shadow', () => {
 // Bug condition: url MATCHES /^\/demo-calendar\/event\/.+/
 //               AND serverRedirects(url, "/demo-events/" + slug)
 //
-// EXPECTED TO FAIL: server/index.js contains the redirect block.
+// EXPECTED TO FAIL: server/app.js contains the redirect block.
 // ---------------------------------------------------------------------------
 describe('Test 2 — Demo event redirect', () => {
-  const serverPath = path.join(ROOT, 'server/index.js');
+  const serverPath = path.join(ROOT, 'server/app.js');
 
-  it('server/index.js should NOT contain a redirect block for /demo-calendar/event/', () => {
+  it('server/app.js should NOT contain a redirect block for /demo-calendar/event/', () => {
     const source = fs.readFileSync(serverPath, 'utf-8');
     // The bug: app.get(['/event/:eventSlug', '/demo-calendar/event/:eventSlug'], ...) issues a 301
     const hasRedirectBlock = /app\.get\(\s*\[['"]\/event\/:eventSlug['"],\s*['"]\/demo-calendar\/event\/:eventSlug['"]\]/.test(source);
     expect(
       hasRedirectBlock,
-      'Redirect block for /demo-calendar/event/:eventSlug found in server/index.js — this causes a 301 redirect chain',
+      'Redirect block for /demo-calendar/event/:eventSlug found in server/app.js — this causes a 301 redirect chain',
     ).toBe(false);
   });
 

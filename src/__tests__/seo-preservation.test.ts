@@ -16,11 +16,11 @@ const ROOT = path.resolve(__dirname, '../../');
 // ---------------------------------------------------------------------------
 // Test 3.1 / 3.2 — SSR meta tag injection for blog, gear, demo-events
 //
-// Preservation: The SSR GET * handler in server/index.js must contain meta
+// Preservation: The SSR GET * handler in server/app.js must contain meta
 // tag injection logic for /blog/:slug, /gear/:slug, and /demo-events/:slug.
 // ---------------------------------------------------------------------------
 describe('Preservation 3.1 / 3.2 — SSR meta tag injection', () => {
-  const serverPath = path.join(ROOT, 'server/index.js');
+  const serverPath = path.join(ROOT, 'server/app.js');
   let source: string;
 
   // Read once for all tests in this suite
@@ -30,61 +30,61 @@ describe('Preservation 3.1 / 3.2 — SSR meta tag injection', () => {
     source = '';
   }
 
-  it('server/index.js should call getBlogPostMeta for /blog/ routes', () => {
+  it('server/app.js should call getBlogPostMeta for /blog/ routes', () => {
     expect(
       source,
       'getBlogPostMeta call not found — blog SSR meta injection may be broken',
     ).toMatch(/getBlogPostMeta\s*\(/);
   });
 
-  it('server/index.js should call getGearPageMeta for /gear/ routes', () => {
+  it('server/app.js should call getGearPageMeta for /gear/ routes', () => {
     expect(
       source,
       'getGearPageMeta call not found — gear SSR meta injection may be broken',
     ).toMatch(/getGearPageMeta\s*\(/);
   });
 
-  it('server/index.js should call getDemoEventPageMeta for /demo-events/ routes', () => {
+  it('server/app.js should call getDemoEventPageMeta for /demo-events/ routes', () => {
     expect(
       source,
       'getDemoEventPageMeta call not found — demo-events SSR meta injection may be broken',
     ).toMatch(/getDemoEventPageMeta\s*\(/);
   });
 
-  it('server/index.js SSR handler injects <meta property="og:title"> for blog routes', () => {
+  it('server/app.js SSR handler injects <meta property="og:title"> for blog routes', () => {
     // The handler replaces og:title via a regex replace on the HTML template
     expect(
       source,
-      'og:title injection not found in server/index.js — Open Graph tags will be missing for blog posts',
+      'og:title injection not found in server/app.js — Open Graph tags will be missing for blog posts',
     ).toMatch(/og:title/);
   });
 
-  it('server/index.js SSR handler injects <meta property="og:description"> for blog routes', () => {
+  it('server/app.js SSR handler injects <meta property="og:description"> for blog routes', () => {
     expect(
       source,
-      'og:description injection not found in server/index.js',
+      'og:description injection not found in server/app.js',
     ).toMatch(/og:description/);
   });
 
-  it('server/index.js SSR handler injects JSON-LD structured data for blog routes', () => {
+  it('server/app.js SSR handler injects JSON-LD structured data for blog routes', () => {
     // The handler appends a <script type="application/ld+json"> block
     expect(
       source,
-      'JSON-LD structured data injection not found in server/index.js',
+      'JSON-LD structured data injection not found in server/app.js',
     ).toMatch(/application\/ld\+json/);
   });
 
-  it('server/index.js SSR handler injects <meta name="description"> for blog routes', () => {
+  it('server/app.js SSR handler injects <meta name="description"> for blog routes', () => {
     expect(
       source,
-      'meta name="description" injection not found in server/index.js',
+      'meta name="description" injection not found in server/app.js',
     ).toMatch(/upsertMetaByName\(nextHtml,\s*'description'/);
   });
 
-  it('server/index.js SSR handler injects <title> for blog routes', () => {
+  it('server/app.js SSR handler injects <title> for blog routes', () => {
     expect(
       source,
-      '<title> injection not found in server/index.js',
+      '<title> injection not found in server/app.js',
     ).toMatch(/<title>/);
   });
 });
@@ -92,11 +92,11 @@ describe('Preservation 3.1 / 3.2 — SSR meta tag injection', () => {
 // ---------------------------------------------------------------------------
 // Test 3.3 — Non-www → www 301 redirect middleware
 //
-// Preservation: server/index.js must contain the non-www to www redirect
+// Preservation: server/app.js must contain the non-www to www redirect
 // middleware that issues a 301 when host === 'demostoke.com'.
 // ---------------------------------------------------------------------------
 describe('Preservation 3.3 — Non-www → www redirect middleware', () => {
-  const serverPath = path.join(ROOT, 'server/index.js');
+  const serverPath = path.join(ROOT, 'server/app.js');
   let source: string;
 
   try {
@@ -105,25 +105,25 @@ describe('Preservation 3.3 — Non-www → www redirect middleware', () => {
     source = '';
   }
 
-  it('server/index.js should contain a non-www to www redirect middleware', () => {
+  it('server/app.js should contain a non-www to www redirect middleware', () => {
     // The middleware checks host === 'demostoke.com' and redirects to www
     expect(
       source,
-      'Non-www to www redirect middleware not found in server/index.js',
+      'Non-www to www redirect middleware not found in server/app.js',
     ).toMatch(/demostoke\.com/);
   });
 
-  it('server/index.js non-www redirect should issue a 301', () => {
+  it('server/app.js non-www redirect should issue a 301', () => {
     expect(
       source,
-      '301 redirect not found in non-www middleware in server/index.js',
+      '301 redirect not found in non-www middleware in server/app.js',
     ).toMatch(/redirect\s*\(\s*301/);
   });
 
-  it('server/index.js non-www redirect should target www.demostoke.com', () => {
+  it('server/app.js non-www redirect should target www.demostoke.com', () => {
     expect(
       source,
-      'www.demostoke.com not found in redirect target in server/index.js',
+      'www.demostoke.com not found in redirect target in server/app.js',
     ).toMatch(/www\.demostoke\.com/);
   });
 });
@@ -281,7 +281,7 @@ describe('Preservation 3.6 — Mixpanel tracking', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Property-based test — for any random slug, the SSR handler in server/index.js
+// Property-based test — for any random slug, the SSR handler in server/app.js
 // always contains the code to inject <meta property="og: for blog routes.
 //
 // This is a structural assertion: the server code must contain the og: injection
@@ -290,16 +290,16 @@ describe('Preservation 3.6 — Mixpanel tracking', () => {
 // Validates: Requirements 3.1, 3.2
 // ---------------------------------------------------------------------------
 describe('Property-based: SSR handler always injects og: meta for blog routes', () => {
-  const serverPath = path.join(ROOT, 'server/index.js');
+  const serverPath = path.join(ROOT, 'server/app.js');
   const source = fs.readFileSync(serverPath, 'utf-8');
 
-  it('server/index.js contains og: meta injection code (structural property)', () => {
+  it('server/app.js contains og: meta injection code (structural property)', () => {
     // The SSR handler replaces og:title, og:description, og:image, og:url, og:type
     // for blog, gear, and demo-events routes. This structural check confirms the
     // injection code is present regardless of runtime slug values.
     expect(
       source,
-      'og: meta injection code not found in server/index.js — SSR Open Graph tags will be missing',
+      'og: meta injection code not found in server/app.js — SSR Open Graph tags will be missing',
     ).toMatch(/upsertMetaByProperty\(nextHtml,\s*'og:/);
   });
 
@@ -313,7 +313,7 @@ describe('Property-based: SSR handler always injects og: meta for blog routes', 
    *
    * Validates: Requirements 3.1, 3.2
    */
-  it('property: for any random slug, server/index.js always contains og: injection helpers', () => {
+  it('property: for any random slug, server/app.js always contains og: injection helpers', () => {
     // Generate 50 random slug-like strings and verify the structural property holds for each
     const chars = 'abcdefghijklmnopqrstuvwxyz0123456789-';
     const randomSlug = (seed: number): string => {
@@ -336,7 +336,7 @@ describe('Property-based: SSR handler always injects og: meta for blog routes', 
       const hasOgInjection = /upsertMetaByProperty\(nextHtml,\s*'og:/.test(source);
       expect(
         hasOgInjection,
-        `For slug "${slug}": server/index.js does not contain og: meta injection code`,
+        `For slug "${slug}": server/app.js does not contain og: meta injection code`,
       ).toBe(true);
     }
   });

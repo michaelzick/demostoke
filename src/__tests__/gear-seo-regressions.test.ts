@@ -239,7 +239,7 @@ describe("Gear SEO helpers", () => {
 });
 
 describe("Gear SEO server regression coverage", () => {
-  const serverPath = path.join(ROOT, "server/index.js");
+  const serverPath = path.join(ROOT, "server/app.js");
   const serverSource = fs.readFileSync(serverPath, "utf-8");
   const pagePath = path.join(ROOT, "src/pages/EquipmentDetailPage.tsx");
   const pageSource = fs.readFileSync(pagePath, "utf-8");
@@ -267,7 +267,7 @@ describe("Gear SEO server regression coverage", () => {
 });
 
 describe("Gear SEO sitemap regression coverage", () => {
-  const serverPath = path.join(ROOT, "server/index.js");
+  const serverPath = path.join(ROOT, "server/app.js");
   const serverSource = fs.readFileSync(serverPath, "utf-8");
   const sitemapPath = path.join(ROOT, "public/sitemap.xml");
 
