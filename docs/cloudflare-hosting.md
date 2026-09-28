@@ -38,3 +38,15 @@ Private infrastructure snapshots live outside Git in `~/.codex/migration-backups
 Run the repository's Node 24 CI gates (`npm ci`, lint, type check, production build, and unit tests), `npm run build:cloudflare`, and `npx wrangler deploy --dry-run`. Local Node installations that expose native Web Storage to Vitest may need `NODE_OPTIONS=--no-experimental-webstorage` so jsdom owns browser storage.
 
 Check the deployed Worker and custom hostnames: homepage, `/about`, `/gear/surfboards`, faceted search canonicals/noindex, a real gear and blog detail, unknown-route 404/noindex, legacy event redirects, `/robots.txt`, `/sitemap.xml`, static JS/CSS, FleetOps sign-in, `widget.html`, `widget-loader.js`, and the demo shop's embedded widget. Confirm authoritative DNS and HTTPS after registrar cutover, plus all four Git-connected Cloudflare production builds.
+
+## DNS cutover (September 28, 2026)
+
+Namecheap now delegates demostoke.com to `elaine.ns.cloudflare.com` and
+`ezra.ns.cloudflare.com`. Cloudflare holds the six Worker custom domains and all
+four pre-existing TXT records (Google verification, DMARC, SPF, and DKIM).
+The DigitalOcean app and DNS zone remain available; neither was archived.
+
+Cloudflare Builds is connected to `michaelzick/demostoke`, production branch
+`main`, with `npm run build:cloudflare`, `npx wrangler deploy`, and Node 24.14.1.
+The repository's CI and Security workflows were already manually disabled;
+their local migration checks passed, and hosted CodeQL passed for PR #179.
