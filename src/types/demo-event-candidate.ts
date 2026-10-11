@@ -50,6 +50,7 @@ export interface DemoEventDiscoveryRunStats {
   skipped_duplicate: number;
   unfeatured_expired: number;
   expired_candidates: number;
+  thumbnails_filled?: number;
 }
 
 export interface DemoEventDiscoveryRunResult {

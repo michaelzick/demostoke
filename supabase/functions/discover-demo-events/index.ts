@@ -111,6 +111,7 @@ type DiscoveryStats = {
   skipped_duplicate: number;
   unfeatured_expired: number;
   expired_candidates: number;
+  thumbnails_filled: number;
 };
 
 type DiscoverPayload = {
@@ -356,10 +357,22 @@ const toHttpsImageUrl = (value: unknown): string | null => {
 
   try {
     const url = new URL(candidate.trim());
+    // Shopify and other platforms often publish og:image over plain http even
+    // though the same asset is served over https; upgrade rather than drop it.
+    if (url.protocol === "http:") url.protocol = "https:";
     return url.protocol === "https:" ? url.toString() : null;
   } catch {
     return null;
   }
+};
+
+const pickPageImage = (metadata: Record<string, unknown>): string | null => {
+  const keys = ["og:image:secure_url", "ogImage", "og:image", "twitter:image"];
+  for (const key of keys) {
+    const image = toHttpsImageUrl(metadata[key]);
+    if (image) return image;
+  }
+  return null;
 };
 
 async function runWithConcurrency<T, R>(
@@ -522,7 +535,7 @@ async function scrapePage(result: SearchResult): Promise<ScrapedPage | null> {
       snippet: result.snippet,
       markdown,
       html,
-      ogImage: toHttpsImageUrl(metadata.ogImage ?? metadata["og:image"]),
+      ogImage: pickPageImage(metadata),
     };
   } catch (error) {
     console.error("Firecrawl scrape exception", { url: result.link, error });
@@ -727,6 +740,30 @@ async function findDuplicateCalendarEvent(
   return duplicate?.id ?? null;
 }
 
+// Fill in a missing thumbnail on a published event without touching any image
+// an admin has already set.
+async function fillMissingThumbnail(
+  serviceClient: any,
+  demoEventId: string,
+  thumbnailUrl: string | null,
+  stats: DiscoveryStats,
+): Promise<void> {
+  if (!thumbnailUrl) return;
+
+  const { data: filled, error } = await serviceClient
+    .from("demo_calendar")
+    .update({ thumbnail_url: thumbnailUrl })
+    .eq("id", demoEventId)
+    .is("thumbnail_url", null)
+    .select("id");
+
+  if (error) {
+    console.error("Failed to backfill demo event thumbnail", error.message);
+  } else if (filled?.length) {
+    stats.thumbnails_filled += 1;
+  }
+}
+
 async function markCandidateApproved(
   serviceClient: any,
   candidateId: string,
@@ -761,6 +798,7 @@ async function publishCandidate(
   const duplicateId = await findDuplicateCalendarEvent(serviceClient, candidate);
   if (duplicateId) {
     await markCandidateApproved(serviceClient, candidateId, duplicateId);
+    await fillMissingThumbnail(serviceClient, duplicateId, candidate.thumbnail_url, stats);
     stats.skipped_duplicate += 1;
     return;
   }
@@ -852,7 +890,7 @@ async function upsertCandidate(
 
   const { data: existingCandidate, error: existingCandidateError } = await serviceClient
     .from("demo_event_candidates")
-    .select("id, status, seen_count, admin_edited, source_urls, thumbnail_url")
+    .select("id, status, seen_count, admin_edited, source_urls, thumbnail_url, approved_demo_event_id")
     .eq("external_event_id", candidate.external_event_id)
     .maybeSingle();
 
@@ -964,6 +1002,14 @@ async function upsertCandidate(
   }
 
   if (existingCandidate.status === "approved") {
+    if (existingCandidate.approved_demo_event_id) {
+      await fillMissingThumbnail(
+        serviceClient,
+        existingCandidate.approved_demo_event_id,
+        candidate.thumbnail_url,
+        stats,
+      );
+    }
     stats.skipped_approved += 1;
   } else if (existingCandidate.status === "rejected") {
     stats.skipped_rejected += 1;
@@ -1006,6 +1052,7 @@ serve(async (req) => {
       skipped_duplicate: 0,
       unfeatured_expired: 0,
       expired_candidates: 0,
+      thumbnails_filled: 0,
     };
 
     await cleanUpExpiredEvents(serviceClient, stats);
