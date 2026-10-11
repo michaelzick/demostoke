@@ -4,17 +4,19 @@ import { Button } from "@/components/ui/button";
 interface ProximityFilterProps {
   selectedRadius: number | null;
   onRadiusChange: (radius: number | null) => void;
-  userLocation: { latitude: number; longitude: number } | null;
+  hasUserLocation: boolean;
   loading: boolean;
   permissionDenied: boolean;
+  locationUnavailable: boolean;
 }
 
 const ProximityFilter = ({
   selectedRadius,
   onRadiusChange,
-  userLocation,
+  hasUserLocation,
   loading,
   permissionDenied,
+  locationUnavailable,
 }: ProximityFilterProps) => {
   const radiusOptions = [10, 25, 50, 100];
 
@@ -37,6 +39,12 @@ const ProximityFilter = ({
         </p>
       )}
 
+      {locationUnavailable && !permissionDenied && !loading && (
+        <p className="text-sm text-muted-foreground mb-3">
+          Couldn't get your location. Pick a distance to try again.
+        </p>
+      )}
+
       <div className="flex flex-wrap gap-2">
         {radiusOptions.map((radius) => (
           <Button
@@ -44,7 +52,7 @@ const ProximityFilter = ({
             variant={selectedRadius === radius ? "default" : "outline"}
             size="sm"
             onClick={() => onRadiusChange(radius)}
-            disabled={!userLocation || loading || permissionDenied}
+            disabled={loading || permissionDenied}
             className="flex-1 min-w-[60px]"
           >
             {radius}
@@ -61,9 +69,11 @@ const ProximityFilter = ({
         </Button>
       </div>
 
-      {userLocation && !loading && (
+      {hasUserLocation && !loading && (
         <p className="text-xs text-muted-foreground mt-2">
-          Showing events within {selectedRadius || "any"} miles
+          {selectedRadius === null
+            ? "Showing events at any distance"
+            : `Showing events within ${selectedRadius} miles`}
         </p>
       )}
     </div>

@@ -41,8 +41,32 @@ const DemoCalendarPage = () => {
   const [editingEvent, setEditingEvent] = useState<DemoEvent | null>(null);
   const [proximityRadius, setProximityRadius] = useState<number | null>(null);
 
-  // Get user location for proximity filtering
-  const { latitude, longitude, loading: locationLoading, permissionDenied } = useGeolocation();
+  // Location is only requested when the user picks a radius, so the browser
+  // permission prompt never fires on page load.
+  const {
+    latitude,
+    longitude,
+    loading: locationLoading,
+    permissionDenied,
+    permissionState,
+    requestLocation,
+  } = useGeolocation();
+  const hasUserLocation = latitude !== null && longitude !== null;
+
+  const handleRadiusChange = (radius: number | null) => {
+    setProximityRadius(radius);
+    if (radius !== null && !hasUserLocation && !locationLoading) {
+      requestLocation();
+    }
+  };
+
+  // Drop the radius if the location request fails so the filter does not
+  // look active while every event is still shown.
+  useEffect(() => {
+    if (permissionState === 'denied') {
+      setProximityRadius(null);
+    }
+  }, [permissionState]);
 
   const [categoryFilters, setCategoryFilters] = useState<CategoryFilterType[]>(() =>
     DEMO_EVENT_CATEGORY_FILTERS.map((filter) => ({ ...filter })),
@@ -151,10 +175,11 @@ const DemoCalendarPage = () => {
         <div className="lg:col-span-1 space-y-4">
           <ProximityFilter
             selectedRadius={proximityRadius}
-            onRadiusChange={setProximityRadius}
-            userLocation={latitude && longitude ? { latitude, longitude } : null}
+            onRadiusChange={handleRadiusChange}
+            hasUserLocation={hasUserLocation}
             loading={locationLoading}
             permissionDenied={permissionDenied}
+            locationUnavailable={permissionState === 'denied'}
           />
 
           <CategoryFilter
