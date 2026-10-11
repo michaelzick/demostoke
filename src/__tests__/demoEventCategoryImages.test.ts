@@ -25,7 +25,7 @@ describe("demo event category images", () => {
   it("stays in sync with the edge function and migration copies", () => {
     const edgeFunction = readRepoFile("supabase/functions/discover-demo-events/index.ts");
     const migration = readRepoFile(
-      "supabase/migrations/20261011130000_demo_event_category_thumbnails.sql",
+      "supabase/migrations/20261011140000_refresh_demo_event_surf_mtb_thumbnails.sql",
     );
 
     for (const [category, url] of Object.entries(DEMO_EVENT_CATEGORY_IMAGES) as [string, string][]) {

@@ -65,12 +65,12 @@ const pexelsSquareThumb = (photoId) =>
 
 // Default thumbnail for every demo event in a category (Pexels License: free
 // to use, no attribution required). The discover-demo-events edge function and
-// migration 20261011130000 keep hand-copied URLs; keep all three in sync.
+// migration 20261011140000 keep hand-copied URLs; keep all three in sync.
 export const DEMO_EVENT_CATEGORY_IMAGES = {
-  surfboards: pexelsSquareThumb(4609198),
+  surfboards: pexelsSquareThumb(5544783),
   snowboards: pexelsSquareThumb(10808867),
   skis: pexelsSquareThumb(6783201),
-  "mountain-bikes": pexelsSquareThumb(90454),
+  "mountain-bikes": pexelsSquareThumb(3880623),
 };
 
 export const getDemoEventCategoryImage = (gearCategory) =>
