@@ -431,7 +431,7 @@ const DemoEventsSection = () => {
             <div>
               <CardTitle className="text-xl">Demo Events</CardTitle>
               <CardDescription>
-                Discover and review upcoming demo events before publishing them to the live calendar.
+                Discovery runs weekly (Sundays, 2am PT) and publishes validated events straight to the live calendar. Run it now to refresh immediately; rejected candidates are never published.
               </CardDescription>
             </div>
 
