@@ -295,16 +295,16 @@ Use these URLs when seeding equipment_images rows. Primary = display_order 0, is
 
 Do not substitute other image sources for seed data. If new categories are added, append rows here before writing SQL.
 
-## Demo Event Category Thumbnails (Pexels)
+## Demo Event Category Thumbnails
 
-Every demo event uses its category's image as `thumbnail_url` (migrations `20261011130000` and `20261011140000`, which replaced the first surf and mountain bike picks), and `discover-demo-events` sets it on publish. Scraped page images are no longer used. These photos are deliberately different from the gear seed images above. They are served as 800x800 crops (`?auto=compress&cs=tinysrgb&w=800&h=800&fit=crop`) under the Pexels License (free, no attribution). The source of truth is `DEMO_EVENT_CATEGORY_IMAGES` in `src/lib/seo/publicMetadata.js`, with hand copies in the edge function and the latest thumbnail migration; `src/__tests__/demoEventCategoryImages.test.ts` checks they stay in sync. `DemoEventThumbnail`, the detail page metadata, and SSR fall back to the category image when `thumbnail_url` is empty. Admins can still set a custom thumbnail on an individual event.
+Every demo event uses its category's image as `thumbnail_url` (migrations `20261011130000`, `20261011140000`, and `20261011150000`; the later two replaced earlier surf and mountain bike picks and leave admin-set thumbnails alone), and `discover-demo-events` sets it on publish. Scraped page images are no longer used. These photos are deliberately different from the gear seed images above. Pexels photos are served as 800x800 crops (`?auto=compress&cs=tinysrgb&w=800&h=800&fit=crop`) under the Pexels License (free, no attribution). The surfboards image was chosen by the user from picryl (public domain, `https://cdn12.picryl.com/photo/2016/12/31/surfer-surfing-surfboard-travel-vacation-cc28fe-1024.jpg`); picryl's CDN rejects non-browser clients, so a recompressed 1024x682 copy is hosted at `gear-images/demo-event-thumbnails/surfboards-picryl-cc28fe.jpg` in Supabase Storage so link-preview crawlers can fetch it. Do not hotlink picryl. The source of truth is `DEMO_EVENT_CATEGORY_IMAGES` in `src/lib/seo/publicMetadata.js`, with hand copies in the edge function and the latest thumbnail migration; `src/__tests__/demoEventCategoryImages.test.ts` checks they stay in sync. `DemoEventThumbnail`, the detail page metadata, and SSR fall back to the category image when `thumbnail_url` is empty. Admins can still set a custom thumbnail on an individual event.
 
-| Category       | Pexels photo |
+| Category       | Image |
 |----------------|--------------|
-| surfboards     | 5544783 |
-| snowboards     | 10808867 |
-| skis           | 6783201 |
-| mountain-bikes | 3880623 |
+| surfboards     | picryl cc28fe (hosted in `gear-images`) |
+| snowboards     | Pexels 10808867 |
+| skis           | Pexels 6783201 |
+| mountain-bikes | Pexels 3880623 |
 
 ## Test and Review Expectations
 - CI runs `npm run lint`, `npm run type-check`, `npm run build`, and `npm run test:unit`.

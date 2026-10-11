@@ -142,13 +142,15 @@ const CATEGORY_SEARCH_TERMS: Record<GearCategory, string[]> = {
   "mountain-bikes": ["mountain bike demo day", "mtb demo ride", "bike park demo event"],
 };
 
-// Every demo event uses its category's Pexels image (Pexels License). Hand-copied
+// Every demo event uses its category's image (Pexels License, or a public domain
+// picryl photo hosted in our gear-images bucket for surfboards). Hand-copied
 // from DEMO_EVENT_CATEGORY_IMAGES in src/lib/seo/publicMetadata.js; keep in sync.
 const pexelsSquareThumb = (photoId: number) =>
   `https://images.pexels.com/photos/${photoId}/pexels-photo-${photoId}.jpeg?auto=compress&cs=tinysrgb&w=800&h=800&fit=crop`;
 
 const DEMO_EVENT_CATEGORY_IMAGES: Record<GearCategory, string> = {
-  surfboards: pexelsSquareThumb(5544783),
+  surfboards:
+    "https://qtlhqsqanbxgfbcjigrl.supabase.co/storage/v1/object/public/gear-images/demo-event-thumbnails/surfboards-picryl-cc28fe.jpg",
   snowboards: pexelsSquareThumb(10808867),
   skis: pexelsSquareThumb(6783201),
   "mountain-bikes": pexelsSquareThumb(3880623),

@@ -63,11 +63,14 @@ const truncateMetaText = (value, maxLength = 160) => {
 const pexelsSquareThumb = (photoId) =>
   `https://images.pexels.com/photos/${photoId}/pexels-photo-${photoId}.jpeg?auto=compress&cs=tinysrgb&w=800&h=800&fit=crop`;
 
-// Default thumbnail for every demo event in a category (Pexels License: free
-// to use, no attribution required). The discover-demo-events edge function and
-// migration 20261011140000 keep hand-copied URLs; keep all three in sync.
+// Default thumbnail for every demo event in a category. Pexels photos are under
+// the Pexels License (free, no attribution); the surfboards image comes from
+// picryl (public domain) and is hosted in our gear-images bucket. The
+// discover-demo-events edge function and migration 20261011150000 keep
+// hand-copied URLs; keep all three in sync.
 export const DEMO_EVENT_CATEGORY_IMAGES = {
-  surfboards: pexelsSquareThumb(5544783),
+  surfboards:
+    "https://qtlhqsqanbxgfbcjigrl.supabase.co/storage/v1/object/public/gear-images/demo-event-thumbnails/surfboards-picryl-cc28fe.jpg",
   snowboards: pexelsSquareThumb(10808867),
   skis: pexelsSquareThumb(6783201),
   "mountain-bikes": pexelsSquareThumb(3880623),
