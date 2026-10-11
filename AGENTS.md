@@ -84,6 +84,8 @@
   - `DemoCalendarPage.tsx` and `DemoEventPage.tsx`
   - client hook is `src/hooks/useDemoEvents.ts`
   - slug and presentation helpers live in `src/utils/eventSlug.ts` and `src/utils/demoEventPresentation.ts`
+  - the home page "Upcoming Demo Events" section (`components/home/FeaturedEventsSection.tsx`) picks events with `selectHomepageDemoEvents()` in `src/utils/demoEventSchedule.ts`: up to 5 dated, non-expired events, admin-featured first, remaining slots filled soonest-first, final list ordered by date. An event expires from the home page at local midnight two days after its `event_date` (24 hours after the date has passed); it stays on the demo calendar.
+  - the `discover-demo-events` edge function runs weekly (pg_cron `demo-event-discovery-weekly-gate`, Sunday 2am PT, 6-day cadence gate in `trigger_demo_event_discovery_cron()`, re-enabled by migration `20261011120000`). It searches all four categories with the Firecrawl v1 search API (not Google Custom Search; 8 queries run in parallel and results are taken rank by rank across queries so each category gets URLs), scrapes with Firecrawl, extracts events with OpenAI, and geocodes with Mapbox (sized for the Firecrawl free plan: search and scrape concurrency 2, at most 10 scrapes per run, about 26 credits per weekly run against 1,000 credits per month; do not raise these without checking the plan), for events up to `window_months` (6) ahead, and when `demo_event_discovery_config.auto_publish` is true it inserts validated events straight into `demo_calendar` (owned by `publish_owner_user_id`, thumbnail set to the category image; see Demo Event Category Thumbnails) and marks the candidate `approved` with a null `approved_by`. It skips fuzzy duplicates (same category and date, same company or overlapping title), never publishes admin-rejected or admin-edited pending candidates, unfeatures expired calendar rows, and rejects past-dated pending candidates with reason `expired`. Manual admin runs use the same path.
 - Quiz:
   - `GearQuizPage.tsx`
   - UI lives in `components/quiz/*`
@@ -232,7 +234,7 @@ CI holds no repository secrets; `.github/workflows/security.yml` uses only the a
   - AI: `OPENAI_API_KEY`, `GEAR_REVIEW_BLOG_MODEL` (model id override, not a credential)
   - Google: `GOOGLE_API_KEY`, `GOOGLE_CSE_ID`, `GOOGLE_SEARCH_API_KEY`, `GOOGLE_SEARCH_ENGINE_ID`, `GOOGLE_RECAPTCHA_SECRET_KEY`, `YOUTUBE_V3_API_KEY`
   - Maps: `MAPBOX_TOKEN` (used by `get-mapbox-token` and `admin-create-user`)
-  - Crawling: `FIRECRAWL_API_KEY` (`rental-discovery-agent`, `discover-demo-events`, `crawl-retailer-details`)
+  - Crawling: `FIRECRAWL_API_KEY` (`rental-discovery-agent`, `discover-demo-events` for both search and scraping, `crawl-retailer-details`)
   - Email: `RESEND_API_KEY` (`send-contact-email`)
   - Internal auth: `AUTO_ASSIGN_INTERNAL_SECRET`
   - FleetOps: see the prefixed list below
@@ -257,7 +259,8 @@ CI holds no repository secrets; `.github/workflows/security.yml` uses only the a
 - Keep `Shops and Shapers` together in the homepage heading with `whitespace-nowrap`, alongside `text-balance` on the heading.
 - Category ordering for client UI comes from `GEAR_CATEGORIES` in `src/lib/gearCategories.ts` (surfboards, snowboards, skis, mountain-bikes). Nav menus, the hero category row, `FilterBar`, the quiz `CategorySelection`, blog filters and category selects (`BLOG_CATEGORIES`, lowercase labels such as `mountain bikes`), the demo-calendar filters (`CATEGORY_META` key order in `demoEventPresentation.ts`) and `AddEventModal` (defaults to `surfboards`), the map legend, the admin demo-events select, `UserContactFields`, and the profile category dropdown (`sortByGearCategoryOrder`) all follow it. `DemoEvent`/`DemoEventCandidate` category types use `GearCategorySlug`. Do not reintroduce hand-written four-category lists in components. Hand-ordered copies that must stay in the same order: `GearBasicInfo` (singular form values), `PUBLIC_GEAR_CATEGORIES` in `src/lib/seo/gearSeo.js`, `DEMO_EVENT_CATEGORY_LABELS` in `publicMetadata.js`, and the Deno edge functions (`ELIGIBLE_GEAR_CATEGORIES`, `ALLOWED_GEAR_CATEGORIES`, discovery defaults).
 - Explore falls back to Santa Monica Bay (`DEFAULT_EXPLORE_COORDINATES` in `src/utils/locationDefaults.ts`) when geolocation is denied. Empty-result notifications and result analytics wait for both a resolved location decision and a successful equipment query; a disabled, loading, or failed query is not an empty result. The gear quiz opens with `surfboards` preselected.
-- The weekly `generate-gear-review-blog-draft` cron picks its category with `chooseRandomCategory` in `_shared/gearReviewBlogGeneration.ts`, weighted by `SURF_CATEGORY_WEIGHT` (0.5) toward surfboards and split evenly across the rest; `shuffleCategories` still provides fallback order. `discover-demo-events` lists surfboards first and interleaves its search queries round-robin across categories, because `MAX_QUERY_ATTEMPTS` (6) is smaller than the number of variants generated per search term.
+- The weekly `generate-gear-review-blog-draft` cron picks its category with `chooseRandomCategory` in `_shared/gearReviewBlogGeneration.ts`, weighted by `SURF_CATEGORY_WEIGHT` (0.5) toward surfboards and split evenly across the rest; `shuffleCategories` still provides fallback order. `discover-demo-events` lists surfboards first and interleaves its search queries round-robin across categories, because `MAX_QUERY_ATTEMPTS` (8, two per category) is smaller than the number of variants generated per search term.
+- Home page demo events must go through `selectHomepageDemoEvents()`; do not reintroduce an `is_featured`-only filter or drop the expiry check. Expired events stay on `/demo-calendar` as history. Auto-published discovery must keep respecting admin rejections and deletions (approved candidates are never republished).
 - SEO changes usually require edits in both client metadata (`usePageMetadata`) and server injection (`server/app.js` + `src/lib/seo/*`). Do not fix only one side.
 - Canonical gear URLs should go through `utils/gearUrl.ts`. When route shape changes, update route definitions, server SEO handling, and SEO tests together.
 - Detail-page visibility rules depend on `isPublicEquipmentRecord()` and hidden-user handling. Check both `useEquipmentById` and `useEquipmentBySlug`.
@@ -291,6 +294,17 @@ Use these URLs when seeding equipment_images rows. Primary = display_order 0, is
 | surfboards     | secondary | https://images.pexels.com/photos/8907535/pexels-photo-8907535.jpeg |
 
 Do not substitute other image sources for seed data. If new categories are added, append rows here before writing SQL.
+
+## Demo Event Category Thumbnails
+
+Every demo event uses its category's image as `thumbnail_url` (migrations `20261011130000`, `20261011140000`, and `20261011150000`; the later two replaced earlier surf and mountain bike picks and leave admin-set thumbnails alone), and `discover-demo-events` sets it on publish. Scraped page images are no longer used. These photos are deliberately different from the gear seed images above. Pexels photos are served as 800x800 crops (`?auto=compress&cs=tinysrgb&w=800&h=800&fit=crop`) under the Pexels License (free, no attribution). The surfboards image was chosen by the user from picryl (public domain, `https://cdn12.picryl.com/photo/2016/12/31/surfer-surfing-surfboard-travel-vacation-cc28fe-1024.jpg`); picryl's CDN rejects non-browser clients, so a recompressed 1024x682 copy is hosted at `gear-images/demo-event-thumbnails/surfboards-picryl-cc28fe.jpg` in Supabase Storage so link-preview crawlers can fetch it. Do not hotlink picryl. The source of truth is `DEMO_EVENT_CATEGORY_IMAGES` in `src/lib/seo/publicMetadata.js`, with hand copies in the edge function and the latest thumbnail migration; `src/__tests__/demoEventCategoryImages.test.ts` checks they stay in sync. `DemoEventThumbnail`, the detail page metadata, and SSR fall back to the category image when `thumbnail_url` is empty. Admins can still set a custom thumbnail on an individual event.
+
+| Category       | Image |
+|----------------|--------------|
+| surfboards     | picryl cc28fe (hosted in `gear-images`) |
+| snowboards     | Pexels 10808867 |
+| skis           | Pexels 6783201 |
+| mountain-bikes | Pexels 3880623 |
 
 ## Test and Review Expectations
 - CI runs `npm run lint`, `npm run type-check`, `npm run build`, and `npm run test:unit`.

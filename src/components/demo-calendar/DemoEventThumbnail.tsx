@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { DemoEvent } from "@/types/demo-calendar";
 import { getDemoEventCategoryMeta } from "@/utils/demoEventPresentation";
+import { getDemoEventCategoryImage } from "@/lib/seo/publicMetadata";
 
 interface DemoEventThumbnailProps {
   event: Pick<DemoEvent, "title" | "thumbnail_url" | "gear_category">;
@@ -14,11 +15,12 @@ const DemoEventThumbnail = ({
   imageClassName,
 }: DemoEventThumbnailProps) => {
   const categoryMeta = getDemoEventCategoryMeta(event.gear_category);
+  const imageUrl = event.thumbnail_url || getDemoEventCategoryImage(event.gear_category);
 
-  if (event.thumbnail_url) {
+  if (imageUrl) {
     return (
       <img
-        src={event.thumbnail_url}
+        src={imageUrl}
         alt={`${event.title} demo event thumbnail`}
         loading="lazy"
         className={cn("h-full w-full object-cover", imageClassName)}

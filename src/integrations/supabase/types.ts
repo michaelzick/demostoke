@@ -326,34 +326,43 @@ export type Database = {
       }
       demo_event_discovery_config: {
         Row: {
+          auto_publish: boolean
           created_at: string
           cron_secret: string
           enabled: boolean
           id: boolean
           last_cron_attempt_at: string | null
+          last_success_at: string | null
           max_candidates_per_run: number
+          publish_owner_user_id: string | null
           search_scope: string
           updated_at: string
           window_months: number
         }
         Insert: {
+          auto_publish?: boolean
           created_at?: string
           cron_secret?: string
           enabled?: boolean
           id?: boolean
           last_cron_attempt_at?: string | null
+          last_success_at?: string | null
           max_candidates_per_run?: number
+          publish_owner_user_id?: string | null
           search_scope?: string
           updated_at?: string
           window_months?: number
         }
         Update: {
+          auto_publish?: boolean
           created_at?: string
           cron_secret?: string
           enabled?: boolean
           id?: boolean
           last_cron_attempt_at?: string | null
+          last_success_at?: string | null
           max_candidates_per_run?: number
+          publish_owner_user_id?: string | null
           search_scope?: string
           updated_at?: string
           window_months?: number

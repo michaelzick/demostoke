@@ -46,6 +46,10 @@ export interface DemoEventDiscoveryRunStats {
   skipped_missing_required: number;
   skipped_out_of_window: number;
   total_processed: number;
+  published: number;
+  skipped_duplicate: number;
+  unfeatured_expired: number;
+  expired_candidates: number;
 }
 
 export interface DemoEventDiscoveryRunResult {
@@ -59,6 +63,8 @@ export interface DemoEventDiscoveryRunResult {
   runtime_limited?: boolean;
   unique_events_considered: number;
   processed_events: number;
+  auto_publish?: boolean;
+  publish_skipped_reason?: string | null;
   error?: string;
 }
 

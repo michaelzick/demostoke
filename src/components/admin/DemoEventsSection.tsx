@@ -431,7 +431,7 @@ const DemoEventsSection = () => {
             <div>
               <CardTitle className="text-xl">Demo Events</CardTitle>
               <CardDescription>
-                Discover and review upcoming demo events before publishing them to the live calendar.
+                Discovery runs weekly (Sundays, 2am PT) and publishes validated events straight to the live calendar. Run it now to refresh immediately; rejected candidates are never published.
               </CardDescription>
             </div>
 
@@ -586,8 +586,11 @@ const DemoEventsSection = () => {
 
             {lastRunResult && (
               <p className="text-xs text-muted-foreground">
-                Last run processed {lastRunResult.stats.total_processed} events. New: {lastRunResult.stats.new_candidates},
-                updated pending: {lastRunResult.stats.updated_pending}.
+                Last run processed {lastRunResult.stats.total_processed} events. Published:{" "}
+                {lastRunResult.stats.published ?? 0}, new: {lastRunResult.stats.new_candidates}, updated pending:{" "}
+                {lastRunResult.stats.updated_pending}.
+                {lastRunResult.publish_skipped_reason === "missing_publish_owner" &&
+                  " Auto-publish skipped: no publish owner is configured."}
               </p>
             )}
           </div>
