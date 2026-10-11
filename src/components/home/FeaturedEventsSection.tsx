@@ -6,22 +6,19 @@ import { buildDemoEventPath } from "@/utils/eventSlug";
 import { format } from "date-fns";
 import { HorizontalScrollSection } from "./HorizontalScrollSection";
 import DemoEventThumbnail from "@/components/demo-calendar/DemoEventThumbnail";
+import { selectHomepageDemoEvents } from "@/utils/demoEventSchedule";
 
 const FeaturedEventsSection = () => {
   const { events } = useDemoEvents();
 
-  const featured = useMemo(() => {
-    return events
-      .filter((e) => e.is_featured)
-      .slice(0, 5);
-  }, [events]);
+  const featured = useMemo(() => selectHomepageDemoEvents(events, new Date()), [events]);
 
   if (!featured || featured.length === 0) return null;
 
   return (
     <>
       <HorizontalScrollSection
-        title="Featured Demo Events"
+        title="Upcoming Demo Events"
         items={featured}
         sectionClassName="pt-10 pb-5 bg-white dark:bg-muted/50"
         desktopCols={{ md: 3, lg: 5 }}

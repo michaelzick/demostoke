@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
+import { timingSafeEqualString } from "../_shared/timingSafeEqual.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -9,21 +10,26 @@ const corsHeaders = {
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-const GOOGLE_API_KEY = Deno.env.get("GOOGLE_API_KEY");
-const GOOGLE_CSE_ID = Deno.env.get("GOOGLE_CSE_ID");
 const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
 const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 const MAPBOX_TOKEN = Deno.env.get("MAPBOX_TOKEN");
 
 const MIN_SEARCH_URLS = 8;
 const MAX_SEARCH_URLS_HARD_CAP = 24;
-const MAX_QUERY_ATTEMPTS = 6;
+// Two queries per category per run (round-robin across the four categories).
+const MAX_QUERY_ATTEMPTS = 8;
 const MAX_PARSE_PAGES = 10;
-const SCRAPE_CONCURRENCY = 4;
+// Sized for the Firecrawl free plan: 10 /scrape and 10 /search requests per
+// minute, 2 concurrent browsers, 1,000 credits per month. One weekly run uses
+// 8 searches (2 credits each) plus at most 10 scrapes (1 credit each).
+const MAX_SCRAPE_PAGES = 10;
+const SCRAPE_CONCURRENCY = 2;
 const PARSE_CONCURRENCY = 2;
 const SOFT_RUNTIME_LIMIT_MS = 100_000;
-const GOOGLE_REQUEST_TIMEOUT_MS = 8_000;
-const SCRAPE_REQUEST_TIMEOUT_MS = 12_000;
+const SEARCH_RESULTS_PER_QUERY = 6;
+const SEARCH_CONCURRENCY = 2;
+const SEARCH_REQUEST_TIMEOUT_MS = 15_000;
+const SCRAPE_REQUEST_TIMEOUT_MS = 15_000;
 const OPENAI_REQUEST_TIMEOUT_MS = 12_000;
 const MAPBOX_REQUEST_TIMEOUT_MS = 7_000;
 
@@ -45,13 +51,14 @@ type DemoEventDiscoveryConfigRow = {
   window_months: number;
   max_candidates_per_run: number;
   last_cron_attempt_at: string | null;
+  auto_publish: boolean;
+  publish_owner_user_id: string | null;
 };
 
 type SearchResult = {
   title: string;
   link: string;
   snippet?: string;
-  displayLink?: string;
 };
 
 type ScrapedPage = {
@@ -60,6 +67,7 @@ type ScrapedPage = {
   snippet?: string;
   markdown: string;
   html?: string;
+  ogImage: string | null;
 };
 
 type ParsedEvent = {
@@ -87,6 +95,7 @@ type NormalizedEvent = {
   source_domain: string | null;
   source_urls: string[];
   source_snippet: string | null;
+  thumbnail_url: string | null;
   raw_payload: Record<string, unknown>;
 };
 
@@ -98,6 +107,10 @@ type DiscoveryStats = {
   skipped_missing_required: number;
   skipped_out_of_window: number;
   total_processed: number;
+  published: number;
+  skipped_duplicate: number;
+  unfeatured_expired: number;
+  expired_candidates: number;
 };
 
 type DiscoverPayload = {
@@ -325,6 +338,30 @@ const withinWindow = (isoDate: string, windowMonths: number): boolean => {
   return eventDate >= start && eventDate <= end;
 };
 
+const pacificDateIso = (offsetDays = 0): string => {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Los_Angeles",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+  const date = new Date(`${parts}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + offsetDays);
+  return date.toISOString().slice(0, 10);
+};
+
+const toHttpsImageUrl = (value: unknown): string | null => {
+  const candidate = Array.isArray(value) ? value[0] : value;
+  if (typeof candidate !== "string") return null;
+
+  try {
+    const url = new URL(candidate.trim());
+    return url.protocol === "https:" ? url.toString() : null;
+  } catch {
+    return null;
+  }
+};
+
 async function runWithConcurrency<T, R>(
   items: T[],
   concurrency: number,
@@ -348,7 +385,9 @@ async function runWithConcurrency<T, R>(
 async function fetchDiscoveryConfig(serviceClient: any): Promise<DemoEventDiscoveryConfigRow> {
   const { data, error } = await serviceClient
     .from("demo_event_discovery_config")
-    .select("id, enabled, cron_secret, search_scope, window_months, max_candidates_per_run, last_cron_attempt_at")
+    .select(
+      "id, enabled, cron_secret, search_scope, window_months, max_candidates_per_run, last_cron_attempt_at, auto_publish, publish_owner_user_id",
+    )
     .eq("id", true)
     .single();
 
@@ -395,39 +434,49 @@ async function verifyManualAdmin(
 
 async function verifyCronSecret(req: Request, config: DemoEventDiscoveryConfigRow): Promise<void> {
   const cronSecret = req.headers.get("x-cron-secret")?.trim();
-  if (!cronSecret || cronSecret !== config.cron_secret) {
+  if (!cronSecret || !timingSafeEqualString(cronSecret, config.cron_secret ?? "")) {
     throw new Error("Invalid cron secret");
   }
 }
 
-async function googleSearch(query: string): Promise<SearchResult[]> {
-  if (!GOOGLE_API_KEY || !GOOGLE_CSE_ID) {
-    throw new Error("Missing GOOGLE_API_KEY or GOOGLE_CSE_ID");
+async function firecrawlSearch(query: string, searchScope: string): Promise<SearchResult[]> {
+  if (!FIRECRAWL_API_KEY) {
+    throw new Error("Missing FIRECRAWL_API_KEY");
   }
 
   try {
-    const url = new URL("https://www.googleapis.com/customsearch/v1");
-    url.searchParams.set("key", GOOGLE_API_KEY);
-    url.searchParams.set("cx", GOOGLE_CSE_ID);
-    url.searchParams.set("q", query);
-    url.searchParams.set("num", "10");
+    const response = await fetchWithTimeout("https://api.firecrawl.dev/v1/search", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${FIRECRAWL_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query,
+        limit: SEARCH_RESULTS_PER_QUERY,
+        ...(searchScope === "us" ? { location: "United States" } : {}),
+        timeout: SEARCH_REQUEST_TIMEOUT_MS - 1_000,
+        ignoreInvalidURLs: true,
+      }),
+    }, SEARCH_REQUEST_TIMEOUT_MS);
 
-    const response = await fetchWithTimeout(url.toString(), {}, GOOGLE_REQUEST_TIMEOUT_MS);
     if (!response.ok) {
       const text = await response.text();
-      console.error("Google search failed", { query, text });
+      console.error("Firecrawl search failed", { query, status: response.status, text });
       return [];
     }
 
     const data = await response.json();
-    return (data.items || []).map((item: any) => ({
-      title: item.title,
-      link: item.link,
-      snippet: item.snippet,
-      displayLink: item.displayLink,
-    }));
+    const items = Array.isArray(data?.data) ? data.data : [];
+    return items
+      .filter((item: any) => typeof item?.url === "string")
+      .map((item: any) => ({
+        title: typeof item.title === "string" ? item.title : "",
+        link: item.url,
+        snippet: typeof item.description === "string" ? item.description : undefined,
+      }));
   } catch (error) {
-    console.error("Google search exception", { query, error });
+    console.error("Firecrawl search exception", { query, error });
     return [];
   }
 }
@@ -465,12 +514,15 @@ async function scrapePage(result: SearchResult): Promise<ScrapedPage | null> {
       return null;
     }
 
+    const metadata = data?.data?.metadata || data?.metadata || {};
+
     return {
       url: result.link,
       title: result.title,
       snippet: result.snippet,
       markdown,
       html,
+      ogImage: toHttpsImageUrl(metadata.ogImage ?? metadata["og:image"]),
     };
   } catch (error) {
     console.error("Firecrawl scrape exception", { url: result.link, error });
@@ -616,6 +668,7 @@ async function normalizeParsedEvent(
       source_domain: sourceDomain,
       source_urls: [page.url],
       source_snippet: page.snippet || null,
+      thumbnail_url: page.ogImage,
       raw_payload: {
         parsed_event: parsedEvent,
         source_title: page.title || null,
@@ -635,16 +688,171 @@ function mergeSourceUrls(existing: unknown, incoming: string[]): string[] {
   return Array.from(new Set([...existingList, ...incoming]));
 }
 
+type PublishContext = {
+  enabled: boolean;
+  ownerUserId: string | null;
+};
+
+const titlesOverlap = (a: string, b: string): boolean => {
+  const left = normalizeToken(a);
+  const right = normalizeToken(b);
+  if (!left || !right) return false;
+  return left.includes(right) || right.includes(left);
+};
+
+// Hand-seeded or admin-created calendar rows carry different external ids, so
+// also treat a same-day, same-category row from the same company (or with an
+// overlapping title) as the same event.
+async function findDuplicateCalendarEvent(
+  serviceClient: any,
+  candidate: NormalizedEvent,
+): Promise<string | null> {
+  const { data, error } = await serviceClient
+    .from("demo_calendar")
+    .select("id, title, company")
+    .eq("gear_category", candidate.gear_category)
+    .eq("event_date", candidate.event_date);
+
+  if (error) {
+    throw new Error(`Failed calendar duplicate lookup: ${error.message}`);
+  }
+
+  const companyToken = normalizeToken(candidate.company);
+  const duplicate = (data || []).find(
+    (row: { title: string; company: string }) =>
+      (companyToken && normalizeToken(row.company || "") === companyToken) ||
+      titlesOverlap(row.title || "", candidate.title),
+  );
+
+  return duplicate?.id ?? null;
+}
+
+async function markCandidateApproved(
+  serviceClient: any,
+  candidateId: string,
+  demoEventId: string,
+): Promise<void> {
+  const nowIso = new Date().toISOString();
+  // approved_by stays null: the weekly discovery run approved it, not an admin.
+  const { error } = await serviceClient
+    .from("demo_event_candidates")
+    .update({
+      status: "approved",
+      approved_at: nowIso,
+      approved_demo_event_id: demoEventId,
+      updated_at: nowIso,
+    })
+    .eq("id", candidateId);
+
+  if (error) {
+    throw new Error(`Failed to mark candidate approved: ${error.message}`);
+  }
+}
+
+async function publishCandidate(
+  serviceClient: any,
+  candidateId: string,
+  candidate: NormalizedEvent,
+  publish: PublishContext,
+  stats: DiscoveryStats,
+): Promise<void> {
+  if (!publish.enabled || !publish.ownerUserId) return;
+
+  const duplicateId = await findDuplicateCalendarEvent(serviceClient, candidate);
+  if (duplicateId) {
+    await markCandidateApproved(serviceClient, candidateId, duplicateId);
+    stats.skipped_duplicate += 1;
+    return;
+  }
+
+  const { data: inserted, error: insertError } = await serviceClient
+    .from("demo_calendar")
+    .insert({
+      title: candidate.title,
+      company: candidate.company,
+      gear_category: candidate.gear_category,
+      event_date: candidate.event_date,
+      event_time: candidate.event_time,
+      location: candidate.location,
+      location_lat: candidate.location_lat,
+      location_lng: candidate.location_lng,
+      equipment_available: candidate.equipment_available,
+      thumbnail_url: candidate.thumbnail_url,
+      is_featured: false,
+      created_by: publish.ownerUserId,
+      external_event_id: candidate.external_event_id,
+      source_primary_url: candidate.source_primary_url,
+    })
+    .select("id")
+    .single();
+
+  if (insertError) {
+    // A concurrent run may have published the same external id first.
+    if (insertError.code === "23505") {
+      const { data: existing } = await serviceClient
+        .from("demo_calendar")
+        .select("id")
+        .eq("external_event_id", candidate.external_event_id)
+        .maybeSingle();
+      if (existing?.id) {
+        await markCandidateApproved(serviceClient, candidateId, existing.id);
+        stats.skipped_duplicate += 1;
+        return;
+      }
+    }
+    throw new Error(`Failed to publish demo event: ${insertError.message}`);
+  }
+
+  await markCandidateApproved(serviceClient, candidateId, inserted.id);
+  stats.published += 1;
+}
+
+// Housekeeping at the start of every run. The home page already hides expired
+// events client-side; this keeps the stored flags and the review queue tidy.
+async function cleanUpExpiredEvents(serviceClient: any, stats: DiscoveryStats): Promise<void> {
+  const nowIso = new Date().toISOString();
+
+  const { data: unfeatured, error: unfeatureError } = await serviceClient
+    .from("demo_calendar")
+    .update({ is_featured: false })
+    .eq("is_featured", true)
+    .lt("event_date", pacificDateIso(-1))
+    .select("id");
+
+  if (unfeatureError) {
+    throw new Error(`Failed to unfeature expired events: ${unfeatureError.message}`);
+  }
+  stats.unfeatured_expired = unfeatured?.length ?? 0;
+
+  const { data: expiredCandidates, error: expireError } = await serviceClient
+    .from("demo_event_candidates")
+    .update({
+      status: "rejected",
+      rejected_at: nowIso,
+      rejection_reason: "expired",
+      updated_at: nowIso,
+    })
+    .eq("status", "pending")
+    .lt("event_date", pacificDateIso())
+    .select("id");
+
+  if (expireError) {
+    throw new Error(`Failed to expire stale candidates: ${expireError.message}`);
+  }
+  stats.expired_candidates = expiredCandidates?.length ?? 0;
+}
+
 async function upsertCandidate(
   serviceClient: any,
   candidate: NormalizedEvent,
+  publish: PublishContext,
   stats: DiscoveryStats,
 ): Promise<void> {
   const nowIso = new Date().toISOString();
 
   const { data: existingCandidate, error: existingCandidateError } = await serviceClient
     .from("demo_event_candidates")
-    .select("id, status, seen_count, admin_edited, source_urls")
+    .select("id, status, seen_count, admin_edited, source_urls, thumbnail_url")
     .eq("external_event_id", candidate.external_event_id)
     .maybeSingle();
 
@@ -668,21 +876,26 @@ async function upsertCandidate(
       return;
     }
 
-    const { error: insertError } = await serviceClient.from("demo_event_candidates").insert({
-      ...candidate,
-      status: "pending",
-      seen_count: 1,
-      first_seen_at: nowIso,
-      last_seen_at: nowIso,
-      created_at: nowIso,
-      updated_at: nowIso,
-    });
+    const { data: insertedCandidate, error: insertError } = await serviceClient
+      .from("demo_event_candidates")
+      .insert({
+        ...candidate,
+        status: "pending",
+        seen_count: 1,
+        first_seen_at: nowIso,
+        last_seen_at: nowIso,
+        created_at: nowIso,
+        updated_at: nowIso,
+      })
+      .select("id")
+      .single();
 
     if (insertError) {
       throw new Error(`Failed to insert candidate: ${insertError.message}`);
     }
 
     stats.new_candidates += 1;
+    await publishCandidate(serviceClient, insertedCandidate.id, candidate, publish, stats);
     return;
   }
 
@@ -711,6 +924,7 @@ async function upsertCandidate(
           location_lat: candidate.location_lat,
           location_lng: candidate.location_lng,
           equipment_available: candidate.equipment_available,
+          thumbnail_url: existingCandidate.thumbnail_url || candidate.thumbnail_url,
         };
 
     const { error: updateError } = await serviceClient
@@ -723,6 +937,20 @@ async function upsertCandidate(
     }
 
     stats.updated_pending += 1;
+
+    // Candidates an admin is actively editing stay in the queue for manual approval.
+    if (!existingCandidate.admin_edited) {
+      await publishCandidate(
+        serviceClient,
+        existingCandidate.id,
+        {
+          ...candidate,
+          thumbnail_url: existingCandidate.thumbnail_url || candidate.thumbnail_url,
+        },
+        publish,
+        stats,
+      );
+    }
     return;
   }
 
@@ -774,7 +1002,21 @@ serve(async (req) => {
       skipped_missing_required: 0,
       skipped_out_of_window: 0,
       total_processed: 0,
+      published: 0,
+      skipped_duplicate: 0,
+      unfeatured_expired: 0,
+      expired_candidates: 0,
     };
+
+    await cleanUpExpiredEvents(serviceClient, stats);
+
+    const publish: PublishContext = {
+      enabled: config.auto_publish !== false,
+      ownerUserId: config.publish_owner_user_id,
+    };
+    if (publish.enabled && !publish.ownerUserId) {
+      console.error("discover-demo-events: auto_publish is on but publish_owner_user_id is not set");
+    }
 
     const maxCandidates = Math.max(1, Math.min(config.max_candidates_per_run || 50, 200));
     const queries = buildQueries(config.search_scope || "us");
@@ -785,19 +1027,22 @@ serve(async (req) => {
       MIN_SEARCH_URLS,
       Math.min(maxCandidates, MAX_SEARCH_URLS_HARD_CAP),
     );
-    let queryAttempts = 0;
+    const queriesToRun = queries.slice(0, MAX_QUERY_ATTEMPTS);
+    const queryAttempts = queriesToRun.length;
+    const resultsByQuery = await runWithConcurrency(
+      queriesToRun,
+      SEARCH_CONCURRENCY,
+      (query) => firecrawlSearch(query, config.search_scope || "us"),
+    );
 
-    for (const query of queries) {
-      if (searchResults.length >= maxSearchUrls) break;
-      if (queryAttempts >= MAX_QUERY_ATTEMPTS) break;
-      if (runtimeExceeded()) break;
-
-      queryAttempts += 1;
-      const results = await googleSearch(query);
-
-      for (const result of results) {
+    // Take results rank by rank across queries so every category (queries are
+    // interleaved by category) gets URLs before the cap is reached.
+    const longestResultList = Math.max(0, ...resultsByQuery.map((results) => results.length));
+    for (let rank = 0; rank < longestResultList; rank += 1) {
+      for (const results of resultsByQuery) {
         if (searchResults.length >= maxSearchUrls) break;
-        if (!result.link || isBlockedDomain(result.link)) continue;
+        const result = results[rank];
+        if (!result?.link || isBlockedDomain(result.link)) continue;
 
         const normalizedUrl = result.link.split("#")[0];
         if (seenUrls.has(normalizedUrl)) continue;
@@ -810,7 +1055,7 @@ serve(async (req) => {
     const maxUrlsToScrape = Math.min(
       searchResults.length,
       Math.max(desiredPagesToParse * 2, MIN_SEARCH_URLS),
-      16,
+      MAX_SCRAPE_PAGES,
     );
     const searchResultsToScrape = searchResults.slice(0, maxUrlsToScrape);
 
@@ -887,11 +1132,19 @@ serve(async (req) => {
 
     for (const event of normalizedEvents) {
       if (runtimeExceeded()) break;
-      await upsertCandidate(serviceClient, event, stats);
+      await upsertCandidate(serviceClient, event, publish, stats);
       stats.total_processed += 1;
     }
 
     const runtime_limited = runtimeExceeded();
+
+    const { error: successUpdateError } = await serviceClient
+      .from("demo_event_discovery_config")
+      .update({ last_success_at: new Date().toISOString() })
+      .eq("id", true);
+    if (successUpdateError) {
+      console.error("Failed to record discovery success time", successUpdateError.message);
+    }
 
     return new Response(
       JSON.stringify({
@@ -905,6 +1158,8 @@ serve(async (req) => {
         parsed_pages: pagesToParse.length,
         unique_events_considered: eventsByExternalId.size,
         processed_events: stats.total_processed,
+        auto_publish: publish.enabled,
+        publish_skipped_reason: publish.enabled && !publish.ownerUserId ? "missing_publish_owner" : null,
       }),
       {
         headers: {
