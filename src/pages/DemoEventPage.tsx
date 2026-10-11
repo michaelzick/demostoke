@@ -24,6 +24,7 @@ import {
   PUBLIC_SITE_URL,
   buildDemoEventDescription,
   buildDemoEventTitle,
+  getDemoEventCategoryImage,
 } from "@/lib/seo/publicMetadata";
 import { ROBOTS_NOINDEX_FOLLOW, isPastDemoEvent } from "@/lib/seo/policy.js";
 import { trackEvent } from "@/utils/tracking";
@@ -99,7 +100,10 @@ const DemoEventPage = () => {
           ? "https://schema.org/EventCompleted"
           : "https://schema.org/EventScheduled",
         eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-        image: event.thumbnail_url || `${PUBLIC_SITE_URL}/img/demostoke-square-transparent.webp`,
+        image:
+          event.thumbnail_url ||
+          getDemoEventCategoryImage(event.gear_category) ||
+          `${PUBLIC_SITE_URL}/img/demostoke-square-transparent.webp`,
         url: canonicalUrl,
         location: event.location
           ? {
@@ -121,7 +125,10 @@ const DemoEventPage = () => {
   usePageMetadata({
     title: event ? buildDemoEventTitle(event.title) : "Demo Event | DemoStoke",
     description: eventDescription,
-    image: event?.thumbnail_url || `${PUBLIC_SITE_URL}/img/demostoke-square-transparent.webp`,
+    image:
+      event?.thumbnail_url ||
+      getDemoEventCategoryImage(event?.gear_category) ||
+      `${PUBLIC_SITE_URL}/img/demostoke-square-transparent.webp`,
     canonicalUrl,
     robots,
     schema,

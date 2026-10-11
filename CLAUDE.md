@@ -85,7 +85,7 @@
   - client hook is `src/hooks/useDemoEvents.ts`
   - slug and presentation helpers live in `src/utils/eventSlug.ts` and `src/utils/demoEventPresentation.ts`
   - the home page "Upcoming Demo Events" section (`components/home/FeaturedEventsSection.tsx`) picks events with `selectHomepageDemoEvents()` in `src/utils/demoEventSchedule.ts`: up to 5 dated, non-expired events, admin-featured first, remaining slots filled soonest-first, final list ordered by date. An event expires from the home page at local midnight two days after its `event_date` (24 hours after the date has passed); it stays on the demo calendar.
-  - the `discover-demo-events` edge function runs weekly (pg_cron `demo-event-discovery-weekly-gate`, Sunday 2am PT, 6-day cadence gate in `trigger_demo_event_discovery_cron()`, re-enabled by migration `20261011120000`). It searches all four categories with the Firecrawl v1 search API (not Google Custom Search; 8 queries run in parallel and results are taken rank by rank across queries so each category gets URLs), scrapes with Firecrawl, extracts events with OpenAI, and geocodes with Mapbox (sized for the Firecrawl free plan: search and scrape concurrency 2, at most 10 scrapes per run, about 26 credits per weekly run against 1,000 credits per month; do not raise these without checking the plan), for events up to `window_months` (6) ahead, and when `demo_event_discovery_config.auto_publish` is true it inserts validated events straight into `demo_calendar` (owned by `publish_owner_user_id`, thumbnail from the source page's `og:image` when HTTPS) and marks the candidate `approved` with a null `approved_by`. It skips fuzzy duplicates (same category and date, same company or overlapping title), never publishes admin-rejected or admin-edited pending candidates, unfeatures expired calendar rows, and rejects past-dated pending candidates with reason `expired`. Manual admin runs use the same path.
+  - the `discover-demo-events` edge function runs weekly (pg_cron `demo-event-discovery-weekly-gate`, Sunday 2am PT, 6-day cadence gate in `trigger_demo_event_discovery_cron()`, re-enabled by migration `20261011120000`). It searches all four categories with the Firecrawl v1 search API (not Google Custom Search; 8 queries run in parallel and results are taken rank by rank across queries so each category gets URLs), scrapes with Firecrawl, extracts events with OpenAI, and geocodes with Mapbox (sized for the Firecrawl free plan: search and scrape concurrency 2, at most 10 scrapes per run, about 26 credits per weekly run against 1,000 credits per month; do not raise these without checking the plan), for events up to `window_months` (6) ahead, and when `demo_event_discovery_config.auto_publish` is true it inserts validated events straight into `demo_calendar` (owned by `publish_owner_user_id`, thumbnail set to the category image; see Demo Event Category Thumbnails) and marks the candidate `approved` with a null `approved_by`. It skips fuzzy duplicates (same category and date, same company or overlapping title), never publishes admin-rejected or admin-edited pending candidates, unfeatures expired calendar rows, and rejects past-dated pending candidates with reason `expired`. Manual admin runs use the same path.
 - Quiz:
   - `GearQuizPage.tsx`
   - UI lives in `components/quiz/*`
@@ -294,6 +294,17 @@ Use these URLs when seeding equipment_images rows. Primary = display_order 0, is
 | surfboards     | secondary | https://images.pexels.com/photos/8907535/pexels-photo-8907535.jpeg |
 
 Do not substitute other image sources for seed data. If new categories are added, append rows here before writing SQL.
+
+## Demo Event Category Thumbnails (Pexels)
+
+Every demo event uses its category's image as `thumbnail_url` (migration `20261011130000`), and `discover-demo-events` sets it on publish. Scraped page images are no longer used. These photos are deliberately different from the gear seed images above. They are served as 800x800 crops (`?auto=compress&cs=tinysrgb&w=800&h=800&fit=crop`) under the Pexels License (free, no attribution). The source of truth is `DEMO_EVENT_CATEGORY_IMAGES` in `src/lib/seo/publicMetadata.js`, with hand copies in the edge function and that migration; `src/__tests__/demoEventCategoryImages.test.ts` checks they stay in sync. `DemoEventThumbnail`, the detail page metadata, and SSR fall back to the category image when `thumbnail_url` is empty. Admins can still set a custom thumbnail on an individual event.
+
+| Category       | Pexels photo |
+|----------------|--------------|
+| surfboards     | 4609198 |
+| snowboards     | 10808867 |
+| skis           | 6783201 |
+| mountain-bikes | 90454 |
 
 ## Test and Review Expectations
 - CI runs `npm run lint`, `npm run type-check`, `npm run build`, and `npm run test:unit`.

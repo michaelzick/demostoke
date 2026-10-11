@@ -67,7 +67,6 @@ type ScrapedPage = {
   snippet?: string;
   markdown: string;
   html?: string;
-  ogImage: string | null;
 };
 
 type ParsedEvent = {
@@ -111,7 +110,6 @@ type DiscoveryStats = {
   skipped_duplicate: number;
   unfeatured_expired: number;
   expired_candidates: number;
-  thumbnails_filled: number;
 };
 
 type DiscoverPayload = {
@@ -142,6 +140,18 @@ const CATEGORY_SEARCH_TERMS: Record<GearCategory, string[]> = {
   snowboards: ["snowboard demo day", "snowboard test ride", "snowboard demo event"],
   skis: ["ski demo day", "ski test event", "ski demo tour"],
   "mountain-bikes": ["mountain bike demo day", "mtb demo ride", "bike park demo event"],
+};
+
+// Every demo event uses its category's Pexels image (Pexels License). Hand-copied
+// from DEMO_EVENT_CATEGORY_IMAGES in src/lib/seo/publicMetadata.js; keep in sync.
+const pexelsSquareThumb = (photoId: number) =>
+  `https://images.pexels.com/photos/${photoId}/pexels-photo-${photoId}.jpeg?auto=compress&cs=tinysrgb&w=800&h=800&fit=crop`;
+
+const DEMO_EVENT_CATEGORY_IMAGES: Record<GearCategory, string> = {
+  surfboards: pexelsSquareThumb(4609198),
+  snowboards: pexelsSquareThumb(10808867),
+  skis: pexelsSquareThumb(6783201),
+  "mountain-bikes": pexelsSquareThumb(90454),
 };
 
 const GEAR_CATEGORY_KEYWORDS: Record<GearCategory, string[]> = {
@@ -351,30 +361,6 @@ const pacificDateIso = (offsetDays = 0): string => {
   return date.toISOString().slice(0, 10);
 };
 
-const toHttpsImageUrl = (value: unknown): string | null => {
-  const candidate = Array.isArray(value) ? value[0] : value;
-  if (typeof candidate !== "string") return null;
-
-  try {
-    const url = new URL(candidate.trim());
-    // Shopify and other platforms often publish og:image over plain http even
-    // though the same asset is served over https; upgrade rather than drop it.
-    if (url.protocol === "http:") url.protocol = "https:";
-    return url.protocol === "https:" ? url.toString() : null;
-  } catch {
-    return null;
-  }
-};
-
-const pickPageImage = (metadata: Record<string, unknown>): string | null => {
-  const keys = ["og:image:secure_url", "ogImage", "og:image", "twitter:image"];
-  for (const key of keys) {
-    const image = toHttpsImageUrl(metadata[key]);
-    if (image) return image;
-  }
-  return null;
-};
-
 async function runWithConcurrency<T, R>(
   items: T[],
   concurrency: number,
@@ -527,15 +513,12 @@ async function scrapePage(result: SearchResult): Promise<ScrapedPage | null> {
       return null;
     }
 
-    const metadata = data?.data?.metadata || data?.metadata || {};
-
     return {
       url: result.link,
       title: result.title,
       snippet: result.snippet,
       markdown,
       html,
-      ogImage: pickPageImage(metadata),
     };
   } catch (error) {
     console.error("Firecrawl scrape exception", { url: result.link, error });
@@ -681,7 +664,7 @@ async function normalizeParsedEvent(
       source_domain: sourceDomain,
       source_urls: [page.url],
       source_snippet: page.snippet || null,
-      thumbnail_url: page.ogImage,
+      thumbnail_url: DEMO_EVENT_CATEGORY_IMAGES[gearCategory],
       raw_payload: {
         parsed_event: parsedEvent,
         source_title: page.title || null,
@@ -740,30 +723,6 @@ async function findDuplicateCalendarEvent(
   return duplicate?.id ?? null;
 }
 
-// Fill in a missing thumbnail on a published event without touching any image
-// an admin has already set.
-async function fillMissingThumbnail(
-  serviceClient: any,
-  demoEventId: string,
-  thumbnailUrl: string | null,
-  stats: DiscoveryStats,
-): Promise<void> {
-  if (!thumbnailUrl) return;
-
-  const { data: filled, error } = await serviceClient
-    .from("demo_calendar")
-    .update({ thumbnail_url: thumbnailUrl })
-    .eq("id", demoEventId)
-    .is("thumbnail_url", null)
-    .select("id");
-
-  if (error) {
-    console.error("Failed to backfill demo event thumbnail", error.message);
-  } else if (filled?.length) {
-    stats.thumbnails_filled += 1;
-  }
-}
-
 async function markCandidateApproved(
   serviceClient: any,
   candidateId: string,
@@ -798,7 +757,6 @@ async function publishCandidate(
   const duplicateId = await findDuplicateCalendarEvent(serviceClient, candidate);
   if (duplicateId) {
     await markCandidateApproved(serviceClient, candidateId, duplicateId);
-    await fillMissingThumbnail(serviceClient, duplicateId, candidate.thumbnail_url, stats);
     stats.skipped_duplicate += 1;
     return;
   }
@@ -890,7 +848,7 @@ async function upsertCandidate(
 
   const { data: existingCandidate, error: existingCandidateError } = await serviceClient
     .from("demo_event_candidates")
-    .select("id, status, seen_count, admin_edited, source_urls, thumbnail_url, approved_demo_event_id")
+    .select("id, status, seen_count, admin_edited, source_urls, thumbnail_url")
     .eq("external_event_id", candidate.external_event_id)
     .maybeSingle();
 
@@ -1002,14 +960,6 @@ async function upsertCandidate(
   }
 
   if (existingCandidate.status === "approved") {
-    if (existingCandidate.approved_demo_event_id) {
-      await fillMissingThumbnail(
-        serviceClient,
-        existingCandidate.approved_demo_event_id,
-        candidate.thumbnail_url,
-        stats,
-      );
-    }
     stats.skipped_approved += 1;
   } else if (existingCandidate.status === "rejected") {
     stats.skipped_rejected += 1;
@@ -1052,7 +1002,6 @@ serve(async (req) => {
       skipped_duplicate: 0,
       unfeatured_expired: 0,
       expired_candidates: 0,
-      thumbnails_filled: 0,
     };
 
     await cleanUpExpiredEvents(serviceClient, stats);

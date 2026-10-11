@@ -10,6 +10,7 @@ import {
   buildGearDetailTitle,
   buildUserProfileDescription,
   buildUserProfileTitle,
+  getDemoEventCategoryImage,
   humanizeSlug,
 } from '../src/lib/seo/publicMetadata.js';
 import {
@@ -876,7 +877,7 @@ async function getDemoEventPageMeta(eventSlug) {
           ? 'https://schema.org/EventCompleted'
           : 'https://schema.org/EventScheduled',
         eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-        image: event.thumbnail_url || DEFAULT_SOCIAL_IMAGE,
+        image: event.thumbnail_url || getDemoEventCategoryImage(event.gear_category) || DEFAULT_SOCIAL_IMAGE,
         url: canonicalUrl,
         location: event.location
           ? {
@@ -920,7 +921,7 @@ async function getDemoEventPageMeta(eventSlug) {
     return {
       title: buildDemoEventTitle(event.title),
       description,
-      image: event.thumbnail_url || DEFAULT_SOCIAL_IMAGE,
+      image: event.thumbnail_url || getDemoEventCategoryImage(event.gear_category) || DEFAULT_SOCIAL_IMAGE,
       canonicalUrl,
       schema,
       noscriptSummary,
