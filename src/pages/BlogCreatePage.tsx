@@ -24,6 +24,7 @@ import { slugify } from "@/utils/slugify";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { trackEvent } from "@/utils/tracking";
 import { BLOG_CATEGORIES } from "@/lib/gearCategories";
+import OpenUrlButton from "@/components/blog/OpenUrlButton";
 
 const categories = BLOG_CATEGORIES;
 
@@ -460,22 +461,30 @@ function BlogCreatePageInner() {
 
                       <div>
                         <Label htmlFor="thumbnailUrl">Thumbnail URL</Label>
-                        <Input
-                          id="thumbnailUrl"
-                          value={thumbnailUrl}
-                          onChange={(e) => setThumbnailUrl(e.target.value)}
-                          placeholder="Thumbnail URL"
-                        />
+                        <div className="flex gap-2">
+                          <Input
+                            id="thumbnailUrl"
+                            className="flex-1"
+                            value={thumbnailUrl}
+                            onChange={(e) => setThumbnailUrl(e.target.value)}
+                            placeholder="Thumbnail URL"
+                          />
+                          <OpenUrlButton url={thumbnailUrl} label="Open thumbnail URL in new tab" />
+                        </div>
                       </div>
 
                       <div>
                         <Label htmlFor="imageUrl">Hero Image URL</Label>
-                        <Input
-                          id="imageUrl"
-                          value={imageUrl}
-                          onChange={(e) => setImageUrl(e.target.value)}
-                          placeholder="Image URL"
-                        />
+                        <div className="flex gap-2">
+                          <Input
+                            id="imageUrl"
+                            className="flex-1"
+                            value={imageUrl}
+                            onChange={(e) => setImageUrl(e.target.value)}
+                            placeholder="Image URL"
+                          />
+                          <OpenUrlButton url={imageUrl} label="Open hero image URL in new tab" />
+                        </div>
                       </div>
 
                       <div>

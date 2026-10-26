@@ -28,6 +28,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { BLOG_CATEGORIES } from "@/lib/gearCategories";
+import OpenUrlButton from "@/components/blog/OpenUrlButton";
 
 const categories = BLOG_CATEGORIES;
 
@@ -647,22 +648,30 @@ function BlogEditPageInner() {
 
             <div className="space-y-2">
               <Label htmlFor="heroImage">Hero Image URL</Label>
-              <Input
-                id="heroImage"
-                value={formData.heroImage}
-                onChange={(e) => setFormData({ ...formData, heroImage: e.target.value })}
-                placeholder="https://..."
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="heroImage"
+                  className="flex-1"
+                  value={formData.heroImage}
+                  onChange={(e) => setFormData({ ...formData, heroImage: e.target.value })}
+                  placeholder="https://..."
+                />
+                <OpenUrlButton url={formData.heroImage} label="Open hero image URL in new tab" />
+              </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="thumbnail">Thumbnail URL</Label>
-              <Input
-                id="thumbnail"
-                value={formData.thumbnail}
-                onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
-                placeholder="https://..."
-              />
+              <div className="flex gap-2">
+                <Input
+                  id="thumbnail"
+                  className="flex-1"
+                  value={formData.thumbnail}
+                  onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
+                  placeholder="https://..."
+                />
+                <OpenUrlButton url={formData.thumbnail} label="Open thumbnail URL in new tab" />
+              </div>
             </div>
 
             <div className="space-y-2">
