@@ -1,6 +1,7 @@
 import express from 'express';
 import compression from 'compression';
 import { createClient } from '@supabase/supabase-js';
+import { getPublishedBlogPost } from '../src/lib/blog/publishedPost.ts';
 import {
   buildDemoEventDescription,
   buildDemoEventTitle,
@@ -37,7 +38,7 @@ import {
   SUPABASE_URL as DEFAULT_SUPABASE_URL,
 } from '../src/integrations/supabase/config.js';
 
-// Supabase client for fetching blog metadata on the server
+// Supabase client for fetching public content and metadata on the server
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || DEFAULT_SUPABASE_URL;
 const SUPABASE_URL_SOURCE = process.env.VITE_SUPABASE_URL
   ? 'VITE_SUPABASE_URL'
@@ -362,55 +363,6 @@ const applyHeadMetadata = (
 
   return nextHtml;
 };
-
-async function getBlogPostMeta(slug) {
-  if (!supabase) {
-    return null;
-  }
-
-  try {
-    const { data, error } = await supabase
-      .from('blog_posts')
-      .select('title, excerpt, thumbnail, hero_image, author, slug, id, published_at, status')
-      .eq('status', 'published')
-      .eq('slug', slug)
-      .single();
-
-    if (error || !data) {
-      // Try by ID if slug doesn't work
-      const { data: dataById, error: errorById } = await supabase
-        .from('blog_posts')
-        .select('title, excerpt, thumbnail, hero_image, author, slug, id, published_at, status')
-        .eq('status', 'published')
-        .eq('id', slug)
-        .single();
-
-      if (errorById || !dataById) return null;
-      return {
-        title: dataById.title,
-        description: dataById.excerpt,
-        image: dataById.thumbnail || dataById.hero_image || DEFAULT_SOCIAL_IMAGE,
-        author: dataById.author,
-        publishedAt: dataById.published_at,
-        slug: dataById.slug,
-        canonicalUrl: buildPublicUrl(`/blog/${dataById.slug}`),
-      };
-    }
-
-    return {
-      title: data.title,
-      description: data.excerpt,
-      image: data.thumbnail || data.hero_image || DEFAULT_SOCIAL_IMAGE,
-      author: data.author,
-      publishedAt: data.published_at,
-      slug: data.slug,
-      canonicalUrl: buildPublicUrl(`/blog/${data.slug}`),
-    };
-  } catch (e) {
-    console.error('Error fetching blog meta', e);
-    return null;
-  }
-}
 
 async function getUserProfileMeta(profileSlug) {
   if (!supabase || !profileSlug) {
@@ -1228,11 +1180,15 @@ export const createApp = ({ getTemplate, loadRenderer, staticMiddleware, compres
       const utilityRouteSeo = resolveUtilityRouteSeo(req.path);
       const notFoundSeo = resolveNotFoundSeo();
       const defaultSeo = buildSeoPolicy();
-      const rawBlogDetailMatch = req.path.match(/^\/blog\/([^/]+)$/);
-      const blogDetailMatch =
-        rawBlogDetailMatch && !['create', 'drafts'].includes(rawBlogDetailMatch[1])
-          ? rawBlogDetailMatch
-          : null;
+      const rawBlogSlug = req.path.match(/^\/blog\/([^/]+)\/?$/i)?.[1];
+      let blogSlug = rawBlogSlug;
+      if (rawBlogSlug) {
+        try {
+          blogSlug = decodeURIComponent(rawBlogSlug);
+        } catch {
+          // React Router also leaves malformed percent escapes undecoded.
+        }
+      }
       const demoEventMatch = req.path.match(/^\/demo-calendar\/event\/([^/]+)$/);
       const userProfileMatch = req.path.match(/^\/user-profile\/([^/]+)$/);
       const gearDetailMatch = !PUBLIC_ROUTE_META[req.path]
@@ -1264,10 +1220,17 @@ export const createApp = ({ getTemplate, loadRenderer, staticMiddleware, compres
         prependMarkup = HOMEPAGE_SUMMARY;
       }
 
-      if (blogDetailMatch) {
-        const meta = await getBlogPostMeta(blogDetailMatch[1]);
+      if (blogSlug && !['create', 'drafts'].includes(blogSlug.toLowerCase())) {
+        let post;
+        try {
+          post = await getPublishedBlogPost(supabase, blogSlug, AbortSignal.timeout(SERVER_METADATA_TIMEOUT_MS));
+        } catch (error) {
+          console.error('Unable to load published blog article:', error.message);
+          return res.status(503).set('Retry-After', '60').send('Blog article temporarily unavailable');
+        }
+        ssrPageData.blog = { slug: blogSlug, post };
 
-        if (!meta) {
+        if (!post) {
           responseStatus = notFoundSeo.status;
           headMeta = {
             ...NOT_FOUND_HEAD,
@@ -1275,37 +1238,39 @@ export const createApp = ({ getTemplate, loadRenderer, staticMiddleware, compres
             robots: notFoundSeo.robots,
           };
         } else {
-          const canonicalPathname = new URL(meta.canonicalUrl).pathname;
+          const canonicalPathname = `/blog/${encodeURIComponent(post.id)}`;
+          const canonicalUrl = buildPublicUrl(canonicalPathname);
           if (req.path !== canonicalPathname) {
             return res.redirect(
               301,
-              appendOriginalSearch(meta.canonicalUrl.replace(PUBLIC_SITE_URL, () => requestOrigin), req.originalUrl),
+              appendOriginalSearch(`${requestOrigin}${canonicalPathname}`, req.originalUrl),
             );
           }
 
+          const image = post.thumbnail || post.heroImage || DEFAULT_SOCIAL_IMAGE;
           headMeta = {
-            title: buildBlogPostTitle(meta.title),
-            description: meta.description,
-            author: meta.author,
-            image: meta.image,
+            title: buildBlogPostTitle(post.title),
+            description: post.excerpt,
+            author: post.author,
+            image,
             type: 'article',
-            url: meta.canonicalUrl,
-            canonicalUrl: meta.canonicalUrl,
+            url: canonicalUrl,
+            canonicalUrl,
             schema: [
               {
                 '@context': 'https://schema.org',
                 '@type': 'BlogPosting',
-                headline: meta.title,
-                description: meta.description,
-                image: meta.image,
-                datePublished: meta.publishedAt,
-                author: { '@type': 'Person', name: meta.author },
+                headline: post.title,
+                description: post.excerpt,
+                image,
+                datePublished: post.publishedAt,
+                author: { '@type': 'Person', name: post.author },
                 publisher: {
                   '@type': 'Organization',
                   name: 'DemoStoke',
                   logo: { '@type': 'ImageObject', url: DEFAULT_SOCIAL_IMAGE },
                 },
-                url: meta.canonicalUrl,
+                url: canonicalUrl,
               },
               {
                 '@context': 'https://schema.org',
@@ -1313,7 +1278,7 @@ export const createApp = ({ getTemplate, loadRenderer, staticMiddleware, compres
                 itemListElement: [
                   { '@type': 'ListItem', position: 1, name: 'Home', item: buildPublicUrl('/') },
                   { '@type': 'ListItem', position: 2, name: 'Blog', item: buildPublicUrl('/blog') },
-                  { '@type': 'ListItem', position: 3, name: meta.title, item: meta.canonicalUrl },
+                  { '@type': 'ListItem', position: 3, name: post.title, item: canonicalUrl },
                 ],
               },
             ],

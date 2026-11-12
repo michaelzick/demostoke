@@ -2,6 +2,7 @@
 import { ClientOnlyToaster } from "@/components/ClientOnlyToaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
 import { AuthProvider } from "./contexts/auth/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { FavoritesProvider } from "./contexts/FavoritesContext";
@@ -12,20 +13,21 @@ import { ClientOnlyCookieConsent } from "./components/ClientOnlyCookieConsent";
 import GoogleTagManager from "./components/GoogleTagManager";
 import AppRoutes from "./components/AppRoutes";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
-      retry: 1,
-    },
-  },
-});
-
 interface AppProps {
   initialSsrPageData?: SsrPageData;
 }
 
 const App = ({ initialSsrPageData = {} }: AppProps) => {
+  // Seeded queries belong to this browser app or this individual SSR request.
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        staleTime: 1000 * 60 * 5, // 5 minutes
+        retry: 1,
+      },
+    },
+  }));
+
   return (
     <QueryClientProvider client={queryClient}>
       <SsrPageDataProvider value={initialSsrPageData}>

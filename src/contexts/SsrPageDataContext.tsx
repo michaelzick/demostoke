@@ -1,9 +1,11 @@
 import { ReactNode, createContext, useContext } from "react";
 import { DemoEvent } from "@/types/demo-calendar";
+import type { BlogPost } from "@/lib/blog/types";
 
 export interface SsrPageData {
   demoEvent?: DemoEvent | null;
   demoEventResolved?: boolean;
+  blog?: { slug: string; post: BlogPost | null };
 }
 
 const SsrPageDataContext = createContext<SsrPageData>({});

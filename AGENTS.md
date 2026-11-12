@@ -79,6 +79,7 @@
   - dynamic data lives in `blog_posts`; static posts live in `src/lib/blog/*`
   - service entrypoint is `src/services/blogService.ts`
   - rendering helpers live in `components/blog/*`
+  - published article routes resolve one public post by slug or legacy ID and render the full article on the server. The matching post seeds the client query at hydration. HTML content uses the same allowlist on the server and client. Draft previews load through the signed-in client and use `noindex`.
   - weekly automated gear-review drafts are created by the `generate-gear-review-blog-draft` edge function; it writes draft `blog_posts` only and records hidden evidence in `gear_review_blog_generation_runs`
 - Demo events:
   - `DemoCalendarPage.tsx` and `DemoEventPage.tsx`
