@@ -121,7 +121,7 @@ export const resolveStaticRouteSeo = (pathname = "", search = "") => {
 };
 
 export const resolveUtilityRouteSeo = (pathname = "") => {
-  if (pathname !== "/api/gear/search") {
+  if (pathname !== "/api/gear/search" && !matchPath("/blog/preview/:id", pathname)) {
     return null;
   }
 

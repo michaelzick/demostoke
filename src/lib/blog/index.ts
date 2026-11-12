@@ -1,10 +1,10 @@
-import { BlogPost } from './types';
-import { snowboardsPosts } from './snowboardsPosts';
-import { skisPosts } from './skisPosts';
-import { surfboardsPosts } from './surfboardsPosts';
-import { mountainBikesPosts } from './mountainBikesPosts';
-import { gearReviewsPosts } from './gearReviewsPosts';
-import { storiesThatStokePosts } from './storiesThatStokePosts';
+import type { BlogPost } from './types';
+import { snowboardsPosts } from './snowboardsPosts.ts';
+import { skisPosts } from './skisPosts.ts';
+import { surfboardsPosts } from './surfboardsPosts.ts';
+import { mountainBikesPosts } from './mountainBikesPosts.ts';
+import { gearReviewsPosts } from './gearReviewsPosts.ts';
+import { storiesThatStokePosts } from './storiesThatStokePosts.ts';
 
 export type { BlogPost };
 

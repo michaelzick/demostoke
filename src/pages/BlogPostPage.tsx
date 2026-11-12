@@ -1,4 +1,5 @@
-import { useParams, Link, useLocation } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import usePageMetadata from "@/hooks/usePageMetadata";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,11 +7,13 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { User, Calendar, Share2, ArrowUp, Edit, ArrowLeft, FileText } from "lucide-react";
 import { blogService } from "@/services/blogService";
 import { slugify } from "@/utils/slugify";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRelatedGear } from "@/hooks/useRelatedGear";
 import RelatedGear from "@/components/equipment-detail/RelatedGear";
 import ContentRenderer from "@/components/blog/ContentRenderer";
-import { BlogPost } from "@/lib/blog/types";
+import { getPublishedBlogPost } from "@/lib/blog/publishedPost";
+import { supabase } from "@/integrations/supabase/client";
+import { useSsrPageData } from "@/contexts/SsrPageDataContext";
 import { useIsAdmin } from "@/hooks/useUserRole";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import {
@@ -27,67 +30,44 @@ import { trackEvent } from "@/utils/tracking";
 
 const BlogPostPage = () => {
   const { slug, id } = useParams<{ slug?: string; id?: string; }>();
-  const location = useLocation();
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [allPosts, setAllPosts] = useState<BlogPost[]>([]);
+  const { blog: ssrBlog } = useSsrPageData();
+  const isPreviewMode = Boolean(id);
+  const { data: article, isLoading, isError, refetch } = useQuery({
+    queryKey: ["blog-post", isPreviewMode ? "preview" : "published", id || slug],
+    queryFn: ({ signal }) => id
+      ? blogService.getDraftById(id)
+      : getPublishedBlogPost(supabase, slug, signal),
+    initialData: !isPreviewMode && ssrBlog && ssrBlog.slug === slug ? ssrBlog.post : undefined,
+    // Preview access and content must be checked each time the route mounts.
+    staleTime: isPreviewMode ? 0 : 60_000,
+    gcTime: isPreviewMode ? 0 : undefined,
+  });
+  const { data: generatedMetadata } = useQuery({
+    queryKey: ["published-blog-review-metadata", article?.databaseId],
+    queryFn: async () => {
+      const metadata = await blogService.getGeneratedGearReviewMetadataMap([article.databaseId]);
+      return metadata.get(article.databaseId) ?? null;
+    },
+    enabled: !isPreviewMode && Boolean(article?.databaseId),
+  });
+  const post = useMemo(
+    () => article && blogService.withGeneratedGearReviewMetadata(article, generatedMetadata),
+    [article, generatedMetadata],
+  );
+  const { data: relatedPosts = [] } = useQuery({
+    queryKey: ["related-blog-posts", article?.id, article?.category],
+    queryFn: ({ signal }) => blogService.getRelatedPublishedPosts(article, signal),
+    enabled: !isPreviewMode && Boolean(article),
+  });
   const [showBackToTop, setShowBackToTop] = useState(false);
-  const [databaseId, setDatabaseId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const generatedReviewViewTrackedRef = useRef<string | null>(null);
   const notFoundTrackedRef = useRef<string | null>(null);
   const relatedGearUnavailableTrackedRef = useRef<string | null>(null);
   const { isAdmin } = useIsAdmin();
-  const isPreviewMode = location.pathname.startsWith('/blog/preview/');
   const currentDocumentTitle =
     typeof document !== "undefined" ? document.title : undefined;
-  const canonicalUrl = !isPreviewMode && post && slug ? `${PUBLIC_SITE_URL}/blog/${slug}` : undefined;
-  const robots = isPreviewMode || (!isLoading && !post) ? ROBOTS_NOINDEX_FOLLOW : undefined;
-
-  useEffect(() => {
-    const loadPost = async () => {
-      setIsLoading(true);
-      try {
-        if (isPreviewMode && id) {
-          // Preview mode: load draft by ID
-          console.log('Loading draft preview with ID:', id);
-          const draft = await blogService.getDraftById(id);
-          console.log('Draft loaded:', draft ? { id: draft.id, title: draft.title, status: draft.status } : 'NOT FOUND');
-          setPost(draft);
-        } else if (slug) {
-          // Regular mode: load published post by slug
-          console.log('Loading published post with slug:', slug);
-          const posts = await blogService.getAllPosts();
-          console.log('All published posts loaded:', posts.length);
-          setAllPosts(posts);
-          const foundPost = posts.find(p => p.id === slug);
-          console.log('Found post:', foundPost ? { id: foundPost.id, author: foundPost.author, title: foundPost.title } : 'NOT FOUND');
-          setPost(foundPost || null);
-
-          // Fetch database ID for admin edit functionality
-          if (foundPost && !isPreviewMode) {
-            const dbId = foundPost.databaseId || await blogService.getPublishedPostBySlug(slug);
-            setDatabaseId(dbId);
-          }
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadPost();
-  }, [slug, id, isPreviewMode]);
-
-  // Debug the post data when it changes
-  useEffect(() => {
-    if (post) {
-      console.log('Post data for meta:', {
-        id: post.id,
-        author: post.author,
-        authorId: post.authorId,
-        title: post.title,
-        thumbnail: post.thumbnail
-      });
-    }
-  }, [post]);
+  const canonicalUrl = !isPreviewMode && post ? `${PUBLIC_SITE_URL}/blog/${encodeURIComponent(post.id)}` : undefined;
+  const robots = isPreviewMode || (!isLoading && !isError && !post) ? ROBOTS_NOINDEX_FOLLOW : undefined;
 
   useEffect(() => {
     if (!post?.isGeneratedGearReview) {
@@ -105,7 +85,7 @@ const BlogPostPage = () => {
   }, [isPreviewMode, post]);
 
   useEffect(() => {
-    if (isLoading || post) {
+    if (isLoading || isError || post) {
       return;
     }
 
@@ -121,7 +101,7 @@ const BlogPostPage = () => {
       post_mode: isPreviewMode ? "draft_preview" : "published",
       failure_reason: "post_not_found",
     });
-  }, [id, isLoading, isPreviewMode, post, slug]);
+  }, [id, isError, isLoading, isPreviewMode, post, slug]);
 
   // Fetch related gear based on post tags with a category fallback
   const {
@@ -181,8 +161,6 @@ const BlogPostPage = () => {
       : undefined
   });
 
-  console.log("Post ID:", slug);
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [slug]);
@@ -205,6 +183,15 @@ const BlogPostPage = () => {
     return <LoadingSpinner />;
   }
 
+  if (!post && isError) {
+    return (
+      <div className="container mx-auto px-4 py-8 text-center">
+        <h1 className="mb-4 text-2xl font-bold">Article temporarily unavailable</h1>
+        <Button onClick={() => void refetch()}>Try again</Button>
+      </div>
+    );
+  }
+
   if (!post) {
     return (
       <div className="container mx-auto px-4 py-8">
@@ -223,7 +210,8 @@ const BlogPostPage = () => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
-      day: "numeric"
+      day: "numeric",
+      timeZone: "UTC",
     });
   };
 
@@ -269,8 +257,8 @@ const BlogPostPage = () => {
       )}
 
       {/* Hero Image */}
-      <div className="relative h-96 bg-cover bg-center" style={{ backgroundImage: `url(${post.heroImage})` }}>
-        <div className="absolute inset-0" />
+      <div className="relative h-96">
+        {post.heroImage && <img src={post.heroImage} alt="" className="absolute inset-0 h-full w-full object-cover" />}
       </div>
 
       {/* Article Content */}
@@ -286,7 +274,7 @@ const BlogPostPage = () => {
                   items={[
                     { label: "Blog", path: "/blog" },
                     { label: capitalizeWords(post.category), path: `/blog?category=${encodeURIComponent(post.category)}` },
-                    { label: post.title, path: `/blog/${post.id}` },
+                  { label: post.title, path: `/blog/${encodeURIComponent(post.id)}` },
                   ]}
                   lastItemClassName="inline-block lg:max-w-[440px] lg:truncate"
                 />
@@ -304,11 +292,11 @@ const BlogPostPage = () => {
               </div>
 
               {/* Admin Action Row */}
-              {isAdmin && !isPreviewMode && databaseId && (
+              {isAdmin && !isPreviewMode && post.databaseId && (
                 <div className="flex items-center gap-2 mb-6 p-3 bg-muted/50 rounded-lg border border-border">
                   <span className="text-sm font-medium text-muted-foreground mr-2">Admin:</span>
                   <Button asChild variant="outline" size="sm">
-                    <Link to={`/blog/edit/${databaseId}`}>
+                    <Link to={`/blog/edit/${post.databaseId}`}>
                       <Edit className="h-4 w-4 mr-1" />
                       Edit Post
                     </Link>
@@ -359,13 +347,13 @@ const BlogPostPage = () => {
                 const m = html.match(/src="([^"]+)"/i);
                 return m ? m[1] : null;
               };
-              let src = extractSrc(post.videoEmbed);
+              const src = extractSrc(post.videoEmbed);
               let safeSrc: string | null = null;
               try {
                 if (src) {
                   const u = new URL(src);
                   const host = u.hostname.replace(/^www\./, '');
-                  if (host === 'youtube.com' || host === 'youtu.be' || host === 'player.vimeo.com') {
+                  if (u.protocol === 'https:' || u.protocol === 'http:') {
                     if (host === 'youtu.be') {
                       safeSrc = `https://www.youtube.com/embed/${u.pathname.replace('/', '')}`;
                     } else if (host === 'youtube.com' && u.pathname.startsWith('/embed')) {
@@ -412,36 +400,33 @@ const BlogPostPage = () => {
             </div>
 
             {/* Related Posts */}
-            {allPosts.filter(p => p.category === post.category && p.id !== post.id).length > 0 && (
+            {relatedPosts.length > 0 && (
               <div className="border-t pt-8">
                 <h4 className="text-lg font-semibold mb-4">More from this category</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {allPosts
-                    .filter(p => p.category === post.category && p.id !== post.id)
-                    .slice(0, 2)
-                    .map((relatedPost) => (
-                      <Link
-                        key={relatedPost.id}
-                        to={`/blog/${relatedPost.id}`}
-                        className="block p-4 border rounded-lg hover:shadow-md transition-shadow"
-                      >
-                        <div className="flex gap-4">
-                          <img
-                            src={relatedPost.thumbnail}
-                            alt={relatedPost.title}
-                            className="w-20 h-20 object-cover rounded"
-                          />
-                          <div>
-                            <h5 className="font-medium line-clamp-2 mb-1">
-                              {relatedPost.title}
-                            </h5>
-                            <p className="text-sm text-muted-foreground">
-                              {relatedPost.readTime} min read
-                            </p>
-                          </div>
+                  {relatedPosts.map((relatedPost) => (
+                    <Link
+                      key={relatedPost.id}
+                      to={`/blog/${encodeURIComponent(relatedPost.id)}`}
+                      className="block p-4 border rounded-lg hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex gap-4">
+                        <img
+                          src={relatedPost.thumbnail}
+                          alt={relatedPost.title}
+                          className="w-20 h-20 object-cover rounded"
+                        />
+                        <div>
+                          <h5 className="font-medium line-clamp-2 mb-1">
+                            {relatedPost.title}
+                          </h5>
+                          <p className="text-sm text-muted-foreground">
+                            {relatedPost.readTime} min read
+                          </p>
                         </div>
-                      </Link>
-                    ))}
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               </div>
             )}

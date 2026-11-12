@@ -1,5 +1,8 @@
 import React, { useMemo } from 'react';
-import DOMPurify from 'dompurify';
+import { Fragment, jsx, jsxs } from 'react/jsx-runtime';
+import { fromHtml } from 'hast-util-from-html';
+import { sanitize, type Schema } from 'hast-util-sanitize';
+import { toJsxRuntime } from 'hast-util-to-jsx-runtime';
 
 interface SafeHtmlRendererProps {
   html: string;
@@ -7,26 +10,23 @@ interface SafeHtmlRendererProps {
   textColor?: string;
 }
 
-const SafeHtmlRenderer: React.FC<SafeHtmlRendererProps> = ({ html, className = "", textColor = "text-foreground" }) => {
-  const sanitizedHtml = useMemo(() => {
-    // Configure DOMPurify with strict allowlist of safe HTML tags
-    const config = {
-      ALLOWED_TAGS: [
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-        'p', 'br', 'strong', 'em', 'b', 'i', 'u',
-        'ul', 'ol', 'li',
-        'blockquote',
-        'a',
-        'span', 'div'
-      ],
-      ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
-      ALLOW_DATA_ATTR: false,
-      FORBID_SCRIPTS: true,
-      FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed'],
-    };
+// Use the same allowlist in the server renderer and during hydration.
+const articleHtmlSchema: Schema = {
+  tagNames: [
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'p', 'br', 'strong', 'em', 'b', 'i', 'u',
+    'ul', 'ol', 'li', 'blockquote', 'a', 'span', 'div',
+  ],
+  attributes: { '*': ['className'], a: ['href', 'target', 'rel'] },
+  protocols: { href: ['http', 'https', 'mailto', 'tel', 'ftp', 'ftps', 'sms', 'callto', 'cid', 'xmpp'] },
+  strip: ['script', 'style', 'iframe', 'object', 'embed', 'template', 'svg', 'math'],
+};
 
-    return DOMPurify.sanitize(html, config);
-  }, [html]);
+const SafeHtmlRenderer: React.FC<SafeHtmlRendererProps> = ({ html, className = "", textColor = "text-foreground" }) => {
+  const content = useMemo(() => toJsxRuntime(
+    sanitize(fromHtml(html, { fragment: true }), articleHtmlSchema),
+    { Fragment, jsx, jsxs },
+  ), [html]);
 
   // Convert textColor class to prose modifier format
   const getProseTextClass = (textColor: string) => {
@@ -39,8 +39,9 @@ const SafeHtmlRenderer: React.FC<SafeHtmlRendererProps> = ({ html, className = "
   return (
     <div
       className={`prose prose-lg dark:prose-invert max-w-none ${getProseTextClass(textColor)} prose-a:text-primary ${className}`}
-      dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
-    />
+    >
+      {content}
+    </div>
   );
 };
 

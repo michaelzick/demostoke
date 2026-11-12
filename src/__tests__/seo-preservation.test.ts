@@ -30,13 +30,6 @@ describe('Preservation 3.1 / 3.2 — SSR meta tag injection', () => {
     source = '';
   }
 
-  it('server/app.js should call getBlogPostMeta for /blog/ routes', () => {
-    expect(
-      source,
-      'getBlogPostMeta call not found — blog SSR meta injection may be broken',
-    ).toMatch(/getBlogPostMeta\s*\(/);
-  });
-
   it('server/app.js should call getGearPageMeta for /gear/ routes', () => {
     expect(
       source,

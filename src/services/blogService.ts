@@ -2,6 +2,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { BlogPost } from "@/lib/blog/types";
 import { blogPosts as staticBlogPosts } from "@/lib/blog";
+import { formatPublishedBlogPost } from "@/lib/blog/publishedPost";
 import { slugify } from "@/utils/slugify";
 
 type GeneratedGearReviewMetadata = {
@@ -9,6 +10,8 @@ type GeneratedGearReviewMetadata = {
   equipmentId: string;
   gearCategory: string;
 };
+
+type RelatedPost = Pick<BlogPost, "id" | "title" | "thumbnail" | "readTime" | "publishedAt">;
 
 export const blogService = {
   async getGeneratedGearReviewMetadataMap(postIds: string[]): Promise<Map<string, GeneratedGearReviewMetadata>> {
@@ -76,30 +79,12 @@ export const blogService = {
       );
 
       // Convert database posts to BlogPost format with slug as id
-      const formattedDbPosts: BlogPost[] = (dbPosts || []).map(post => {
-        console.log('Processing DB post:', { id: post.id, slug: post.slug, author: post.author });
-        const formattedPost = {
-          id: post.slug || post.id, // Use slug as id for routing
-          databaseId: post.id,
-          title: post.title,
-          excerpt: post.excerpt || '',
-          content: post.content || '',
-          category: post.category || '',
-          author: post.author || '',
-          authorId: post.author_id || '',
-          publishedAt: post.published_at,
-          readTime: post.read_time,
-          heroImage: post.hero_image || '',
-          thumbnail: post.thumbnail || '',
-          videoEmbed: post.video_embed || undefined,
-          tags: post.tags || []
-        };
-
-        return this.withGeneratedGearReviewMetadata(
-          formattedPost,
+      const formattedDbPosts = (dbPosts || []).map(post =>
+        this.withGeneratedGearReviewMetadata(
+          formatPublishedBlogPost(post),
           generatedMetadataByPostId.get(post.id),
-        );
-      });
+        ),
+      );
 
       // Combine and sort by publishedAt
       const allPosts = [...formattedDbPosts, ...staticBlogPosts]
@@ -113,6 +98,37 @@ export const blogService = {
       console.error('Error in getAllPosts:', error);
       return staticBlogPosts;
     }
+  },
+
+  async getRelatedPublishedPosts(
+    post: Pick<BlogPost, "id" | "databaseId" | "category">,
+    signal: AbortSignal,
+  ): Promise<RelatedPost[]> {
+    const query = supabase.from("blog_posts")
+      .select("id, slug, title, thumbnail, read_time, published_at")
+      .eq("status", "published")
+      .eq("category", post.category);
+    if (post.databaseId) query.neq("id", post.databaseId);
+
+    const { data, error } = await query
+      .order("published_at", { ascending: false })
+      .limit(2)
+      .abortSignal(signal);
+    if (error && !signal.aborted) console.error("Unable to load related blog posts");
+
+    const databasePosts = (data ?? []).map((row) => ({
+      id: row.slug || row.id,
+      title: row.title,
+      thumbnail: row.thumbnail || "",
+      readTime: row.read_time,
+      publishedAt: row.published_at,
+    }));
+    const staticPosts = staticBlogPosts.filter((item) => item.category === post.category);
+
+    return [...databasePosts, ...staticPosts]
+      .filter((item) => item.id !== post.id)
+      .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+      .slice(0, 2);
   },
 
   // Get featured post IDs from database + static posts
@@ -592,28 +608,6 @@ export const blogService = {
     } catch (error) {
       console.error('Error in publishDraftFromExistingPost:', error);
       return { success: false, error: 'Failed to publish draft from existing post' };
-    }
-  },
-
-  // Get published post by slug (returns database ID)
-  async getPublishedPostBySlug(slug: string): Promise<string | null> {
-    try {
-      const { data, error } = await supabase
-        .from('blog_posts')
-        .select('id')
-        .eq('slug', slug)
-        .eq('status', 'published')
-        .maybeSingle();
-
-      if (error) {
-        console.error('Error fetching post by slug:', error);
-        return null;
-      }
-
-      return data?.id || null;
-    } catch (error) {
-      console.error('Error in getPublishedPostBySlug:', error);
-      return null;
     }
   },
 
