@@ -10,6 +10,8 @@ import type {
   DemoEventJsonIngestResult,
 } from "@/types/demo-event-candidate";
 
+const EMPTY_CANDIDATES: DemoEventCandidate[] = [];
+
 const DISCOVER_DEMO_EVENTS_FUNCTION_URL =
   "https://qtlhqsqanbxgfbcjigrl.supabase.co/functions/v1/discover-demo-events";
 
@@ -269,7 +271,7 @@ export const useDemoEventCandidates = (statusFilter: DemoEventCandidateFilter = 
   });
 
   return {
-    candidates: candidatesQuery.data || [],
+    candidates: candidatesQuery.data ?? EMPTY_CANDIDATES,
     isLoading: candidatesQuery.isLoading,
     error: candidatesQuery.error,
     refetch: candidatesQuery.refetch,
