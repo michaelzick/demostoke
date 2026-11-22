@@ -4,7 +4,7 @@ import { StarIcon, MapPin, Car } from "lucide-react";
 import { Equipment } from "@/types";
 import PriceDisplay from "./PriceDisplay";
 import DistanceDisplay from "@/components/DistanceDisplay";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/navigation";
 import { slugify } from "@/utils/slugify";
 import { cn } from "@/lib/utils";
 import { buildEquipmentTrackingFrom, trackEvent } from "@/utils/tracking";

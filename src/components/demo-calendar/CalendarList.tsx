@@ -20,7 +20,6 @@ interface CalendarListProps {
   onChangeView: (mode: 'calendar' | 'list') => void;
   onEditEvent: (event: DemoEvent) => void;
   onDeleteEvent: (eventId: string) => void;
-  onEventClick: (event: DemoEvent) => void;
   isDeleting?: boolean;
   isAdmin: boolean;
   isLoadingRole: boolean;
@@ -45,7 +44,6 @@ const CalendarList = ({
   onChangeView,
   onEditEvent,
   onDeleteEvent,
-  onEventClick,
   isDeleting,
   isAdmin,
   isLoadingRole
@@ -108,7 +106,6 @@ const CalendarList = ({
                   categoryColors={categoryFilters}
                   onEdit={onEditEvent}
                   onDelete={onDeleteEvent}
-                  onEventClick={onEventClick}
                   isDeleting={isDeleting}
                   isAdmin={isAdmin}
                 />
@@ -126,7 +123,6 @@ const CalendarList = ({
         categoryFilters={categoryFilters}
         onEditEvent={onEditEvent}
         onDeleteEvent={onDeleteEvent}
-        onEventClick={onEventClick}
         isDeleting={isDeleting}
         isAdmin={isAdmin}
       />

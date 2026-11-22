@@ -270,6 +270,7 @@ export const fetchEquipmentFromShopGearFeed = async (
 ): Promise<Equipment[]> => {
   const response = await fetch(buildFeedUrl(params), {
     method: 'GET',
+    redirect: params.headers ? 'error' : 'follow',
     headers: {
       'Content-Type': 'application/json',
       ...(params.headers || {}),

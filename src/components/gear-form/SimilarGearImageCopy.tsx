@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/navigation";
 import { slugify } from "@/utils/slugify";
 import { buildGearPath } from "@/utils/gearUrl";
 import { Copy, Images, Loader2 } from "lucide-react";

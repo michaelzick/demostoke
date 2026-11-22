@@ -1,5 +1,5 @@
 
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/navigation";
 import { Button } from "@/components/ui/button";
 import { openCookiePreferences } from "@/utils/cookieConsent";
 import { RiptydeLink } from "@/components/RiptydeLink";

@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/helpers";
 import { useGearFormState } from "@/hooks/gear-form/useGearFormState";

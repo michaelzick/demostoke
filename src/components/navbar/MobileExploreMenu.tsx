@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/navigation";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { GEAR_CATEGORIES } from "@/lib/gearCategories";

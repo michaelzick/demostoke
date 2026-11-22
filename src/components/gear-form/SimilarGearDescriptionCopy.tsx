@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/navigation";
 import { slugify } from "@/utils/slugify";
 import { buildGearPath } from "@/utils/gearUrl";
 import { Copy, FileText, Loader2 } from "lucide-react";

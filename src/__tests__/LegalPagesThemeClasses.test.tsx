@@ -2,8 +2,8 @@ import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 
-import PrivacyPolicyPage from "@/pages/PrivacyPolicyPage";
-import TermsOfServicePage from "@/pages/TermsOfServicePage";
+import PrivacyPolicyPage from "@/screens/PrivacyPolicyPage";
+import TermsOfServicePage from "@/screens/TermsOfServicePage";
 
 describe("Legal page theme-aware typography", () => {
   beforeEach(() => {

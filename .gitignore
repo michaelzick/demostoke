@@ -31,3 +31,9 @@ Demostoke Demonstration
 
 .wrangler/
 .dev.vars*
+
+.env.next
+.next/
+.open-next/
+next-env.d.ts
+*.tsbuildinfo

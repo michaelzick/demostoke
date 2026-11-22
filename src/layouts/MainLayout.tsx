@@ -1,9 +1,12 @@
+'use client';
 
-import { Outlet, useLocation } from "react-router-dom";
+import type { ReactNode } from 'react';
+
+import { useLocation } from "@/lib/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-const MainLayout = () => {
+const MainLayout = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   const showMainFooter = location.pathname !== '/blog' && location.pathname !== '/blog/create';
 
@@ -11,7 +14,7 @@ const MainLayout = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar />
       <main className="flex-1">
-        <Outlet />
+        {children}
       </main>
       {showMainFooter && <Footer />}
     </div>

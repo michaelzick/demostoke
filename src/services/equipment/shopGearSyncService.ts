@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { fetchConfiguredShopGearFeed } from "./configuredShopGearFeed";
 import { fetchEquipmentFromShopGearFeed } from "./shopGearFeedService";
 import { normalizeCurrencyCode } from "@/utils/currency";
 import {
@@ -204,25 +205,17 @@ export const syncShopGearFromEndpoint = async ({
   const { endpointUrl, shopSlug, includeHidden } =
     parseShopFeedEndpoint(endpointInput);
 
-  const apiKey = import.meta.env.VITE_SHOP_GEAR_FEED_APIKEY as
-    | string
-    | undefined;
-  const headers = apiKey
-    ? {
-        apikey: apiKey,
-        Authorization: `Bearer ${apiKey}`,
-      }
-    : undefined;
-
-  const externalGear = await fetchEquipmentFromShopGearFeed({
+  const configuredGear = includeHidden
+    ? null
+    : await fetchConfiguredShopGearFeed({ endpoint: endpointUrl, shop: shopSlug });
+  const externalGear = configuredGear?.map((item) => ({
+    ...item,
+    owner: { ...item.owner, id: userId, shopId: null },
+  })) ?? await fetchEquipmentFromShopGearFeed({
     endpointUrl,
     shopSlug,
     includeHidden,
-    ownerOverride: {
-      id: userId,
-      shopId: null,
-    },
-    headers,
+    ownerOverride: { id: userId, shopId: null },
   });
 
   const { error: mappingError } = await supabase
@@ -320,7 +313,6 @@ export const syncShopGearFromEndpoint = async ({
               userId,
               itemId: item.id,
               imageIndex: index,
-              headers,
             })
           : resolvedSourceUrl;
 

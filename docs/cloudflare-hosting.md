@@ -13,17 +13,19 @@ Production deploys use `main`. The main repository pins Wrangler in its lockfile
 
 ## Main application
 
-`server/app.js` is the shared Express factory. `server/index.js` provides filesystem-backed assets, lazy SSR loading, compression, and the traditional Node listener. `server/worker.js` provides bundled HTML and SSR imports through Cloudflare's Node HTTP adapter. The same implementation handles metadata, canonical redirects, real 404 responses, public-record visibility, security headers, and the dynamic sitemap.
+OpenNext builds DemoStoke's Next.js App Router into `.open-next`. The custom Worker entrypoint implements the apex redirect and maps known upstream catalog failures to retryable 503 responses. Next.js owns application routes and metadata. The existing production Worker name and custom domains identify the same service across the migration.
 
-`npm run build:cloudflare` builds the Vite client/SSR outputs and bundles the Worker with Node module resolution. This avoids Express 4's legacy browser mappings disabling iconv-lite's Node streams. The built Worker uses Node's createRequire for bundled CommonJS dependencies that access supported Node builtins. Wrangler uploads this bundle without rebundling it.
+## Preview builds
 
-The assets binding serves static files. `/`, `/index.html`, and `/sitemap.xml` reach the Worker, and unmatched paths reach Express for server-rendered routing. Assets are not configured with an SPA fallback on the main app, because that would turn unknown URLs into false 200 responses and skip SEO enrichment.
+Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` under **Settings → Builds → Previews Base**. Cloudflare copies those variables to new branch previews. An existing preview can receive them through its own build settings. Use Node 24.14.1.
 
-## Configuration and secrets
+The migration branch can first deploy under the existing base commands, `npm run build:cloudflare` and `npx wrangler preview`. Then configure that branch's Build command as blank and set its Preview command to `npm run deploy:preview`. Use the stable branch URL for review and the immutable deployment URL for verifying the PR commit. Hosted previews serve public reads and are marked `noindex`.
 
-The main site's checked-in Supabase URL and publishable key are public browser configuration. They also provide the default SSR metadata connection. FleetOps builds require `VITE_WIDGET_SUPABASE_URL`, `VITE_WIDGET_SUPABASE_PUBLISHABLE_KEY`, and `VITE_WIDGET_STRIPE_PUBLISHABLE_KEY`; these are browser-public values, not service credentials. Preserve the existing widget hostname and embed permissions.
+## Production cutover
 
-Do not copy DigitalOcean's shared `STRIPE_SECRET_KEY` into any browser build. Stripe, email, AI, and service-role credentials remain in Supabase. No database migration or Edge Function deployment is required by the hosting port.
+After explicit release approval, record the active Worker version and current builds settings. Set the production build command to `DEMOSTOKE_DEPLOYMENT_TARGET=production npm run build:cloudflare` and the deploy command to `npx wrangler deploy --config wrangler.jsonc`. Set the public Supabase URL and publishable key in production build settings. Switch Previews Base to an empty Build command and `npm run deploy:preview` when `main` uses Next.js.
+
+Store any optional external gear feed credentials as runtime Worker secrets. The shop feed proxy accepts only the configured HTTPS endpoint and exposes public inventory. Stripe, email, AI, and Supabase service-role credentials stay in Supabase.
 
 ## DNS and rollback
 
@@ -35,7 +37,7 @@ Private infrastructure snapshots live outside Git in `~/.codex/migration-backups
 
 ## Validation
 
-Run the repository's Node 24 CI gates (`npm ci`, lint, type check, production build, and unit tests), `npm run build:cloudflare`, and `npx wrangler deploy --dry-run`. Local Node installations that expose native Web Storage to Vitest may need `NODE_OPTIONS=--no-experimental-webstorage` so jsdom owns browser storage.
+Run the repository's Node 24 CI gates (`npm ci`, lint, type check, OpenNext build, and unit tests) and `npx wrangler deploy --dry-run`. Local Node installations that expose native Web Storage to Vitest may need `NODE_OPTIONS=--no-experimental-webstorage` so jsdom owns browser storage.
 
 Check the deployed Worker and custom hostnames: homepage, `/about`, `/gear/surfboards`, faceted search canonicals/noindex, a real gear and blog detail, unknown-route 404/noindex, legacy event redirects, `/robots.txt`, `/sitemap.xml`, static JS/CSS, FleetOps sign-in, `widget.html`, `widget-loader.js`, and the demo shop's embedded widget. Confirm authoritative DNS and HTTPS after registrar cutover, plus all four Git-connected Cloudflare production builds.
 

@@ -1,5 +1,5 @@
 
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "@/lib/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useEquipmentById } from "@/hooks/useEquipmentById";
 import { useEditGearFormState } from "@/hooks/gear-form/useEditGearFormState";

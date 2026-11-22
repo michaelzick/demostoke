@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from "react";
-import { useMatch } from "react-router-dom";
+import { useMatch } from "@/lib/navigation";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { supabase } from "@/integrations/supabase/client";

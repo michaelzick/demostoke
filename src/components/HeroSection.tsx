@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "@/lib/navigation";
 import { Search, ExternalLink } from "lucide-react";
 import { Snowflake, Mountains, Waves, Bicycle, type Icon } from "@phosphor-icons/react";
 import HeroVideoIndicators from "@/components/HeroVideoIndicators";

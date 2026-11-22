@@ -1,5 +1,5 @@
 import { Equipment } from "@/types";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/navigation";
 import { Button } from "@/components/ui/button";
 
 interface EquipmentSpecsProps {
