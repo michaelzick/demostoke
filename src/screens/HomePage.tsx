@@ -1,0 +1,293 @@
+'use client';
+
+import { useState, useEffect, useRef } from "react";
+import usePageMetadata from "@/hooks/usePageMetadata";
+import HeroSection from "@/components/HeroSection";
+import HowItWorksSection from "@/components/home/HowItWorksSection";
+import SeoContentSection from "@/components/home/SeoContentSection";
+import FeaturedGearSection from "@/components/home/FeaturedGearSection";
+import FeaturedPostsSection from "@/components/home/FeaturedPostsSection";
+import FeaturedEventsSection from "@/components/home/FeaturedEventsSection";
+import RecentlyViewedGearSection from "@/components/home/RecentlyViewedGearSection";
+import { useTrendingEquipment } from "@/hooks/useTrendingEquipment";
+import { useAuth } from "@/contexts/auth";
+import { useFeaturedEquipment } from "@/hooks/useFeaturedEquipment";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { EmailChangeDialog } from "@/components/EmailChangeDialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import Recaptcha, { RecaptchaHandle } from "@/components/Recaptcha";
+import { safeLocalStorage } from "@/utils/ssrSafe";
+import { PUBLIC_ROUTE_META } from "@/lib/seo/publicMetadata";
+
+const HomePage = () => {
+  usePageMetadata(PUBLIC_ROUTE_META["/"]);
+
+  // Scroll to top on page load
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // Fetch trending, recent, and featured equipment
+  const { data: trendingEquipment, isLoading: trendingLoading } = useTrendingEquipment();
+  const { data: featuredEquipment, isLoading: featuredLoading } = useFeaturedEquipment();
+
+  // Modal state and localStorage logic
+  const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    subject: "",
+    message: ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const recaptchaRef = useRef<RecaptchaHandle>(null);
+  const { user } = useAuth();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const isFormValid =
+    formData.firstName &&
+    formData.lastName &&
+    formData.email &&
+    formData.subject &&
+    formData.message;
+
+  const handleDontShowAgain = () => {
+    const timer = timerRef.current;
+    if (timer) {
+      clearTimeout(timer);
+      timerRef.current = null;
+    }
+    safeLocalStorage.setItem("hideEmailModal", "1");
+    setShowModal(false);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!isFormValid) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const captchaToken = await recaptchaRef.current?.execute();
+      if (!captchaToken) {
+        throw new Error("Captcha verification failed");
+      }
+
+      console.log("Submitting contact form with data:", {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        subject: formData.subject,
+        messageLength: formData.message.length,
+        hasCaptcha: !!captchaToken
+      });
+
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          subject: `[DemoStoke] ${formData.subject}`,
+          message: formData.message,
+          captchaToken
+        }
+      });
+
+      console.log("Function response:", { data, error });
+
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw new Error(error.message || 'Failed to send email');
+      }
+
+      toast({
+        title: "Success",
+        description: "Your message has been sent successfully. We'll get back to you soon!",
+      });
+
+      // Mark modal as sent in localStorage
+      handleDontShowAgain();
+
+      // Reset form
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        subject: "",
+        message: ""
+      });
+      setShowModal(false); // Close the modal on success
+
+    } catch (error) {
+      console.error('Contact form error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div>
+      {/* Email Change Dialog */}
+      <EmailChangeDialog />
+
+      {/* Email Modal */}
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>This site is under active development.</DialogTitle>
+            <DialogDescription>
+              If you'd like to be notified when it's fully functional, please fill out the form below.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email Address</Label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="subject">Subject</Label>
+              <Input
+                id="subject"
+                name="subject"
+                type="text"
+                value={formData.subject}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="message">Message</Label>
+              <Textarea
+                id="message"
+                name="message"
+                value={formData.message}
+                onChange={handleInputChange}
+                required
+                className="min-h-[100px]"
+              />
+            </div>
+            <Recaptcha ref={recaptchaRef} />
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={handleDontShowAgain}
+                disabled={isSubmitting}
+              >
+                Don't Show Again
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowModal(false)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={!isFormValid || isSubmitting}>
+                {isSubmitting ? "Sending..." : "Send It!"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+      <HeroSection />
+      <FeaturedEventsSection />
+      <HowItWorksSection />
+      <RecentlyViewedGearSection userId={user?.id} />
+
+      {/* Featured section with admin-selected equipment */}
+      {!featuredLoading && featuredEquipment && featuredEquipment.length > 0 && (
+        <FeaturedGearSection
+          title="Featured Gear"
+          equipment={featuredEquipment}
+        />
+      )}
+
+      {/* Conditionally render trending section only if we have trending data */}
+      {!trendingLoading && trendingEquipment && trendingEquipment.length > 0 && (
+        <FeaturedGearSection
+          title="Trending"
+          equipment={trendingEquipment}
+          className="bg-white dark:bg-muted/20"
+        />
+      )}
+
+      {/* Fresh Picks section with recent equipment */}
+      {/* {!recentLoading && recentEquipment && recentEquipment.length > 0 && (
+        <FeaturedGearSection
+          title="Fresh Picks"
+          equipment={recentEquipment}
+          className="bg-white dark:bg-muted/20"
+        />
+      )} */}
+
+      <FeaturedPostsSection />
+      <SeoContentSection />
+    </div>
+  );
+};
+
+export default HomePage;

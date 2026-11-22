@@ -1,5 +1,5 @@
 
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/navigation";
 import { Button } from "@/components/ui/button";
 import EquipmentCard from "@/components/EquipmentCard";
 import { Equipment } from "@/types";

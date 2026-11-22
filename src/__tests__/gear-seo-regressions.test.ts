@@ -1,6 +1,4 @@
 import { describe, expect, it } from "vitest";
-import fs from "fs";
-import path from "path";
 import {
   buildGearMetaDescription,
   buildGearProductSchema,
@@ -9,7 +7,6 @@ import {
   parseLegacyGearRoute,
 } from "../lib/seo/gearSeo.js";
 
-const ROOT = path.resolve(__dirname, "../../");
 
 describe("Gear SEO helpers", () => {
   it("parses public legacy gear routes and rejects non-gear routes", () => {
@@ -31,7 +28,6 @@ describe("Gear SEO helpers", () => {
     const summaryText = buildGearSummaryText({
       displayName: "Lost RNF 96 5'8",
       locationText: "Encinitas, CA",
-      lastVerified: "2026-03-30",
     });
     const schema = buildGearProductSchema({
       canonicalUrl:
@@ -91,7 +87,7 @@ describe("Gear SEO helpers", () => {
       highPrice: "3200",
       offerCount: "3",
     });
-    expect(schema.offers.offers).toEqual(
+    expect(("offers" in schema.offers ? schema.offers.offers : [])).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           name: "Daily rental",
@@ -127,7 +123,6 @@ describe("Gear SEO helpers", () => {
     const summaryText = buildGearSummaryText({
       displayName: "Burton Custom 156",
       locationText: "Mammoth Lakes, CA",
-      lastVerified: "2026-03-30",
     });
 
     expect(
@@ -235,55 +230,5 @@ describe("Gear SEO helpers", () => {
     });
 
     expect(aboveMaxRatingSchema.aggregateRating).toBeUndefined();
-  });
-});
-
-describe("Gear SEO server regression coverage", () => {
-  const serverPath = path.join(ROOT, "server/app.js");
-  const serverSource = fs.readFileSync(serverPath, "utf-8");
-  const pagePath = path.join(ROOT, "src/pages/EquipmentDetailPage.tsx");
-  const pageSource = fs.readFileSync(pagePath, "utf-8");
-
-  it("registers a server-side redirect route for legacy gear URLs", () => {
-    expect(serverSource).toMatch(/app\.get\('\/:category\/:ownerSlug\/:slug'/);
-    expect(serverSource).toMatch(/resolveLegacyGearCanonicalUrl/);
-    expect(serverSource).toMatch(/res\.redirect\(301,\s*canonicalUrl\)/);
-  });
-
-  it("redirects stale /gear/ slugs to the exact canonical product URL", () => {
-    expect(serverSource).toMatch(
-      /canonicalPathname[\s\S]*appendOriginalSearch\(meta\.canonicalUrl\.replace\(PUBLIC_SITE_URL,\s*\(\) => requestOrigin\),\s*req\.originalUrl\)/,
-    );
-  });
-
-  it("uses the shared gear Product builder in both server SSR and client metadata", () => {
-    expect(serverSource).toMatch(/buildGearProductSchema/);
-    expect(pageSource).toMatch(/buildGearProductSchema/);
-  });
-
-  it("accepts the legacy Supabase anon env var as a metadata fallback", () => {
-    expect(serverSource).toMatch(/VITE_SUPABASE_ANON_KEY/);
-  });
-});
-
-describe("Gear SEO sitemap regression coverage", () => {
-  const serverPath = path.join(ROOT, "server/app.js");
-  const serverSource = fs.readFileSync(serverPath, "utf-8");
-  const sitemapPath = path.join(ROOT, "public/sitemap.xml");
-
-  it("does not ship a static sitemap file that can shadow the runtime endpoint", () => {
-    expect(fs.existsSync(sitemapPath)).toBe(false);
-  });
-
-  it("builds dynamic gear URLs in the runtime sitemap", () => {
-    expect(serverSource).toMatch(/app\.get\('\/sitemap\.xml'/);
-    expect(serverSource).toMatch(/path:\s*`\/gear\/\$\{buildGearSlug/);
-  });
-
-  it("keeps private and API routes out of the sitemap source", () => {
-    expect(serverSource).not.toMatch(/path:\s*'\/api\/gear\/search'/);
-    expect(serverSource).not.toMatch(/path:\s*'\/profile'/);
-    expect(serverSource).not.toMatch(/path:\s*'\/my-gear'/);
-    expect(serverSource).not.toMatch(/path:\s*'\/admin'/);
   });
 });

@@ -11,7 +11,7 @@
 - All agents and engineers must adhere to these standards before implementation, refactoring, or review.
 
 ## Project Summary
-- DemoStoke is a Vite + React + TypeScript marketplace for action-sports gear demos, rentals, listings, profiles, and related content.
+- DemoStoke is a Next.js + React + TypeScript marketplace for action-sports gear demos, rentals, listings, profiles, and related content.
 - Core product areas:
   - marketplace discovery with map/list/hybrid views
   - gear detail pages with canonical URLs and SSR SEO metadata
@@ -25,34 +25,23 @@
 - Category strategy (September 2026): DemoStoke is surf-first. Surfboards lead every category list, the homepage, site metadata, the explore fallback map center, the quiz default, the weekly gear-review draft mix, and demo-event discovery order. Snowboards, skis, and mountain bikes remain fully supported long-tail categories: do not delete categories, routes, inventory, or content to narrow scope. Riptyde (`https://apps.apple.com/us/app/riptyde/id6793336480`) is the companion surf-forecasting iOS app; its App Store link lives in `src/lib/gearCategories.ts` as `RIPTYDE_APP_STORE_URL` and is the only external app link on the site (hero, footer, `/gear/surfboards`). Every Riptyde link renders through `RiptydeLink` / `RiptydeIcon` in `src/components/RiptydeLink.tsx`, which always shows the app icon (`public/img/logos/riptyde-icon.webp`, a 192px WebP derived from the `riptyde-landing-page` repo icon) next to the link text. Riptyde clicks emit the `riptyde_link_click` event with a `source` property only.
 
 ## Stack and Runtime
-- Node `>=24`
-- Vite 8 with Rolldown-backed production builds
-- React 18, React Router 6, TanStack Query 5
-- Tailwind CSS + shadcn/ui / Radix primitives
-- Supabase JS v2 for auth, database, storage, and edge functions
-- Express SSR wrapper in `server/index.js`
-- `@` path alias points to `src/`
-- `npm run dev` uses Vite on port `8080`
-- `npm run dev:ssr` uses the Express server and also defaults to `PORT` or `8080`
+- Node 24, Next.js App Router, React 19, TanStack Query 5, Tailwind CSS, shadcn/ui and Radix.
+- Supabase JS v2 handles auth, database, storage and Edge Functions.
+- OpenNext packages the app for Cloudflare Workers. The local Next dev server listens on port 8080.
 
 ## Important Commands
-- `npm run dev` - Vite dev server
-- `npm run dev:ssr` - Express SSR server
-- `npm run build` - client + server build
-- `npm run lint`
-- `npm run type-check` - checks both the application and Vite config TypeScript projects explicitly
-- `npm run test:unit`
-- `npm run generate-sitemap`
+- `npm run dev` runs Next.js locally.
+- `npm run type-check` generates App Router types and runs TypeScript.
+- `npm run lint`, `npm run test:unit` and `npm run build:cloudflare` mirror GitHub CI.
+- `npm run preview:cloudflare` builds and starts the local Workers runtime.
+- `npm run deploy:preview` builds and uploads a Workers Builds branch preview.
 
 ## Top-Level Architecture
-- `src/main.tsx` is the plain Vite mount entry.
-- `src/entry-client.tsx` hydrates the SSR shell when server markup exists and falls back to a plain client mount when Vite serves a non-SSR HTML shell.
-- `src/entry-server.tsx` renders the React tree to string.
-- `src/App.tsx` wires providers: query client, SSR page data, theme, auth, favorites, geolocation, tooltip, analytics/toaster.
-- `src/components/AppRoutes.tsx` is the authoritative route map.
-- `server/app.js` defines shared Express routing, while `server/index.js` serves `dist/client`, loads the server bundle, and injects canonical/meta/schema/robots/404 behavior using `src/lib/seo/*`.
-- `server/app.js` also owns the live security headers, including the production `Content-Security-Policy` allowlists for analytics, Supabase, Mapbox, Google reCAPTCHA, and similar third-party origins.
-- `index.html` contains the pre-hydration theme resolver plus a consent-gated analytics bootstrap. GTM, GA4, and Mixpanel scripts are injected only by `window.__loadAnalytics()`, which runs by default (opt-out model) for visitors outside the EU/EEA/UK unless they opted out; EU/EEA/UK visitors (timezone heuristic) must opt in first. Do Not Sell and GPC do not gate analytics. If you touch head behavior, inspect this file.
+- `src/app/` owns routing, metadata, security boundaries, sitemap and request status. Page components live in `src/screens/`.
+- `src/app/providers.tsx` owns the shared browser providers. Public server loaders seed initial HTML and the matching client query through `SsrPageDataProvider`.
+- `src/lib/server/` loads public data with a Supabase publishable key and explicit visibility checks. Keep signed-in and draft data out of public loaders and caches.
+- `next.config.ts` owns shared security and noindex headers. `server/next-worker.ts` applies the apex redirect and turns failed public-catalog requests into retryable 503 responses.
+- `src/app/bootstrap.ts` contains the pre-hydration theme resolver and consent-gated analytics bootstrap. Only production enables analytics.
 
 ## High-Value Route Areas
 - Marketing/public pages:
@@ -106,7 +95,8 @@
   - `PrivatePartyPage.tsx` is mock-data driven
 
 ## Directory Map
-- `src/pages/` route-level screens
+- `src/app/` App Router pages, layouts and HTTP endpoints
+- `src/screens/` page components
 - `src/components/` reusable UI grouped by feature
 - `src/components/ui/` shadcn / Radix primitives; keep edits conservative here
 - `src/hooks/` query hooks, page hooks, gear-form hooks, auth/profile helpers
@@ -115,7 +105,7 @@
 - `src/lib/` static blog content, SEO helpers, mock data, web vitals
 - `src/contexts/` auth, theme, favorites, geolocation, SSR page data
 - `src/theme/` theme provider and storage helpers
-- `server/` Express SSR server
+- `server/` Cloudflare Worker entrypoint
 - `supabase/functions/` edge functions
 - `supabase/migrations/` schema history
 - `src/integrations/supabase/types.ts` is the generated schema map
@@ -207,27 +197,13 @@ If a grant is missing, PostgREST returns error code `42501` with the exact GRANT
   - `fleetops-seed-pos-inventory`
 
 ## Env and Integration Surface
-- Browser/public runtime uses `VITE_SUPABASE_URL` plus `VITE_SUPABASE_PUBLISHABLE_KEY` or `VITE_SUPABASE_ANON_KEY` when provided, and otherwise falls back to checked-in values in `src/integrations/supabase/config.js` for the Supabase URL and publishable key.
-- Server SSR metadata enrichment uses `VITE_SUPABASE_URL` plus `VITE_SUPABASE_PUBLISHABLE_KEY` or `VITE_SUPABASE_ANON_KEY`.
-- Shop feed flags live in:
-  - `VITE_USE_SHOP_GEAR_FEED`
-  - `VITE_SHOP_GEAR_FEED_URL`
-  - `VITE_SHOP_GEAR_FEED_SHOP_SLUG`
-  - `VITE_SHOP_GEAR_FEED_START`
-  - `VITE_SHOP_GEAR_FEED_END`
-  - `VITE_SHOP_GEAR_FEED_INCLUDE_HIDDEN`
-  - `VITE_SHOP_GEAR_FEED_APIKEY`
-- Theme flicker fix can be disabled with `VITE_ENABLE_THEME_FLICKER_FIX=false`.
 
-### Where Secrets Actually Live
-
-There are five distinct stores. Do not assume the root `.env` is the app's config.
-
-1. **Root `.env` (gitignored) - local tooling only, not read by app code.** Holds `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`, `SUPABASE_ACCESS_TOKEN` (Supabase CLI), and `MIXPANEL_SA_USERNAME` / `MIXPANEL_SA_SECRET` (Mixpanel service account for API/agent access). None carry a `VITE_` prefix, so Vite never exposes them and the SSR server never reads them. It is the only env file in the tree; there is no `.env.example`.
-2. **Supabase Edge Function secrets** (`supabase secrets set`, or the dashboard) - the real secret store. See the full inventory below.
-3. **Hardcoded public keys in the repo** - `src/integrations/supabase/config.js` (project URL + anon JWT), `index.html` (Mixpanel project token, `GTM-MHM2XTTV`, `G-KKQJ9P2ECC`), and `src/components/Recaptcha.tsx` (`RECAPTCHA_SITE_KEY`). All are public-by-design client keys. Never add a private key to these files.
-4. **The database** - Supabase Vault secret `auto_assign_internal_secret`, plus `gear_review_blog_generation_config.cron_secret` and `fleetops_pos_inventory_seed_config.cron_secret`.
-5. **The SSR host** - the `VITE_*` vars the client and `server/index.js` read are set in whatever platform runs `npm start`. Cloudflare hosting is configured in `wrangler.jsonc`; deployment topology and rollback are documented in `docs/cloudflare-hosting.md`. The retained DigitalOcean host still uses the Express Node entrypoint.
+- `.env.next.example` documents local configuration. `.env.next` is ignored and loaded by the Next and OpenNext build commands. Keep the root `.env` for Supabase and Mixpanel tooling.
+- Public requests use `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Only publishable or legacy anon keys belong in the app. The checked-in public project config supports clean CI builds.
+- `DEMOSTOKE_DEPLOYMENT_TARGET` selects `local`, `preview` or `production`. Cloudflare previews read public data and disable authentication, writes, indexing and analytics. Use loopback fixtures for authenticated tests.
+- `NEXT_PUBLIC_USE_SHOP_GEAR_FEED` enables the configured public feed. Read the feed URL, shop slug and API key from server runtime configuration. See [hosting](docs/cloudflare-hosting.md).
+- `NEXT_PUBLIC_ENABLE_THEME_FLICKER_FIX=false` disables the pre-hydration theme bootstrap.
+- Supabase Edge Function secrets live in the dashboard. The database stores the `auto_assign_internal_secret` Vault entry and the scheduled job secrets. Cloudflare Worker secrets hold private runtime bindings. The Supabase anon key and public analytics and reCAPTCHA site identifiers can be shipped in the app.
 
 CI holds no repository secrets; `.github/workflows/security.yml` uses only the auto-provided `secrets.GITHUB_TOKEN`.
 
@@ -249,7 +225,6 @@ CI holds no repository secrets; `.github/workflows/security.yml` uses only the a
 - The admin broken-image scanner deduplicates image URL probes per scan and backs off rate-limited hosts. Only GET-confirmed HTTP 404/410 responses are deletion candidates; rate limits, timeouts, blocked requests, unsafe URLs, and unexpected content types remain inconclusive. Its UI also filters legacy responses, groups retry URLs, and reports the checked page separately from the full image count. A scan does not write to the database.
 - `rental-discovery-agent`, `crawl-retailer-details`, and `extract-gear-from-html` require verified admin JWTs through `_shared/requestAuth.ts`. `generate-blog-text` and `generate-blog-post` require a verified signed-in user; non-admin blog editors remain supported. Generated posts use the caller's RLS-scoped client and verified `user_id`, retaining the existing author display/slug fields. `_shared/requestValidation.ts` validates and bounds their request bodies before paid work.
 - `send-contact-email` stays anonymous with mandatory reCAPTCHA. It validates field types/lengths (names 100, email 254, total subject 200, message 10,000), escapes HTML, checks Resend errors, and returns only success or safe error information. The client subject limit accounts for its `[DemoStoke] ` prefix. Never log contact request bodies or generated blog drafts/provider payloads.
-- `package.json` overrides Express's `qs` dependency to compatible patched 6.16.x or later within major 6. Remove the override when Express's own range includes a patched release. React Router remains on major 6; the September 12, 2026 audit's two moderate package entries require a separate major upgrade (see `docs/security-repairs-2026-09.md`).
 - Imported FleetOps storage uses public buckets `fleetops-equipment-images` and `fleetops-shop-logos`.
 - Imported FleetOps Edge Functions read `FLEETOPS_`-prefixed secrets exclusively: `FLEETOPS_STRIPE_SECRET_KEY`, `FLEETOPS_STRIPE_WEBHOOK_SECRET`, `FLEETOPS_SENDGRID_API_KEY`, `FLEETOPS_FROM_EMAIL`, `FLEETOPS_PUBLIC_SUPABASE_URL`, and `FLEETOPS_POS_INVENTORY_SEED_CRON_SECRET`. The unprefixed fallbacks (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SENDGRID_API_KEY`, `FROM_EMAIL`, `PUBLIC_SUPABASE_URL`, `SITE_URL`, `POS_INVENTORY_SEED_CRON_SECRET`, `SERVICE_ROLE_KEY`) were removed in August 2026; they were never set on the linked project, so they were dead code that made the real source of each value ambiguous. Do not reintroduce them. `FLEETOPS_FROM_EMAIL` is intentionally optional and defaults to `bookings@demostoke.com`.
 - The retained `fleetops_pos_inventory_seed_config.cron_secret` should stay synchronized with `FLEETOPS_POS_INVENTORY_SEED_CRON_SECRET` if the disabled seed flow is ever re-enabled.
@@ -257,19 +232,19 @@ CI holds no repository secrets; `.github/workflows/security.yml` uses only the a
 
 ## Critical Invariants and Gotchas
 - Shops, profiles (including public phone/address/contact fields), and gear are intentionally publicly readable. Preserve existing profile-hiding controls and public-discovery visibility predicates; security fixes must not restrict public reads or blanket-lock public Edge Functions.
-- Map popup builders return DOM elements populated with `textContent`; consumers must use Mapbox `setDOMContent()`. SSR structured data and hydration JSON escape `<`, and HTML string insertion uses replacement callbacks to preserve literal `$` sequences. Replacing old structured-data script blocks must retain a whitespace boundary so adjacent fragments cannot form a new HTML tag.
+- Map popup builders return DOM elements populated with `textContent`; consumers must use Mapbox `setDOMContent()`. Escape `<` in server-rendered JSON-LD and render blog HTML through the shared allowlist.
 - Keep `Shops and Shapers` together in the homepage heading with `whitespace-nowrap`, alongside `text-balance` on the heading.
 - Category ordering for client UI comes from `GEAR_CATEGORIES` in `src/lib/gearCategories.ts` (surfboards, snowboards, skis, mountain-bikes). Nav menus, the hero category row, `FilterBar`, the quiz `CategorySelection`, blog filters and category selects (`BLOG_CATEGORIES`, lowercase labels such as `mountain bikes`), the demo-calendar filters (`CATEGORY_META` key order in `demoEventPresentation.ts`) and `AddEventModal` (defaults to `surfboards`), the map legend, the admin demo-events select, `UserContactFields`, and the profile category dropdown (`sortByGearCategoryOrder`) all follow it. `DemoEvent`/`DemoEventCandidate` category types use `GearCategorySlug`. Do not reintroduce hand-written four-category lists in components. Hand-ordered copies that must stay in the same order: `GearBasicInfo` (singular form values), `PUBLIC_GEAR_CATEGORIES` in `src/lib/seo/gearSeo.js`, `DEMO_EVENT_CATEGORY_LABELS` in `publicMetadata.js`, and the Deno edge functions (`ELIGIBLE_GEAR_CATEGORIES`, `ALLOWED_GEAR_CATEGORIES`, discovery defaults).
 - Explore falls back to Santa Monica Bay (`DEFAULT_EXPLORE_COORDINATES` in `src/utils/locationDefaults.ts`) when geolocation is denied. Empty-result notifications and result analytics wait for both a resolved location decision and a successful equipment query; a disabled, loading, or failed query is not an empty result. The gear quiz opens with `surfboards` preselected.
 - The weekly `generate-gear-review-blog-draft` cron picks its category with `chooseRandomCategory` in `_shared/gearReviewBlogGeneration.ts`, weighted by `SURF_CATEGORY_WEIGHT` (0.5) toward surfboards and split evenly across the rest; `shuffleCategories` still provides fallback order. `discover-demo-events` lists surfboards first and interleaves its search queries round-robin across categories, because `MAX_QUERY_ATTEMPTS` (8, two per category) is smaller than the number of variants generated per search term.
 - Home page demo events must go through `selectHomepageDemoEvents()`; do not reintroduce an `is_featured`-only filter or drop the expiry check. Expired events stay on `/demo-calendar` as history. Auto-published discovery must keep respecting admin rejections and deletions (approved candidates are never republished).
-- SEO changes usually require edits in both client metadata (`usePageMetadata`) and server injection (`server/app.js` + `src/lib/seo/*`). Do not fix only one side.
+- App Router metadata and `src/lib/seo/*` own public canonical URLs, robots directives and structured data.
 - Canonical gear URLs should go through `utils/gearUrl.ts`. When route shape changes, update route definitions, server SEO handling, and SEO tests together.
 - Detail-page visibility rules depend on `isPublicEquipmentRecord()` and hidden-user handling. Check both `useEquipmentById` and `useEquipmentBySlug`.
 - Multi-image behavior prefers `equipment_images` / `all_images`; many components assume the primary image is `images[0]`, not a legacy single `image_url`.
 - `AuthProvider` syncs favorites and recently viewed items from localStorage into Supabase on sign-in; browser-only storage assumptions matter.
-- The theme system is split between `index.html` and `src/theme/*`; if you change theme startup behavior, keep both in sync.
-- All analytics (GTM, GA4, Mixpanel incl. session replay) are consent-gated: US-style opt-out (default on) for visitors outside GDPR territories, opt-in (default off) for EU/EEA/UK/CH visitors detected via the free timezone heuristic `isEuVisitor()` (`Europe/*` plus the EU Atlantic island zones; duplicated in the `index.html` bootstrap — keep in sync). Effective consent is `stored ? stored.analytics : !isEuVisitor()`. The "Do Not Sell or Share My Information" preference (`doNotSell`) is INDEPENDENT of analytics and ON by default: DemoStoke does not sell or share data (analytics is internal-use only, a deliberate product decision, July 2026), so `doNotSell` and GPC signals record the CPRA opt-out but never disable analytics. Scripts load only via `window.__loadAnalytics()` in the `index.html` bootstrap (Mixpanel via the official embed snippet + `mixpanel.init`, token hardcoded there, autocapture with URL-change pageviews, 100% session replay, and replay heatmap capture); ordinary page text is visible in replays, all form inputs stay globally masked, and displayed profile contact data uses focused `.mp-mask`/`.mp-block` redaction. Consent state lives in `src/utils/cookieConsent.ts` (`cookie-consent` key, versioned via `CONSENT_VERSION` — bump it to re-prompt everyone, localStorage + cookie mirror). Opt-out calls `mixpanel.opt_out_tracking()` and sweeps `mp_*`/legacy `AMP_*` cookie and localStorage state. The banner is `src/components/CookieConsentBanner.tsx` (mounted via `ClientOnlyCookieConsent` in `App.tsx`; reopened from the Footer's "Cookie Settings" and "Do Not Sell or Share My Information" buttons and a link on the Privacy Policy page). `trackEvent`, `GoogleTagManager`, and both `vitals` senders all guard on `hasAnalyticsConsent()` so opted-out events never enter the dataLayer queue (GTM replays it on late load). Never add analytics scripts directly to `index.html` or push to `dataLayer` without a consent check. Analytics identity is UUID-only: `identifyUser()` in `src/utils/tracking.ts` sends the Supabase user UUID on sign-in/restore and `resetAnalyticsIdentity()` runs on real sign-out (wired in `AuthContext`); never send email, name, or other PII people-profile props to Mixpanel. The `cookie-consent` key/version literals and the default-allowed logic are duplicated between `index.html` and `cookieConsent.ts` — keep them in sync.
+- The theme system is split between `src/app/bootstrap.ts` and `src/theme/*`; if you change theme startup behavior, keep both in sync.
+- All analytics (GTM, GA4, Mixpanel incl. session replay) are consent-gated: US-style opt-out (default on) for visitors outside GDPR territories, opt-in (default off) for EU/EEA/UK/CH visitors detected via the free timezone heuristic `isEuVisitor()` (`Europe/*` plus the EU Atlantic island zones; duplicated in the `src/app/bootstrap.ts` bootstrap — keep in sync). Effective consent is `stored ? stored.analytics : !isEuVisitor()`. The "Do Not Sell or Share My Information" preference (`doNotSell`) is INDEPENDENT of analytics and ON by default: DemoStoke does not sell or share data (analytics is internal-use only, a deliberate product decision, July 2026), so `doNotSell` and GPC signals record the CPRA opt-out but never disable analytics. Scripts load only via `window.__loadAnalytics()` in the `src/app/bootstrap.ts` bootstrap (Mixpanel via the official embed snippet + `mixpanel.init`, token hardcoded there, autocapture with URL-change pageviews, 100% session replay, and replay heatmap capture); ordinary page text is visible in replays, all form inputs stay globally masked, and displayed profile contact data uses focused `.mp-mask`/`.mp-block` redaction. Consent state lives in `src/utils/cookieConsent.ts` (`cookie-consent` key, versioned via `CONSENT_VERSION` — bump it to re-prompt everyone, localStorage + cookie mirror). Opt-out calls `mixpanel.opt_out_tracking()` and sweeps `mp_*`/legacy `AMP_*` cookie and localStorage state. The banner is `src/components/CookieConsentBanner.tsx` (mounted via `ClientOnlyCookieConsent` in `src/app/providers.tsx`; reopened from the Footer's "Cookie Settings" and "Do Not Sell or Share My Information" buttons and a link on the Privacy Policy page). `trackEvent`, `GoogleTagManager`, and both `vitals` senders all guard on `hasAnalyticsConsent()` so opted-out events never enter the dataLayer queue (GTM replays it on late load). Never add analytics ungated analytics scripts or push to `dataLayer` without a consent check. Analytics identity is UUID-only: `identifyUser()` in `src/utils/tracking.ts` sends the Supabase user UUID on sign-in/restore and `resetAnalyticsIdentity()` runs on real sign-out (wired in `AuthContext`); never send email, name, or other PII people-profile props to Mixpanel. The `cookie-consent` key/version literals and the default-allowed logic are duplicated between `src/app/bootstrap.ts` and `cookieConsent.ts` — keep them in sync.
 - Search/explore/profile visibility behavior is tightly coupled to `equipmentDataService`, `searchService`, `useEquipmentWithDynamicDistance`, and advanced filter helpers.
 - The sign-in page runs invisible reCAPTCHA with the floating Google badge hidden (`hideBadge` prop on `src/components/Recaptcha.tsx`). Google only allows hiding the badge when the disclosure text is shown instead, so keep `hideBadge` paired with `RecaptchaDisclosure` on any form that uses it.
 - Automated gear-review drafts must not create `equipment_reviews` rows or mutate `equipment.rating` / `equipment.review_count`. Hidden factual evidence belongs in `gear_review_blog_generation_runs.hidden_evidence`, not in public blog copy, tags, excerpts, or analytics payloads.
@@ -278,7 +253,6 @@ CI holds no repository secrets; `.github/workflows/security.yml` uses only the a
 - Generated gear-review analytics must use safe metadata only: post id/slug, category, source equipment id, gear category, author, generated flag, and preview/published mode. Never send hidden evidence, source snippets, credentials, or raw prompts to Mixpanel or Google Analytics.
 - `DemoStokeWidget` is a local-dev artifact right now. Treat it as unfinished unless you intentionally wire it to production.
 - There is a large amount of existing debug logging. Remove or preserve it intentionally, not accidentally.
-- Vite 8 uses Rolldown build options. Do not add object-form `manualChunks`; it is unsupported and breaks client builds.
 
 ## Canonical Category Image URLs (Pexels)
 
@@ -309,7 +283,7 @@ Every demo event uses its category's image as `thumbnail_url` (migrations `20261
 | mountain-bikes | Pexels 3880623 |
 
 ## Test and Review Expectations
-- CI runs `npm run lint`, `npm run type-check`, `npm run build`, and `npm run test:unit`.
+- CI runs `npm run lint`, `npm run type-check`, `npm run build:cloudflare`, and `npm run test:unit`.
 - Unit tests live under `src/__tests__/` and focus heavily on SEO, SSR/server behavior, map/hybrid filtering, quiz resolution, and related regressions.
 - If you change routing, SEO, SSR, schema, or public discovery behavior, run the most relevant local checks and update tests when behavior changed intentionally.
 - Before finishing a code change, re-check whether this file needs an update.
@@ -428,7 +402,6 @@ Documented in `demostoke-gear-adder/demostoke_seed_batches/arizona_mountain_bike
 - Prescott, Show Low/Pinetop, Phoenix metro, Cave Creek — not yet researched
 
 ## Cloudflare Hosting
-- `server/app.js` is the shared Express application factory for Node and Cloudflare. `server/index.js` supplies disk assets and the Node listener; `server/worker.js` uses Cloudflare's Node HTTP adapter and bundled HTML/SSR imports. Keep metadata, redirects, sitemap, security headers, and visibility rules in the shared app.
-- `wrangler.jsonc` deploys the `demostoke` Worker with static assets from `dist/client`. HTML entry requests and `/sitemap.xml` must reach the Worker; missing routes must preserve SSR 404/noindex behavior.
-- `npm run build:cloudflare`, `npm run preview:cloudflare`, and `npm run deploy:cloudflare` build, preview, and deploy the complete site.
-- The DigitalOcean app is retained as a rollback host and also contains unrelated ZICKONEZERO components. Do not archive or delete it as part of this migration. Supabase remains the existing backend.
+- `wrangler.jsonc` deploys the `demostoke` Worker with assets from `.open-next/assets`. Requests reach the Worker for redirects and preview headers.
+- Configure the public Supabase variables in Workers Builds Previews Base. Configure the migration branch with the preview command `npm run deploy:preview`. See [hosting and rollback](docs/cloudflare-hosting.md).
+- The retained DigitalOcean app contains unrelated ZICK ONE ZERO components and can serve its existing rollback revision. Supabase remains the backend.

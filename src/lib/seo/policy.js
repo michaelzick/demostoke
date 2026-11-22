@@ -1,4 +1,3 @@
-import { matchPath } from "react-router-dom";
 import { PUBLIC_ROUTE_META } from "./publicMetadata.js";
 
 export const ROBOTS_INDEX_FOLLOW = "index,follow";
@@ -121,7 +120,7 @@ export const resolveStaticRouteSeo = (pathname = "", search = "") => {
 };
 
 export const resolveUtilityRouteSeo = (pathname = "") => {
-  if (pathname !== "/api/gear/search" && !matchPath("/blog/preview/:id", pathname)) {
+  if (pathname !== "/api/gear/search" && !matchesRoute("/blog/preview/:id", pathname)) {
     return null;
   }
 
@@ -136,18 +135,16 @@ export const resolveNotFoundSeo = () =>
     status: SEO_STATUS_NOT_FOUND,
   });
 
-export const isKnownAppRoute = (pathname = "") =>
-  KNOWN_APP_ROUTE_PATTERNS.some((path) =>
-    Boolean(
-      matchPath(
-        {
-          path,
-          end: true,
-        },
-        pathname,
-      ),
-    ),
+const matchesRoute = (pattern, pathname) => {
+  const segments = pathname.toLowerCase().replace(/\/+$/, '').split('/');
+  const expected = pattern.replace(/\/+$/, '').split('/');
+  return segments.length === expected.length && expected.every(
+    (part, index) => part.startsWith(':') ? Boolean(segments[index]) : part === segments[index],
   );
+};
+
+export const isKnownAppRoute = (pathname = "") =>
+  KNOWN_APP_ROUTE_PATTERNS.some((path) => matchesRoute(path, pathname));
 
 export const isPublicEquipmentRecord = ({
   status,

@@ -7,7 +7,7 @@ const readSource = (relativePath: string) =>
   fs.readFileSync(path.join(ROOT, relativePath), "utf-8");
 
 describe("Mixpanel replay privacy", () => {
-  const indexSource = readSource("index.html");
+  const indexSource = readSource("src/app/bootstrap.ts");
 
   it("shows ordinary page text and enables replay-backed heatmaps", () => {
     expect(indexSource).toMatch(/record_heatmap_data:\s*true/);

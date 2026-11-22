@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/navigation";
 import { useRecentlyViewedEquipment } from "@/hooks/useRecentlyViewedEquipment";
 import { buildGearPath } from "@/utils/gearUrl";
 import { HorizontalScrollSection } from "./HorizontalScrollSection";

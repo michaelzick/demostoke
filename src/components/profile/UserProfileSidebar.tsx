@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { MessageCircleIcon, StarIcon, MapPinIcon, PhoneIcon, GlobeIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/navigation";
 import MapComponent from "@/components/MapComponent";
 
 interface UserProfileSidebarProps {

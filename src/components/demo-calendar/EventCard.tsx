@@ -1,4 +1,5 @@
-
+import { Link } from "@/lib/navigation";
+import { buildDemoEventPath } from "@/utils/eventSlug";
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
@@ -9,7 +10,6 @@ interface EventCardProps {
   categoryColors: CategoryFilter[];
   onEdit: (event: DemoEvent) => void;
   onDelete: (eventId: string) => void;
-  onEventClick: (event: DemoEvent) => void;
   isDeleting?: boolean;
   isAdmin: boolean;
 }
@@ -18,7 +18,6 @@ const EventCard = ({
   event,
   onEdit,
   onDelete,
-  onEventClick,
   isDeleting,
   isAdmin
 }: EventCardProps) => {
@@ -27,13 +26,13 @@ const EventCard = ({
   return (
     <div className="bg-card rounded-lg p-3 shadow-sm border hover:shadow-md transition-shadow">
       <div className="mb-2">
-        <h4
-          className={`font-semibold text-sm cursor-pointer hover:underline truncate ${categoryMeta.textColorClass}`}
-          onClick={() => onEventClick(event)}
+        <Link
+          to={buildDemoEventPath(event)}
+          className={`block font-semibold text-sm hover:underline truncate ${categoryMeta.textColorClass}`}
           title={event.title}
         >
           {event.title}
-        </h4>
+        </Link>
         {event.company && (
           <p className="text-sm font-semibold text-foreground truncate" title={event.company}>
             {event.company}

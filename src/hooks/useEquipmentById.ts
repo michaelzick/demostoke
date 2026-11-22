@@ -7,8 +7,12 @@ import { getEquipmentData } from "@/services/equipment/equipmentDataService";
 import { isPublicEquipmentRecord } from "@/lib/seo/policy.js";
 import { normalizeCurrencyCode } from "@/utils/currency";
 
+import { useSsrPageData } from "@/contexts/SsrPageDataContext";
+
 export const useEquipmentById = (id: string) => {
+  const { equipment } = useSsrPageData();
   return useQuery({
+    initialData: equipment?.id === id ? equipment : undefined,
     queryKey: ["equipment", id],
     queryFn: async (): Promise<Equipment | null> => {
       if (!id) {

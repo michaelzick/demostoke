@@ -12,7 +12,6 @@ interface CalendarDayProps {
   categoryFilters: CategoryFilter[];
   onEditEvent: (event: DemoEvent) => void;
   onDeleteEvent: (eventId: string) => void;
-  onEventClick: (event: DemoEvent) => void;
   isDeleting?: boolean;
   isAdmin: boolean;
 }
@@ -24,7 +23,6 @@ const CalendarDay = ({
   categoryFilters,
   onEditEvent,
   onDeleteEvent,
-  onEventClick,
   isDeleting,
   isAdmin
 }: CalendarDayProps) => {
@@ -55,7 +53,6 @@ const CalendarDay = ({
               key={event.id}
               event={event}
               categoryColors={categoryFilters}
-              onClick={() => onEventClick(event)}
             />
           ) : (
             <EventCard
@@ -64,7 +61,6 @@ const CalendarDay = ({
               categoryColors={categoryFilters}
               onEdit={onEditEvent}
               onDelete={onDeleteEvent}
-              onEventClick={onEventClick}
               isDeleting={isDeleting}
               isAdmin={isAdmin}
             />

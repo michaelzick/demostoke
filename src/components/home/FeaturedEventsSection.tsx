@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/navigation";
 import { Button } from "@/components/ui/button";
 import { useMemo } from "react";
 import { useDemoEvents } from "@/hooks/useDemoEvents";

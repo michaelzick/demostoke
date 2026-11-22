@@ -1,5 +1,5 @@
 
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/navigation";
 import { Search } from "lucide-react";
 import SquiggleUnderline from "./SquiggleUnderline";
 import {

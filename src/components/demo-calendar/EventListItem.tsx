@@ -1,3 +1,5 @@
+import { Link } from "@/lib/navigation";
+import { buildDemoEventPath } from "@/utils/eventSlug";
 import { DemoEvent, CategoryFilter } from "@/types/demo-calendar";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
@@ -8,7 +10,6 @@ interface EventListItemProps {
   categoryColors: CategoryFilter[];
   onEdit: (event: DemoEvent) => void;
   onDelete: (eventId: string) => void;
-  onEventClick: (event: DemoEvent) => void;
   isDeleting?: boolean;
   isAdmin: boolean;
 }
@@ -17,7 +18,6 @@ const EventListItem = ({
   event,
   onEdit,
   onDelete,
-  onEventClick,
   isDeleting,
   isAdmin
 }: EventListItemProps) => {
@@ -25,15 +25,15 @@ const EventListItem = ({
 
   return (
     <div className="flex items-center justify-between gap-2 py-2">
-      <button
+      <Link
+        to={buildDemoEventPath(event)}
         className="flex-1 text-left"
-        onClick={() => onEventClick(event)}
       >
         <p className={`font-semibold text-sm truncate hover:underline ${categoryMeta.textColorClass}`}>{event.title}</p>
         {event.company && (
           <p className="text-sm font-semibold text-foreground truncate">{event.company}</p>
         )}
-      </button>
+      </Link>
       {isAdmin && (
         <div className="flex gap-1">
           <Button

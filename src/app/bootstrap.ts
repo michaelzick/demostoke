@@ -1,0 +1,169 @@
+export const themeBootstrap = String.raw`
+(function () {
+      try {
+        var meta = document.querySelector('meta[name="enable-theme-flicker-fix"]');
+        if (meta && meta.content === 'false') return;
+      } catch {}
+      if (window.__ENABLE_THEME_FLICKER_FIX === false) return;
+      try {
+        // mark that theme resolution is in progress
+        document.documentElement.classList.add('theme-resolving');
+      } catch {}
+      try {
+        var KEY = 'ui-theme';
+        var val = null;
+        try { val = localStorage.getItem(KEY); } catch { val = null; }
+        // fallback to cookie if localStorage is blocked
+        if (!val) {
+          try {
+            var m = document.cookie.match('(?:^|; )' + KEY + '=([^;]*)');
+            if (m) val = decodeURIComponent(m[1]);
+          } catch {}
+        }
+        if (!val) val = 'system';
+        if (!/^(light|dark|system)$/.test(val)) val = 'system';
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = val === 'system' ? (prefersDark ? 'dark' : 'light') : val;
+        var de = document.documentElement;
+        de.classList.remove('light', 'dark');
+        de.classList.add(theme);
+        if (val === 'system') de.classList.add('system'); else de.classList.remove('system');
+      } catch {
+        try {
+          var de2 = document.documentElement;
+          var prefersDark2 = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          de2.classList.add(prefersDark2 ? 'dark' : 'light');
+        } catch {}
+      } finally {
+        try { document.documentElement.classList.remove('theme-resolving'); } catch {}
+      }
+    })();
+`;
+
+export const analyticsBootstrap = String.raw`
+(function () {
+      var KEY = 'cookie-consent';
+      var VERSION = 2;
+
+      // Google Consent Mode v2 defaults, queued before any Google script
+      // could possibly run.
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { window.dataLayer.push(arguments); }
+      window.gtag = window.gtag || gtag;
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied'
+      });
+
+      function readConsent() {
+        var raw = null;
+        try { raw = localStorage.getItem(KEY); } catch (e) { }
+        if (!raw) {
+          try {
+            var m = document.cookie.match('(?:^|; )' + KEY + '=([^;]*)');
+            if (m) raw = decodeURIComponent(m[1]);
+          } catch (e) { }
+        }
+        if (!raw) return null;
+        try {
+          var parsed = JSON.parse(raw);
+          return parsed && parsed.version === VERSION &&
+            typeof parsed.analytics === 'boolean' &&
+            typeof parsed.doNotSell === 'boolean' ? parsed : null;
+        } catch (e) { return null; }
+      }
+
+      var loaded = false;
+      window.__loadAnalytics = function () {
+        if (loaded) return;
+        loaded = true;
+
+        window.gtag('consent', 'update', { analytics_storage: 'granted' });
+
+        // Google Tag Manager
+        window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        var gtm = document.createElement('script');
+        gtm.async = true;
+        gtm.src = 'https://www.googletagmanager.com/gtm.js?id=GTM-MHM2XTTV';
+        document.head.appendChild(gtm);
+
+        // GA4 direct fallback
+        var ga = document.createElement('script');
+        ga.async = true;
+        ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-KKQJ9P2ECC';
+        document.head.appendChild(ga);
+        window.gtag('js', new Date());
+        window.gtag('config', 'G-KKQJ9P2ECC');
+
+        // Mixpanel Analytics & Session Replay — the official embed snippet
+        // defines a queueing stub at window.mixpanel immediately, then loads
+        // the library from cdn.mxpnl.com; init/track calls queue against the
+        // stub so nothing drops between consent grant and library load. This
+        // block only runs inside __loadAnalytics(), so window.mixpanel still
+        // never exists pre-consent. Pin the library URL to https so the
+        // snippet's protocol-relative default can't resolve to http on
+        // localhost, where the SSR server's https-only CSP would block it.
+        window.MIXPANEL_CUSTOM_LIB_URL = 'https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js';
+        (function(e,c){if(!c.__SV){var l,h;window.mixpanel=c;c._i=[];c.init=function(q,r,f){function t(d,a){var g=a.split(".");2==g.length&&(d=d[g[0]],a=g[1]);d[a]=function(){d.push([a].concat(Array.prototype.slice.call(arguments,0)))}}var b=c;"undefined"!==typeof f?b=c[f]=[]:f="mixpanel";b.people=b.people||[];b.toString=function(d){var a="mixpanel";"mixpanel"!==f&&(a+="."+f);d||(a+=" (stub)");return a};b.people.toString=function(){return b.toString(1)+".people (stub)"};l="disable time_event track track_pageview track_links track_forms track_with_groups add_group set_group remove_group register register_once alias unregister identify name_tag set_config reset opt_in_tracking opt_out_tracking has_opted_in_tracking has_opted_out_tracking clear_opt_in_out_tracking start_batch_senders start_session_recording stop_session_recording people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user people.remove".split(" ");
+        for(h=0;h<l.length;h++)t(b,l[h]);var n="set set_once union unset remove delete".split(" ");b.get_group=function(){function d(p){a[p]=function(){b.push([g,[p].concat(Array.prototype.slice.call(arguments,0))])}}for(var a={},g=["get_group"].concat(Array.prototype.slice.call(arguments,0)),m=0;m<n.length;m++)d(n[m]);return a};c._i.push([q,r,f])};c.__SV=1.2;var k=e.createElement("script");k.type="text/javascript";k.async=!0;k.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"file:"===
+        e.location.protocol&&"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//)?"https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";e=e.getElementsByTagName("script")[0];e.parentNode.insertBefore(k,e)}})(document,window.mixpanel||[]);
+        window.mixpanel.init('bd90c5d017f23977ba6dd6965e4fa8c7', {
+          debug: /^(localhost|127\.0\.0\.1)$/.test(window.location.hostname),
+          persistence: 'localStorage',
+          autocapture: {
+            pageview: 'full-url',
+            click: true,
+            input: true,
+            scroll: true,
+            submit: true,
+            capture_text_content: false
+          },
+          record_sessions_percent: 100,
+          record_heatmap_data: true,
+          record_mask_all_text: false,
+          record_mask_all_inputs: true
+        });
+      };
+
+      // Timezone heuristic for GDPR territories, duplicated from
+      // isEuVisitor() in src/utils/cookieConsent.ts — keep in sync.
+      function isEuTimeZone() {
+        try {
+          var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+          return tz.indexOf('Europe/') === 0 ||
+            ['Atlantic/Canary', 'Atlantic/Madeira', 'Atlantic/Azores',
+              'Atlantic/Reykjavik', 'Atlantic/Faroe'].indexOf(tz) !== -1;
+        } catch (e) { return false; }
+      }
+
+      // Opt-out model outside the EU/EEA/UK: analytics runs by default
+      // unless the visitor opted out. EU/EEA/UK visitors (timezone
+      // heuristic) must opt in first. The do-not-sell preference and GPC
+      // cover sale/sharing only and never gate analytics.
+      var stored = readConsent();
+      var allowed = stored ? stored.analytics === true : !isEuTimeZone();
+      if (allowed) {
+        window.__loadAnalytics();
+      }
+    })();
+window.onerror = function(msg, src, line, col, err) {
+      if (window.mixpanel && window.mixpanel.track) {
+        window.mixpanel.track('js_error', {
+          message: String(msg),
+          source: src,
+          line: line,
+          column: col,
+          error: err ? String(err.stack || err) : null,
+        });
+      }
+    };
+    window.addEventListener('unhandledrejection', function(e) {
+      if (window.mixpanel && window.mixpanel.track) {
+        window.mixpanel.track('js_unhandled_rejection', {
+          reason: e.reason ? String(e.reason.stack || e.reason) : String(e.reason),
+        });
+      }
+    });
+`;

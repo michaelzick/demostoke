@@ -1,8 +1,11 @@
+'use client';
 
-import { Link, Outlet } from "react-router-dom";
+import type { ReactNode } from 'react';
+
+import { Link } from "@/lib/navigation";
 import { Button } from "@/components/ui/button";
 
-const AuthLayout = () => {
+const AuthLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex flex-col min-h-screen bg-ocean-light dark:bg-mountain-dark">
       <div className="container flex h-16 items-center px-4 md:px-6">
@@ -27,7 +30,7 @@ const AuthLayout = () => {
       </div>
       <div className="flex flex-1 items-center justify-center p-4 md:p-8">
         <div className="w-full max-w-md">
-          <Outlet />
+          {children}
         </div>
       </div>
     </div>

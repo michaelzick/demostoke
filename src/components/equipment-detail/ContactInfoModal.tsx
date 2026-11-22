@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MapPinIcon, PhoneIcon, GlobeIcon } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/navigation";
 import { useEffect, useMemo, useRef } from "react";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { slugify } from "@/utils/slugify";

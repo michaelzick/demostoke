@@ -22,7 +22,6 @@ interface CalendarGridProps {
   onChangeView: (mode: 'calendar' | 'list') => void;
   onEditEvent: (event: DemoEvent) => void;
   onDeleteEvent: (eventId: string) => void;
-  onEventClick: (event: DemoEvent) => void;
   isDeleting?: boolean;
   isAdmin: boolean;
   isLoadingRole: boolean;
@@ -49,7 +48,6 @@ const CalendarGrid = ({
   onChangeView,
   onEditEvent,
   onDeleteEvent,
-  onEventClick,
   isDeleting,
   isAdmin,
   isLoadingRole
@@ -123,7 +121,6 @@ const CalendarGrid = ({
               categoryFilters={categoryFilters}
               onEditEvent={onEditEvent}
               onDeleteEvent={onDeleteEvent}
-              onEventClick={onEventClick}
               isDeleting={isDeleting}
               isAdmin={isAdmin}
             />
@@ -136,7 +133,6 @@ const CalendarGrid = ({
         categoryFilters={categoryFilters}
         onEditEvent={onEditEvent}
         onDeleteEvent={onDeleteEvent}
-        onEventClick={onEventClick}
         isDeleting={isDeleting}
         isAdmin={isAdmin}
       />

@@ -1,5 +1,5 @@
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "@/lib/navigation";
 import { useAuth } from "@/helpers";
 import { slugify } from "@/utils/slugify";
 import { Search, X, User, Package, BarChart3, Calendar, Settings } from "lucide-react";

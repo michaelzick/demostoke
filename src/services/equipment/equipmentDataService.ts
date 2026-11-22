@@ -3,7 +3,7 @@ import { Equipment } from "@/types";
 import { convertSupabaseToEquipment } from "./equipmentConverter";
 import { deduplicateImageUrls } from "@/utils/imageDeduplication";
 import { getHiddenUserIds, filterHiddenUsers } from "./hiddenUserFilter";
-import { fetchEquipmentFromShopGearFeed } from "./shopGearFeedService";
+import { fetchConfiguredShopGearFeed } from "./configuredShopGearFeed";
 
 export type EquipmentDataOptions = {
   start?: string | Date;
@@ -111,76 +111,18 @@ const getDateRangeFromQueryString = (): EquipmentDataOptions => {
   return {};
 };
 
-const resolveDateRange = (
-  options: EquipmentDataOptions | undefined,
-  envStart: string | undefined,
-  envEnd: string | undefined,
-): EquipmentDataOptions => {
-  if (options?.start && options?.end) {
-    return { start: options.start, end: options.end };
-  }
-
-  if (options?.start || options?.end) {
-    console.warn(
-      "Ignoring partial equipment date range. Both start and end are required.",
-    );
-  }
-
-  const queryRange = getDateRangeFromQueryString();
-  if (queryRange.start && queryRange.end) {
-    return queryRange;
-  }
-
-  if (envStart && envEnd) {
-    return { start: envStart, end: envEnd };
-  }
-
-  if (envStart || envEnd) {
-    console.warn(
-      "Ignoring partial env date range. Set both VITE_SHOP_GEAR_FEED_START and VITE_SHOP_GEAR_FEED_END.",
-    );
-  }
-
-  return {};
-};
-
 const fetchEquipmentFromConfiguredShopFeed = async (
   options?: EquipmentDataOptions,
 ): Promise<Equipment[] | null> => {
-  const useShopFeed = import.meta.env.VITE_USE_SHOP_GEAR_FEED === "true";
-  if (!useShopFeed) return null;
-
-  const endpointUrl = import.meta.env.VITE_SHOP_GEAR_FEED_URL as string | undefined;
-  const shopSlug = import.meta.env.VITE_SHOP_GEAR_FEED_SHOP_SLUG as string | undefined;
-  const envStart = import.meta.env.VITE_SHOP_GEAR_FEED_START as string | undefined;
-  const envEnd = import.meta.env.VITE_SHOP_GEAR_FEED_END as string | undefined;
-  const includeHidden = import.meta.env.VITE_SHOP_GEAR_FEED_INCLUDE_HIDDEN === "true";
-  const apiKey = import.meta.env.VITE_SHOP_GEAR_FEED_APIKEY as string | undefined;
-  const { start, end } = resolveDateRange(options, envStart, envEnd);
-
-  if (!endpointUrl || !shopSlug) {
-    console.warn(
-      "VITE_USE_SHOP_GEAR_FEED is enabled but VITE_SHOP_GEAR_FEED_URL or VITE_SHOP_GEAR_FEED_SHOP_SLUG is missing. Falling back to Supabase equipment query.",
-    );
-    return null;
+  if (process.env.NEXT_PUBLIC_USE_SHOP_GEAR_FEED !== "true") return null;
+  if ((options?.start && !options.end) || (options?.end && !options.start)) {
+    console.warn("Ignoring partial equipment date range. Both start and end are required.");
   }
+  const { start, end } = options?.start && options.end ? options : getDateRangeFromQueryString();
+  const date = (value: string | Date) => typeof value === "string" ? value : value.toISOString();
 
   try {
-    const headers = apiKey
-      ? {
-          apikey: apiKey,
-          Authorization: `Bearer ${apiKey}`,
-        }
-      : undefined;
-
-    return await fetchEquipmentFromShopGearFeed({
-      endpointUrl,
-      shopSlug,
-      start,
-      end,
-      includeHidden,
-      headers,
-    });
+    return await fetchConfiguredShopGearFeed(start && end ? { start: date(start), end: date(end) } : {});
   } catch (error) {
     console.error("Failed to fetch shop gear feed; falling back to Supabase data.", error);
     return null;

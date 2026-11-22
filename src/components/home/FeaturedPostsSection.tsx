@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/navigation";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { BlogPost } from "@/lib/blog/types";

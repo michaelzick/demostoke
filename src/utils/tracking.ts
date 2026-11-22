@@ -1,3 +1,4 @@
+import { isReadOnlyPreview } from '@/lib/deployment';
 import { hasAnalyticsConsent } from "@/utils/cookieConsent";
 
 export const buildEquipmentTrackingFrom = (equipment: {
@@ -29,7 +30,7 @@ export const trackEvent = (
 ) => {
   // GTM replays the whole dataLayer queue when it loads after a late opt-in,
   // so pre-consent events must never be pushed.
-  if (!hasAnalyticsConsent()) {
+  if (isReadOnlyPreview || !hasAnalyticsConsent()) {
     return;
   }
 
@@ -55,7 +56,7 @@ export const trackEvent = (
 // other PII (privacy-minimization decision, Aug 2026). The UUID joins to
 // Supabase internally when needed.
 export const identifyUser = (userId: string) => {
-  if (typeof window === "undefined" || !hasAnalyticsConsent()) {
+  if (isReadOnlyPreview || typeof window === "undefined" || !hasAnalyticsConsent()) {
     return;
   }
   // Supabase user UUID, never email.

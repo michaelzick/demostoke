@@ -5,12 +5,16 @@ import { DemoEvent, DemoEventInput } from "@/types/demo-calendar";
 import { useToast } from "@/hooks/use-toast";
 import { trackEvent } from "@/utils/tracking";
 
+import { useSsrPageData } from "@/contexts/SsrPageDataContext";
+
 export const useDemoEvents = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { demoEvents } = useSsrPageData();
 
   const { data: events = [], isLoading, error } = useQuery<DemoEvent[]>({
     queryKey: ['demo-events'],
+    initialData: demoEvents,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('demo_calendar')

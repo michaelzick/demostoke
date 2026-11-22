@@ -1,5 +1,5 @@
 
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Snowflake, Waves, Bike } from "lucide-react";

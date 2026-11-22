@@ -118,11 +118,16 @@ const buildShopAliasProfile = (
   is_hidden: false,
 });
 
+import { useSsrPageData } from "@/contexts/SsrPageDataContext";
+
 export const useUserProfileBySlug = (slug: string) => {
   const { isAdmin } = useIsAdmin();
+  const { publicProfile } = useSsrPageData();
 
   return useQuery({
     queryKey: ["userProfile", slug, isAdmin],
+    initialData: isAdmin ? undefined : publicProfile,
+    initialDataUpdatedAt: publicProfile ? 0 : undefined,
     queryFn: async (): Promise<UserProfile | null> => {
       if (!slug) {
         throw new Error("Slug is required");

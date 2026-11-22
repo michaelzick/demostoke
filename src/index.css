@@ -153,3 +153,23 @@
 .how-it-works-icon {
   color: #020817;
 }
+
+/* Theme initialization and keyboard focus */
+/* Prevent theme flash on load */
+html {
+  transition: none !important;
+}
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+/* Improve button accessibility */
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+/* Prevent theme transitions during initial paint */
+html.theme-resolving *, html.theme-resolving *::before, html.theme-resolving *::after {
+  transition: none !important;
+  animation: none !important;
+}

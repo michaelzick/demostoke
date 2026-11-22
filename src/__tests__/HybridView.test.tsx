@@ -335,6 +335,8 @@ describe("HybridView viewport sync", () => {
     expect(loadingMatches.length).toBeGreaterThan(0);
     expect(screen.queryAllByTestId("equipment-card")).toHaveLength(0);
 
+    await waitFor(() => expect(mapHarness.mapMock.on).toHaveBeenCalledWith("load", expect.any(Function)));
+
     act(() => {
       mapHarness.emit("load");
     });

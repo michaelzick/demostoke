@@ -8,7 +8,7 @@ import AddOnSelection from "./AddOnSelection";
 import PriceSummary from "./PriceSummary";
 import BookingActions from "./BookingActions";
 import { buildGearDisplayName } from "@/utils/gearUrl";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "@/lib/navigation";
 
 interface BookingCardProps {
   equipment: Equipment;

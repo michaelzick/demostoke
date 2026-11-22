@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/navigation";
 
 interface BreadcrumbsProps {
   items: { label: string; path: string; }[];

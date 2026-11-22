@@ -5,9 +5,10 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
+    alias: [
+      { find: /^@\/lib\/navigation$/, replacement: "react-router-dom" },
+      { find: "@", replacement: path.resolve(__dirname, "./src") },
+    ],
   },
   test: {
     environment: "jsdom",

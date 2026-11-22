@@ -1,5 +1,5 @@
 
-import { useMatch } from 'react-router-dom';
+import { useMatch } from '@/lib/navigation';
 import { GEAR_CATEGORIES, type GearCategorySlug } from '@/lib/gearCategories';
 
 const GEAR_LEGEND_COLORS: Record<GearCategorySlug, string> = {

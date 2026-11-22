@@ -10,6 +10,7 @@ export interface PageMetadata {
   canonicalUrl?: string;
   robots?: string;
   trackingReady?: boolean;
+  serverManaged?: boolean;
 }
 
 const setMeta = (attr: 'name' | 'property', key: string, value: string) => {
@@ -43,8 +44,10 @@ const usePageMetadata = ({
   canonicalUrl,
   robots,
   trackingReady = true,
+  serverManaged = false,
 }: PageMetadata) => {
   useEffect(() => {
+    if (serverManaged) return;
     if (title) {
       document.title = title;
       setMeta('property', 'og:title', title);
@@ -101,6 +104,9 @@ const usePageMetadata = ({
       script.remove();
     }
 
+  }, [title, description, image, type, schema, canonicalUrl, robots, serverManaged]);
+
+  useEffect(() => {
     if (trackingReady) {
       window.dispatchEvent(
         new CustomEvent('page_metadata_applied', {
@@ -113,7 +119,7 @@ const usePageMetadata = ({
         }),
       );
     }
-  }, [title, description, image, type, schema, canonicalUrl, robots, trackingReady]);
+  }, [title, canonicalUrl, trackingReady]);
 };
 
 export default usePageMetadata;
